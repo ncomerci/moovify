@@ -55,6 +55,17 @@
       <version>${project.parent.version}</version>
       <scope>runtime</scope>
     </dependency>
+
+    <!-- This dependencies are needed because we are working with an older version of Apache Tomcat -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
