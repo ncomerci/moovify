@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <h2>Hello World!! <c:out value="${user.username}"/>!</h2>
+    <h2>Hello World!! <c:out value="${user.title}"/>!</h2>
 </body>
 
 </html>

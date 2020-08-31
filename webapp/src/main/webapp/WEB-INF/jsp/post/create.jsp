@@ -20,7 +20,7 @@
     <script src="<c:url value="/resources/js/post/create.js" />"></script>
 </head>
 <body>
-    <form method="post">
+    <form method="post" action="<c:url value="/post/create" />">
         <label>
             Username:
             <input type="text" required />
@@ -31,7 +31,12 @@
             <input type="email" />
         </label>
 
-        <textarea id="createPostData" name="postData" required ></textarea>
+
+        <label for="createPostData">
+            <textarea id="createPostData" name="postData" required ></textarea>
+        </label>
+
+        <input type="submit" value="Enviar">
 
     </form>
 </body>
