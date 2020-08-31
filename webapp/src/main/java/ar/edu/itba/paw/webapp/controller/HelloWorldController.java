@@ -22,4 +22,13 @@ public class HelloWorldController {
         return mv;
     }
 
+    @RequestMapping("/post/create")
+    public ModelAndView createPost() {
+
+        final ModelAndView mv = new ModelAndView("post/create");
+        mv.addObject("user", userService.findById(1));
+
+        return mv;
+    }
+
 }
