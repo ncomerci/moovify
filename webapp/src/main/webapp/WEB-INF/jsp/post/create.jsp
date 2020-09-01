@@ -9,30 +9,23 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<html>
+<!DOCTYPE html>
+<html lang="en" >
 <head>
     <title>Create Post</title>
-    <%-- TODO: Refactor EasyMD and DOMPurify dependencies  --%>
-    <link rel="stylesheet" href="https://unpkg.com/easymde/dist/easymde.min.css">
-    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.0.14/purify.js" integrity="sha512-k1Cz/QJmmxQHFJhI9dAjibYnBjZbkQVrCiGFTGs6UDek/zjbd6DZrnrPQAnZREr6hx0wyQRDOfWpzA/t5xQKjw==" crossorigin="anonymous"></script>
+
+    <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+    <jsp:include page="/WEB-INF/jsp/dependencies/mdEditor.jsp" />
 
     <script src="<c:url value="/resources/js/post/create.js" />"></script>
 </head>
 <body>
+    <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
+
     <form method="post" action="<c:url value="/post/create" />">
-        <label>
-            Username:
-            <input type="text" required />
-        </label>
+        <input type="text" name="title" class="uk-input uk-form-width-large" placeholder="Titulo" required />
 
         <label>
-            Email:
-            <input type="email" />
-        </label>
-
-
-        <label for="createPostData">
             <textarea id="createPostData" name="postData" required ></textarea>
         </label>
 

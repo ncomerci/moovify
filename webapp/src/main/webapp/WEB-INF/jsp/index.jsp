@@ -7,9 +7,11 @@
 <head>
     <meta charset=utf-8>
     <title>Hello World!</title>
+    <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 
 <body>
+    <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
     <h2>Hello World!! <c:out value="${user.title}"/>!</h2>
 </body>
 
