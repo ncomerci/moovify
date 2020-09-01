@@ -9,6 +9,6 @@
 
 
 <nav>
-    <p>hola</p>
+    <p>Soy una navbar</p>
 </nav>
 

@@ -11,7 +11,7 @@ import ar.edu.itba.paw.interfaces.services.PostService;
 @Controller
 public class HelloWorldController {
 
-    @Autowired
+  /*  @Autowired
     private PostService postService;
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
@@ -21,6 +21,6 @@ public class HelloWorldController {
         mv.addObject("user", postService.findById(1));
 
         return mv;
-    }
+    }*/
 
 }

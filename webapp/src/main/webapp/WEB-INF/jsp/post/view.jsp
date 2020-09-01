@@ -14,6 +14,6 @@
 <body>
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
-    <h2>Hello World!! <c:out value="${post.title}"/>!</h2>
+    <h2>Hello World!! <c:out value="${post.title}"/> <c:out value="${post.id}"/>!</h2>
 </body>
 </html>
