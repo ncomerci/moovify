@@ -39,11 +39,11 @@ public class PostDaoImpl implements PostDao {
 
         jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS posts (" +
                         "postId SERIAL PRIMARY KEY," +
-                        "creationDate TIMESTAMP NOT NULL" +
-                        "title VARCHAR(50) NOT NULL" +
-                        "email VARCHAR(40) NOT NULL" +
-                        "wordCount INTEGER " +
-                        "body VARCHAR "
+                        "creationDate TIMESTAMP NOT NULL," +
+                        "title VARCHAR(50) NOT NULL," +
+                        "email VARCHAR(40) NOT NULL," +
+                        "wordCount INTEGER," +
+                        "body VARCHAR )"
                     );
     }
 
