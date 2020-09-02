@@ -17,11 +17,10 @@ import java.util.*;
 @Repository
 public class MovieDaoImpl implements MovieDao {
 
-    private static final String movieTableName = "movies";
 
     private static final RowMapper<Movie> MOVIE_ROW_MAPPER = (rs, rowNum) ->
             new Movie(rs.getLong("movie_id"), rs.getString("title"),
-                    rs.getObject("creation_date", LocalDate.class));
+                    rs.getObject("premier_date", LocalDate.class));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;

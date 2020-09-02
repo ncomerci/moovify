@@ -6,12 +6,12 @@ import java.util.Objects;
 public class Movie {
 
     private final long id;
-    private final String name;
+    private final String title;
     private final LocalDate premierDate;
 
-    public Movie(long id, String name, LocalDate premierDate) {
+    public Movie(long id, String title, LocalDate premierDate) {
         this.id = id;
-        this.name = name;
+        this.title = title;
         this.premierDate = premierDate;
     }
 
@@ -19,8 +19,8 @@ public class Movie {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public LocalDate getPremierDate() {
