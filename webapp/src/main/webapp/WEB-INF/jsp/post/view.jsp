@@ -14,7 +14,7 @@
     <article class="uk-article">
         <div class="uk-container uk-container-small">
             <h2 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-remove-top"><c:out value="${post.title}"/></h2>
-            <p class="uk-article-meta">Written on <c:out value="${post.timestamp}"/>. | <span data-uk-icon="icon: future"></span> Takes <c:out value="${post.wordCount}"/> min reading.</p>
+            <p class="uk-article-meta">Written on <c:out value="${post.creationDate}"/>. | <span data-uk-icon="icon: future"></span> Takes <c:out value="${post.wordCount}"/> min reading.</p>
         </div>
         <div class="uk-container uk-container-small">
             <p id="unparsedBody">

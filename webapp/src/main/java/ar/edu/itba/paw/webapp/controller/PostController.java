@@ -25,10 +25,11 @@ public class PostController {
         return mv;
     }
 
-    @RequestMapping( path = "/post/create" , method = RequestMethod.POST)
+    @RequestMapping(path = "/post/create" , method = RequestMethod.POST)
     public ModelAndView create(@RequestParam("title") final String title, @RequestParam("email") final String email, @RequestParam("body") final String body ){
+
         final Post post = postService.register(title, email, body);
-        return new ModelAndView("redirect:/post/" + post.getId() );
+        return new ModelAndView("redirect:/post/" + post.getId());
 
     }
 
