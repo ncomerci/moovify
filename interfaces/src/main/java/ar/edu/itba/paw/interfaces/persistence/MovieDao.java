@@ -4,10 +4,13 @@ import ar.edu.itba.paw.models.Movie;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 
 public interface MovieDao {
 
-    public Optional<Movie> findById(long id);
+    Optional<Movie> findById(long id);
 
-    public Movie register(String title, LocalDate premierDate);
+    Movie register(String title, LocalDate premierDate);
+
+    Set<Movie> getMoviesByPost(long postId);
 }

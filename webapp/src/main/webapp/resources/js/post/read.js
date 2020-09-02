@@ -7,10 +7,10 @@ function interpretBody(){
     //  silent: true,
     });
 
-    let unparsedBodyElem = document.getElementById("unparsedBody");
+    //let unparsedBodyElem = document.getElementById("unparsedBody");
     let parsedBodyElem = document.getElementById("parsedBody");
     let body = document.querySelector("body").dataset.postBody;
 
     parsedBodyElem.innerHTML = marked(body);
-    unparsedBodyElem.style.display = 'none';
+    //unparsedBodyElem.style.display = 'none';
 }

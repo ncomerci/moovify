@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.models;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Post {
     
@@ -10,6 +12,7 @@ public class Post {
     private final String body;
     private final int wordCount;
     private final String email;
+    private final Set<Movie> movies;
 
     /*
     * Average of words per minute read.
@@ -18,13 +21,14 @@ public class Post {
     */
     private static final int EN_WORDS_PER_MINUTE = 238;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email, Set<Movie> movies) {
         this.id = id;
         this.creationDate = creationDate;
         this.title = title;
         this.body = body;
         this.wordCount = wordCount;
         this.email = email;
+        this.movies = movies;
     }
 
     public long getId() {
@@ -52,6 +56,10 @@ public class Post {
     }
 
     public int getReadingTimeMinutes() {
-        return wordCount/EN_WORDS_PER_MINUTE;
+        return getWordCount() / EN_WORDS_PER_MINUTE;
+    }
+
+    public Set<Movie> getMovies() {
+        return movies;
     }
 }

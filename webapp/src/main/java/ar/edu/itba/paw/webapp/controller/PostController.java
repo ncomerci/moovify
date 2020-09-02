@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.HashSet;
+import java.util.List;
+
 @Controller
 public class PostController {
 
@@ -20,15 +23,14 @@ public class PostController {
     @RequestMapping(path = "/post/create", method = RequestMethod.GET)
     public ModelAndView write() {
 
-        final ModelAndView mv = new ModelAndView("post/create");
-
-        return mv;
+        return new ModelAndView("post/create");
     }
 
     @RequestMapping(path = "/post/create" , method = RequestMethod.POST)
-    public ModelAndView create(@RequestParam("title") final String title, @RequestParam("email") final String email, @RequestParam("body") final String body ){
+    public ModelAndView create(@RequestParam("title") final String title, @RequestParam("email") final String email,
+                               @RequestParam("body") final String body, @RequestParam("movies") List<Long> movies){
 
-        final Post post = postService.register(title, email, body);
+        final Post post = postService.register(title, email, body, new HashSet<>(movies));
         return new ModelAndView("redirect:/post/" + post.getId());
 
     }
