@@ -21,6 +21,7 @@ import java.util.Optional;
 public class PostDaoImpl implements PostDao {
 
     private static final String postTableName = "posts";
+    private static final String postMovieTableName = "postMovieTable";
 
     private static final RowMapper<Post> POST_ROW_MAPPER = (rs, rowNum) ->
             new Post(rs.getLong("post_id"), rs.getObject("creation_date", LocalDateTime.class),
