@@ -5127,7 +5127,8 @@ ul.uk-nav-sub {
 /* Container
  ========================================================================== */
 .uk-navbar-container:not(.uk-navbar-transparent) {
-  background: #f8f8f8;
+  /*t-navbar-background-color*/
+  background: #355070;
 }
 /*
  * Remove pseudo elements created by micro clearfix as precaution (if Container component is used)
