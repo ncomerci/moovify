@@ -9,6 +9,10 @@
 <body>
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
-    <h2>Hello World!! <c:out value="${post.title}"/>!</h2>
+    <h2>Hello World!! <c:out value="${post.title}"/> <c:out value="${post.id}"/>!</h2>
+    <h3>By: <c:out value="${post.email}"/></h3>
+    <h6>Word Count: <c:out value="${post.wordCount}"/></h6>
+    <h6>Creation Date: <c:out value="${post.creationDate}"/></h6>
+    <p><c:out value="${post.body}"/></p>
 </body>
 </html>

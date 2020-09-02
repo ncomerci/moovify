@@ -30,6 +30,7 @@
 
   <dependencyManagement>
     <dependencies>
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
@@ -41,6 +42,19 @@
         <artifactId>spring-context</artifactId>
         <version>${org.springframework.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>${org.springframework.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.2.16</version>
+      </dependency>
+
 
       <!-- This dependencies are needed because we are working with an older version of Apache Tomcat -->
       <dependency>
