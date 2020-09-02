@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -25,4 +26,10 @@ public class MovieServiceImpl implements MovieService {
     public Movie register(String title, LocalDate premierDate) {
         return movieDao.register(title, premierDate);
     }
+
+    @Override
+    public Set<Movie> getAllMovies() {
+        return movieDao.getAllMovies();
+    }
+
 }

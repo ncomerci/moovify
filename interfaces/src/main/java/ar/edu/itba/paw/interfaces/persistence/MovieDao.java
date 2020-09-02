@@ -13,4 +13,6 @@ public interface MovieDao {
     Movie register(String title, LocalDate premierDate);
 
     Set<Movie> getMoviesByPost(long postId);
+
+    Set<Movie> getAllMovies();
 }
