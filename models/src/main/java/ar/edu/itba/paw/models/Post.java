@@ -5,15 +5,15 @@ import java.time.LocalDateTime;
 public class Post {
     
     private final long id;
-    private final LocalDateTime timestamp;
+    private final LocalDateTime creationDate;
     private final String title;
     private final String body;
     private final int wordCount;
     private final String email;
 
-    public Post(long id, LocalDateTime timestamp, String title, String body, int wordCount, String email) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email) {
         this.id = id;
-        this.timestamp = timestamp;
+        this.creationDate = creationDate;
         this.title = title;
         this.body = body;
         this.wordCount = wordCount;
@@ -24,8 +24,8 @@ public class Post {
         return id;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public LocalDateTime getCreationDate() {
+        return creationDate;
     }
 
     public String getTitle() {
