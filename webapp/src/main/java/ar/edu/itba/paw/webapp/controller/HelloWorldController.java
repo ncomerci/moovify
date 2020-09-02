@@ -11,16 +11,13 @@ import ar.edu.itba.paw.interfaces.services.PostService;
 @Controller
 public class HelloWorldController {
 
-  /*  @Autowired
+    @Autowired
     private PostService postService;
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
     public ModelAndView helloWorld() {
 
-        final ModelAndView mv = new ModelAndView("index");
-        mv.addObject("user", postService.findById(1));
-
-        return mv;
-    }*/
+        return new ModelAndView("redirect:/post/create");
+    }
 
 }

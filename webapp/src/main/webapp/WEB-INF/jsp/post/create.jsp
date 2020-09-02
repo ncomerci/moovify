@@ -24,9 +24,10 @@
 
     <form method="post" action="<c:url value="/post/create" />">
         <input type="text" name="title" class="uk-input uk-form-width-large" placeholder="Titulo" required />
+        <input type="text" name="email" class="uk-input uk-form-width-large" placeholder="Email" required />
 
         <label>
-            <textarea id="createPostData" name="postData" required ></textarea>
+            <textarea id="createPostData" name="body" required ></textarea>
         </label>
 
         <input type="submit" value="Enviar">
