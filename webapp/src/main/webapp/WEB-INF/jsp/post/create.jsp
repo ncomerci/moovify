@@ -21,19 +21,20 @@
 </head>
 <body>
     <form method="post" action="<c:url value="/post/create" />">
-        <label>
-            Username:
-            <input type="text" required />
-        </label>
 
         <label>
             Email:
-            <input type="email" />
+            <input id="email" name="email" type="email" />
+        </label>
+
+        <label>
+            Title:
+            <input id="title"  name="title" type="text" />
         </label>
 
 
         <label for="createPostData">
-            <textarea id="createPostData" name="postData" required ></textarea>
+            <textarea id="createPostData" name="body" required ></textarea>
         </label>
 
         <input type="submit" value="Enviar">

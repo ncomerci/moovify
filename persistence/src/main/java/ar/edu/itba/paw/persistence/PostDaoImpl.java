@@ -20,36 +20,37 @@ import java.util.Optional;
 @Repository
 public class PostDaoImpl implements PostDao {
 
-    private static final String postDb = "posts";
+    private static final String postTableName = "posts";
 
     private static final RowMapper<Post> POST_ROW_MAPPER = (rs, rowNum) ->
-            new Post(rs.getLong("id"), rs.getObject("timestamp", LocalDateTime.class),
+            new Post(rs.getLong("post_id"), rs.getObject("creation_date", LocalDateTime.class),
                     rs.getString("title"), rs.getString("body"),
-                    rs.getInt("wordCount"), rs.getString("email"));
+                    rs.getInt("word_count"), rs.getString("email"));
 
-    private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert jdbcInsert;
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert jdbcInsert;
 
     @Autowired
     public PostDaoImpl(final DataSource ds){
         jdbcTemplate = new JdbcTemplate(ds);
         jdbcInsert = new SimpleJdbcInsert(ds)
-                .withTableName(postDb)
-                .usingGeneratedKeyColumns("postId");
+                .withTableName(postTableName)
+                .usingGeneratedKeyColumns("post_id");
 
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS posts (" +
-                        "postId SERIAL PRIMARY KEY," +
-                        "creationDate TIMESTAMP NOT NULL," +
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + postTableName + " (" +
+                        "post_id SERIAL PRIMARY KEY," +
+                        "creation_date TIMESTAMP NOT NULL," +
                         "title VARCHAR(50) NOT NULL," +
                         "email VARCHAR(40) NOT NULL," +
-                        "wordCount INTEGER," +
+                        "word_count INTEGER," +
                         "body VARCHAR )"
                     );
     }
 
     @Override
     public Optional<Post> findById(long id){
-        List<Post> results = jdbcTemplate.query("SELECT * FROM ? WHERE id= ?", new Object[]{ postDb , id }, POST_ROW_MAPPER);
+        //TODO: preguntar si es una buena forma de generalizar el nombre de la tabla
+        List<Post> results = jdbcTemplate.query("SELECT * FROM " + postTableName + " WHERE post_id= ?", new Object[]{ id }, POST_ROW_MAPPER);
 
         return results.stream().findFirst();
     }
@@ -63,9 +64,9 @@ public class PostDaoImpl implements PostDao {
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("title", title);
-        map.put("creationDate", Timestamp.valueOf(creationDate));
+        map.put("creation_date", Timestamp.valueOf(creationDate));
         map.put("email", email);
-        map.put("wordCount", wordCount);
+        map.put("word_count", wordCount);
         map.put("body", body);
 
         final Number key = jdbcInsert.executeAndReturnKey(map);

@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.function.Supplier;
-
 @Controller
 public class PostController {
 
@@ -30,7 +28,7 @@ public class PostController {
     @RequestMapping( path = "/post/create" , method = RequestMethod.POST)
     public ModelAndView create(@RequestParam("title") final String title, @RequestParam("email") final String email, @RequestParam("body") final String body ){
         final Post post = postService.register(title, email, body);
-        return new ModelAndView("redirect:/post/view/" + post.getId() );
+        return new ModelAndView("redirect:/post/" + post.getId() );
 
     }
 
@@ -41,6 +39,4 @@ public class PostController {
         mv.addObject("post", postService.findById(id).orElseThrow(PostNotFoundException::new));
         return mv;
     }
-
-
 }
