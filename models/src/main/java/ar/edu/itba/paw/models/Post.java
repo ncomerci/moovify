@@ -11,6 +11,13 @@ public class Post {
     private final int wordCount;
     private final String email;
 
+    /*
+    * Average of words per minute read.
+    * Extracted from
+    * https://www.researchgate.net/publication/332380784_How_many_words_do_we_read_per_minute_A_review_and_meta-analysis_of_reading_rate
+    */
+    private static final int EN_WORDS_PER_MINUTE = 238;
+
     public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email) {
         this.id = id;
         this.creationDate = creationDate;
@@ -42,5 +49,9 @@ public class Post {
 
     public String getEmail() {
         return email;
+    }
+
+    public int getReadingTimeMinutes() {
+        return wordCount/EN_WORDS_PER_MINUTE;
     }
 }
