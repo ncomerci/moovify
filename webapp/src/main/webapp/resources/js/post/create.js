@@ -98,7 +98,7 @@ function addMovie(formElem, inputElem, datalistElem, moviesSelectedElem){
 
     // Add movie to movies selected list
     let movieSelectedElem = document.createElement("span");
-    movieSelectedElem.innerHTML = `<span class="uk-badge">${movieName}</span>`;
+    movieSelectedElem.innerHTML = `<span class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">${movieName}</span>`;
 
     moviesSelectedElem.appendChild(movieSelectedElem);
 }
