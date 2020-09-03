@@ -51,6 +51,7 @@ public class PostController {
 
         final ModelAndView mv = new ModelAndView("post/view");
         mv.addObject("post", postService.findById(id).orElseThrow(PostNotFoundException::new));
+
         return mv;
     }
 }
