@@ -23,8 +23,11 @@
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
     <form method="post" action="<c:url value="/post/create" />" id="new-post-form">
-        <input type="text" name="title" class="uk-input uk-form-width-large" placeholder="Titulo" required />
-        <input type="text" name="email" class="uk-input uk-form-width-large" placeholder="Email" required />
+        <label for="titleInput"></label>
+        <input type="text" id="titleInput" name="title" class="uk-input uk-form-width-large" placeholder="Titulo" required />
+
+        <label for="emailInput"></label>
+        <input type="text" id="emailInput" name="email" class="uk-input uk-form-width-large" placeholder="Email" required />
 
         <label>
             <textarea id="create-post-data" name="body" required ></textarea>
@@ -35,22 +38,24 @@
 
     <!-- This is the modal -->
     <div id="movies-modal" uk-modal>
-        <div class="uk-modal-dialog uk-modal-body">
-            <h2 class="uk-modal-title">De que peliculas se habla en este Post?</h2>
+        <div class="uk-modal-dialog uk-modal-body uk-border-rounded">
+            <p class="uk-text-right uk-margin-remove">
+                <button class="uk-modal-close" type="button" uk-close></button>
+            </p>
+            <h2 class="uk-modal-title uk-margin-remove-top">De que peliculas se habla en este Post?</h2>
 
             <div>
                 <div>
-                    <label for="add-movie-input"></label>
-                    <input id="add-movie-input" list="movie-list" placeholder="Ingrese el nombre de la pelicula que quiera agregar">
-                    <button id="add-movie-button" class="uk-button uk-button-primary" type="button">Add</button>
+                    <label for="add-movie-input" class="uk-margin-bottom" ></label>
+                    <input id="add-movie-input" class="uk-input uk-margin-right uk-input uk-margin-bottom uk-border-rounded" list="movie-list" placeholder="Ingrese el nombre de la pelicula que quiera agregar">
+                    <button id="add-movie-button" class="uk-button uk-button-primary uk-border-rounded" type="button">Add</button>
                 </div>
             </div>
 
-            <div id="movies-selected"></div>
+            <div id="movies-selected" class="uk-margin-top uk-width-3-4"></div>
 
             <p class="uk-text-right">
-                <button class="uk-button uk-button-default uk-modal-close" type="button">Volver</button>
-                <button id="submit-form-button" class="uk-button uk-button-primary" type="button">Enviar</button>
+                <button id="submit-form-button" class="uk-button uk-button-primary uk-border-rounded" type="button">Enviar</button>
             </p>
         </div>
     </div>
