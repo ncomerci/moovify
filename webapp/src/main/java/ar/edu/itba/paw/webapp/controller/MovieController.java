@@ -26,13 +26,13 @@ public class MovieController {
     }
 
     @RequestMapping( path = "/movie/register", method = RequestMethod.POST)
-    public ModelAndView register(@RequestParam("title") final String title, @RequestParam("premierDate") @DateTimeFormat(pattern="yyyy-MM-dd") final LocalDate premierDate){
+    public ModelAndView register(@RequestParam final String title, @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") final LocalDate premierDate){
         final Movie movie = movieService.register(title, premierDate);
         return new ModelAndView("redirect:/movie/" + movie.getId());
     }
 
     @RequestMapping(path = "/movie/{id}", method = RequestMethod.GET)
-    public ModelAndView view(@PathVariable("id") final long id) {
+    public ModelAndView view(@PathVariable final long id) {
 
         final ModelAndView mv = new ModelAndView("movie/view");
         mv.addObject("movie", movieService.findById(id).orElseThrow(MovieNotFoundException::new));

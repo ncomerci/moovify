@@ -16,4 +16,6 @@ public interface PostDao {
     Set<Post> findPostsByMovieTitle(String movie_title);
 
     Post register(String title, String email, String body, Set<Long> movies);
+
+    Set<Post> getAllPosts();
 }

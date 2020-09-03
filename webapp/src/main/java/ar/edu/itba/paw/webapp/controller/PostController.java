@@ -34,8 +34,8 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/create" , method = RequestMethod.POST)
-    public ModelAndView create(@RequestParam("title") final String title, @RequestParam("email") final String email,
-                               @RequestParam("body") final String body, @RequestParam(value = "movies[]", required = false) Set<Long> movies){
+    public ModelAndView create(@RequestParam final String title, @RequestParam final String email,
+                               @RequestParam final String body, @RequestParam(value = "movies[]", required = false) Set<Long> movies){
 
         // movies default value is an empty Set. (Overrides Spring default value of null)
         if(movies == null)
@@ -47,7 +47,7 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/{id}", method = RequestMethod.GET)
-    public ModelAndView view(@PathVariable("id") final long id) {
+    public ModelAndView view(@PathVariable final long id) {
 
         final ModelAndView mv = new ModelAndView("post/view");
         mv.addObject("post", postService.findById(id).orElseThrow(PostNotFoundException::new));

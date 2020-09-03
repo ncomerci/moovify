@@ -1,9 +1,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<!-- UIkit CSS -->
+<%--META--%>
+<link rel="shortcut icon" type="image/x-icon" href="<c:url value="/resources/favicon.ico"/>"/>
+<!--Icon source: https://www.flaticon.com/free-icon/3d-glasses_1082650 -->
+
+<%--UIkit CSS--%>
 <link rel="stylesheet" href="<c:out value="/resources/css/uikit.css" />" />
 
-<!-- UIkit JS -->
+<%--UIkit JS--%>
 <script src="<c:out value="/resources/js/uikit/uikit.js" />"></script>
 <script src="<c:out value="/resources/js/uikit/uikit-icons.js" />"></script>
 

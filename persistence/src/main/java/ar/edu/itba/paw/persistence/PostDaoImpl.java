@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 
-
 @Repository
 public class PostDaoImpl implements PostDao {
 
@@ -115,6 +114,15 @@ public class PostDaoImpl implements PostDao {
         }
 
         return new Post(postId, creationDate, title, body, wordCount, email, movieDao.getMoviesByPost(postId));
+    }
+
+    @Override
+    public Set<Post> getAllPosts() {
+        Set<Post> result = new TreeSet<>(Comparator.comparing(Post::getCreationDate));
+
+        result.addAll(jdbcTemplate.query("SELECT * FROM posts ORDER BY creation_date", POST_ROW_MAPPER));
+
+        return result;
     }
 
 }

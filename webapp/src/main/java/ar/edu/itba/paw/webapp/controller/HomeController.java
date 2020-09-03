@@ -9,7 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 import ar.edu.itba.paw.interfaces.services.PostService;
 
 @Controller
-public class HelloWorldController {
+public class HomeController {
 
     @Autowired
     private PostService postService;
@@ -17,7 +17,10 @@ public class HelloWorldController {
     @RequestMapping(path = "/", method = RequestMethod.GET)
     public ModelAndView helloWorld() {
 
-        return new ModelAndView("redirect:/post/create");
+        final ModelAndView mv = new ModelAndView("index");
+        mv.addObject("posts", postService.getAllPosts());
+
+        return mv;
     }
 
 }
