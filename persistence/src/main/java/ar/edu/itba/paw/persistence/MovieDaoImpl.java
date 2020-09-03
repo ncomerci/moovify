@@ -71,6 +71,6 @@ public class MovieDaoImpl implements MovieDao {
     @Override
     public Set<Movie> getAllMovies(){
         return new HashSet<>(jdbcTemplate.query(
-                "SELECT * FROM" + TableNames.MOVIES.getTableName(), MOVIE_ROW_MAPPER));
+                "SELECT * FROM " + TableNames.MOVIES.getTableName(), MOVIE_ROW_MAPPER));
     }
 }
