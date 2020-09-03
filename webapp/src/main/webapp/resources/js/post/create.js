@@ -1,7 +1,5 @@
 window.addEventListener('load', function(){
 
-    configureEasyMDE();
-
     let formElem = document.getElementById('new-post-form');
     let addMovieInputElem = document.getElementById('add-movie-input');
     let addMovieButtonElem = document.getElementById('add-movie-button');
@@ -11,12 +9,11 @@ window.addEventListener('load', function(){
     let openModalButtonElem = document.getElementById('open-modal-button');
     let moviesModalElem = document.getElementById('movies-modal');
 
+    configureEasyMDE(formElem, moviesModalElem);
+
     // Validate form before opening modal
     // reportValidity is not compatible with IE, Chrome < 40, Firefox < 49, Edge < 17;
-    openModalButtonElem.addEventListener('click', () => {
-        if(formElem.reportValidity())
-            UIkit.modal(moviesModalElem).show();
-    }, false);
+    openModalButtonElem.addEventListener('click', () => openModal(formElem, moviesModalElem), false);
 
     addMovieButtonElem.addEventListener('click',
         () => addMovie(formElem, addMovieInputElem, datalistElem, moviesSelectedElem),
@@ -28,7 +25,7 @@ window.addEventListener('load', function(){
 
 }, false);
 
-function configureEasyMDE(){
+function configureEasyMDE(formElem, moviesModalElem){
     new EasyMDE({
         element: document.getElementById("create-post-data"),
         spellChecker: false,
@@ -53,19 +50,37 @@ function configureEasyMDE(){
         inputStyle: "textarea", // Could be contenteditable
         theme: "easymde", // Default
 
-        toolbar: ["bold", "italic", "heading", "heading-smaller", "heading-bigger", "|",
+        toolbar: ["bold", "italic", "heading", "|",
             "quote", "unordered-list", "ordered-list", "|",
             "horizontal-rule", "strikethrough",
             "link", "image", "|",
             "preview", "side-by-side", "fullscreen", "|",
-            "clean-block", "guide",
+            "clean-block", "guide", "|",
+            {
+                name: "upload",
+                action: () => openModal(formElem, moviesModalElem),
+                className: "fa fa-upload",
+                title: "Upload",
+            },
         ],
 
         renderingConfig: {
             sanitizerFunction: (dirtyHTML) => DOMPurify.sanitize(dirtyHTML),
-        }
+        },
+
+        onToggleFullScreen: easyMdeFullscreenHandle,
 
     });
+}
+
+// Recives a boolean indicating if editor is entering fullscreen mode (true), or leaving (false).
+function easyMdeFullscreenHandle(fullscreen){
+    document.getElementById('navbar').style.visibility = (fullscreen) ? 'hidden' : 'visible';
+}
+
+function openModal(formElem, moviesModalElem){
+    if(formElem.reportValidity())
+        UIkit.modal(moviesModalElem).show();
 }
 
 function addMovie(formElem, inputElem, datalistElem, moviesSelectedElem){

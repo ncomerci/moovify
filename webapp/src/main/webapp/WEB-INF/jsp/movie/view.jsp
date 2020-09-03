@@ -16,6 +16,14 @@
             <p class="uk-article-meta"> Premier date: <c:out value="${movie.premierDate}"/></p>
         </div>
         <hr>
+        <h1>Posts about this movie</h1>
+        <c:forEach items="${posts}" var="post">
+            <li>
+                <a href="<c:url value="/post/${post.id}"/>">
+                    <c:out value="${post.title}"/>
+                </a>
+            </li>
+        </c:forEach>
     </div>
 </article>
 </body>

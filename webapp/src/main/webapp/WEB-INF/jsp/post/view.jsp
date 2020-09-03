@@ -34,8 +34,8 @@
             </div>
             <div class="uk-width-3-4">
                 <c:forEach items="${post.movies}" var="movie" >
-<%--                TODO: Add search path with correct query  --%>
-                    <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom" href="#" >
+                    <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom"
+                       href="/movie/${movie.id}" >
                             ${movie.title}
                     </a>
                 </c:forEach>

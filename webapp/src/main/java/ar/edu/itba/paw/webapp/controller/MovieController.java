@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.MovieService;
+import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class MovieController {
     @Autowired
     private MovieService movieService;
 
+    @Autowired
+    private PostService postService;
+
     @RequestMapping( path = "/movie/create",  method = RequestMethod.GET)
     public ModelAndView create(){
         return new ModelAndView("movie/create");
@@ -36,6 +40,7 @@ public class MovieController {
 
         final ModelAndView mv = new ModelAndView("movie/view");
         mv.addObject("movie", movieService.findById(id).orElseThrow(MovieNotFoundException::new));
+        mv.addObject("posts", postService.findPostsByMovieId(id));
         return mv;
     }
 

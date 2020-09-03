@@ -29,9 +29,9 @@
         <label for="emailInput"></label>
         <input type="text" id="emailInput" name="email" class="uk-input uk-form-width-large" placeholder="Email" required />
 
-        <label>
-            <textarea id="create-post-data" name="body" required ></textarea>
-        </label>
+        <label for="create-post-data"></label>
+        <textarea id="create-post-data" name="body" required ></textarea>
+
     </form>
 
     <button id="open-modal-button" type="button">Done</button>
