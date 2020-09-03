@@ -11,7 +11,9 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Repository
@@ -19,8 +21,8 @@ public class MovieDaoImpl implements MovieDao {
 
 
     private static final RowMapper<Movie> MOVIE_ROW_MAPPER = (rs, rowNum) ->
-            new Movie(rs.getLong("movie_id"), rs.getString("title"),
-                    rs.getObject("premier_date", LocalDate.class));
+            new Movie(rs.getLong("movie_id"), rs.getObject("creation_date", LocalDateTime.class),
+                    rs.getString("title"), rs.getObject("premier_date", LocalDate.class));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcInsert;
@@ -34,14 +36,16 @@ public class MovieDaoImpl implements MovieDao {
 
         jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + TableNames.MOVIES.getTableName() + " (" +
                 "movie_id SERIAL PRIMARY KEY," +
+                "creation_date TIMESTAMP NOT NULL," +
                 "premier_date DATE NOT NULL," +
-                "title VARCHAR(50) NOT NULL )" );
+                "title VARCHAR(50) NOT NULL )"
+        );
     }
 
 
     @Override
     public Optional<Movie> findById(long id) {
-        List<Movie> results = jdbcTemplate.query("SELECT * FROM " + TableNames.MOVIES.getTableName() + " WHERE movie_id= ?", new Object[]{ id }, MOVIE_ROW_MAPPER);
+        List<Movie> results = jdbcTemplate.query("SELECT * FROM " + TableNames.MOVIES.getTableName() + " WHERE movie_id = ?", new Object[]{ id }, MOVIE_ROW_MAPPER);
 
         return results.stream().findFirst();
     }
@@ -49,12 +53,15 @@ public class MovieDaoImpl implements MovieDao {
     @Override
     public Movie register(String title, LocalDate premierDate) {
 
+        LocalDateTime creationDate = LocalDateTime.now();
+
         HashMap<String, Object> map = new HashMap<>();
+        map.put("creation_date", Timestamp.valueOf(creationDate));
         map.put("title", title);
         map.put("premier_date", premierDate);
 
         final Number key = jdbcInsert.executeAndReturnKey(map);
-        return new Movie(key.longValue(), title, premierDate);
+        return new Movie(key.longValue(), creationDate, title, premierDate);
     }
 
     @Override

@@ -64,7 +64,7 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Optional<Post> findById(long id){
-        List<Post> results = jdbcTemplate.query("SELECT * FROM " + TableNames.POST.getTableName() + " WHERE post_id= ?", new Object[]{ id }, POST_ROW_MAPPER);
+        List<Post> results = jdbcTemplate.query("SELECT * FROM " + TableNames.POST.getTableName() + " WHERE post_id = ?", new Object[]{ id }, POST_ROW_MAPPER);
 
         return results.stream().findFirst();
     }
