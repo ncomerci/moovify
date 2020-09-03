@@ -9,5 +9,11 @@ public interface PostDao {
 
     Optional<Post> findById(long id);
 
+    Set<Post> findPostsByTitle(String title);
+
+    Set<Post> findPostsByMovieId(long id);
+
+    Set<Post> findPostsByMovieTitle(String movie_title);
+
     Post register(String title, String email, String body, Set<Long> movies);
 }

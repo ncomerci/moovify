@@ -22,6 +22,21 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Set<Post> findPostsByTitle(String title) {
+        return postDao.findPostsByTitle(title);
+    }
+
+    @Override
+    public Set<Post> findPostsByMovieTitle(String movie_title) {
+        return postDao.findPostsByMovieTitle(movie_title);
+    }
+
+    @Override
+    public Set<Post> findPostsByMovieId(long movie_id) {
+        return postDao.findPostsByMovieId(movie_id);
+    }
+
+    @Override
     public Post register(String title, String email, String body, Set<Long> movies){
         return postDao.register(title, email, body, movies);
     }

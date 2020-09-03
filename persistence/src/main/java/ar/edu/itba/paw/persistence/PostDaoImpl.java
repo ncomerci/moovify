@@ -12,11 +12,8 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
-import java.util.Optional;
-import java.util.Set;
 
 
 @Repository
@@ -69,6 +66,30 @@ public class PostDaoImpl implements PostDao {
 
         return results.stream().findFirst();
     }
+
+    @Override
+    public Set<Post> findPostsByTitle(String title) {
+        List<Post> result = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE title LIKE ? ORDER BY creation_date", new Object[] { '%' +title+ '%' }, POST_ROW_MAPPER );
+
+        return new HashSet<>(result);
+    }
+    @Override
+    public Set<Post> findPostsByMovieId(long movie_id) {
+        List<Post> result = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE post_id in " +
+        " ( SELECT post_id FROM " + TableNames.POST_MOVIE.getTableName() + " WHERE movie_id = ? ORDER BY creation_date ) ", new Object[] { movie_id }, POST_ROW_MAPPER );
+
+        return new HashSet<>(result);
+    }
+
+    @Override
+    public Set<Post> findPostsByMovieTitle(String movie_title) {
+        List<Post> result = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE post_id in " +
+                " (SELECT post_id FROM " + TableNames.POST_MOVIE.getTableName() + " as pm INNER JOIN " + TableNames.MOVIES.getTableName() + " as m on pm.movie_id = m.movie_id "
+                + " WHERE title LIKE ? ) ORDER BY creation_date ", new Object[] { '%' + movie_title + '%' }, POST_ROW_MAPPER );
+
+        return new HashSet<>(result);
+    }
+
 
     @Override
     public Post register(String title, String email, String body, Set<Long> movies) {
