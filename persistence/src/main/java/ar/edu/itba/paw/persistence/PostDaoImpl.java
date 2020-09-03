@@ -94,8 +94,11 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Set<Post> getAllPosts() {
+        Set<Post> result = new TreeSet<>(Comparator.comparing(Post::getCreationDate));
 
-        return new HashSet<>(jdbcTemplate.query("SELECT * FROM posts ORDER BY creation_date", POST_ROW_MAPPER));
+        result.addAll(jdbcTemplate.query("SELECT * FROM posts ORDER BY creation_date", POST_ROW_MAPPER));
+
+        return result;
     }
 
 }
