@@ -11,4 +11,6 @@ public interface PostService {
 
     Post register(String title, String email, String body, Set<Long> movies);
 
+    Set<Post> getAllPosts();
+
 }

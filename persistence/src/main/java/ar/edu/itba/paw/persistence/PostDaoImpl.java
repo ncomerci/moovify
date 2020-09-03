@@ -12,11 +12,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 
 @Repository
@@ -94,6 +90,12 @@ public class PostDaoImpl implements PostDao {
         }
 
         return new Post(postId, creationDate, title, body, wordCount, email, movieDao.getMoviesByPost(postId));
+    }
+
+    @Override
+    public Set<Post> getAllPosts() {
+
+        return new HashSet<>(jdbcTemplate.query("SELECT * FROM posts ORDER BY creation_date", POST_ROW_MAPPER));
     }
 
 }

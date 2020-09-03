@@ -26,6 +26,10 @@ public class PostServiceImpl implements PostService {
         return postDao.register(title, email, body, movies);
     }
 
+    @Override
+    public Set<Post> getAllPosts() {
+        return postDao.getAllPosts();
+    }
 
 
 }

@@ -3,7 +3,7 @@
 
 <html>
 <head>
-    <title>Title</title>
+    <title><c:out value="${movie.title}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body>

@@ -10,4 +10,6 @@ public interface PostDao {
     Optional<Post> findById(long id);
 
     Post register(String title, String email, String body, Set<Long> movies);
+
+    Set<Post> getAllPosts();
 }
