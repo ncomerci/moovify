@@ -97,9 +97,10 @@ function addMovie(formElem, inputElem, datalistElem, moviesSelectedElem){
     inputElem.value = "";
 
     // Add movie to movies selected list
-    moviesSelectedElem
-        .appendChild(document.createElement("p")
-            .appendChild(document.createTextNode(movieName)));
+    let movieSelectedElem = document.createElement("span");
+    movieSelectedElem.innerHTML = `<span class="uk-badge">${movieName}</span>`;
+
+    moviesSelectedElem.appendChild(movieSelectedElem);
 }
 
 function cancelModal(formElem, datalistElem, moviesSelectedElem) {
