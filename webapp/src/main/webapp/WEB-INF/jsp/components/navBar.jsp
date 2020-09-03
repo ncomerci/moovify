@@ -2,7 +2,7 @@
 
 <header uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
     <nav class="uk-navbar-container" uk-navbar>
-        <a class="uk-logo" href="<c:url value="/" />"><img src="<c:url value="" />" alt="Moovify"></a>
+        <a class="uk-logo" href="<c:url value="/" />"><img src="<c:url value="/resources/images/logo.png"/>" alt="Moovify"></a>
 
         <div class="uk-navbar-right">
             <ul class="uk-navbar-nav">
@@ -24,3 +24,11 @@
         </div>
     </nav>
 </header>
+
+<style>
+    img {
+        width: auto;
+        height: 60px;
+        margin: 10px;
+    }
+</style>
