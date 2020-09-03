@@ -40,12 +40,12 @@ public class PostDaoImpl implements PostDao {
     public PostDaoImpl(final DataSource ds){
         jdbcTemplate = new JdbcTemplate(ds);
         postInsert = new SimpleJdbcInsert(ds)
-                .withTableName(TableNames.POST.getTableName())
+                .withTableName(TableNames.POSTS.getTableName())
                 .usingGeneratedKeyColumns("post_id");
         postMoviesInsert = new SimpleJdbcInsert(ds)
-                .withTableName(TableNames.POST.getTableName());
+                .withTableName(TableNames.POST_MOVIE.getTableName());
 
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + TableNames.POST.getTableName() + " (" +
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + TableNames.POSTS.getTableName() + " (" +
                         "post_id SERIAL PRIMARY KEY," +
                         "creation_date TIMESTAMP NOT NULL," +
                         "title VARCHAR(50) NOT NULL," +
@@ -54,17 +54,18 @@ public class PostDaoImpl implements PostDao {
                         "body VARCHAR )"
         );
 
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + TableNames.POST_MOVIES.getTableName() + " (" +
-                "post_id integer PRIMARY KEY," +
-                "movie_id integer UNIQUE NOT NULL," +
-                "FOREIGN KEY (post_id) REFERENCES " + TableNames.POST.getTableName() + "(post_id)," +
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + TableNames.POST_MOVIE.getTableName() + " (" +
+                "post_id integer," +
+                "movie_id integer," +
+                "PRIMARY KEY (post_id, movie_id)," +
+                "FOREIGN KEY (post_id) REFERENCES " + TableNames.POSTS.getTableName() + " (post_id)," +
                 "FOREIGN KEY (movie_id) REFERENCES " + TableNames.MOVIES.getTableName() + " (movie_id))"
         );
     }
 
     @Override
     public Optional<Post> findById(long id){
-        List<Post> results = jdbcTemplate.query("SELECT * FROM " + TableNames.POST.getTableName() + " WHERE post_id = ?", new Object[]{ id }, POST_ROW_MAPPER);
+        List<Post> results = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE post_id = ?", new Object[]{ id }, POST_ROW_MAPPER);
 
         return results.stream().findFirst();
     }

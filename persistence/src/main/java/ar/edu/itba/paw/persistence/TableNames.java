@@ -2,9 +2,9 @@ package ar.edu.itba.paw.persistence;
 
 enum TableNames {
     //TODO: preguntar si es una buena forma de generalizar el nombre de la tabla
-    POST("posts"),
+    POSTS("posts"),
     MOVIES("movies"),
-    POST_MOVIES("postMovie");
+    POST_MOVIE("post_movie");
 
     private final String tableName;
 

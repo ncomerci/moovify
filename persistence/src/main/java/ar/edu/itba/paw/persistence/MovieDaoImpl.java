@@ -70,7 +70,7 @@ public class MovieDaoImpl implements MovieDao {
         return new HashSet<>(jdbcTemplate.query(
                 "SELECT * FROM " + TableNames.MOVIES.getTableName() +
                         " WHERE movie_id IN (" +
-                        "SELECT movie_id FROM " + TableNames.POST_MOVIES.getTableName() + " WHERE post_id = ?)",
+                        "SELECT movie_id FROM " + TableNames.POST_MOVIE.getTableName() + " WHERE post_id = ?)",
                 new Object[]{ postId }, MOVIE_ROW_MAPPER)
         );
     }
