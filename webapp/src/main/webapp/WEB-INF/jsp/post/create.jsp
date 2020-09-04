@@ -23,11 +23,11 @@
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
     <form method="post" action="<c:url value="/post/create" />" id="new-post-form">
-        <label for="titleInput"></label>
-        <input type="text" id="titleInput" name="title" class="uk-input uk-form-width-large" placeholder="Titulo" required />
+        <label for="title-input"></label>
+        <input type="text" id="title-input" name="title" class="uk-input uk-form-width-large" placeholder="Titulo" required />
 
-        <label for="emailInput"></label>
-        <input type="text" id="emailInput" name="email" class="uk-input uk-form-width-large" placeholder="Email" required />
+        <label for="email-input"></label>
+        <input type="text" id="email-input" name="email" class="uk-input uk-form-width-large" placeholder="Email" required />
 
         <label for="create-post-data"></label>
         <textarea id="create-post-data" name="body" required ></textarea>

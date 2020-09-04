@@ -112,24 +112,47 @@ function addMovie(formElem, inputElem, datalistElem, moviesSelectedElem){
     inputElem.value = "";
 
     // Add movie to movies selected list
-    let movieSelectedElem = document.createElement("span");
-    movieSelectedElem.innerHTML = `<span class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">${movieName}</span>`;
+    /* <span class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">
+         ${movieName}
+         <button class="uk-margin-small-left uk-light" type="button" uk-close></button>
+       </span> */
 
-    moviesSelectedElem.appendChild(movieSelectedElem);
+    let closeElem = document.createElement("button");
+    closeElem.setAttribute('class', 'uk-margin-small-left uk-light');
+    closeElem.setAttribute('type', 'button');
+    closeElem.setAttribute('uk-close', '');
+
+    let movieBadgeElem = document.createElement("span");
+
+    movieBadgeElem.setAttribute('class', 'uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom');
+
+    movieBadgeElem.appendChild(document.createTextNode(movieName));
+    movieBadgeElem.appendChild(closeElem);
+
+    moviesSelectedElem.appendChild(movieBadgeElem);
+
+    closeElem.addEventListener('click',
+        () => unselectMovie(formElem, datalistElem, newInput, moviesSelectedElem, movieBadgeElem), false);
+}
+
+function unselectMovie(formElem, datalistElem, inputElem, moviesSelectedElem, movieBadgeElem){
+    let opt = document.createElement("option");
+
+    opt.setAttribute('value', inputElem.dataset.movieName);
+    opt.setAttribute('data-id', inputElem.value);
+
+    datalistElem.appendChild(opt);
+
+    formElem.removeChild(inputElem);
+
+    if(moviesSelectedElem && movieBadgeElem)
+        moviesSelectedElem.removeChild(movieBadgeElem);
 }
 
 function cancelModal(formElem, datalistElem, moviesSelectedElem) {
 
     formElem.querySelectorAll("input[name ^= 'movies']")
-        .forEach(movieNode => {
-
-            let opt = document.createElement("option");
-            opt.setAttribute('value', movieNode.dataset.movieName);
-            opt.setAttribute('data-id', movieNode.value);
-            datalistElem.appendChild(opt);
-
-            formElem.removeChild(movieNode);
-        });
+        .forEach(movieInputElem => unselectMovie(formElem, datalistElem, movieInputElem));
 
     moviesSelectedElem.innerHTML = "";
 }
