@@ -9,7 +9,7 @@ window.addEventListener('load', function(){
     let openModalButtonElem = document.getElementById('open-modal-button');
     let moviesModalElem = document.getElementById('movies-modal');
 
-    configureEasyMDE(formElem, moviesModalElem);
+    let easyMDE = configureEasyMDE(formElem, moviesModalElem);
 
     // Validate form before opening modal
     // reportValidity is not compatible with IE, Chrome < 40, Firefox < 49, Edge < 17;
@@ -19,14 +19,17 @@ window.addEventListener('load', function(){
         () => addMovie(formElem, addMovieInputElem, datalistElem, moviesSelectedElem),
         false);
 
-    submitFormButton.addEventListener('click', () => formElem.submit(), false);
+    submitFormButton.addEventListener('click', () => {
+        easyMDE.clearAutosavedValue();
+        formElem.submit();
+    }, false);
 
     moviesModalElem.addEventListener('beforehide', () => cancelModal(formElem, datalistElem, moviesSelectedElem), false);
 
 }, false);
 
 function configureEasyMDE(formElem, moviesModalElem){
-    new EasyMDE({
+    return new EasyMDE({
         element: document.getElementById("create-post-data"),
         spellChecker: false,
         autosave: {
