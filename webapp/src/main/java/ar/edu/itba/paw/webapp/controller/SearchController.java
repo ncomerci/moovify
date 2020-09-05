@@ -15,6 +15,14 @@ public class SearchController {
     @Autowired
     private SearchService searchService;
 
+    @RequestMapping( path ="/search", method = RequestMethod.GET)
+    public ModelAndView searchPosts(@RequestParam() final String searchParam){
+
+        final ModelAndView mv = new ModelAndView( "search/posts/view");
+        mv.addObject("posts", searchService.searchPosts(searchParam));
+        return mv;
+    }
+
     @RequestMapping( path ="/searchposttitle", method = RequestMethod.GET)
     public ModelAndView searchPostByTitle(@RequestParam() final String title){
 

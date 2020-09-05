@@ -6,7 +6,7 @@ import ar.edu.itba.paw.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.Collection;
 
 @Service
 public class SearchServiceImpl implements SearchService {
@@ -15,17 +15,20 @@ public class SearchServiceImpl implements SearchService {
     private PostDao postDao;
 
     @Override
-    public Set<Post> searchPostsbyTitle(String title) {
+    public Collection<Post> searchPosts(String searchParam) { return postDao.findPosts(searchParam); }
+
+    @Override
+    public Collection<Post> searchPostsbyTitle(String title) {
         return postDao.findPostsByTitle(title);
     }
 
     @Override
-    public Set<Post> searchPostsbyMovieTitle(String movie_title) {
+    public Collection<Post> searchPostsbyMovieTitle(String movie_title) {
         return postDao.findPostsByMovieTitle(movie_title);
     }
 
     @Override
-    public Set<Post> searchPostsbyMovieId(long movie_id) {
+    public Collection<Post> searchPostsbyMovieId(long movie_id) {
         return postDao.findPostsByMovieId(movie_id);
     }
 

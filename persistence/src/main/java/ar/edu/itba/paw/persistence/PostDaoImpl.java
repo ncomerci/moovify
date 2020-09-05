@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,10 @@ import java.util.*;
 @Repository
 public class PostDaoImpl implements PostDao {
 
-    @Autowired
-    private MovieDao movieDao;
-
-    // TODO: Sacamos el static para poder acceder al movie dao cuando necesitamos el set de movies, esta legal ¡?¡?
-    private final RowMapper<Post> POST_ROW_MAPPER = (rs, rowNum) ->
+    private static final RowMapper<Post> POST_ROW_MAPPER = (rs, rowNum) ->
             new Post(rs.getLong("post_id"), rs.getObject("creation_date", LocalDateTime.class),
                     rs.getString("title"), rs.getString("body"),
-                    rs.getInt("word_count"), rs.getString("email"),
-                    movieDao.getMoviesByPost(rs.getLong("post_id")));
+                    rs.getInt("word_count"), rs.getString("email"));
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert postInsert;
@@ -35,9 +29,11 @@ public class PostDaoImpl implements PostDao {
     @Autowired
     public PostDaoImpl(final DataSource ds){
         jdbcTemplate = new JdbcTemplate(ds);
+
         postInsert = new SimpleJdbcInsert(ds)
                 .withTableName(TableNames.POSTS.getTableName())
                 .usingGeneratedKeyColumns("post_id");
+
         postMoviesInsert = new SimpleJdbcInsert(ds)
                 .withTableName(TableNames.POST_MOVIE.getTableName());
 
@@ -58,37 +54,38 @@ public class PostDaoImpl implements PostDao {
                 "FOREIGN KEY (movie_id) REFERENCES " + TableNames.MOVIES.getTableName() + " (movie_id))"
         );
     }
-    // TODO Las busquedas por titulo deberian matchear sin ser case sentitive
+
     @Override
     public Optional<Post> findById(long id){
-        List<Post> results = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE post_id = ?", new Object[]{ id }, POST_ROW_MAPPER);
-
-        return results.stream().findFirst();
+        return jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE post_id = ?",
+                new Object[]{ id }, POST_ROW_MAPPER)
+                .stream().findFirst();
     }
 
     @Override
-    public Set<Post> findPostsByTitle(String title) {
-        List<Post> result = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE title LIKE ? ORDER BY creation_date", new Object[] { '%' +title+ '%' }, POST_ROW_MAPPER );
-
-        return new HashSet<>(result);
-    }
-    @Override
-    public Set<Post> findPostsByMovieId(long movie_id) {
-        List<Post> result = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE post_id in " +
-        " ( SELECT post_id FROM " + TableNames.POST_MOVIE.getTableName() + " WHERE movie_id = ? ORDER BY creation_date ) ", new Object[] { movie_id }, POST_ROW_MAPPER );
-
-        return new HashSet<>(result);
-    }
-
-    @Override
-    public Set<Post> findPostsByMovieTitle(String movie_title) {
-        List<Post> result = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE post_id in " +
+    public Collection<Post> findPosts(String searchParam) {
+        return jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE title LIKE ? OR post_id in " +
                 " (SELECT post_id FROM " + TableNames.POST_MOVIE.getTableName() + " as pm INNER JOIN " + TableNames.MOVIES.getTableName() + " as m on pm.movie_id = m.movie_id "
-                + " WHERE title LIKE ? ) ORDER BY creation_date ", new Object[] { '%' + movie_title + '%' }, POST_ROW_MAPPER );
+                + " WHERE title LIKE ? ) ORDER BY creation_date ", new Object[] { '%' + searchParam + '%', '%' + searchParam + '%' }, POST_ROW_MAPPER );
 
-        return new HashSet<>(result);
     }
 
+    @Override
+    public Collection<Post> findPostsByTitle(String title) {
+        return jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE title LIKE ? ORDER BY creation_date", new Object[] { '%' +title+ '%' }, POST_ROW_MAPPER );
+    }
+    @Override
+    public Collection<Post> findPostsByMovieId(long movie_id) {
+        return jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE post_id in " +
+        " ( SELECT post_id FROM " + TableNames.POST_MOVIE.getTableName() + " WHERE movie_id = ? ORDER BY creation_date ) ", new Object[] { movie_id }, POST_ROW_MAPPER );
+    }
+
+    @Override
+    public Collection<Post> findPostsByMovieTitle(String movie_title) {
+        return jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE post_id in " +
+                " (SELECT post_id FROM " + TableNames.POST_MOVIE.getTableName() + " as pm INNER JOIN " + TableNames.MOVIES.getTableName() + " as m on pm.movie_id = m.movie_id "
+                + " WHERE title LIKE ? ) ORDER BY creation_date ", new Object[] { '%' + movie_title + '%' }, POST_ROW_MAPPER);
+    }
 
     @Override
     public Post register(String title, String email, String body, Set<Long> movies) {
@@ -113,17 +110,12 @@ public class PostDaoImpl implements PostDao {
             postMoviesInsert.execute(map);
         }
 
-        return new Post(postId, creationDate, title, body, wordCount, email, movieDao.getMoviesByPost(postId));
+        return new Post(postId, creationDate, title, body, wordCount, email);
     }
 
-//  TODO refactorear el nombre para que indique que son ordenados
     @Override
-    public Set<Post> getAllPosts() {
-        Set<Post> result = new TreeSet<>(Comparator.comparing(Post::getCreationDate).reversed());
-
-        result.addAll(jdbcTemplate.query("SELECT * FROM posts ORDER BY creation_date", POST_ROW_MAPPER));
-
-        return result;
+    public Collection<Post> getAllPosts() {
+        return jdbcTemplate.query("SELECT * FROM posts ORDER BY creation_date", POST_ROW_MAPPER);
     }
 
 }

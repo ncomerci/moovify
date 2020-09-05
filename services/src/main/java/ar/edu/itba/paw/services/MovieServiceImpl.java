@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -28,8 +28,13 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Set<Movie> getAllMovies() {
+    public Collection<Movie> getAllMovies() {
         return movieDao.getAllMovies();
+    }
+
+    @Override
+    public Collection<Movie> findMoviesByPostId(long postId) {
+        return movieDao.findMoviesByPostId(postId);
     }
 
 }

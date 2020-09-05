@@ -2,13 +2,15 @@ package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.models.Post;
 
-import java.util.Set;
+import java.util.Collection;
 
 public interface SearchService {
 
-    Set<Post> searchPostsbyTitle( String title );
+    Collection<Post> searchPosts(String searchParam);
 
-    Set<Post> searchPostsbyMovieTitle( String movie_title );
+    Collection<Post> searchPostsbyTitle( String title );
 
-    Set<Post> searchPostsbyMovieId( long movie_id );
+    Collection<Post> searchPostsbyMovieTitle( String movie_title );
+
+    Collection<Post> searchPostsbyMovieId(long movie_id );
 }
