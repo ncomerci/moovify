@@ -32,14 +32,14 @@
     <div class="uk-margin-left uk-margin-bottom" >
         <label class="uk-form-label uk-text-secondary uk-margin-auto" for="title-text">Choose a title for your post:</label>
         <div class="uk-form-controls">
-            <input class="uk-input uk-form-small" id="title-text" type="text" placeholder="Title" required />
+            <input name="title" class="uk-input uk-form-small" id="title-text" type="text" placeholder="Title" required />
         </div>
     </div>
 
     <div class="uk-margin-left uk-margin-bottom">
         <label class="uk-form-label uk-text-secondary uk-margin-auto" for="email-text">Insert your email:</label>
         <div class="uk-form-controls">
-            <input class="uk-input uk-form-small" id="email-text" type="text" placeholder="Email" required />
+            <input name="email" class="uk-input uk-form-small" id="email-text" type="email" placeholder="Email" required />
         </div>
     </div>
 
