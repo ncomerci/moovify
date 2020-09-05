@@ -17,7 +17,7 @@ html {
   /* 2 */
   -webkit-text-size-adjust: 100%;
   /* 3 */
-  background: #fff;
+  background: #ECECEC;
   color: #666;
 }
 /*
@@ -40,7 +40,8 @@ a:hover {
  */
 a,
 .uk-link {
-  color: #1e87f0;
+  /*color: #1e87f0;*/
+  color: #f2a365;
   text-decoration: none;
   cursor: pointer;
 }
@@ -48,7 +49,8 @@ a:hover,
 .uk-link:hover,
 .uk-link-toggle:hover .uk-link,
 .uk-link-toggle:focus .uk-link {
-  color: #0f6ecd;
+  /*color: #0f6ecd;*/
+  color: #fa8a32;
   text-decoration: underline;
 }
 /* Text-level semantics
@@ -243,10 +245,11 @@ h6,
 .uk-heading-large,
 .uk-heading-xlarge,
 .uk-heading-2xlarge {
+  /*Change*/
   margin: 0 0 20px 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-weight: normal;
-  color: #333;
+  color: #30475e;
   text-transform: none;
 }
 /* Add margin if adjacent element */
@@ -2021,14 +2024,16 @@ select.uk-form-width-xsmall {
  * Primary
  */
 .uk-button-primary {
-  background-color: #1e87f0;
+  /*background-color: #1e87f0;*/
+  background-color: #f2a365;
   color: #fff;
   border: 1px solid transparent;
 }
 /* Hover + Focus */
 .uk-button-primary:hover,
 .uk-button-primary:focus {
-  background-color: #0f7ae5;
+  /*background-color: #0f7ae5;*/
+  background-color: #fa8a32;
   color: #fff;
 }
 /* OnClick + Active */
@@ -3085,6 +3090,7 @@ select.uk-form-width-xsmall {
  * 1. Style
  * 2. Center child vertically and horizontally
  */
+/*Change*/
 .uk-badge {
   box-sizing: border-box;
   min-width: 22px;
@@ -3093,7 +3099,8 @@ select.uk-form-width-xsmall {
   border-radius: 500px;
   vertical-align: middle;
   /* 1 */
-  background: #1e87f0;
+  /*background: #1e87f0;*/
+  background: #f2a365;
   color: #fff;
   font-size: 0.875rem;
   /* 2 */
@@ -3106,7 +3113,7 @@ select.uk-form-width-xsmall {
  */
 .uk-badge:hover,
 .uk-badge:focus {
-  color: #fff;
+  color: #30475e;
   text-decoration: none;
   outline: none;
 }
@@ -3335,6 +3342,7 @@ select.uk-form-width-xsmall {
  * 8. Take the full container width
  * 9. Style
  */
+/*Change*/
 .uk-search-input {
   /* 1 */
   box-sizing: border-box;
@@ -3354,17 +3362,20 @@ select.uk-form-width-xsmall {
   width: 100%;
   /* 9 */
   border: none;
-  color: #666;
+  color: #f2a365;
+/*  Color del input de la busqueda*/
 }
 .uk-search-input:focus {
   outline: none;
 }
 /* Placeholder */
 .uk-search-input:-ms-input-placeholder {
-  color: #999 !important;
+  color: #f2a365 !important;
 }
+/*Change*/
 .uk-search-input::placeholder {
-  color: #999;
+  color: #ECECEC;
+/*  Cambia el color de "Search"*/
 }
 /* Icon (Adopts `uk-icon`)
  ========================================================================== */
@@ -3391,13 +3402,13 @@ select.uk-form-width-xsmall {
   justify-content: center;
   align-items: center;
   /* 3 */
-  color: #999;
+  color: #f2a365;
 }
 /*
  * Required for `a`.
  */
 .uk-search .uk-search-icon:hover {
-  color: #999;
+  color: #f2a365;
 }
 /*
  * Make `input` element clickable through icon, e.g. if it's a `span`
@@ -5128,7 +5139,7 @@ ul.uk-nav-sub {
  ========================================================================== */
 .uk-navbar-container:not(.uk-navbar-transparent) {
   /*t-navbar-background-color*/
-  background: #355070;
+  background: #222831;
 }
 /*
  * Remove pseudo elements created by micro clearfix as precaution (if Container component is used)
@@ -5244,8 +5255,11 @@ ul.uk-nav-sub {
 /*
  * Nav items
  */
+/*Change*/
 .uk-navbar-nav > li > a {
-  color: #999;
+  /*color: #999;*/
+  color: #f2a365;
+  font-weight: 500;
   text-transform: uppercase;
   transition: 0.1s ease-in-out;
   transition-property: color, background-color;
@@ -5254,11 +5268,13 @@ ul.uk-nav-sub {
  * Hover
  * Apply hover style also to focus state and if dropdown is opened
  */
+/*Change*/
 .uk-navbar-nav > li:hover > a,
 .uk-navbar-nav > li > a:focus,
 .uk-navbar-nav > li > a.uk-open {
-  color: #666;
+  color: #fa8a32;
   outline: none;
+  font-weight: 500;
 }
 /* OnClick */
 .uk-navbar-nav > li > a:active {
@@ -5266,7 +5282,8 @@ ul.uk-nav-sub {
 }
 /* Active */
 .uk-navbar-nav > li.uk-active > a {
-  color: #333;
+  color: #fa8a32;
+  font-weight: 500;
 }
 /* Item
  ========================================================================== */
@@ -7255,8 +7272,10 @@ ul.uk-nav-sub {
 .uk-text-emphasis {
   color: #333 !important;
 }
+/*Change*/
 .uk-text-primary {
-  color: #1e87f0 !important;
+  /*color: #1e87f0 !important;*/
+  color: #30475e !important;
 }
 .uk-text-secondary {
   color: #222 !important;

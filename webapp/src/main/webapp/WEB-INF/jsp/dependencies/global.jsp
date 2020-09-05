@@ -13,5 +13,5 @@
 
 <%-- Navbar --%>
 <script src="<c:url value="/resources/js/components/navBar.js" />"></script>
-<link href="<c:url value="/resources/css/navBar.css" />" />
+<link rel="stylesheet" href="<c:url value="/resources/css/navBar.css" />" />
 
