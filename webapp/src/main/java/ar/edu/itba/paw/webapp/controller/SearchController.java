@@ -20,6 +20,7 @@ public class SearchController {
 
         final ModelAndView mv = new ModelAndView( "search/posts/view");
         mv.addObject("posts", searchService.searchPostsbyTitle(title));
+        mv.addObject("query",title);
         return mv;
     }
     @RequestMapping( path ="/searchmovieid", method = RequestMethod.GET)
@@ -35,6 +36,7 @@ public class SearchController {
 
         final ModelAndView mv = new ModelAndView( "search/posts/view");
         mv.addObject("posts", searchService.searchPostsbyMovieTitle(movie_title));
+        mv.addObject("query",movie_title);
         return mv;
     }
 

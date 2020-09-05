@@ -58,7 +58,7 @@ public class PostDaoImpl implements PostDao {
                 "FOREIGN KEY (movie_id) REFERENCES " + TableNames.MOVIES.getTableName() + " (movie_id))"
         );
     }
-
+    // TODO Las busquedas por titulo deberian matchear sin ser case sentitive
     @Override
     public Optional<Post> findById(long id){
         List<Post> results = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE post_id = ?", new Object[]{ id }, POST_ROW_MAPPER);
