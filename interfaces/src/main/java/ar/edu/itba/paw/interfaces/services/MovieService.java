@@ -4,8 +4,8 @@ import ar.edu.itba.paw.models.Movie;
 
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Optional;
-import java.util.Set;
 
 public interface MovieService {
 
@@ -13,5 +13,7 @@ public interface MovieService {
 
     Movie register(String title, LocalDate premierDate);
 
-    Set<Movie> getAllMovies();
+    Collection<Movie> getAllMovies();
+
+    Collection<Movie> findMoviesByPostId(long postId);
 }

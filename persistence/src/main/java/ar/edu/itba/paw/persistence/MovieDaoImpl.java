@@ -30,6 +30,7 @@ public class MovieDaoImpl implements MovieDao {
     @Autowired
     public MovieDaoImpl(final DataSource ds){
         jdbcTemplate = new JdbcTemplate(ds);
+
         jdbcInsert = new SimpleJdbcInsert(ds)
                 .withTableName(TableNames.MOVIES.getTableName())
                 .usingGeneratedKeyColumns("movie_id");
@@ -45,9 +46,8 @@ public class MovieDaoImpl implements MovieDao {
 
     @Override
     public Optional<Movie> findById(long id) {
-        List<Movie> results = jdbcTemplate.query("SELECT * FROM " + TableNames.MOVIES.getTableName() + " WHERE movie_id = ?", new Object[]{ id }, MOVIE_ROW_MAPPER);
-
-        return results.stream().findFirst();
+        return jdbcTemplate.query("SELECT * FROM " + TableNames.MOVIES.getTableName() + " WHERE movie_id = ?",
+                new Object[]{ id }, MOVIE_ROW_MAPPER).stream().findFirst();
     }
 
     @Override
@@ -65,19 +65,19 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public Set<Movie> getMoviesByPost(long postId) {
+    public Collection<Movie> findMoviesByPostId(long postId) {
 
-        return new HashSet<>(jdbcTemplate.query(
+        return jdbcTemplate.query(
                 "SELECT * FROM " + TableNames.MOVIES.getTableName() +
                         " WHERE movie_id IN (" +
                         "SELECT movie_id FROM " + TableNames.POST_MOVIE.getTableName() + " WHERE post_id = ?)",
-                new Object[]{ postId }, MOVIE_ROW_MAPPER)
+                new Object[]{ postId }, MOVIE_ROW_MAPPER
         );
     }
 
     @Override
-    public Set<Movie> getAllMovies(){
-        return new HashSet<>(jdbcTemplate.query(
-                "SELECT * FROM " + TableNames.MOVIES.getTableName(), MOVIE_ROW_MAPPER));
+    public Collection<Movie> getAllMovies(){
+        return jdbcTemplate.query(
+                "SELECT * FROM " + TableNames.MOVIES.getTableName(), MOVIE_ROW_MAPPER);
     }
 }

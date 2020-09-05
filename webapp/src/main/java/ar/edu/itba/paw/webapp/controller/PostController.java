@@ -33,6 +33,16 @@ public class PostController {
         return mv;
     }
 
+    @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
+    public ModelAndView view(@PathVariable final long postId) {
+
+        final ModelAndView mv = new ModelAndView("post/view");
+        mv.addObject("post", postService.findById(postId).orElseThrow(PostNotFoundException::new));
+        mv.addObject("postMovies", movieService.findMoviesByPostId(postId));
+
+        return mv;
+    }
+
     @RequestMapping(path = "/post/create" , method = RequestMethod.POST)
     public ModelAndView create(@RequestParam final String title, @RequestParam final String email,
                                @RequestParam final String body, @RequestParam(value = "movies[]", required = false) Set<Long> movies){
@@ -44,14 +54,5 @@ public class PostController {
         final Post post = postService.register(title, email, body, movies);
         return new ModelAndView("redirect:/post/" + post.getId());
 
-    }
-
-    @RequestMapping(path = "/post/{id}", method = RequestMethod.GET)
-    public ModelAndView view(@PathVariable final long id) {
-
-        final ModelAndView mv = new ModelAndView("post/view");
-        mv.addObject("post", postService.findById(id).orElseThrow(PostNotFoundException::new));
-
-        return mv;
     }
 }

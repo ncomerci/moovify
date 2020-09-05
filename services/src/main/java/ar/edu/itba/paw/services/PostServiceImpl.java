@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.interfaces.services.PostService;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,17 +23,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Set<Post> findPostsByTitle(String title) {
+    public Collection<Post> findPostsByTitle(String title) {
         return postDao.findPostsByTitle(title);
     }
 
     @Override
-    public Set<Post> findPostsByMovieTitle(String movie_title) {
+    public Collection<Post> findPostsByMovieTitle(String movie_title) {
         return postDao.findPostsByMovieTitle(movie_title);
     }
 
     @Override
-    public Set<Post> findPostsByMovieId(long movie_id) {
+    public Collection<Post> findPostsByMovieId(long movie_id) {
         return postDao.findPostsByMovieId(movie_id);
     }
 
@@ -42,7 +43,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Set<Post> getAllPosts() {
+    public Collection<Post> getAllPosts() {
         return postDao.getAllPosts();
     }
 
