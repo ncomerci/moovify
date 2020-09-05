@@ -3090,6 +3090,7 @@ select.uk-form-width-xsmall {
  * 1. Style
  * 2. Center child vertically and horizontally
  */
+/*Change*/
 .uk-badge {
   box-sizing: border-box;
   min-width: 22px;
@@ -3098,7 +3099,8 @@ select.uk-form-width-xsmall {
   border-radius: 500px;
   vertical-align: middle;
   /* 1 */
-  background: #1e87f0;
+  /*background: #1e87f0;*/
+  background: #f2a365;
   color: #fff;
   font-size: 0.875rem;
   /* 2 */
@@ -3111,7 +3113,7 @@ select.uk-form-width-xsmall {
  */
 .uk-badge:hover,
 .uk-badge:focus {
-  color: #fff;
+  color: #30475e;
   text-decoration: none;
   outline: none;
 }
