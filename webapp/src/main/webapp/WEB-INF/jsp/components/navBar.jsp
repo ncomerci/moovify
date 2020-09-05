@@ -10,7 +10,7 @@
             <ul class="uk-navbar-nav">
                 <li class="uk-visible@s">
                     <div>
-                        <a class="uk-navbar-toggle" data-uk-search-icon ></a>
+                        <a id="nav-search-icon" class="uk-navbar-toggle uk-icon-link" uk-icon="search" ></a>
                         <div class="uk-drop" data-uk-drop="mode: click; pos: right-center; offset: 0; boundary: #navbar">
 <%--                            TODO: change form action attribute --%>
                             <form action="#" class="uk-search uk-search-navbar uk-width-1-1">

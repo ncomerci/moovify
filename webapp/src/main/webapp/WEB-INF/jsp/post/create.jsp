@@ -22,12 +22,12 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
-<div class="uk-margin-left uk-margin-top">
-    <legend class="uk-legend uk-article-title uk-margin-auto uk-text-center uk-text-primary">Create a new Post</legend>
+<div class="uk-margin-auto uk-margin-top">
+    <legend class="uk-legend uk-article-title uk-margin-auto uk-text-center uk-text-primary">Create a new post</legend>
     <hr class="uk-divider-icon">
 </div>
 
-<form method="post" class="uk-form-horizontal" action="<c:url value="/post/create" />" id="new-post-form">
+<form method="post" class="uk-form-horizontal uk-margin-auto uk-padding-large uk-padding-remove-vertical" action="<c:url value="/post/create" />" id="new-post-form">
 
     <div class="uk-margin-left uk-margin-bottom" >
         <label class="uk-form-label uk-text-secondary uk-margin-auto" for="title-text">Choose a title for your post:</label>
