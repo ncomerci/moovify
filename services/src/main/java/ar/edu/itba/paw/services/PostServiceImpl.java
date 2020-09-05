@@ -22,6 +22,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Set<Post> findPosts(String searchParam) {
+        return postDao.findPosts(searchParam);
+    }
+
+    @Override
     public Set<Post> findPostsByTitle(String title) {
         return postDao.findPostsByTitle(title);
     }

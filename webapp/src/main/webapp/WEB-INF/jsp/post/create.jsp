@@ -23,7 +23,7 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <div class="uk-margin-auto uk-margin-top">
-    <legend class="uk-legend uk-article-title uk-margin-auto uk-text-center uk-text-primary">Create a new post</legend>
+    <h1 class="uk-article-title uk-margin-auto uk-text-center uk-text-primary">Create a new post</h1>
     <hr class="uk-divider-icon">
 </div>
 

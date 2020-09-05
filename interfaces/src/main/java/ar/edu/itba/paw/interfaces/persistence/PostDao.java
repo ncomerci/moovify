@@ -9,6 +9,8 @@ public interface PostDao {
 
     Optional<Post> findById(long id);
 
+    Set<Post> findPosts(String searchParam);
+
     Set<Post> findPostsByTitle(String title);
 
     Set<Post> findPostsByMovieId(long id);

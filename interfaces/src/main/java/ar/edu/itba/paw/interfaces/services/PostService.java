@@ -9,6 +9,8 @@ public interface PostService {
 
     Optional<Post> findById(long id);
 
+    Set<Post> findPosts(String searchParam);
+
     Set<Post> findPostsByTitle(String title);
 
     Set<Post> findPostsByMovieTitle(String movie_title);

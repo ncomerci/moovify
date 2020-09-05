@@ -15,14 +15,15 @@ public class SearchServiceImpl implements SearchService {
     private PostDao postDao;
 
     @Override
+    public Set<Post> searchPosts(String searchParam) { return postDao.findPosts(searchParam); }
+
+    @Override
     public Set<Post> searchPostsbyTitle(String title) {
         return postDao.findPostsByTitle(title);
     }
 
     @Override
-    public Set<Post> searchPostsbyMovieTitle(String movie_title) {
-        return postDao.findPostsByMovieTitle(movie_title);
-    }
+    public Set<Post> searchPostsbyMovieTitle(String movie_title) { return postDao.findPostsByMovieTitle(movie_title); }
 
     @Override
     public Set<Post> searchPostsbyMovieId(long movie_id) {

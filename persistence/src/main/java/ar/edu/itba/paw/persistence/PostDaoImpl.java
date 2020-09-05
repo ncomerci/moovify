@@ -67,6 +67,15 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
+    public Set<Post> findPosts(String searchParam) {
+        List<Post> result = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE title LIKE ? OR post_id in " +
+                " (SELECT post_id FROM " + TableNames.POST_MOVIE.getTableName() + " as pm INNER JOIN " + TableNames.MOVIES.getTableName() + " as m on pm.movie_id = m.movie_id "
+                + " WHERE title LIKE ? ) ORDER BY creation_date ", new Object[] { '%' + searchParam + '%', '%' + searchParam + '%' }, POST_ROW_MAPPER );
+
+        return new HashSet<>(result);
+    }
+
+    @Override
     public Set<Post> findPostsByTitle(String title) {
         List<Post> result = jdbcTemplate.query("SELECT * FROM " + TableNames.POSTS.getTableName() + " WHERE title LIKE ? ORDER BY creation_date", new Object[] { '%' +title+ '%' }, POST_ROW_MAPPER );
 
