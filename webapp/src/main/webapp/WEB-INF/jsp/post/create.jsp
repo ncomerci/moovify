@@ -51,6 +51,7 @@
     <div class="uk-text-center">
         <button id="open-modal-button" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="button">Create</button>
     </div>
+
 <!-- This is the modal -->
 <div id="movies-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body uk-border-rounded">
