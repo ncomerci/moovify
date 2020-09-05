@@ -10,6 +10,8 @@ public interface PostDao {
 
     Optional<Post> findById(long id);
 
+    Collection<Post> findPosts(String searchParam);
+
     Collection<Post> findPostsByTitle(String title);
 
     Collection<Post> findPostsByMovieId(long id);

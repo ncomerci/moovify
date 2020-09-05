@@ -3,7 +3,6 @@
 <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
     <nav class="uk-navbar-container" uk-navbar>
         <a class="uk-logo" href="<c:url value="/" />"><img id="nav-logo" src="<c:url value="/resources/images/logo.png"/>" alt="Moovify"></a>
-//TODO cuando presiono la lupa con una query escrita, cierra la barra
         <div class="uk-navbar-right">
             <ul class="uk-navbar-nav">
                 <li class="uk-visible@s">
