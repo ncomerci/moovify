@@ -39,14 +39,14 @@ function configureEasyMDE(formElem, moviesModalElem){
             text: "Saved: ",
         },
         forceSync: true,
-        initialValue: "El valor inicial del editor. Cuando se carga la pagina, si no hay nada guardado, se llena con esto",
+        // initialValue: "El valor inicial del editor. Cuando se carga la pagina, si no hay nada guardado, se llena con esto",
         minHeight: "300px", // This is the default minHeight
         parsingConfig: {
             allowAtxHeaderWithoutSpace: true,
             strikethrough: true,
             underscoresBreakWords: true
         },
-        placeholder: "This is the Placeholder. Solo aparece si no hay texto.",
+        placeholder: "Escriba su Post aquí...",
 
         // Upload Image Support Configurations
 
