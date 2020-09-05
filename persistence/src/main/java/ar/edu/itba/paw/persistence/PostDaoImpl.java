@@ -116,9 +116,10 @@ public class PostDaoImpl implements PostDao {
         return new Post(postId, creationDate, title, body, wordCount, email, movieDao.getMoviesByPost(postId));
     }
 
+//  TODO refactorear el nombre para que indique que son ordenados
     @Override
     public Set<Post> getAllPosts() {
-        Set<Post> result = new TreeSet<>(Comparator.comparing(Post::getCreationDate));
+        Set<Post> result = new TreeSet<>(Comparator.comparing(Post::getCreationDate).reversed());
 
         result.addAll(jdbcTemplate.query("SELECT * FROM posts ORDER BY creation_date", POST_ROW_MAPPER));
 
