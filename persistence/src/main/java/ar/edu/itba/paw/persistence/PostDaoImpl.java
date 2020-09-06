@@ -205,7 +205,7 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Collection<Post> findPostsByPostAndMovieTitle(String searchParam, boolean withMovies) {
+    public Collection<Post> findPostsByPostAndMovieTitle(String title, boolean withMovies) {
         return findPostsBy(
                 " WHERE " + POSTS + ".title ILIKE '%' || ? || '%'" +
                 "OR " + POSTS + ".post_id in ( " +
@@ -213,7 +213,7 @@ public class PostDaoImpl implements PostDao {
                 "FROM " + POST_MOVIE +
                 " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
                 "WHERE " + MOVIES + ".title ILIKE '%' || ? || '%') " +
-                "ORDER BY " + POSTS + ".creation_date", new Object[] { searchParam , searchParam }, withMovies);
+                "ORDER BY " + POSTS + ".creation_date", new Object[] {title, title}, withMovies);
     }
 
 }

@@ -20,5 +20,5 @@ public interface PostDao {
 
     Collection<Post> getAllPosts(boolean withMovies);
 
-    Collection<Post> findPostsByPostAndMovieTitle(String searchParam, boolean withMovies);
+    Collection<Post> findPostsByPostAndMovieTitle(String title, boolean withMovies);
 }
