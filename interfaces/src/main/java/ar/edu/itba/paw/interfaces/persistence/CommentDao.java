@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface CommentDao {
 
-    Comment register(long postId, long parentId, String body, String userMail);
+    Comment register(long postId, Long parentId, String body, String userMail);
 
     Optional<Comment> findCommentById(long id);
 }

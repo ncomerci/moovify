@@ -18,4 +18,9 @@ public class CommentServiceImpl implements CommentService {
     public Optional<Comment> findCommentById(long id){
         return commentDao.findCommentById(id);
     }
+
+    @Override
+    public Comment register(long postId, Long parentId, String body, String userMail) {
+        return commentDao.register(postId, parentId, body, userMail);
+    }
 }

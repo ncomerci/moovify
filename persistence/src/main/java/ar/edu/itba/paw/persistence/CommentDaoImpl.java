@@ -37,8 +37,8 @@ public class CommentDaoImpl implements CommentDao {
         jdbcTemplate = new JdbcTemplate(ds);
 
         commentInsert = new SimpleJdbcInsert(ds)
-                .withTableName(MOVIES)
-                .usingGeneratedKeyColumns("movie_id");
+                .withTableName(COMMENTS)
+                .usingGeneratedKeyColumns("comment_id");
 
         jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + COMMENTS + " (" +
                 "comment_id SERIAL PRIMARY KEY," +
@@ -53,7 +53,7 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public Comment register(long postId, long parentId, String body, String userMail) {
+    public Comment register(long postId, Long parentId, String body, String userMail) {
 
         body = body.trim();
         LocalDateTime creationDate = LocalDateTime.now();

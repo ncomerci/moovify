@@ -8,12 +8,12 @@ public class Comment {
     private final long id;
     private final LocalDateTime creationDate;
     private final long postId;
-    private final long parentId;
+    private final Long parentId;
     private final Collection<Comment> children;
     private final String body;
     private final String userEmail; // Temporary
 
-    public Comment(long id, LocalDateTime creationDate, long postId, long parentId, Collection<Comment> children, String body, String userEmail) {
+    public Comment(long id, LocalDateTime creationDate, long postId, Long parentId, Collection<Comment> children, String body, String userEmail) {
         this.id = id;
         this.creationDate = creationDate;
         this.postId = postId;
