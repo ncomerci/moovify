@@ -24,21 +24,21 @@ public class PostController {
     @Autowired
     private MovieService movieService;
 
-    @RequestMapping(path = "/post/create", method = RequestMethod.GET)
-    public ModelAndView write() {
-
-        final ModelAndView mv = new ModelAndView("post/create");
-        mv.addObject("movies", movieService.getAllMovies());
-
-        return mv;
-    }
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long postId) {
 
         final ModelAndView mv = new ModelAndView("post/view");
-        mv.addObject("post", postService.findById(postId).orElseThrow(PostNotFoundException::new));
-        mv.addObject("postMovies", movieService.findMoviesByPostId(postId));
+        mv.addObject("post", postService.findPostById(postId, true).orElseThrow(PostNotFoundException::new));
+
+        return mv;
+    }
+
+    @RequestMapping(path = "/post/create", method = RequestMethod.GET)
+    public ModelAndView write() {
+
+        final ModelAndView mv = new ModelAndView("post/create");
+        mv.addObject("movies", movieService.getAllMovies());
 
         return mv;
     }
@@ -51,6 +51,7 @@ public class PostController {
         if(movies == null)
             movies = new HashSet<>();
 
+        // TODO: No tiene sentido redireccionar teniendo ya el objeto que mostrar. Habria que llamar a la vista directamente.
         final Post post = postService.register(title, email, body, movies);
         return new ModelAndView("redirect:/post/" + post.getId());
 

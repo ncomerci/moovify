@@ -15,22 +15,22 @@ public class SearchServiceImpl implements SearchService {
     private PostDao postDao;
 
     @Override
-    public Collection<Post> searchPosts(String searchParam) { return postDao.findPosts(searchParam); }
-
-    @Override
-    public Collection<Post> searchPostsbyTitle(String title) {
-        return postDao.findPostsByTitle(title);
+    public Collection<Post> findPostsByPostAndMovieTitle(String title, boolean withMovies) {
+        return postDao.findPostsByPostAndMovieTitle(title, withMovies);
     }
 
     @Override
-    public Collection<Post> searchPostsbyMovieTitle(String movie_title) {
-        return postDao.findPostsByMovieTitle(movie_title);
+    public Collection<Post> findPostsByTitle(String title, boolean withMovies) {
+        return postDao.findPostsByTitle(title, withMovies);
     }
 
     @Override
-    public Collection<Post> searchPostsbyMovieId(long movie_id) {
-        return postDao.findPostsByMovieId(movie_id);
+    public Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies) {
+        return postDao.findPostsByMovieTitle(movie_title, withMovies);
     }
 
-
+    @Override
+    public Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies) {
+        return postDao.findPostsByMovieId(movie_id, withMovies);
+    }
 }

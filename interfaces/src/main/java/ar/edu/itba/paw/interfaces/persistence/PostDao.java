@@ -8,17 +8,17 @@ import java.util.Set;
 
 public interface PostDao {
 
-    Optional<Post> findById(long id);
-
-    Collection<Post> findPosts(String searchParam);
-
-    Collection<Post> findPostsByTitle(String title);
-
-    Collection<Post> findPostsByMovieId(long id);
-
-    Collection<Post> findPostsByMovieTitle(String movie_title);
-
     Post register(String title, String email, String body, Set<Long> movies);
 
-    Collection<Post> getAllPosts();
+    Optional<Post> findPostById(long id, boolean withMovies);
+
+    Collection<Post> findPostsByTitle(String title, boolean withMovies);
+
+    Collection<Post> findPostsByMovieId(long id, boolean withMovies);
+
+    Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies);
+
+    Collection<Post> getAllPosts(boolean withMovies);
+
+    Collection<Post> findPostsByPostAndMovieTitle(String searchParam, boolean withMovies);
 }

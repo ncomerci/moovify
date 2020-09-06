@@ -6,11 +6,11 @@ import java.util.Collection;
 
 public interface SearchService {
 
-    Collection<Post> searchPosts(String searchParam);
+    Collection<Post> findPostsByPostAndMovieTitle(String title, boolean withMovies);
 
-    Collection<Post> searchPostsbyTitle( String title );
+    Collection<Post> findPostsByTitle(String title, boolean withMovies);
 
-    Collection<Post> searchPostsbyMovieTitle( String movie_title );
+    Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies);
 
-    Collection<Post> searchPostsbyMovieId(long movie_id );
+    Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies);
 }

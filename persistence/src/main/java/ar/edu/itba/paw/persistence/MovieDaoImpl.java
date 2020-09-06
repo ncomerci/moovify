@@ -19,6 +19,9 @@ import java.util.*;
 @Repository
 public class MovieDaoImpl implements MovieDao {
 
+    private static final String POSTS = TableNames.POSTS.getTableName();
+    private static final String MOVIES = TableNames.MOVIES.getTableName();
+    private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
 
     private static final RowMapper<Movie> MOVIE_ROW_MAPPER = (rs, rowNum) ->
             new Movie(rs.getLong("movie_id"), rs.getObject("creation_date", LocalDateTime.class),
@@ -32,22 +35,15 @@ public class MovieDaoImpl implements MovieDao {
         jdbcTemplate = new JdbcTemplate(ds);
 
         jdbcInsert = new SimpleJdbcInsert(ds)
-                .withTableName(TableNames.MOVIES.getTableName())
+                .withTableName(MOVIES)
                 .usingGeneratedKeyColumns("movie_id");
 
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + TableNames.MOVIES.getTableName() + " (" +
+        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + MOVIES + " (" +
                 "movie_id SERIAL PRIMARY KEY," +
                 "creation_date TIMESTAMP NOT NULL," +
                 "premier_date DATE NOT NULL," +
                 "title VARCHAR(50) NOT NULL )"
         );
-    }
-
-
-    @Override
-    public Optional<Movie> findById(long id) {
-        return jdbcTemplate.query("SELECT * FROM " + TableNames.MOVIES.getTableName() + " WHERE movie_id = ?",
-                new Object[]{ id }, MOVIE_ROW_MAPPER).stream().findFirst();
     }
 
     @Override
@@ -65,12 +61,18 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
+    public Optional<Movie> findById(long id) {
+        return jdbcTemplate.query("SELECT * FROM " + MOVIES + " WHERE " + MOVIES + ".movie_id = ?",
+                new Object[]{ id }, MOVIE_ROW_MAPPER).stream().findFirst();
+    }
+
+    @Override
     public Collection<Movie> findMoviesByPostId(long postId) {
 
         return jdbcTemplate.query(
-                "SELECT * FROM " + TableNames.MOVIES.getTableName() +
-                        " WHERE movie_id IN (" +
-                        "SELECT movie_id FROM " + TableNames.POST_MOVIE.getTableName() + " WHERE post_id = ?)",
+                "SELECT * FROM " + MOVIES +
+                        " WHERE " + MOVIES + ".movie_id IN (" +
+                        "SELECT " + POST_MOVIE + ".movie_id FROM " + POST_MOVIE + " WHERE " + POSTS + ".post_id = ?)",
                 new Object[]{ postId }, MOVIE_ROW_MAPPER
         );
     }
@@ -78,6 +80,6 @@ public class MovieDaoImpl implements MovieDao {
     @Override
     public Collection<Movie> getAllMovies(){
         return jdbcTemplate.query(
-                "SELECT * FROM " + TableNames.MOVIES.getTableName(), MOVIE_ROW_MAPPER);
+                "SELECT * FROM " + MOVIES, MOVIE_ROW_MAPPER);
     }
 }

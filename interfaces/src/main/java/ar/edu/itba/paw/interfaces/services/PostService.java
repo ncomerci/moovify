@@ -8,18 +8,17 @@ import java.util.Set;
 
 public interface PostService {
 
-    Optional<Post> findById(long id);
-
-    Collection<Post> findPosts(String searchParam);
-
-    Collection<Post> findPostsByTitle(String title);
-
-    Collection<Post> findPostsByMovieTitle(String movie_title);
-
-    Collection<Post> findPostsByMovieId(long movie_id);
-
     Post register(String title, String email, String body, Set<Long> movies);
 
-    Collection<Post> getAllPosts();
+    Optional<Post> findPostById(long id, boolean withMovies);
 
+    Collection<Post> findPostsByPostAndMovieTitle(String searchParam, boolean withMovies);
+
+    Collection<Post> findPostsByTitle(String title, boolean withMovies);
+
+    Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies);
+
+    Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies);
+
+    Collection<Post> getAllPosts(boolean withMovies);
 }

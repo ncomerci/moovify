@@ -33,7 +33,7 @@
                 <div id="parsedBody"></div>
             </div>
             <div class="uk-width-3-4">
-                <c:forEach items="${postMovies}" var="movie" >
+                <c:forEach items="${post.movies}" var="movie" >
                     <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom"
                        href="/movie/${movie.id}" >
                             ${movie.title}

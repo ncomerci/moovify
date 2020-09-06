@@ -40,8 +40,7 @@ public class MovieController {
 
         final ModelAndView mv = new ModelAndView("movie/view");
         mv.addObject("movie", movieService.findById(id).orElseThrow(MovieNotFoundException::new));
-        mv.addObject("posts", postService.findPostsByMovieId(id));
+        mv.addObject("posts", postService.findPostsByMovieId(id, false));
         return mv;
     }
-
 }

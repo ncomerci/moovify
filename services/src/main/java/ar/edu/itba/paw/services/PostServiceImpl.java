@@ -18,39 +18,37 @@ public class PostServiceImpl implements PostService {
     private PostDao postDao;
 
     @Override
-    public Optional<Post> findById(long id) {
-        return postDao.findById(id);
-    }
-
-    @Override
-    public Collection<Post> findPosts(String searchParam) {
-        return postDao.findPosts(searchParam);
-    }
-
-    @Override
-    public Collection<Post> findPostsByTitle(String title) {
-        return postDao.findPostsByTitle(title);
-    }
-
-    @Override
-    public Collection<Post> findPostsByMovieTitle(String movie_title) {
-        return postDao.findPostsByMovieTitle(movie_title);
-    }
-
-    @Override
-    public Collection<Post> findPostsByMovieId(long movie_id) {
-        return postDao.findPostsByMovieId(movie_id);
-    }
-
-    @Override
     public Post register(String title, String email, String body, Set<Long> movies){
         return postDao.register(title, email, body, movies);
     }
 
     @Override
-    public Collection<Post> getAllPosts() {
-        return postDao.getAllPosts();
+    public Optional<Post> findPostById(long id, boolean withMovies) {
+        return postDao.findPostById(id, withMovies);
     }
 
+    @Override
+    public Collection<Post> findPostsByPostAndMovieTitle(String searchParam, boolean withMovies) {
+        return postDao.findPostsByPostAndMovieTitle(searchParam, withMovies);
+    }
 
+    @Override
+    public Collection<Post> findPostsByTitle(String title, boolean withMovies) {
+        return postDao.findPostsByTitle(title, withMovies);
+    }
+
+    @Override
+    public Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies) {
+        return postDao.findPostsByMovieTitle(movie_title, withMovies);
+    }
+
+    @Override
+    public Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies) {
+        return postDao.findPostsByMovieId(movie_id, withMovies);
+    }
+
+    @Override
+    public Collection<Post> getAllPosts(boolean withMovies) {
+        return postDao.getAllPosts(withMovies);
+    }
 }
