@@ -8,7 +8,7 @@ import java.util.Set;
 
 public interface PostDao {
 
-    Post register(String title, String email, String body, Set<Long> movies);
+    Post register(String title, String email, String body, Collection<String> tags, Set<Long> movies);
 
     Optional<Post> findPostById(long id, boolean withMovies);
 

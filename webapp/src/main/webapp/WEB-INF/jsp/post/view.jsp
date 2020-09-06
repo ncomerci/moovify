@@ -16,7 +16,12 @@
         <div class="uk-container uk-container-small">
             <div>
                 <h2 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-remove-top"><c:out value="${post.title}"/></h2>
-
+                <h3 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-remove-top">
+                    <c:forEach items="${post.tags}" var="tag" >
+                    <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">
+                        <c:out value="${tag}"/>
+                    </a>
+                </c:forEach></h3>
                 <p class="uk-article-meta"> Written on
 <%--                TODO: Is there a better way to handle LocalDateTime formatting?    --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>

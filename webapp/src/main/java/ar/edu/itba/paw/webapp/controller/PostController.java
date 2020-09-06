@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,14 +46,17 @@ public class PostController {
 
     @RequestMapping(path = "/post/create" , method = RequestMethod.POST)
     public ModelAndView create(@RequestParam final String title, @RequestParam final String email,
-                               @RequestParam final String body, @RequestParam(value = "movies[]", required = false) Set<Long> movies){
+                               @RequestParam final String body, @RequestParam(value = "tags[]" , required = false) Collection<String> tags, @RequestParam(value = "movies[]", required = false) Set<Long> movies){
 
         // movies default value is an empty Set. (Overrides Spring default value of null)
         if(movies == null)
             movies = new HashSet<>();
 
+        if(tags == null)
+            tags = new HashSet<>();
+
         // TODO: No tiene sentido redireccionar teniendo ya el objeto que mostrar. Habria que llamar a la vista directamente.
-        final Post post = postService.register(title, email, body, movies);
+        final Post post = postService.register(title, email, body, tags, movies);
         return new ModelAndView("redirect:/post/" + post.getId());
 
     }

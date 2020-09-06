@@ -18,8 +18,8 @@ public class PostServiceImpl implements PostService {
     private PostDao postDao;
 
     @Override
-    public Post register(String title, String email, String body, Set<Long> movies){
-        return postDao.register(title, email, body, movies);
+    public Post register(String title, String email, String body, Collection<String> tags, Set<Long> movies){
+        return postDao.register(title, email, body, tags, movies);
     }
 
     @Override

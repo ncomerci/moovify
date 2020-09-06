@@ -69,6 +69,17 @@
 
         <div id="movies-selected" class="uk-margin-top uk-width-3-4"></div>
 
+        <h4 class="uk-modal-title uk-margin-remove-top">Write tags that describe this post (5 max)</h4>
+        <div>
+            <div>
+                <label for="add-tag-input" class="uk-margin-bottom" ></label>
+                <input id="add-tag-input" class="uk-input uk-margin-right uk-input uk-margin-bottom uk-border-rounded" placeholder="Write the tag here">
+                <button id="add-tag-button" class="uk-button uk-button-primary uk-border-rounded" type="button">Add</button>
+            </div>
+        </div>
+
+        <div id="tags-selected" class="uk-margin-top uk-width-3-4"></div>
+
         <p class="uk-text-right">
             <button id="submit-form-button" class="uk-button uk-button-primary uk-border-rounded" type="button">Enviar</button>
         </p>
