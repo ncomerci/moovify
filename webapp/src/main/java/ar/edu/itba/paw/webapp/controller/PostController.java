@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 @Controller
@@ -30,7 +30,7 @@ public class PostController {
     public ModelAndView view(@PathVariable final long postId) {
 
         final ModelAndView mv = new ModelAndView("post/view");
-        mv.addObject("post", postService.findPostWithCommentsById(postId, true)
+        mv.addObject("post", postService.findPostById(postId, true)
                 .orElseThrow(PostNotFoundException::new));
 
         return mv;
@@ -51,12 +51,11 @@ public class PostController {
 
         // movies default value is an empty Set. (Overrides Spring default value of null)
         if(movies == null)
-            movies = new HashSet<>();
+            movies = Collections.emptySet();
 
         if(tags == null)
-            tags = new HashSet<>();
+            tags = Collections.emptySet();
 
-        // TODO: No tiene sentido redireccionar teniendo ya el objeto que mostrar. Habria que llamar a la vista directamente.
         final Post post = postService.register(title, email, body, tags, movies);
         return new ModelAndView("redirect:/post/" + post.getId());
 

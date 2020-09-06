@@ -9,6 +9,6 @@
     <div class="uk-margin-small-left">
         <%--  Recursive Set  --%>
         <c:set var="comments" value="${comment.children}" scope="request"/>
-        <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp" />
+        <jsp:include page="commentTree.jsp" />
     </div>
 </c:forEach>
