@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
+import ar.edu.itba.paw.interfaces.services.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,9 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostDao postDao;
 
+    @Autowired
+    private CommentService commentService;
+
     @Override
     public Post register(String title, String email, String body, Collection<String> tags, Set<Long> movies){
         return postDao.register(title, email, body, tags, movies);
@@ -25,6 +29,14 @@ public class PostServiceImpl implements PostService {
     @Override
     public Optional<Post> findPostById(long id, boolean withMovies) {
         return postDao.findPostById(id, withMovies);
+    }
+
+    @Override
+    public Optional<Post> findPostWithCommentsById(long id, boolean withMovies) {
+        Optional<Post> optionalPost = postDao.findPostById(id, withMovies);
+        optionalPost.ifPresent(post -> post.setComments(commentService.findCommentsByPostId(post.getId())));
+
+        return optionalPost;
     }
 
     @Override

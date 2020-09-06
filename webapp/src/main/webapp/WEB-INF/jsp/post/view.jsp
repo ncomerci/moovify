@@ -47,6 +47,9 @@
             </div>
         </div>
     </article>
+    <hr>
+    <c:set var="comments" value="${post.comments}" scope="request"/>
+    <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp" />
 
 </body>
 </html>

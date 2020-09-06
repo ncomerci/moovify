@@ -44,6 +44,7 @@ a,
   color: #f2a365;
   text-decoration: none;
   cursor: pointer;
+  font-weight: bold;
 }
 a:hover,
 .uk-link:hover,

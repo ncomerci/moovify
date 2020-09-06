@@ -25,6 +25,7 @@ public class PostDaoImpl implements PostDao {
     private static final String MOVIES = TableNames.MOVIES.getTableName();
     private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
     private static final String TAGS = TableNames.TAGS.getTableName();
+    private static final String COMMENTS = TableNames.COMMENTS.getTableName();
 
     // Use each MAPPER with it's corresponding SELECT Macro. Update them together.
 
@@ -74,7 +75,7 @@ public class PostDaoImpl implements PostDao {
                                 post_id, rs.getObject("p_creation_date", LocalDateTime.class),
                                 rs.getString("p_title"), rs.getString("p_body"),
                                 rs.getInt("p_word_count"), rs.getString("p_email"),
-                                new HashSet<>(), new ArrayList<>() // No haria falta que la coleccion de tags sea un set ya que no debieran haber tags repetidos, pero por si mas adelante cambia al agregar comentarios se dejo como uno
+                                new HashSet<>(), new ArrayList<>(), null // No haria falta que la coleccion de tags sea un set ya que no debieran haber tags repetidos, pero por si mas adelante cambia al agregar comentarios se dejo como uno
                         )
                 );
             }
@@ -102,7 +103,7 @@ public class PostDaoImpl implements PostDao {
                                 post_id, rs.getObject("p_creation_date", LocalDateTime.class),
                                 rs.getString("p_title"), rs.getString("p_body"),
                                 rs.getInt("p_word_count"), rs.getString("p_email"),
-                                new HashSet<>(), new ArrayList<>()
+                                new HashSet<>(), new ArrayList<>(), null
                         )
                 );
             }
@@ -209,7 +210,7 @@ public class PostDaoImpl implements PostDao {
             tagsInsert.execute(map);
         }
 
-        return new Post(postId, creationDate, title, body, wordCount, email, tags);
+        return new Post(postId, creationDate, title, body, wordCount, email, tags, null, null);
     }
 
     // This two methods abstract the logic needed to perform select queries with or without movies.
@@ -281,45 +282,3 @@ public class PostDaoImpl implements PostDao {
     }
 
 }
-
-// Query Back Up For Now... TODO: Remove when we test enough
-/*
-
-@Override
-    public Optional<Post> findById(long id){
-        return jdbcTemplate.query("SELECT * FROM " + POSTS + " WHERE post_id = ?",
-                new Object[]{ id }, POST_ROW_MAPPER)
-                .stream().findFirst();
-    }
-
-@Override
-    public Collection<Post> findPostsByTitle(String title) {
-        return jdbcTemplate.query("SELECT * FROM " + POSTS + " WHERE title ILIKE '%' || ? || '%' ORDER BY creation_date", new Object[] { title }, POST_ROW_MAPPER);
-    }
-
-@Override
-    public Collection<Post> findPostsByMovieId(long movie_id) {
-        return jdbcTemplate.query("SELECT * FROM " + POSTS + " WHERE post_id in " +
-        " ( SELECT post_id FROM " + POST_MOVIE + " WHERE movie_id = ? ORDER BY creation_date ) ", new Object[] { movie_id }, POST_ROW_MAPPER);
-    }
-
-@Override
-    public Collection<Post> findPostsByMovieTitle(String movie_title) {
-        return jdbcTemplate.query("SELECT * FROM " + POSTS + " WHERE post_id in " +
-                " (SELECT post_id FROM " + POST_MOVIE + " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id "
-                + " WHERE title ILIKE ? ) ORDER BY creation_date ", new Object[] { '%' + movie_title + '%' }, POST_ROW_MAPPER);
-    }
-
-@Override
-    public Collection<Post> getAllPosts() {
-        return jdbcTemplate.query("SELECT * FROM " + POSTS + " ORDER BY creation_date", POST_ROW_MAPPER);
-    }
-
-@Override
-    public Collection<Post> findPostsByPostAndMovieTitle(String searchParam) {
-        return jdbcTemplate.query("SELECT * FROM " + POSTS + " WHERE title LIKE '%' || ? || '%' OR post_id in " +
-                " (SELECT post_id FROM " + POST_MOVIE + " as pm INNER JOIN " + MOVIES + " as m on pm.movie_id = m.movie_id "
-                + " WHERE title LIKE '%' || ? || '%' ) ORDER BY creation_date ", new Object[] { searchParam , searchParam }, POST_ROW_MAPPER);
-
-    }
- */

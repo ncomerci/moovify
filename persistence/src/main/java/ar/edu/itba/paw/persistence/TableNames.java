@@ -4,8 +4,9 @@ enum TableNames {
     //TODO: preguntar si es una buena forma de generalizar el nombre de la tabla
     POSTS("posts"),
     MOVIES("movies"),
-    POST_MOVIE("post_movie"),
+    POST_MOVIE("post_movie");
     TAGS("tags");
+    COMMENTS("comments");
 
     private final String tableName;
 

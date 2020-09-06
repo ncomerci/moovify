@@ -19,8 +19,7 @@
                 <dl class="uk-description-list ">
                     <c:forEach items="${posts}" var="post">
                         <dt>
-                            <a class="uk-text-normal"
-                               href="<c:url value="/post/${post.id}"/>">
+                            <a href="<c:url value="/post/${post.id}"/>">
                                 <c:out value="${post.title}"/>
                             </a>
                         </dt>
@@ -37,8 +36,7 @@
                 <dl class="uk-description-list ">
                     <c:forEach items="${posts}" var="post">
                         <dt>
-                            <a class="uk-text-normal"
-                               href="<c:url value="/post/${post.id}"/>">
+                            <a href="<c:url value="/post/${post.id}"/>">
                                 <c:out value="${post.title}"/>
                             </a>
                         </dt>
