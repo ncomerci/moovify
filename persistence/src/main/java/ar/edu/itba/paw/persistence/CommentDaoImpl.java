@@ -2,7 +2,6 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -27,10 +26,37 @@ public class CommentDaoImpl implements CommentDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert commentInsert;
 
+    private static final String SELECT_COMMENTS = "SELECT * FROM " + COMMENTS;
+
     private static final RowMapper<Comment> COMMENT_ROW_MAPPER = (rs, rowNum) ->
             new Comment(rs.getLong("comment_id"), rs.getObject("creation_date", LocalDateTime.class),
-                    rs.getLong("post_id"), rs.getLong("parent_id"), Collections.emptyList(),
+                    rs.getLong("post_id"), rs.getLong("parent_id"), null,
                     rs.getString("body"), rs.getString("user_email"));
+
+    // Needs ORDER BY parent_id (doesn't block further ordering). Also coalesce parent_id = null to parent_id = 0.
+    private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER_WITH_CHILDREN = (rs) -> {
+        List<Comment> result = new ArrayList<>();
+        Map<Long, Comment> idToCommentMap = new HashMap<>();
+        Comment currentComment;
+
+        while(rs.next()){
+
+            currentComment = new Comment(rs.getLong("comment_id"),
+                    rs.getObject("creation_date", LocalDateTime.class),
+                    rs.getLong("post_id"), rs.getLong("parent_id"), new ArrayList<>(),
+                    rs.getString("body"), rs.getString("user_email"));
+
+            idToCommentMap.put(currentComment.getId(), currentComment);
+
+            if(currentComment.getParentId() == 0)
+                result.add(currentComment);
+
+            else
+                idToCommentMap.get(currentComment.getParentId()).getChildren().add(currentComment);
+        }
+
+        return result;
+    };
 
     @Autowired
     public CommentDaoImpl(final DataSource ds) {
@@ -75,5 +101,26 @@ public class CommentDaoImpl implements CommentDao {
         return jdbcTemplate.query(
                 "SELECT * FROM " + COMMENTS + " WHERE " + COMMENTS + ".comment_id = ?",
                 new Object[] { id }, COMMENT_ROW_MAPPER).stream().findFirst();
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByPostId(long post_id){
+        return jdbcTemplate.query(
+                "WITH RECURSIVE comment_tree AS (" +
+                "        SELECT comment_id, parent_id, post_id, user_email, creation_date, body" +
+                "        FROM " + COMMENTS + " WHERE post_id = ?" +
+                "        UNION" +
+                "        SELECT " + COMMENTS + ".comment_id," +
+                "               comment_tree.parent_id," +
+                "               " + COMMENTS + ".post_id," +
+                "               " + COMMENTS + ".user_email," +
+                "               " + COMMENTS + ".creation_date," +
+                "               " + COMMENTS + ".body" +
+                "        FROM comment_tree, " + COMMENTS +
+                "        WHERE comment_tree.comment_id = " + COMMENTS + ".parent_id" +
+                "    ) " +
+                "SELECT comment_id, coalesce(max(parent_id), 0) parent_id, post_id, user_email, creation_date, body " +
+                "FROM comment_tree GROUP BY comment_id, post_id, user_email, creation_date, body " +
+                "ORDER BY parent_id", new Object[] { post_id }, COMMENT_ROW_MAPPER_WITH_CHILDREN);
     }
 }

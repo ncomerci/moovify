@@ -12,6 +12,7 @@ public class Post {
     private final int wordCount;
     private final String email;
     private final Collection<Movie> movies;
+    private Collection<Comment> comments;
 
     /*
     * Average of words per minute read.
@@ -20,7 +21,7 @@ public class Post {
     */
     private static final int EN_WORDS_PER_MINUTE = 238;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email, Collection<Movie> movies) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email, Collection<Movie> movies, Collection<Comment> comments) {
         this.id = id;
         this.creationDate = creationDate;
         this.title = title;
@@ -28,16 +29,7 @@ public class Post {
         this.wordCount = wordCount;
         this.email = email;
         this.movies = movies;
-    }
-
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email) {
-        this.id = id;
-        this.creationDate = creationDate;
-        this.title = title;
-        this.body = body;
-        this.wordCount = wordCount;
-        this.email = email;
-        this.movies = null;
+        this.comments = comments;
     }
 
     public long getId() {
@@ -66,6 +58,14 @@ public class Post {
 
     public Collection<Movie> getMovies() {
         return movies;
+    }
+
+    public Collection<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Collection<Comment> comments) {
+        this.comments = comments;
     }
 
     public int getReadingTimeMinutes() {

@@ -24,6 +24,7 @@ public class PostDaoImpl implements PostDao {
     private static final String POSTS = TableNames.POSTS.getTableName();
     private static final String MOVIES = TableNames.MOVIES.getTableName();
     private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
+    private static final String COMMENTS = TableNames.COMMENTS.getTableName();
 
 
     // Use each MAPPER with it's corresponding SELECT Macro. Update them together.
@@ -34,7 +35,7 @@ public class PostDaoImpl implements PostDao {
     private static final RowMapper<Post> POST_ROW_MAPPER = (rs, rowNum) ->
             new Post(rs.getLong("post_id"), rs.getObject("creation_date", LocalDateTime.class),
                     rs.getString("title"), rs.getString("body"),
-                    rs.getInt("word_count"), rs.getString("email"));
+                    rs.getInt("word_count"), rs.getString("email"), null, null);
 
 
     // Mapper and Select for post retrievals which include movies info.
@@ -66,7 +67,7 @@ public class PostDaoImpl implements PostDao {
                                 post_id, rs.getObject("p_creation_date", LocalDateTime.class),
                                 rs.getString("p_title"), rs.getString("p_body"),
                                 rs.getInt("p_word_count"), rs.getString("p_email"),
-                                new ArrayList<>()
+                                new ArrayList<>(), null
                         )
                 );
             }
@@ -145,7 +146,7 @@ public class PostDaoImpl implements PostDao {
             postMoviesInsert.execute(map);
         }
 
-        return new Post(postId, creationDate, title, body, wordCount, email);
+        return new Post(postId, creationDate, title, body, wordCount, email, null, null);
     }
 
     // This two methods abstract the logic needed to perform select queries with or without movies.

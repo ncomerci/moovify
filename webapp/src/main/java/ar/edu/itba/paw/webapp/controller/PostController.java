@@ -29,7 +29,8 @@ public class PostController {
     public ModelAndView view(@PathVariable final long postId) {
 
         final ModelAndView mv = new ModelAndView("post/view");
-        mv.addObject("post", postService.findPostById(postId, true).orElseThrow(PostNotFoundException::new));
+        mv.addObject("post", postService.findPostWithCommentsById(postId, true)
+                .orElseThrow(PostNotFoundException::new));
 
         return mv;
     }
