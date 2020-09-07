@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.models.Post;
@@ -25,6 +26,9 @@ public class PostController {
     @Autowired
     private MovieService movieService;
 
+    @Autowired
+    private CommentService commentService;
+
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long postId) {
@@ -32,6 +36,8 @@ public class PostController {
         final ModelAndView mv = new ModelAndView("post/view");
         mv.addObject("post", postService.findPostById(postId, true)
                 .orElseThrow(PostNotFoundException::new));
+
+//        mv.addObject("comments", commentService.findCommentsByPostId(postId, true));
 
         return mv;
     }

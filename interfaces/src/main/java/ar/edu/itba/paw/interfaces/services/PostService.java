@@ -12,8 +12,6 @@ public interface PostService {
 
     Optional<Post> findPostById(long id, boolean withMovies);
 
-    Optional<Post> findPostWithCommentsById(long id, boolean withMovies);
-
     Collection<Post> findPostsByPostAndMovieTitle(String searchParam, boolean withMovies);
 
     Collection<Post> findPostsByTitle(String title, boolean withMovies);
