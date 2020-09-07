@@ -29,41 +29,28 @@ public class PostDaoImpl implements PostDao {
     // Use each MAPPER with it's corresponding SELECT Macro. Update them together.
 
     // Mapper and Select for simple post retrieval.
-    private static final String SELECT_POSTS = "SELECT " +
+    private static final String BASE_POST_SELECT = "SELECT " +
             // Posts Table Columns - Alias: p_column_name
             POSTS + ".post_id p_post_id, " + POSTS + ".creation_date p_creation_date, " + POSTS + ".title p_title, " +
-            POSTS + ".body p_body, " + POSTS + ".word_count p_word_count, " + POSTS + ".email p_email, " +
+            POSTS + ".body p_body, " + POSTS + ".word_count p_word_count, " + POSTS + ".email p_email";
 
-            // Tags Table
-            TAGS + ".tag p_tag " +
+    private static final String TAGS_SELECT = TAGS + ".tag p_tag";
 
-            // Outer Joins between posts - tags
-            " FROM " + POSTS +
-            " LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id ";
-
-    // Mapper and Select for post retrievals which include movies info.
-    // DO NOT USE ALIASES IN QUERIES INVOLVING THIS MAPPER
-    private static final String SELECT_POSTS_WITH_MOVIES = "SELECT " +
-            // Posts Table Columns - Alias: p_column_name
-            POSTS + ".post_id p_post_id, " + POSTS + ".creation_date p_creation_date, " + POSTS + ".title p_title, " +
-            POSTS + ".body p_body, " + POSTS + ".word_count p_word_count, " + POSTS + ".email p_email, " +
-
-            // Tags Table
-            TAGS + ".tag p_tag, " +
-
-            // Movies Table Columns - Alias: m_column_name
+    private static final String MOVIES_SELECT =
             MOVIES + ".movie_id m_movie_id, " + MOVIES + ".creation_date m_creation_date, " + MOVIES + ".title m_title, " +
-            MOVIES + ".premier_date m_premier_date " +
+            MOVIES + ".premier_date m_premier_date";
 
-            // Outer Joins between posts - post_movie - movies Tables
-            " FROM " + POSTS +
-            " LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id " +
-            " LEFT OUTER JOIN (" +
-                " SELECT " + MOVIES + ".movie_id, " + MOVIES + ".creation_date, " +
+    private static final String BASE_POST_FROM = "FROM " + POSTS;
+
+    private static final String TAGS_FROM = "LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id";
+
+    private static final String MOVIES_FROM =
+            "LEFT OUTER JOIN (" +
+                    " SELECT " + MOVIES + ".movie_id, " + MOVIES + ".creation_date, " +
                     MOVIES + ".title, " + MOVIES + ".premier_date, " + "post_id" +
-                " FROM "+ POST_MOVIE +
-                " INNER JOIN " + MOVIES + " ON " + POST_MOVIE+ ".movie_id = " + MOVIES + ".movie_id" +
-            ") " + MOVIES + " on " + MOVIES + ".post_id = " + POSTS + ".post_id";
+                    " FROM "+ POST_MOVIE +
+                    " INNER JOIN " + MOVIES + " ON " + POST_MOVIE+ ".movie_id = " + MOVIES + ".movie_id" +
+                    ") " + MOVIES + " on " + MOVIES + ".post_id = " + POSTS + ".post_id";
 
     private static final ResultSetExtractor<Collection<Post>> POST_ROW_MAPPER = (rs) -> {
         Map<Long, Post> resultMap = new HashMap<>();
@@ -219,19 +206,32 @@ public class PostDaoImpl implements PostDao {
 
     // This two methods abstract the logic needed to perform select queries with or without movies.
     private Collection<Post> findPostsBy(String queryAfterFrom, Object[] args, boolean withMovies){
-        if(withMovies)
-            return jdbcTemplate.query(SELECT_POSTS_WITH_MOVIES + " " + queryAfterFrom, args, POST_ROW_MAPPER_WITH_MOVIES);
 
-        else
-            return jdbcTemplate.query(SELECT_POSTS + " " + queryAfterFrom, args, POST_ROW_MAPPER);
+        final String select = BASE_POST_SELECT
+                + ", " + TAGS_SELECT
+                + (withMovies? ", " + MOVIES_SELECT : "");
+
+        final String from = BASE_POST_FROM
+               + " " + TAGS_FROM
+                + (withMovies? " " + MOVIES_FROM : "");
+
+        final String query = select + " " + from + " " + queryAfterFrom;
+
+        if(args != null) {
+            if (withMovies)
+                return jdbcTemplate.query(query, args, POST_ROW_MAPPER_WITH_MOVIES);
+            else
+                return jdbcTemplate.query(query, args, POST_ROW_MAPPER);
+        } else {
+            if(withMovies)
+                return jdbcTemplate.query(query, POST_ROW_MAPPER_WITH_MOVIES);
+            else
+                return jdbcTemplate.query(query, POST_ROW_MAPPER);
+        }
     }
 
     private Collection<Post> findPostsBy(String queryAfterFrom, boolean withMovies){
-        if(withMovies)
-            return jdbcTemplate.query(SELECT_POSTS_WITH_MOVIES + " " + queryAfterFrom, POST_ROW_MAPPER_WITH_MOVIES);
-
-        else
-            return jdbcTemplate.query(SELECT_POSTS + " " + queryAfterFrom, POST_ROW_MAPPER);
+        return findPostsBy(queryAfterFrom, null, withMovies);
     }
 
     @Override
