@@ -6,7 +6,6 @@ import ar.edu.itba.paw.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -57,10 +56,14 @@ public class PostDaoImpl implements PostDao {
             MOVIES + ".premier_date m_premier_date " +
 
             // Outer Joins between posts - post_movie - movies Tables
-            "FROM " + POSTS +
+            " FROM " + POSTS +
             " LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id " +
-            " LEFT OUTER JOIN " + POST_MOVIE + " ON " + POSTS + ".post_id = " + POST_MOVIE + ".post_id " +
-            " INNER JOIN " + MOVIES + " ON " + MOVIES + ".movie_id = " + POST_MOVIE + ".movie_id ";
+            " LEFT OUTER JOIN (" +
+                " SELECT " + MOVIES + ".movie_id, " + MOVIES + ".creation_date, " +
+                    MOVIES + ".title, " + MOVIES + ".premier_date, " + "post_id" +
+                " FROM "+ POST_MOVIE +
+                " INNER JOIN " + MOVIES + " ON " + POST_MOVIE+ ".movie_id = " + MOVIES + ".movie_id" +
+            ") " + MOVIES + " on " + MOVIES + ".post_id = " + POSTS + ".post_id";
 
     private static final ResultSetExtractor<Collection<Post>> POST_ROW_MAPPER = (rs) -> {
         Map<Long, Post> resultMap = new HashMap<>();
@@ -128,7 +131,8 @@ public class PostDaoImpl implements PostDao {
         Collection<Post> posts = resultMap.values();
 
         for (Post p: posts) {
-            p.getMovies().addAll(movieMap.get(p.getId()).values());
+            if(movieMap.containsKey(p.getId()))
+                p.getMovies().addAll(movieMap.get(p.getId()).values());
         }
 
         return posts;
