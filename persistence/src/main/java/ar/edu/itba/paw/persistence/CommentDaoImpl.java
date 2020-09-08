@@ -26,7 +26,7 @@ public class CommentDaoImpl implements CommentDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert commentInsert;
 
-    //language=SQL
+
     private static final String SELECT_COMMENTS = "SELECT " +
             COMMENTS + ".comment_id, " +
             "coalesce(" + COMMENTS + ".parent_id, 0) parent_id, " +
@@ -41,26 +41,58 @@ public class CommentDaoImpl implements CommentDao {
                     rs.getLong("post_id"), rs.getLong("parent_id"), null,
                     rs.getString("body"), rs.getString("user_email"));
 
-    // Needs ORDER BY parent_id (doesn't block further ordering). Also coalesce parent_id = null to parent_id = 0.
+    // Coalesce parent_id = null to parent_id = 0.
     private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER_WITH_CHILDREN = (rs) -> {
         List<Comment> result = new ArrayList<>();
         Map<Long, Comment> idToCommentMap = new HashMap<>();
+        Map<Long, Collection<Comment>> childrenWithoutParentMap = new HashMap<>();
+
+        long comment_id;
         Comment currentComment;
 
         while(rs.next()){
 
-            currentComment = new Comment(rs.getLong("comment_id"),
-                    rs.getObject("creation_date", LocalDateTime.class),
-                    rs.getLong("post_id"), rs.getLong("parent_id"), new ArrayList<>(),
-                    rs.getString("body"), rs.getString("user_email"));
+            comment_id = rs.getLong("comment_id");
 
-            idToCommentMap.put(currentComment.getId(), currentComment);
+            // Returns 0 on null
+            if(comment_id != 0 && !idToCommentMap.containsKey(comment_id)) {
 
-            if(currentComment.getParentId() == 0)
-                result.add(currentComment);
+                currentComment = new Comment(comment_id,
+                        rs.getObject("creation_date", LocalDateTime.class),
+                        rs.getLong("post_id"), rs.getLong("parent_id"), new ArrayList<>(),
+                        rs.getString("body"), rs.getString("user_email"));
 
-            else
-                idToCommentMap.get(currentComment.getParentId()).getChildren().add(currentComment);
+                idToCommentMap.put(comment_id, currentComment);
+
+                // Incorporate all children that appeared before currentComment
+                if(childrenWithoutParentMap.containsKey(comment_id)) {
+                    currentComment.getChildren().addAll(childrenWithoutParentMap.get(comment_id));
+
+                    // Mapping is no longer necessary
+                    childrenWithoutParentMap.remove(comment_id);
+                }
+
+                // Comment is root
+                if (currentComment.getParentId() == 0)
+                    result.add(currentComment);
+
+                else {
+                    // If parent doesn't exist yet
+                    if(!idToCommentMap.containsKey(currentComment.getParentId())) {
+
+                        // Initialize Collection inside Map if necessary
+                        if(!childrenWithoutParentMap.containsKey(currentComment.getParentId()))
+                            childrenWithoutParentMap.put(currentComment.getParentId(), new ArrayList<>());
+
+                        // Add children to Parent Children Buffer
+                        childrenWithoutParentMap.get(currentComment.getParentId()).add(currentComment);
+                    }
+
+                    // Parent exists -> Add to parent
+                    else
+                        idToCommentMap.get(currentComment.getParentId()).getChildren().add(currentComment);
+                }
+            }
         }
 
         return result;
@@ -104,23 +136,9 @@ public class CommentDaoImpl implements CommentDao {
         return new Comment(commentId, creationDate, postId, parentId, Collections.emptyList(), body, userMail);
     }
 
-    private Collection<Comment> findCommentsBy(String whereStatement, String orderByStatement, Object[] args, boolean withChildren) {
-        final boolean hasWhereStatement = whereStatement != null;
-        final boolean hasOrderByStatement = orderByStatement != null;
+    private Collection<Comment> findCommentsBy(String queryAfterFrom, Object[] args, boolean withChildren) {
 
-        final String where = hasWhereStatement? whereStatement : "";
-
-        String orderBy = (withChildren || hasOrderByStatement)? "ORDER BY " : "";
-
-        // With Children Query requirement defined by COMMENT_ROW_MAPPER_WITH_CHILDREN
-        if(withChildren)
-            orderBy += "parent_id" + (hasOrderByStatement? ", " : "");
-
-        if(hasOrderByStatement)
-            orderBy += orderByStatement;
-
-        final String query = SELECT_COMMENTS + " " + where + " " + orderBy + " ";
-
+        final String query = SELECT_COMMENTS + " " + queryAfterFrom;
 
         if(args != null){
             if(withChildren)
@@ -136,16 +154,12 @@ public class CommentDaoImpl implements CommentDao {
         }
     }
 
-    private Collection<Comment> findCommentsBy(String whereStatement, String orderByStatement, boolean withChildren) {
-        return findCommentsBy(whereStatement, orderByStatement, null, withChildren);
+    private Collection<Comment> findCommentsBy(String whereStatement, boolean withChildren) {
+        return findCommentsBy(whereStatement, null, withChildren);
     }
 
-    private Collection<Comment> findCommentsBy(String orderByStatement, boolean withChildren) {
-        return findCommentsBy(null, orderByStatement, null, withChildren);
-    }
-
-    private Collection<Comment> findCommentsBy(String whereStatement, Object[] args, boolean withChildren) {
-        return findCommentsBy(whereStatement, null, args, withChildren);
+    private Collection<Comment> findCommentsBy(boolean withChildren) {
+        return findCommentsBy("", null, withChildren);
     }
 
     @Override

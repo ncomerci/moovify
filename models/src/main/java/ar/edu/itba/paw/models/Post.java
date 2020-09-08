@@ -13,6 +13,7 @@ public class Post {
     private final String email;
     private final Collection<String> tags;
     private final Collection<Movie> movies;
+    private final Collection<Comment> comments;
 
     /*
     * Average of words per minute read.
@@ -30,6 +31,7 @@ public class Post {
         this.email = email;
         this.tags = tags;
         this.movies = movies;
+        this.comments = comments;
     }
 
     public long getId() {
@@ -62,6 +64,10 @@ public class Post {
 
     public Collection<Movie> getMovies() {
         return movies;
+    }
+
+    public Collection<Comment> getComments() {
+        return comments;
     }
 
     public int getReadingTimeMinutes() {
