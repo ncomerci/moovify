@@ -18,7 +18,7 @@ public class HomeController {
     public ModelAndView helloWorld() {
 
         final ModelAndView mv = new ModelAndView("index");
-        mv.addObject("posts", postService.getAllPosts(false));
+        mv.addObject("posts", postService.getAllPosts(false, false));
 
         return mv;
     }

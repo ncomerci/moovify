@@ -10,15 +10,15 @@ public interface PostDao {
 
     Post register(String title, String email, String body, Collection<String> tags, Set<Long> movies);
 
-    Optional<Post> findPostById(long id, boolean withMovies);
+    Optional<Post> findPostById(long id, boolean withMovies, boolean withComments);
 
-    Collection<Post> findPostsByTitle(String title, boolean withMovies);
+    Collection<Post> findPostsByTitle(String title, boolean withMovies, boolean withComments);
 
-    Collection<Post> findPostsByMovieId(long id, boolean withMovies);
+    Collection<Post> findPostsByMovieId(long id, boolean withMovies, boolean withComments);
 
-    Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies);
+    Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies, boolean withComments);
 
-    Collection<Post> getAllPosts(boolean withMovies);
+    Collection<Post> getAllPosts(boolean withMovies, boolean withComments);
 
-    Collection<Post> findPostsByPostAndMovieTitle(String title, boolean withMovies);
+    Collection<Post> findPostsByPostAndMovieTitle(String title, boolean withMovies, boolean withComments);
 }

@@ -23,6 +23,14 @@
     <div uk-grid>
         <div class="uk-width-1-5">
             <div>
+                <h2>Searching for</h2>
+                <ul>
+                    <li>Post Title</li>
+                    <li>Movie Title</li>
+                    <li>Tags</li>
+                </ul>
+            </div>
+            <div>
                 <h2>Filter by</h2>
                 <div class="uk-inline">
                     <button class="uk-button uk-button-default" type="button">Newest<span class="uk-padding-small uk-padding-remove-vertical" uk-icon="icon:  triangle-down"></span></button>
