@@ -39,7 +39,7 @@
             </div>
             <div class="uk-width-3-4">
                 <c:forEach items="${post.movies}" var="movie" >
-                    <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom"
+                    <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
                        href="/movie/${movie.id}" >
                             ${movie.title}
                     </a>

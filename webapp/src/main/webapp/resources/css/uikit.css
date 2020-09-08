@@ -5604,8 +5604,10 @@ ul.uk-nav-sub {
   color: #666;
 }
 /* Active */
+/*Change*/
 .uk-subnav-pill > .uk-active > a {
-  background-color: #1e87f0;
+  /*background-color: #1e87f0;*/
+  background-color: #f2a365;
   color: #fff;
 }
 /* Disabled
@@ -12520,4 +12522,10 @@ iframe.uk-cover {
   h3 {
     page-break-after: avoid;
   }
+}
+
+/*========================= CUSTOM ADDED =========================*/
+
+.uk-badge.disabled {
+  color: #fff;
 }

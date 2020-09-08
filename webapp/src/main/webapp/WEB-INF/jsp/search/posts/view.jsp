@@ -45,10 +45,10 @@
             <div>
                 <h2>Categories</h2>
                 <ul class="uk-list uk-list-hyphen">
-                    <li><a class="uk-text-light" href="<c:url value="#"/>">News</a></li>
-                    <li><a class="uk-text-light" href="<c:url value="#"/>">Debate</a></li>
-                    <li><a class="uk-text-light" href="<c:url value="#"/>">Watch-list</a></li>
-                    <li><a class="uk-text-light" href="<c:url value="#"/>">Question</a></li>
+                    <li><a class="uk-text-normal" href="<c:url value="#"/>">News</a></li>
+                    <li><a class="uk-text-normal" href="<c:url value="#"/>">Debate</a></li>
+                    <li><a class="uk-text-normal" href="<c:url value="#"/>">Watch-list</a></li>
+                    <li><a class="uk-text-normal" href="<c:url value="#"/>">Question</a></li>
                 </ul>
             </div>
         </div>
@@ -57,7 +57,7 @@
             <dl class="uk-description-list ">
                 <c:forEach items="${posts}" var="post">
                     <dt>
-                        <a class="uk-text-normal"
+                        <a
                            href="<c:url value="/post/${post.id}"/>">
                             <c:out value="${post.title}"/>
                         </a>

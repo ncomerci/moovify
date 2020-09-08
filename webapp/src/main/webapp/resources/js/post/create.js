@@ -134,7 +134,7 @@ function addMovie(formElem, inputElem, datalistElem, moviesSelectedElem){
 
     let movieBadgeElem = document.createElement("span");
 
-    movieBadgeElem.setAttribute('class', 'uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom');
+    movieBadgeElem.setAttribute('class', 'uk-badge disabled uk-padding-small uk-margin-small-right uk-margin-small-bottom');
 
     movieBadgeElem.appendChild(document.createTextNode(movieName));
     movieBadgeElem.appendChild(closeElem);
@@ -182,7 +182,7 @@ function addTag( formElem, inputElem, tagsSelectedElem){
 
     let tagBadgeElem = document.createElement("span");
 
-    tagBadgeElem.setAttribute('class', 'uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom');
+    tagBadgeElem.setAttribute('class', 'uk-badge disabled uk-padding-small uk-margin-small-right uk-margin-small-bottom');
 
     tagBadgeElem.appendChild(document.createTextNode(tagName));
     tagBadgeElem.appendChild(closeElem);
