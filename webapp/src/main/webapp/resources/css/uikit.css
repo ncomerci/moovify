@@ -12529,3 +12529,7 @@ iframe.uk-cover {
 .uk-badge.disabled {
   color: #fff;
 }
+
+.mid-bold {
+  font-weight: 500;
+}
