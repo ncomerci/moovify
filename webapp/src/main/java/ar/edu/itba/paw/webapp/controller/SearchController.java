@@ -19,7 +19,7 @@ public class SearchController {
     public ModelAndView searchPosts(@RequestParam() final String searchParam){
 
         final ModelAndView mv = new ModelAndView( "search/posts/view");
-        mv.addObject("posts", searchService.findPostsByPostAndMovieTitle(searchParam, false));
+        mv.addObject("posts", searchService.findPostsByPostAndMovieTitle(searchParam, false, false));
         return mv;
     }
 
@@ -27,7 +27,7 @@ public class SearchController {
     public ModelAndView searchPostByTitle(@RequestParam() final String title){
 
         final ModelAndView mv = new ModelAndView( "search/posts/view");
-        mv.addObject("posts", searchService.findPostsByTitle(title, false));
+        mv.addObject("posts", searchService.findPostsByTitle(title, false, false));
         mv.addObject("query",title);
         return mv;
     }
@@ -35,7 +35,7 @@ public class SearchController {
     public ModelAndView searchPostByMovieId(@RequestParam() final long movie_id){
 
         final ModelAndView mv = new ModelAndView( "search/posts/view");
-        mv.addObject("posts", searchService.findPostsByMovieId(movie_id, false));
+        mv.addObject("posts", searchService.findPostsByMovieId(movie_id, false, false));
         return mv;
     }
 
@@ -43,7 +43,7 @@ public class SearchController {
     public ModelAndView searchPostByMovieTitle(@RequestParam() final String movie_title){
 
         final ModelAndView mv = new ModelAndView( "search/posts/view");
-        mv.addObject("posts", searchService.findPostsByMovieTitle(movie_title, false));
+        mv.addObject("posts", searchService.findPostsByMovieTitle(movie_title, false, false));
         mv.addObject("query",movie_title);
         return mv;
     }
