@@ -9,7 +9,7 @@ public interface CommentService {
 
     Comment register(long postId, Long parentId, String body, String userMail);
 
-    Optional<Comment> findCommentById(long id);
+    Optional<Comment> findCommentById(long id, boolean withChildren);
 
-    Collection<Comment> findCommentsByPostId(long post_id);
+    Collection<Comment> findCommentsByPostId(long post_id, boolean withChildren);
 }

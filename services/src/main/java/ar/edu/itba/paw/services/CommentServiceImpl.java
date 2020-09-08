@@ -16,17 +16,17 @@ public class CommentServiceImpl implements CommentService {
     private CommentDao commentDao;
 
     @Override
-    public Optional<Comment> findCommentById(long id){
-        return commentDao.findCommentById(id);
-    }
-
-    @Override
     public Comment register(long postId, Long parentId, String body, String userMail) {
         return commentDao.register(postId, parentId, body, userMail);
     }
 
     @Override
-    public Collection<Comment> findCommentsByPostId(long post_id){
-        return commentDao.findCommentsByPostId(post_id);
+    public Optional<Comment> findCommentById(long id, boolean withChildren){
+        return commentDao.findCommentById(id, withChildren);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByPostId(long post_id, boolean withChildren){
+        return commentDao.findCommentsByPostId(post_id, withChildren);
     }
 }

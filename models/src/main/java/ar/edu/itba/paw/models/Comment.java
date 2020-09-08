@@ -35,7 +35,8 @@ public class Comment {
         return postId;
     }
 
-    public long getParentId() {
+    // May return null when comment is root
+    public Long getParentId() {
         return parentId;
     }
 

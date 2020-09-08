@@ -26,7 +26,15 @@ public class CommentDaoImpl implements CommentDao {
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert commentInsert;
 
-    private static final String SELECT_COMMENTS = "SELECT * FROM " + COMMENTS;
+    //language=SQL
+    private static final String SELECT_COMMENTS = "SELECT " +
+            COMMENTS + ".comment_id, " +
+            "coalesce(" + COMMENTS + ".parent_id, 0) parent_id, " +
+            COMMENTS + ".post_id, " +
+            COMMENTS + ".user_email, " +
+            COMMENTS + ".creation_date, " +
+            COMMENTS + ".body " +
+            "FROM " + COMMENTS;
 
     private static final RowMapper<Comment> COMMENT_ROW_MAPPER = (rs, rowNum) ->
             new Comment(rs.getLong("comment_id"), rs.getObject("creation_date", LocalDateTime.class),
@@ -96,31 +104,60 @@ public class CommentDaoImpl implements CommentDao {
         return new Comment(commentId, creationDate, postId, parentId, Collections.emptyList(), body, userMail);
     }
 
-    @Override
-    public Optional<Comment> findCommentById(long id){
-        return jdbcTemplate.query(
-                "SELECT * FROM " + COMMENTS + " WHERE " + COMMENTS + ".comment_id = ?",
-                new Object[] { id }, COMMENT_ROW_MAPPER).stream().findFirst();
+    private Collection<Comment> findCommentsBy(String whereStatement, String orderByStatement, Object[] args, boolean withChildren) {
+        final boolean hasWhereStatement = whereStatement != null;
+        final boolean hasOrderByStatement = orderByStatement != null;
+
+        final String where = hasWhereStatement? whereStatement : "";
+
+        String orderBy = (withChildren || hasOrderByStatement)? "ORDER BY " : "";
+
+        // With Children Query requirement defined by COMMENT_ROW_MAPPER_WITH_CHILDREN
+        if(withChildren)
+            orderBy += "parent_id" + (hasOrderByStatement? ", " : "");
+
+        if(hasOrderByStatement)
+            orderBy += orderByStatement;
+
+        final String query = SELECT_COMMENTS + " " + where + " " + orderBy + " ";
+
+
+        if(args != null){
+            if(withChildren)
+                return jdbcTemplate.query(query, args, COMMENT_ROW_MAPPER_WITH_CHILDREN);
+            else
+                return jdbcTemplate.query(query, args, COMMENT_ROW_MAPPER);
+        }
+        else {
+            if(withChildren)
+                return jdbcTemplate.query(query, COMMENT_ROW_MAPPER_WITH_CHILDREN);
+            else
+                return jdbcTemplate.query(query, COMMENT_ROW_MAPPER);
+        }
+    }
+
+    private Collection<Comment> findCommentsBy(String whereStatement, String orderByStatement, boolean withChildren) {
+        return findCommentsBy(whereStatement, orderByStatement, null, withChildren);
+    }
+
+    private Collection<Comment> findCommentsBy(String orderByStatement, boolean withChildren) {
+        return findCommentsBy(null, orderByStatement, null, withChildren);
+    }
+
+    private Collection<Comment> findCommentsBy(String whereStatement, Object[] args, boolean withChildren) {
+        return findCommentsBy(whereStatement, null, args, withChildren);
     }
 
     @Override
-    public Collection<Comment> findCommentsByPostId(long post_id){
-        return jdbcTemplate.query(
-                "WITH RECURSIVE comment_tree AS (" +
-                "        SELECT comment_id, parent_id, post_id, user_email, creation_date, body" +
-                "        FROM " + COMMENTS + " WHERE post_id = ?" +
-                "        UNION" +
-                "        SELECT " + COMMENTS + ".comment_id," +
-                "               comment_tree.parent_id," +
-                "               " + COMMENTS + ".post_id," +
-                "               " + COMMENTS + ".user_email," +
-                "               " + COMMENTS + ".creation_date," +
-                "               " + COMMENTS + ".body" +
-                "        FROM comment_tree, " + COMMENTS +
-                "        WHERE comment_tree.comment_id = " + COMMENTS + ".parent_id" +
-                "    ) " +
-                "SELECT comment_id, coalesce(max(parent_id), 0) parent_id, post_id, user_email, creation_date, body " +
-                "FROM comment_tree GROUP BY comment_id, post_id, user_email, creation_date, body " +
-                "ORDER BY parent_id", new Object[] { post_id }, COMMENT_ROW_MAPPER_WITH_CHILDREN);
+    public Optional<Comment> findCommentById(long id, boolean withChildren){
+        return findCommentsBy(
+                "WHERE " + COMMENTS + ".comment_id = ?", new Object[] { id }, withChildren)
+                .stream().findFirst();
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByPostId(long post_id, boolean withChildren){
+        return findCommentsBy(
+                "WHERE " + COMMENTS + ".post_id = ?", new Object[] { post_id }, withChildren);
     }
 }

@@ -7,7 +7,7 @@
     <p>${comment.body}</p>
 
     <div class="uk-margin-small-left">
-        <%--  Recursive Set  --%>
+        <%--  Recursive Call  --%>
         <c:set var="comments" value="${comment.children}" scope="request"/>
         <jsp:include page="commentTree.jsp" />
     </div>
