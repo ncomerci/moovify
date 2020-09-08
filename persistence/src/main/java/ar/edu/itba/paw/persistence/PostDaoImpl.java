@@ -138,6 +138,10 @@ public class PostDaoImpl implements PostDao {
         return posts;
     };
 
+    //Maps with every implementation for each criteria used in GET like queries
+    private Map<PostSearchCriteria.FilterCriteria, String> filterCriteriaImplementations;
+    private Map<PostSearchCriteria.SortCriteria, String> sortCriteriaImplementations;
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert postInsert;
     private final SimpleJdbcInsert postMoviesInsert;
@@ -180,6 +184,10 @@ public class PostDaoImpl implements PostDao {
                 "tag VARCHAR(30) NOT NULL," +
                 "PRIMARY KEY (post_id, tag)," +
                 "FOREIGN KEY (post_id) REFERENCES " + POSTS + " (post_id))");
+
+        //Load implementations for criterias
+        loadFilterCriteriaImplementation();
+        loadSortCriteriaImplementation();
     }
 
 
@@ -242,9 +250,20 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Collection<Post> findPostsByTitle(String title, boolean withMovies) {
-        return findPostsBy(
-                " WHERE " + POSTS + ".title ILIKE '%' || ? || '%' " +
-                        "ORDER BY " + POSTS + ".creation_date", new Object[] { title }, withMovies);
+
+        return findPosts(new PostSearchCriteria(
+                        title,
+                        PostSearchCriteria.SortCriteria.NEWEST,
+                        new PostSearchCriteria.FilterCriteria[]{
+                                PostSearchCriteria.FilterCriteria.BY_POST_TITLE,
+                        }),
+                        withMovies);
+
+//        return findPostsBy(
+//                " WHERE " + POSTS + ".title ILIKE '%' || ? || '%' " +
+//                        " OR " + POSTS + ".post_id IN (" +
+//                            " SELECT " + TAGS + ".post_id FROM " + TAGS + " WHERE " +  TAGS + ".tag ILIKE '%' || ? || '%'" +
+//                        ") ORDER BY " + POSTS + ".creation_date", new Object[] { title, title }, withMovies);
     }
 
     @Override
@@ -259,30 +278,160 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies) {
-        return findPostsBy(
-                " WHERE " + POSTS + ".post_id IN ( " +
-                        "SELECT " + POSTS + ".post_id " +
-                        "FROM " + POST_MOVIE +
-                        " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
-                        "WHERE " + POSTS + ".title ILIKE '%' || ? || '%') " +
-                        "ORDER BY " + POSTS + ".creation_date", new Object[] { movie_title }, withMovies);
+
+        return findPosts(new PostSearchCriteria(
+                movie_title,
+                PostSearchCriteria.SortCriteria.NEWEST,
+                new PostSearchCriteria.FilterCriteria[]{
+                        PostSearchCriteria.FilterCriteria.BY_MOVIE_TITLE
+                }),
+                withMovies);
+
+//        return findPostsBy(
+//                " WHERE " + POSTS + ".post_id IN ( " +
+//                        "SELECT " + POSTS + ".post_id " +
+//                        "FROM " + POST_MOVIE +
+//                        " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
+//                        "WHERE " + POSTS + ".title ILIKE '%' || ? || '%') " +
+//                        "ORDER BY " + POSTS + ".creation_date", new Object[] { movie_title }, withMovies);
     }
 
     @Override
     public Collection<Post> getAllPosts(boolean withMovies) {
-        return findPostsBy(" ORDER BY " + POSTS + ".creation_date", withMovies);
+
+        return findPosts(new PostSearchCriteria(
+                PostSearchCriteria.SortCriteria.NEWEST,
+                new PostSearchCriteria.FilterCriteria[]{}),
+                withMovies);
+
+//        return findPostsBy(" ORDER BY " + POSTS + ".creation_date", withMovies);
     }
 
     @Override
     public Collection<Post> findPostsByPostAndMovieTitle(String title, boolean withMovies) {
-        return findPostsBy(
-                " WHERE " + POSTS + ".title ILIKE '%' || ? || '%'" +
-                "OR " + POSTS + ".post_id in ( " +
-                "SELECT " + POST_MOVIE + ".post_id " +
-                "FROM " + POST_MOVIE +
-                " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
-                "WHERE " + MOVIES + ".title ILIKE '%' || ? || '%') " +
-                "ORDER BY " + POSTS + ".creation_date", new Object[] {title, title}, withMovies);
+
+
+        return findPosts(new PostSearchCriteria(
+                title,
+                PostSearchCriteria.SortCriteria.NEWEST,
+                new PostSearchCriteria.FilterCriteria[]{
+                    PostSearchCriteria.FilterCriteria.BY_POST_TITLE,
+                    PostSearchCriteria.FilterCriteria.BY_MOVIE_TITLE
+                }),
+                withMovies);
+
+//        return findPostsBy(
+//                " WHERE " + POSTS + ".title ILIKE '%' || ? || '%'" +
+//                "OR " + POSTS + ".post_id in ( " +
+//                "SELECT " + POST_MOVIE + ".post_id " +
+//                "FROM " + POST_MOVIE +
+//                " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
+//                "WHERE " + MOVIES + ".title ILIKE '%' || ? || '%') " +
+//                "ORDER BY " + POSTS + ".creation_date", new Object[] {title, title}, withMovies);
     }
 
+    private Collection<Post> findPosts(PostSearchCriteria criteria, boolean withMovies) {
+
+        StringBuilder sqlQuery = new StringBuilder();
+        List<Object> placeHolders = new ArrayList<>();
+
+        if(criteria.getFilterCriteria().length != 0){
+            sqlQuery.append(" WHERE ");
+            for( PostSearchCriteria.FilterCriteria filterCriteria : criteria.getFilterCriteria()){
+                if(filterCriteriaImplementations.containsKey(filterCriteria)){
+                    sqlQuery.append(filterCriteriaImplementations.get(filterCriteria));
+                    sqlQuery.append("OR");
+                    placeHolders.add(criteria.getQuery());
+                }
+            }
+            //Delete the last OR
+            sqlQuery.delete(sqlQuery.length() - 2, sqlQuery.length());
+        }
+
+        // SortCriteria is always included else, an if statement would be necessary.
+        sqlQuery.append(" ORDER BY ");
+        if(sortCriteriaImplementations.containsKey(criteria.getSortCriteria()))
+            sqlQuery.append(sortCriteriaImplementations.get(criteria.getSortCriteria()));
+
+
+        // TODO se puede mejorar el manejo de placeholder vacio
+        if(placeHolders.size() == 0)
+            return findPostsBy(sqlQuery.toString(), withMovies);
+
+        return findPostsBy(sqlQuery.toString(), placeHolders.toArray(), withMovies);
+    }
+
+    private void loadFilterCriteriaImplementation(){
+        filterCriteriaImplementations = new HashMap<>();
+        filterCriteriaImplementations.put(PostSearchCriteria.FilterCriteria.BY_POST_TITLE,
+                " " + POSTS + ".title ILIKE '%' || ? || '%' ");
+        filterCriteriaImplementations.put(PostSearchCriteria.FilterCriteria.BY_TAGS,
+                " " + POSTS + ".post_id IN (" +
+                " SELECT " + TAGS + ".post_id FROM " + TAGS +
+                " WHERE " +  TAGS + ".tag ILIKE '%' || ? || '%' ) ");
+        filterCriteriaImplementations.put(PostSearchCriteria.FilterCriteria.BY_MOVIE_TITLE,
+                " " + POSTS + ".post_id IN ( " +
+                "SELECT " + POST_MOVIE + ".post_id " +
+                " FROM " + POST_MOVIE +
+                " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
+                " WHERE " + MOVIES + ".title ILIKE '%' || ? || '%') ");
+    }
+
+    private void loadSortCriteriaImplementation(){
+        sortCriteriaImplementations = new HashMap<>();
+        sortCriteriaImplementations.put(PostSearchCriteria.SortCriteria.NEWEST, " " + POSTS + ".creation_date desc");
+        sortCriteriaImplementations.put(PostSearchCriteria.SortCriteria.OLDEST, " " + POSTS + ".creation_date");
+    }
+
+    //TODO por que me pidio statico? La clase interna se podria modelarla con un builder¿?
+    static class PostSearchCriteria{
+
+        String query;
+        SortCriteria sortCriteria;
+        FilterCriteria[] filterCriteria;
+
+        public PostSearchCriteria(String query, SortCriteria sortCriteria, FilterCriteria[] filterCriteria) {
+            this.query = query;
+            this.sortCriteria = sortCriteria;
+            this.filterCriteria = filterCriteria;
+        }
+
+        public PostSearchCriteria(SortCriteria sortCriteria, FilterCriteria[] filterCriteria) {
+            this.query = ""; // TODO determinar el valor default cuando no se usa una query
+            this.sortCriteria = sortCriteria;
+            this.filterCriteria = filterCriteria;
+        }
+
+        public String getQuery() {
+            return query;
+        }
+
+        public SortCriteria getSortCriteria() {
+            return sortCriteria;
+        }
+
+        public FilterCriteria[] getFilterCriteria() {
+            return filterCriteria;
+        }
+
+        public enum SortCriteria {
+            NEWEST(),
+            //MOST_LIKED(),
+            OLDEST(),
+            //MOST_COMMENTS(),
+        }
+
+        public enum FilterCriteria {
+            BY_POST_TITLE(1),
+            BY_TAGS(2),
+            BY_MOVIE_TITLE(4);
+
+            long id;
+
+
+            FilterCriteria(long id) {
+                this.id = id;
+            }
+        }
+    }
 }
