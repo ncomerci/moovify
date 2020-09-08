@@ -210,29 +210,6 @@ public class PostDaoImpl implements PostDao {
         tagsInsert = new SimpleJdbcInsert(ds)
                 .withTableName(TAGS);
 
-//        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + POSTS + " (" +
-//                "post_id SERIAL PRIMARY KEY," +
-//                "creation_date TIMESTAMP NOT NULL," +
-//                "title VARCHAR(50) NOT NULL," +
-//                "email VARCHAR(40) NOT NULL," +
-//                "word_count INTEGER," +
-//                "body VARCHAR )"
-//        );
-//
-//        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + POST_MOVIE + " (" +
-//                "post_id integer," +
-//                "movie_id integer," +
-//                "PRIMARY KEY (post_id, movie_id)," +
-//                "FOREIGN KEY (post_id) REFERENCES " + POSTS + " (post_id)," +
-//                "FOREIGN KEY (movie_id) REFERENCES " + MOVIES + " (movie_id))"
-//        );
-//
-//        jdbcTemplate.execute( "CREATE TABLE IF NOT EXISTS " + TAGS + " (" +
-//                "post_id integer," +
-//                "tag VARCHAR(30) NOT NULL," +
-//                "PRIMARY KEY (post_id, tag)," +
-//                "FOREIGN KEY (post_id) REFERENCES " + POSTS + " (post_id))");
-
         //Load implementations for criterias
         loadFilterCriteriaImplementation();
         loadSortCriteriaImplementation();

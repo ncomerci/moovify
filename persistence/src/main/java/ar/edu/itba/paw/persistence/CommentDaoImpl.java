@@ -105,17 +105,6 @@ public class CommentDaoImpl implements CommentDao {
         commentInsert = new SimpleJdbcInsert(ds)
                 .withTableName(COMMENTS)
                 .usingGeneratedKeyColumns("comment_id");
-
-//        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + COMMENTS + " (" +
-//                "comment_id SERIAL PRIMARY KEY," +
-//                "parent_id INT," +
-//                "post_id INT NOT NULL," +
-//                "user_email VARCHAR(320) NOT NULL," +
-//                "creation_date TIMESTAMP NOT NULL," +
-//                "body VARCHAR NOT NULL," +
-//                "FOREIGN KEY (parent_id) REFERENCES " + COMMENTS + " (comment_id)," +
-//                "FOREIGN KEY (post_id) REFERENCES " + POSTS + " (post_id) )"
-//        );
     }
 
     @Override
