@@ -51,4 +51,8 @@ public class Comment {
     public String getUserEmail() {
         return userEmail;
     }
+
+    public int getDescendantCount() {
+        return children.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount() + 1, Integer::sum);
+    }
 }
