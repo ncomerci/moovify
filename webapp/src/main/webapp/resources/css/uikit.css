@@ -5257,7 +5257,7 @@ ul.uk-nav-sub {
  * Nav items
  */
 /*Change*/
-.uk-navbar-nav > li > a {
+.uk-navbar-nav > li > a, p {
   /*color: #999;*/
   color: #f2a365;
   font-weight: 500;
