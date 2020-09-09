@@ -43,6 +43,8 @@ public class PostDaoImpl implements PostDao {
     *
     *   - In BASE_POST_ROW_MAPPER a post_id to Post Map must be maintained for others to use.
     *
+    *   - The use of LinkedHashSet, LinkedHashMap and List collections is of importance to maintain query order.
+    *
     * - TAGS:
     *   - In BASE_POST_ROW_MAPPER, the tags Collection must be a Set to guaranty uniqueness.
     *
@@ -104,7 +106,7 @@ public class PostDaoImpl implements PostDao {
                             post_id, rs.getObject("p_creation_date", LocalDateTime.class),
                             rs.getString("p_title"), rs.getString("p_body"),
                             rs.getInt("p_word_count"), rs.getString("p_email"),
-                            new HashSet<>(), new HashSet<>(), new ArrayList<>()
+                            new LinkedHashSet<>(), new LinkedHashSet<>(), new ArrayList<>()
                     )
             );
         }
@@ -326,7 +328,8 @@ public class PostDaoImpl implements PostDao {
         // Option 2 (current approach)
 
         return (rs) -> {
-            final Map<Long, Post> idToPostMap = new HashMap<>();
+            // Important use of LinkedHashMap to maintain Post insertion order
+            final Map<Long, Post> idToPostMap = new LinkedHashMap<>();
             final Map<Long, Movie> idToMovieMap = new HashMap<>();
             final Map<Long, Comment> idToCommentMap = new HashMap<>();
             final Map<Long, Collection<Comment>> childrenWithoutParentMap = new HashMap<>();
