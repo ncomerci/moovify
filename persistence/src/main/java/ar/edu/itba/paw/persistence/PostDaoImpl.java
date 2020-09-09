@@ -445,8 +445,13 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Collection<Post> getAllPosts(boolean withMovies, boolean withComments) {
+    public Collection<Post> getAllPostsOrderByNewest(boolean withMovies, boolean withComments) {
         return findPostsBy(SortCriteria.NEWEST.query, withMovies, withComments);
+    }
+
+    @Override
+    public Collection<Post> getAllPostsOrderByOldest(boolean withMovies, boolean withComments) {
+        return findPostsBy(SortCriteria.OLDEST.query, withMovies, withComments);
     }
 
     @Override

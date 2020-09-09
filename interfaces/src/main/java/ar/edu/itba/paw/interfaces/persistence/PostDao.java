@@ -12,6 +12,10 @@ public interface PostDao {
 
     Optional<Post> findPostById(long id, boolean withMovies, boolean withComments);
 
+    Collection<Post> getAllPostsOrderByNewest(boolean withMovies, boolean withComments);
+
+    Collection<Post> getAllPostsOrderByOldest(boolean withMovies, boolean withComments);
+
     Collection<Post> findPostsByTitleOrderByNewest(String title, boolean withMovies, boolean withComments);
 
     Collection<Post> findPostsByTitleOrderByOldest(String title, boolean withMovies, boolean withComments);
@@ -43,8 +47,6 @@ public interface PostDao {
     Collection<Post> findPostsByMovieId(long id, boolean withMovies, boolean withComments);
 
     Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies, boolean withComments);
-
-    Collection<Post> getAllPosts(boolean withMovies, boolean withComments);
 
     Collection<Post> findPostsByPostAndMovieTitle(String title, boolean withMovies, boolean withComments);
 }

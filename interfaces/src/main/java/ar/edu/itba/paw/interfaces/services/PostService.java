@@ -14,5 +14,7 @@ public interface PostService {
 
     Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies, boolean withComments);
 
-    Collection<Post> getAllPosts(boolean withMovies, boolean withComments);
+    Collection<Post> getAllPostsOrderByNewest(boolean withMovies, boolean withComments);
+
+    Collection<Post> getAllPostsOrderByOldest(boolean withMovies, boolean withComments);
 }

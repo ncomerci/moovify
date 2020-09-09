@@ -34,7 +34,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Collection<Post> getAllPosts(boolean withMovies, boolean withComments) {
-        return postDao.getAllPosts(withMovies, withComments);
+    public Collection<Post> getAllPostsOrderByNewest(boolean withMovies, boolean withComments) {
+        return postDao.getAllPostsOrderByNewest(withMovies, withComments);
+    }
+
+    @Override
+    public Collection<Post> getAllPostsOrderByOldest(boolean withMovies, boolean withComments) {
+        return postDao.getAllPostsOrderByOldest(withMovies, withComments);
     }
 }
