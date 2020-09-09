@@ -4,7 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @FunctionalInterface
-public interface ResultSetConsumer<T> {
+public interface ResultSetMonoConsumer<T> {
 
     /*
     *   Functional Interface to Operate based on a ResultSet.
