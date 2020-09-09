@@ -16,7 +16,8 @@
     <div class="uk-margin-auto">
         <button class="uk-button uk-button-primary uk-border-rounded uk-margin-auto uk-align-center"
                 type="button"
-                onclick="goBack()">
+                onclick="goBack()"
+        >
             Go back
         </button>
     </div>

@@ -2040,7 +2040,7 @@ select.uk-form-width-xsmall {
 /* OnClick + Active */
 .uk-button-primary:active,
 .uk-button-primary.uk-active {
-  background-color: #0e6dcd;
+  background-color: #fa8a32;
   color: #fff;
 }
 /*

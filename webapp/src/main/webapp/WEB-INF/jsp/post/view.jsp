@@ -48,8 +48,13 @@
         </div>
     </article>
     <hr>
-<%--    <c:set var="comments" value="${post.comments}" scope="request" />--%>
-<%--    <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp" />--%>
+    <div class="uk-container uk-container-small">
+        <h2>Comments (${post.totalCommentCount})</h2>
+
+        <c:set var="comments" value="${post.comments}" scope="request" />
+        <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp" />
+    </div>
 
 </body>
 </html>
+
