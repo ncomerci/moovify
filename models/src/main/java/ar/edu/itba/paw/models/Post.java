@@ -70,6 +70,10 @@ public class Post {
         return comments;
     }
 
+    public int getTotalCommentCount() {
+        return comments.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount() + 1, Integer::sum);
+    }
+
     public int getReadingTimeMinutes() {
         return getWordCount() / EN_WORDS_PER_MINUTE;
     }
