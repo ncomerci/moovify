@@ -35,7 +35,7 @@ public class PostDaoImpl implements PostDao {
     * the BASE_POST static variables (the one Model linked with this Dao). That way, any other
     * can be made optional (currently the case of MOVIES and COMMENTS).
     *
-    * Additional requirements of each segment is made explicit below:
+    * Additional requirements of each segment are made explicit below:
     *
     * - ALL:
     *   - All segments must abide to the aliases defined in BASE_POST_SELECT to access Post properties.

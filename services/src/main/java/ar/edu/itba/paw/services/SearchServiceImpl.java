@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -20,6 +21,14 @@ public class SearchServiceImpl implements SearchService {
 
         public final int id;
         public final String name;
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
 
         SortCriteria(int id, String name) {
             this.id = id;
@@ -44,6 +53,14 @@ public class SearchServiceImpl implements SearchService {
 
         public final int id;
         public final String name;
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
 
         FilterCriteria(int id, String name) {
             this.id = id;
@@ -97,14 +114,14 @@ public class SearchServiceImpl implements SearchService {
 
     public Optional<Collection<Post>> findPostsBy(String query, Collection<String> filterCriteria, String sortCriteria, boolean withMovies, boolean withComments){
         SortCriteria sort = SortCriteria.getSortByName(sortCriteria.toLowerCase());
-        Stream<FilterCriteria> filterStream = filterCriteria.stream().map(fc -> FilterCriteria.getFilterByName(fc.toUpperCase()));
+        Collection<FilterCriteria> filterCollection = filterCriteria.stream().map(fc -> FilterCriteria.getFilterByName(fc.toLowerCase())).collect(Collectors.toList());
 
-        if(filterStream.anyMatch(Objects::isNull) || sort == null)
+        if(filterCollection.contains(null) || sort == null)
             return Optional.empty();
 
         return Optional.of(
                 findMethodsMap.get(sort.id)
-                .get(filterStream.map(f -> f.id).reduce(0, Integer::sum))
+                .get(filterCollection.stream().map(FilterCriteria::getId).reduce(0, Integer::sum))
                 .find(query, withMovies, withComments)
         );
     }
