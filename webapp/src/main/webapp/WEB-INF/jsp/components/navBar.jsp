@@ -10,7 +10,7 @@
                         <div class="uk-drop" data-uk-drop="mode: click; pos: right-center; offset: 0; boundary: #navbar">
                             <form action="<c:url value="/search" />" class="uk-search uk-search-navbar uk-width-1-1">
                                 <label for="nav-search"></label>
-                                <input id="nav-search" name="searchParam" class="uk-search-input" type="search" placeholder="Search..." >
+                                <input id="nav-search" name="query" class="uk-search-input" type="search" placeholder="Search..." >
                             </form>
                         </div>
                 </li>

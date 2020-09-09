@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Collection;
+
 
 @Controller
 public class SearchController {
@@ -16,14 +18,15 @@ public class SearchController {
     private SearchService searchService;
 
     @RequestMapping( path ="/search", method = RequestMethod.GET)
-    public ModelAndView searchPosts(@RequestParam() final String searchParam){
+    public ModelAndView searchPosts(@RequestParam() final String query, @RequestParam(value = "filter_criteria[]", defaultValue = "by_post_title") Collection<String> filterCriteria, @RequestParam(defaultValue = "newest") final String sortCriteria ){
 
         final ModelAndView mv = new ModelAndView( "search/posts/view");
-        mv.addObject("posts", searchService.findPostsByPostAndMovieTitle(searchParam, false, false));
+
+        mv.addObject("posts", searchService.findPostsBy(query, filterCriteria, sortCriteria, false, false));
         return mv;
     }
 
-    @RequestMapping( path ="/searchposttitle", method = RequestMethod.GET)
+   /* @RequestMapping( path ="/searchposttitle", method = RequestMethod.GET)
     public ModelAndView searchPostByTitle(@RequestParam() final String title){
 
         final ModelAndView mv = new ModelAndView( "search/posts/view");
@@ -46,5 +49,5 @@ public class SearchController {
         mv.addObject("posts", searchService.findPostsByMovieTitle(movie_title, false, false));
         mv.addObject("query",movie_title);
         return mv;
-    }
+    }*/
 }

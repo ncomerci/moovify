@@ -355,21 +355,73 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Collection<Post> findPostsByTitle(String title, boolean withMovies, boolean withComments) {
+    public Collection<Post> findPostsByTitleOrderByNewest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
 
-        return findPosts(new PostSearchCriteria(
-                        title,
-                        PostSearchCriteria.SortCriteria.NEWEST,
-                        new PostSearchCriteria.FilterCriteria[]{
-                                PostSearchCriteria.FilterCriteria.BY_POST_TITLE,
-                        }),
-                        withMovies, withComments);
+    @Override
+    public Collection<Post> findPostsByTitleOrderByOldest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
 
-//        return findPostsBy(
-//                " WHERE " + POSTS + ".title ILIKE '%' || ? || '%' " +
-//                        " OR " + POSTS + ".post_id IN (" +
-//                            " SELECT " + TAGS + ".post_id FROM " + TAGS + " WHERE " +  TAGS + ".tag ILIKE '%' || ? || '%'" +
-//                        ") ORDER BY " + POSTS + ".creation_date", new Object[] { title, title }, withMovies);
+    @Override
+    public Collection<Post> findPostsByMoviesOrderByNewest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByMoviesOrderByOldest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByTagsOrderByNewest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByTagsOrderByOldest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByTitleAndMoviesOrderByNewest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByTitleAndMoviesOrderByOldest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByTitleAndTagsOrderByNewest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByTitleAndTagsOrderByOldest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByTagsAndMoviesOrderByNewest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByTagsAndMoviesOrderByOldest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByTitleAndTagsAndMoviesOrderByNewest(String title, boolean withMovies, boolean withComments) {
+        return null;
+    }
+
+    @Override
+    public Collection<Post> findPostsByTitleAndTagsAndMoviesOrderByOldest(String title, boolean withMovies, boolean withComments) {
+        return null;
     }
 
     @Override

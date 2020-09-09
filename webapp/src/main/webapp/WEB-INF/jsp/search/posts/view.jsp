@@ -21,44 +21,38 @@
     </div>
     <hr>
     <div uk-grid>
+
         <div class="uk-width-1-5">
-            <div>
-                <h2>Searching for</h2>
-                <ul>
-                    <li>Post Title</li>
-                    <li>Movie Title</li>
-                    <li>Tags</li>
-                </ul>
-            </div>
-            <div>
-                <h2>Filter by</h2>
-                <div class="uk-inline">
-                    <button class="uk-button uk-button-default" type="button">Newest<span class="uk-padding-small uk-padding-remove-vertical" uk-icon="icon:  triangle-down"></span></button>
-                    <div uk-dropdown="pos: bottom-justify; mode: click">
-                        <ul class="uk-nav uk-dropdown-nav">
-                            <li class="uk-active"><a href="#">Newest</a></li>
-                            <li><a href="#">Hottest</a></li>
-                            <li><a href="#">More comments</a></li>
-                        </ul>
+            <jsp:include page="/WEB-INF/jsp/search/posts/form.jsp" />
+                <%--<div>
+                    <h2>Filter by</h2>
+                    <div class="uk-inline">
+                        <button class="uk-button uk-button-default" type="button">Newest<span class="uk-padding-small uk-padding-remove-vertical" uk-icon="icon:  triangle-down"></span></button>
+                        <div uk-dropdown="pos: bottom-justify; mode: click">
+                            <ul class="uk-nav uk-dropdown-nav">
+                                <li class="uk-active"><a href="#">Newest</a></li>
+                                <li><a href="#">Hottest</a></li>
+                                <li><a href="#">More comments</a></li>
+                            </ul>
+                        </div>
                     </div>
+                </div>--%>
+                <div>
+                    <h2>Result's type</h2>
+                    <ul class="uk-subnav uk-subnav-pill" uk-switcher>
+                        <li><a href="#">Movies</a></li>
+                        <li class="uk-active"><a href="#">Posts</a></li>
+                    </ul>
                 </div>
-            </div>
-            <div>
-                <h2>Result's type</h2>
-                <ul class="uk-subnav uk-subnav-pill" uk-switcher>
-                    <li><a href="#">Movies</a></li>
-                    <li class="uk-active"><a href="#">Posts</a></li>
-                </ul>
-            </div>
-            <div>
-                <h2>Categories</h2>
-                <ul class="uk-list uk-list-hyphen">
-                    <li><a class="uk-text-normal" href="<c:url value="#"/>">News</a></li>
-                    <li><a class="uk-text-normal" href="<c:url value="#"/>">Debate</a></li>
-                    <li><a class="uk-text-normal" href="<c:url value="#"/>">Watch-list</a></li>
-                    <li><a class="uk-text-normal" href="<c:url value="#"/>">Question</a></li>
-                </ul>
-            </div>
+                <div>
+                    <h2>Categories</h2>
+                    <ul class="uk-list uk-list-hyphen">
+                        <li><a class="uk-text-light" href="<c:url value="#"/>">News</a></li>
+                        <li><a class="uk-text-light" href="<c:url value="#"/>">Debate</a></li>
+                        <li><a class="uk-text-light" href="<c:url value="#"/>">Watch-list</a></li>
+                        <li><a class="uk-text-light" href="<c:url value="#"/>">Question</a></li>
+                    </ul>
+                </div>
         </div>
         <div class="uk-width-expand">
 

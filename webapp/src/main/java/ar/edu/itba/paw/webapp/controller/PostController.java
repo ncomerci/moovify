@@ -48,7 +48,7 @@ public class PostController {
 
         return mv;
     }
-
+    // TODO unificar tags y movies, uno es collection y el otro es set
     @RequestMapping(path = "/post/create" , method = RequestMethod.POST)
     public ModelAndView create(@RequestParam final String title, @RequestParam final String email,
                                @RequestParam final String body, @RequestParam(value = "tags[]" , required = false) Collection<String> tags, @RequestParam(value = "movies[]", required = false) Set<Long> movies){

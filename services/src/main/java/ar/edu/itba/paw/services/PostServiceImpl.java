@@ -29,21 +29,6 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Collection<Post> findPostsByPostAndMovieTitle(String searchParam, boolean withMovies, boolean withComments) {
-        return postDao.findPostsByPostAndMovieTitle(searchParam, withMovies, withComments);
-    }
-
-    @Override
-    public Collection<Post> findPostsByTitle(String title, boolean withMovies, boolean withComments) {
-        return postDao.findPostsByTitle(title, withMovies, withComments);
-    }
-
-    @Override
-    public Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies, boolean withComments) {
-        return postDao.findPostsByMovieTitle(movie_title, withMovies, withComments);
-    }
-
-    @Override
     public Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies, boolean withComments) {
         return postDao.findPostsByMovieId(movie_id, withMovies, withComments);
     }
