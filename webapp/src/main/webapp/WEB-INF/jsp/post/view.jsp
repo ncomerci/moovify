@@ -15,7 +15,7 @@
     <article class="uk-article">
         <div class="uk-container uk-container-small">
             <div>
-                <h2 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-remove-top"><c:out value="${post.title}"/></h2>
+                <h2 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-medium-top"><c:out value="${post.title}"/></h2>
                 <h3 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-remove-top">
                     <c:forEach items="${post.tags}" var="tag" >
                     <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">
