@@ -2,8 +2,8 @@ CREATE TABLE IF NOT EXISTS POSTS
 (
     post_id       SERIAL PRIMARY KEY,
     creation_date TIMESTAMP   NOT NULL,
-    title         VARCHAR(50) NOT NULL,
-    email         VARCHAR(40) NOT NULL,
+    title         VARCHAR(200) NOT NULL,
+    email         VARCHAR(200) NOT NULL,
     word_count    INTEGER,
     body          VARCHAR
 );
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS POSTS
 CREATE TABLE IF NOT EXISTS TAGS
 (
     post_id integer,
-    tag     VARCHAR(30) NOT NULL,
+    tag     VARCHAR(50) NOT NULL,
     PRIMARY KEY (post_id, tag),
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id)
 );
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS MOVIES
     movie_id      SERIAL PRIMARY KEY,
     creation_date TIMESTAMP   NOT NULL,
     premier_date  DATE        NOT NULL,
-    title         VARCHAR(50) NOT NULL
+    title         VARCHAR(200) NOT NULL
 );
 
 

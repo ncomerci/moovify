@@ -37,22 +37,22 @@
                         </div>
                     </div>
                 </div>--%>
-                <div>
-                    <h2>Result's type</h2>
-                    <ul class="uk-subnav uk-subnav-pill" uk-switcher>
-                        <li><a href="#">Movies</a></li>
-                        <li class="uk-active"><a href="#">Posts</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h2>Categories</h2>
-                    <ul class="uk-list uk-list-hyphen">
-                        <li><a class="uk-text-light" href="<c:url value="#"/>">News</a></li>
-                        <li><a class="uk-text-light" href="<c:url value="#"/>">Debate</a></li>
-                        <li><a class="uk-text-light" href="<c:url value="#"/>">Watch-list</a></li>
-                        <li><a class="uk-text-light" href="<c:url value="#"/>">Question</a></li>
-                    </ul>
-                </div>
+<%--                <div>--%>
+<%--                    <h2>Result's type</h2>--%>
+<%--                    <ul class="uk-subnav uk-subnav-pill" uk-switcher>--%>
+<%--                        <li><a href="#">Movies</a></li>--%>
+<%--                        <li class="uk-active"><a href="#">Posts</a></li>--%>
+<%--                    </ul>--%>
+<%--                </div>--%>
+<%--                <div>--%>
+<%--                    <h2>Categories</h2>--%>
+<%--                    <ul class="uk-list uk-list-hyphen">--%>
+<%--                        <li><a class="uk-text-light" href="<c:url value="#"/>">News</a></li>--%>
+<%--                        <li><a class="uk-text-light" href="<c:url value="#"/>">Debate</a></li>--%>
+<%--                        <li><a class="uk-text-light" href="<c:url value="#"/>">Watch-list</a></li>--%>
+<%--                        <li><a class="uk-text-light" href="<c:url value="#"/>">Question</a></li>--%>
+<%--                    </ul>--%>
+<%--                </div>--%>
         </div>
         <div class="uk-width-expand">
 

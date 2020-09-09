@@ -15,7 +15,7 @@
                         </form>
                     </div>
                 </li>
-<%--                <li class="nav-item"><a class="uk-light" href="<c:url value="/" />">Home</a></li>--%>
+<%--                <li class="nav-item"><a class="uk-light" href="<c:url value="/" />">Home</a></li>  --%>
                 <li class="uk-navbar-item"><a href="<c:url value="/post/create" />">Create Post</a></li>
             </ul>
 
