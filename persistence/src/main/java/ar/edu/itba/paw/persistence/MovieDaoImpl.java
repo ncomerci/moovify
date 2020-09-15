@@ -41,6 +41,8 @@ public class MovieDaoImpl implements MovieDao {
 
     @Override
     public Movie register(String title, LocalDate premierDate) {
+        Objects.requireNonNull(title);
+        Objects.requireNonNull(premierDate);
 
         LocalDateTime creationDate = LocalDateTime.now();
 

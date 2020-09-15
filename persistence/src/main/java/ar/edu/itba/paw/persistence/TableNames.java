@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
-enum TableNames {
+public enum TableNames {
     //TODO: preguntar si es una buena forma de generalizar el nombre de la tabla
     POSTS("posts"),
     MOVIES("movies"),
@@ -15,6 +15,11 @@ enum TableNames {
     }
 
     public String getTableName() {
+        return tableName;
+    }
+
+    @Override
+    public String toString() {
         return tableName;
     }
 }

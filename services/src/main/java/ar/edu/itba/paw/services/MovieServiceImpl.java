@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -36,5 +37,4 @@ public class MovieServiceImpl implements MovieService {
     public Collection<Movie> findMoviesByPostId(long postId) {
         return movieDao.findMoviesByPostId(postId);
     }
-
 }

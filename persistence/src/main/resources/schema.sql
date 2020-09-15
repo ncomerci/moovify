@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS POSTS
     title         VARCHAR(200) NOT NULL,
     email         VARCHAR(200) NOT NULL,
     word_count    INTEGER,
-    body          VARCHAR
+    body          TEXT
 );
 
 
@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS MOVIES
     movie_id      SERIAL PRIMARY KEY,
     creation_date TIMESTAMP   NOT NULL,
     premier_date  DATE        NOT NULL,
-    title         VARCHAR(200) NOT NULL
+    title         VARCHAR(200) NOT NULL,
+
+    UNIQUE (title, premier_date)
 );
 
 
@@ -45,7 +47,7 @@ CREATE TABLE IF NOT EXISTS COMMENTS
     post_id       INT          NOT NULL,
     user_email    VARCHAR(320) NOT NULL,
     creation_date TIMESTAMP    NOT NULL,
-    body          VARCHAR      NOT NULL,
+    body          TEXT      NOT NULL,
     FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id),
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id)
 );
