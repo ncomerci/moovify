@@ -17,7 +17,7 @@
             <section id="newest-posts">
                 <h1 class="uk-heading-small">Newest posts</h1>
                 <dl class="uk-description-list ">
-                    <c:forEach items="${posts}" var="post">
+                    <c:forEach items="${newestPosts}" var="post">
                         <dt>
                             <a href="<c:url value="/post/${post.id}"/>">
                                 <c:out value="${post.title}"/>
@@ -32,9 +32,9 @@
                 </dl>
             </section>
             <section id="hottest-posts">
-                <h1 class="uk-heading-small">Hottest posts</h1>
+                <h1 class="uk-heading-small">Oldest posts</h1>
                 <dl class="uk-description-list ">
-                    <c:forEach items="${posts}" var="post">
+                    <c:forEach items="${oldestPosts}" var="post">
                         <dt>
                             <a href="<c:url value="/post/${post.id}"/>">
                                 <c:out value="${post.title}"/>

@@ -24,12 +24,12 @@ public class MovieController {
     @Autowired
     private PostService postService;
 
-    @RequestMapping( path = "/movie/create",  method = RequestMethod.GET)
+    @RequestMapping(path = "/movie/create",  method = RequestMethod.GET)
     public ModelAndView create(){
         return new ModelAndView("movie/create");
     }
 
-    @RequestMapping( path = "/movie/register", method = RequestMethod.POST)
+    @RequestMapping(path = "/movie/register", method = RequestMethod.POST)
     public ModelAndView register(@RequestParam final String title, @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") final LocalDate premierDate){
         final Movie movie = movieService.register(title, premierDate);
         return new ModelAndView("redirect:/movie/" + movie.getId());
@@ -40,7 +40,7 @@ public class MovieController {
 
         final ModelAndView mv = new ModelAndView("movie/view");
         mv.addObject("movie", movieService.findById(id).orElseThrow(MovieNotFoundException::new));
-        mv.addObject("posts", postService.findPostsByMovieId(id, false));
+        mv.addObject("posts", postService.findPostsByMovieId(id, false, false));
         return mv;
     }
 }

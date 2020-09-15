@@ -3,3 +3,15 @@
     height: 60px;
     margin: 10px;
 }
+
+#submit-navbar-search-button::before {
+    transition: none;
+}
+
+#submit-navbar-search-button{
+    color: #fa8a32;
+}
+
+#nav-search {
+    max-width: 70%;
+}

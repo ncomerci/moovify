@@ -37,13 +37,6 @@ public class MovieDaoImpl implements MovieDao {
         jdbcInsert = new SimpleJdbcInsert(ds)
                 .withTableName(MOVIES)
                 .usingGeneratedKeyColumns("movie_id");
-
-        jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS " + MOVIES + " (" +
-                "movie_id SERIAL PRIMARY KEY," +
-                "creation_date TIMESTAMP NOT NULL," +
-                "premier_date DATE NOT NULL," +
-                "title VARCHAR(50) NOT NULL )"
-        );
     }
 
     @Override

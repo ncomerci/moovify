@@ -11,8 +11,9 @@ public class Post {
     private final String body;
     private final int wordCount;
     private final String email;
+    private final Collection<String> tags;
     private final Collection<Movie> movies;
-    private Collection<Comment> comments;
+    private final Collection<Comment> comments;
 
     /*
     * Average of words per minute read.
@@ -21,13 +22,14 @@ public class Post {
     */
     private static final int EN_WORDS_PER_MINUTE = 238;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email, Collection<Movie> movies, Collection<Comment> comments) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email, Collection<String> tags, Collection<Movie> movies, Collection<Comment> comments) {
         this.id = id;
         this.creationDate = creationDate;
         this.title = title;
         this.body = body;
         this.wordCount = wordCount;
         this.email = email;
+        this.tags = tags;
         this.movies = movies;
         this.comments = comments;
     }
@@ -56,6 +58,10 @@ public class Post {
         return email;
     }
 
+    public Collection<String> getTags() {
+        return tags;
+    }
+
     public Collection<Movie> getMovies() {
         return movies;
     }
@@ -64,8 +70,8 @@ public class Post {
         return comments;
     }
 
-    public void setComments(Collection<Comment> comments) {
-        this.comments = comments;
+    public int getTotalCommentCount() {
+        return comments.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount() + 1, Integer::sum);
     }
 
     public int getReadingTimeMinutes() {

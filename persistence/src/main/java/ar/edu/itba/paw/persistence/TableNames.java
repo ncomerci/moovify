@@ -5,6 +5,7 @@ enum TableNames {
     POSTS("posts"),
     MOVIES("movies"),
     POST_MOVIE("post_movie"),
+    TAGS("tags"),
     COMMENTS("comments");
 
     private final String tableName;

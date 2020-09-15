@@ -15,8 +15,13 @@
     <article class="uk-article">
         <div class="uk-container uk-container-small">
             <div>
-                <h2 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-remove-top"><c:out value="${post.title}"/></h2>
-
+                <h2 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-medium-top"><c:out value="${post.title}"/></h2>
+                <h3 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-remove-top">
+                    <c:forEach items="${post.tags}" var="tag" >
+                    <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">
+                        <c:out value="${tag}"/>
+                    </a>
+                </c:forEach></h3>
                 <p class="uk-article-meta"> Written on
 <%--                TODO: Is there a better way to handle LocalDateTime formatting?    --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
@@ -34,7 +39,7 @@
             </div>
             <div class="uk-width-3-4">
                 <c:forEach items="${post.movies}" var="movie" >
-                    <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom"
+                    <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
                        href="/movie/${movie.id}" >
                             ${movie.title}
                     </a>
@@ -43,8 +48,13 @@
         </div>
     </article>
     <hr>
-    <c:set var="comments" value="${post.comments}" scope="request"/>
-    <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp" />
+    <div class="uk-container uk-container-small">
+        <h2>Comments (${post.totalCommentCount})</h2>
+
+        <c:set var="comments" value="${post.comments}" scope="request" />
+        <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp" />
+    </div>
 
 </body>
 </html>
+

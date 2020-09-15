@@ -4,6 +4,9 @@ window.addEventListener('load', function(){
     let addMovieInputElem = document.getElementById('add-movie-input');
     let addMovieButtonElem = document.getElementById('add-movie-button');
     let moviesSelectedElem = document.getElementById('movies-selected');
+    let addTagInputElem = document.getElementById('add-tag-input');
+    let addTagButtonElem = document.getElementById('add-tag-button');
+    let tagsSelectedElem = document.getElementById('tags-selected');
     let submitFormButton = document.getElementById('submit-form-button');
     let datalistElem = document.getElementById('movie-list');
     let openModalButtonElem = document.getElementById('open-modal-button');
@@ -17,6 +20,10 @@ window.addEventListener('load', function(){
 
     addMovieButtonElem.addEventListener('click',
         () => addMovie(formElem, addMovieInputElem, datalistElem, moviesSelectedElem),
+        false);
+
+    addTagButtonElem.addEventListener('click',
+        () => addTag(formElem, addTagInputElem, tagsSelectedElem),
         false);
 
     submitFormButton.addEventListener('click', () => {
@@ -127,7 +134,7 @@ function addMovie(formElem, inputElem, datalistElem, moviesSelectedElem){
 
     let movieBadgeElem = document.createElement("span");
 
-    movieBadgeElem.setAttribute('class', 'uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom');
+    movieBadgeElem.setAttribute('class', 'uk-badge disabled uk-padding-small uk-margin-small-right uk-margin-small-bottom');
 
     movieBadgeElem.appendChild(document.createTextNode(movieName));
     movieBadgeElem.appendChild(closeElem);
@@ -150,6 +157,48 @@ function unselectMovie(formElem, datalistElem, inputElem, moviesSelectedElem, mo
 
     if(moviesSelectedElem && movieBadgeElem)
         moviesSelectedElem.removeChild(movieBadgeElem);
+}
+
+function addTag( formElem, inputElem, tagsSelectedElem){
+    let tagName = inputElem.value;
+    if(!tagName)
+        return;
+
+    let newInput = document.createElement("input");
+    newInput.setAttribute('name', `tags[]`);
+    newInput.setAttribute('type', 'text');
+    newInput.setAttribute('value', tagName);
+    newInput.style.display = 'none';
+
+
+    formElem.appendChild(newInput);
+
+    inputElem.value = "";
+
+    let closeElem = document.createElement("button");
+    closeElem.setAttribute('class', 'uk-margin-small-left uk-light');
+    closeElem.setAttribute('type', 'button');
+    closeElem.setAttribute('uk-close', '');
+
+    let tagBadgeElem = document.createElement("span");
+
+    tagBadgeElem.setAttribute('class', 'uk-badge disabled uk-padding-small uk-margin-small-right uk-margin-small-bottom');
+
+    tagBadgeElem.appendChild(document.createTextNode(tagName));
+    tagBadgeElem.appendChild(closeElem);
+
+    tagsSelectedElem.appendChild(tagBadgeElem);
+
+    closeElem.addEventListener('click',
+        () => unselectTag(formElem, newInput, tagsSelectedElem, tagBadgeElem), false);
+}
+
+function unselectTag(formElem,inputElem, tagsSelectedElem, tagBadgeElem){
+
+    formElem.removeChild(inputElem);
+
+    if(tagsSelectedElem && tagBadgeElem)
+        tagsSelectedElem.removeChild(tagBadgeElem);
 }
 
 function cancelModal(formElem, datalistElem, moviesSelectedElem) {

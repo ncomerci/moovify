@@ -18,49 +18,28 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostDao postDao;
 
-    @Autowired
-    private CommentService commentService;
-
     @Override
-    public Post register(String title, String email, String body, Set<Long> movies){
-        return postDao.register(title, email, body, movies);
+    public Post register(String title, String email, String body, Collection<String> tags, Set<Long> movies){
+        return postDao.register(title, email, body, tags, movies);
     }
 
     @Override
-    public Optional<Post> findPostById(long id, boolean withMovies) {
-        return postDao.findPostById(id, withMovies);
+    public Optional<Post> findPostById(long id, boolean withMovies, boolean withComments) {
+        return postDao.findPostById(id, withMovies, withComments);
     }
 
     @Override
-    public Optional<Post> findPostWithCommentsById(long id, boolean withMovies) {
-        Optional<Post> optionalPost = postDao.findPostById(id, withMovies);
-        optionalPost.ifPresent(post -> post.setComments(commentService.findCommentsByPostId(post.getId())));
-
-        return optionalPost;
+    public Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies, boolean withComments) {
+        return postDao.findPostsByMovieId(movie_id, withMovies, withComments);
     }
 
     @Override
-    public Collection<Post> findPostsByPostAndMovieTitle(String searchParam, boolean withMovies) {
-        return postDao.findPostsByPostAndMovieTitle(searchParam, withMovies);
+    public Collection<Post> getAllPostsOrderByNewest(boolean withMovies, boolean withComments) {
+        return postDao.getAllPostsOrderByNewest(withMovies, withComments);
     }
 
     @Override
-    public Collection<Post> findPostsByTitle(String title, boolean withMovies) {
-        return postDao.findPostsByTitle(title, withMovies);
-    }
-
-    @Override
-    public Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies) {
-        return postDao.findPostsByMovieTitle(movie_title, withMovies);
-    }
-
-    @Override
-    public Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies) {
-        return postDao.findPostsByMovieId(movie_id, withMovies);
-    }
-
-    @Override
-    public Collection<Post> getAllPosts(boolean withMovies) {
-        return postDao.getAllPosts(withMovies);
+    public Collection<Post> getAllPostsOrderByOldest(boolean withMovies, boolean withComments) {
+        return postDao.getAllPostsOrderByOldest(withMovies, withComments);
     }
 }

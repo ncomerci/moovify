@@ -1724,7 +1724,7 @@ select.uk-form-width-xsmall {
 .uk-radio:focus,
 .uk-checkbox:focus {
   outline: none;
-  border-color: #1e87f0;
+  border-color: #f2a365;
 }
 /*
  * Checked
@@ -1732,14 +1732,14 @@ select.uk-form-width-xsmall {
 .uk-radio:checked,
 .uk-checkbox:checked,
 .uk-checkbox:indeterminate {
-  background-color: #1e87f0;
+  background-color: #f2a365;
   border-color: transparent;
 }
 /* Focus */
 .uk-radio:checked:focus,
 .uk-checkbox:checked:focus,
 .uk-checkbox:indeterminate:focus {
-  background-color: #0e6dcd;
+  background-color: #fa8a32;
 }
 /*
  * Icons
@@ -2040,7 +2040,7 @@ select.uk-form-width-xsmall {
 /* OnClick + Active */
 .uk-button-primary:active,
 .uk-button-primary.uk-active {
-  background-color: #0e6dcd;
+  background-color: #fa8a32;
   color: #fff;
 }
 /*
@@ -5257,7 +5257,7 @@ ul.uk-nav-sub {
  * Nav items
  */
 /*Change*/
-.uk-navbar-nav > li > a {
+.uk-navbar-nav > li > a, .uk-navbar-nav > li > p {
   /*color: #999;*/
   color: #f2a365;
   font-weight: 500;
@@ -5604,8 +5604,10 @@ ul.uk-nav-sub {
   color: #666;
 }
 /* Active */
+/*Change*/
 .uk-subnav-pill > .uk-active > a {
-  background-color: #1e87f0;
+  /*background-color: #1e87f0;*/
+  background-color: #f2a365;
   color: #fff;
 }
 /* Disabled
@@ -12520,4 +12522,14 @@ iframe.uk-cover {
   h3 {
     page-break-after: avoid;
   }
+}
+
+/*========================= CUSTOM ADDED =========================*/
+
+.uk-badge.disabled {
+  color: #fff;
+}
+
+.mid-bold {
+  font-weight: 500;
 }

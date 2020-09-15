@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.models.Post;
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 @Controller
@@ -24,12 +26,15 @@ public class PostController {
     @Autowired
     private MovieService movieService;
 
+    @Autowired
+    private CommentService commentService;
+
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long postId) {
 
         final ModelAndView mv = new ModelAndView("post/view");
-        mv.addObject("post", postService.findPostWithCommentsById(postId, true)
+        mv.addObject("post", postService.findPostById(postId, true, true)
                 .orElseThrow(PostNotFoundException::new));
 
         return mv;
@@ -43,17 +48,19 @@ public class PostController {
 
         return mv;
     }
-
+    // TODO unificar tags y movies, uno es collection y el otro es set
     @RequestMapping(path = "/post/create" , method = RequestMethod.POST)
     public ModelAndView create(@RequestParam final String title, @RequestParam final String email,
-                               @RequestParam final String body, @RequestParam(value = "movies[]", required = false) Set<Long> movies){
+                               @RequestParam final String body, @RequestParam(value = "tags[]" , required = false) Collection<String> tags, @RequestParam(value = "movies[]", required = false) Set<Long> movies){
 
         // movies default value is an empty Set. (Overrides Spring default value of null)
         if(movies == null)
-            movies = new HashSet<>();
+            movies = Collections.emptySet();
 
-        // TODO: No tiene sentido redireccionar teniendo ya el objeto que mostrar. Habria que llamar a la vista directamente.
-        final Post post = postService.register(title, email, body, movies);
+        if(tags == null)
+            tags = Collections.emptySet();
+
+        final Post post = postService.register(title, email, body, tags, movies);
         return new ModelAndView("redirect:/post/" + post.getId());
 
     }
