@@ -1,4 +1,4 @@
-
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%--
   Created by IntelliJ IDEA.
   User: tobias
@@ -12,7 +12,7 @@
 <!DOCTYPE html>
 <html lang="en" >
 <head>
-    <title>Create Post</title>
+    <title><spring:message code="post.create.title"/></title>
 
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
     <jsp:include page="/WEB-INF/jsp/dependencies/mdEditor.jsp" />
@@ -23,23 +23,23 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <div class="uk-margin-auto uk-margin-top">
-    <h1 class="uk-article-title uk-margin-auto uk-text-center uk-text-primary">Create a new post</h1>
+    <h1 class="uk-article-title uk-margin-auto uk-text-center uk-text-primary"><spring:message code="post.create.newPost"/></h1>
     <hr class="uk-divider-icon">
 </div>
 
 <form method="post" class="uk-form-horizontal uk-margin-auto uk-padding-large uk-padding-remove-vertical" action="<c:url value="/post/create" />" id="new-post-form">
 
     <div class="uk-margin-left uk-margin-bottom" >
-        <label class="uk-form-label uk-text-secondary uk-margin-auto" for="title-text">Choose a title for your post:</label>
+        <label class="uk-form-label uk-text-secondary uk-margin-auto" for="title-text"><spring:message code="post.create.newPostTitle"/></label>
         <div class="uk-form-controls">
-            <input name="title" class="uk-input uk-form-small" id="title-text" type="text" placeholder="Title" required />
+            <input name="title" class="uk-input uk-form-small" id="title-text" type="text" placeholder="<spring:message code="post.create.titlePlaceholder"/>" required />
         </div>
     </div>
 
     <div class="uk-margin-left uk-margin-bottom">
-        <label class="uk-form-label uk-text-secondary uk-margin-auto" for="email-text">Insert your email:</label>
+        <label class="uk-form-label uk-text-secondary uk-margin-auto" for="email-text"><spring:message code="post.create.newPostEmail"/></label>
         <div class="uk-form-controls">
-            <input name="email" class="uk-input uk-form-small" id="email-text" type="email" placeholder="Email" required />
+            <input name="email" class="uk-input uk-form-small" id="email-text" type="email" placeholder="<spring:message code="post.create.emailPlaceholder"/>" required />
         </div>
     </div>
 
@@ -49,7 +49,7 @@
     </div>
 </form>
     <div class="uk-text-center">
-        <button id="open-modal-button" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="button">Create</button>
+        <button id="open-modal-button" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="button"><spring:message code="post.create.createButton"/></button>
     </div>
 
 <!-- This is the modal -->
@@ -58,30 +58,30 @@
         <p class="uk-text-right uk-margin-remove">
             <button class="uk-modal-close" type="button" uk-close></button>
         </p>
-        <h2 class="uk-modal-title uk-margin-remove-top">What movies are discussed in this Post?</h2>
+        <h2 class="uk-modal-title uk-margin-remove-top"><spring:message code="post.create.modal.moviewDiscussed"/></h2>
         <div>
             <div>
                 <label for="add-movie-input" class="uk-margin-bottom" ></label>
-                <input id="add-movie-input" class="uk-input uk-margin-right uk-input uk-margin-bottom uk-border-rounded" list="movie-list" placeholder="Insert the name of the movie you want to add">
-                <button id="add-movie-button" class="uk-button uk-button-primary uk-border-rounded" type="button">Add</button>
+                <input id="add-movie-input" class="uk-input uk-margin-right uk-input uk-margin-bottom uk-border-rounded" list="movie-list" placeholder="<spring:message code="post.create.modal.moviesPlaceholder"/>">
+                <button id="add-movie-button" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="post.create.modal.addButton"/></button>
             </div>
         </div>
 
         <div id="movies-selected" class="uk-margin-top uk-width-3-4"></div>
 
-        <h4 class="uk-modal-title uk-margin-remove-top">Write tags that describe this post (5 max)</h4>
+        <h4 class="uk-modal-title uk-margin-remove-top"></h4>
         <div>
             <div>
-                <label for="add-tag-input" class="uk-margin-bottom" ></label>
-                <input id="add-tag-input" class="uk-input uk-margin-right uk-input uk-margin-bottom uk-border-rounded" placeholder="Write the tag here">
-                <button id="add-tag-button" class="uk-button uk-button-primary uk-border-rounded" type="button">Add</button>
+                <label for="add-tag-input" class="uk-margin-bottom" ><spring:message code="post.create.modal.tags"/></label>
+                <input id="add-tag-input" class="uk-input uk-margin-right uk-input uk-margin-bottom uk-border-rounded" placeholder="<spring:message code="post.create.modal.tagsPlaceholder"/>">
+                <button id="add-tag-button" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="post.create.modal.addButton"/></button>
             </div>
         </div>
 
         <div id="tags-selected" class="uk-margin-top uk-width-3-4"></div>
 
         <p class="uk-text-right">
-            <button id="submit-form-button" class="uk-button uk-button-primary uk-border-rounded" type="button">Enviar</button>
+            <button id="submit-form-button" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="post.create.modal.sendButton"/></button>
         </p>
     </div>
 </div>

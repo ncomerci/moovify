@@ -1,9 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <html>
 <head>
-    <title>Moovify</title>
+    <title><spring:message code="index.pagename"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js" ></script>
     <script src="<c:url value="/resources/js/post/read.js" />"></script>
@@ -15,7 +16,7 @@
         <div class="uk-column-1-2 uk-padding-large">
 
             <section id="newest-posts">
-                <h1 class="uk-heading-small">Newest posts</h1>
+                <h1 class="uk-heading-small"><spring:message code="index.newestPost"/></h1>
                 <dl class="uk-description-list ">
                     <c:forEach items="${newestPosts}" var="post">
                         <dt>
@@ -32,7 +33,7 @@
                 </dl>
             </section>
             <section id="hottest-posts">
-                <h1 class="uk-heading-small">Oldest posts</h1>
+                <h1 class="uk-heading-small"><spring:message code="index.oldestPost"/></h1>
                 <dl class="uk-description-list ">
                     <c:forEach items="${oldestPosts}" var="post">
                         <dt>
