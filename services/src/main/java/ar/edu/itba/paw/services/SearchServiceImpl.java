@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class SearchServiceImpl implements SearchService {
@@ -112,7 +111,7 @@ public class SearchServiceImpl implements SearchService {
         return resultMap;
     }
 
-    public Optional<Collection<Post>> findPostsBy(String query, Collection<String> filterCriteria, String sortCriteria, boolean withMovies, boolean withComments){
+    public Optional<Collection<Post>> findPostsBy(String query, Collection<String> filterCriteria, String sortCriteria){
         SortCriteria sort = SortCriteria.getSortByName(sortCriteria.toLowerCase());
         Collection<FilterCriteria> filterCollection = filterCriteria.stream().map(fc -> FilterCriteria.getFilterByName(fc.toLowerCase())).collect(Collectors.toList());
 
@@ -122,12 +121,12 @@ public class SearchServiceImpl implements SearchService {
         return Optional.of(
                 findMethodsMap.get(sort.id)
                 .get(filterCollection.stream().map(FilterCriteria::getId).reduce(0, Integer::sum))
-                .find(query, withMovies, withComments)
+                .find(query, EnumSet.noneOf(PostDao.FetchRelation.class))
         );
     }
 
     @FunctionalInterface
     private interface PostFindMethod{
-        Collection<Post> find(String query, boolean withMovies, boolean withComments);
+        Collection<Post> find(String query, EnumSet<PostDao.FetchRelation> includedRelations);
     }
 }

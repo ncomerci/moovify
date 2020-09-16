@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
-import ar.edu.itba.paw.interfaces.services.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +8,7 @@ import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.interfaces.services.PostService;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,22 +24,22 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Optional<Post> findPostById(long id, boolean withMovies, boolean withComments) {
-        return postDao.findPostById(id, withMovies, withComments);
+    public Optional<Post> findPostById(long id) {
+        return postDao.findPostById(id, EnumSet.allOf(PostDao.FetchRelation.class));
     }
 
     @Override
-    public Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies, boolean withComments) {
-        return postDao.findPostsByMovieId(movie_id, withMovies, withComments);
+    public Collection<Post> findPostsByMovieId(long movie_id) {
+        return postDao.findPostsByMovieId(movie_id, EnumSet.noneOf(PostDao.FetchRelation.class));
     }
 
     @Override
-    public Collection<Post> getAllPostsOrderByNewest(boolean withMovies, boolean withComments) {
-        return postDao.getAllPostsOrderByNewest(withMovies, withComments);
+    public Collection<Post> getAllPostsOrderByNewest() {
+        return postDao.getAllPostsOrderByNewest(EnumSet.noneOf(PostDao.FetchRelation.class));
     }
 
     @Override
-    public Collection<Post> getAllPostsOrderByOldest(boolean withMovies, boolean withComments) {
-        return postDao.getAllPostsOrderByOldest(withMovies, withComments);
+    public Collection<Post> getAllPostsOrderByOldest() {
+        return postDao.getAllPostsOrderByOldest(EnumSet.noneOf(PostDao.FetchRelation.class));
     }
 }

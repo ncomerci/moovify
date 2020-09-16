@@ -26,7 +26,7 @@ public class SearchController {
 
         mv.addObject("query", query);
         mv.addObject("posts",
-                searchService.findPostsBy(query, filterCriteria, sortCriteria, false, false)
+                searchService.findPostsBy(query, filterCriteria, sortCriteria)
                         .orElseThrow(NonExistingSearchCriteriaException::new));
         return mv;
     }
