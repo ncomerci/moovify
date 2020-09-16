@@ -34,7 +34,7 @@ public class PostController {
     public ModelAndView view(@PathVariable final long postId) {
 
         final ModelAndView mv = new ModelAndView("post/view");
-        mv.addObject("post", postService.findPostById(postId, true, true)
+        mv.addObject("post", postService.findPostById(postId)
                 .orElseThrow(PostNotFoundException::new));
 
         return mv;

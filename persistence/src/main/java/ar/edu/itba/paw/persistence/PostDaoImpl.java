@@ -34,6 +34,9 @@ public class PostDaoImpl implements PostDao {
     * It is important that they are design only assuming the pre-existence and execution of
     * the BASE_POST static variables (the one Model linked with this Dao). That way, any other
     * can be made optional (currently the case of MOVIES and COMMENTS).
+    * All functionality involving this constants is encapsulated in the FetchRelationSelector.
+    * Use this enum to access Select, From and Mapper for each desired relation. In this enum the
+    * relations are also categorized as required and not required.
     *
     * Additional requirements of each segment are made explicit below:
     *
@@ -52,6 +55,103 @@ public class PostDaoImpl implements PostDao {
     *   - In BASE_POST_ROW_MAPPER, the movies Collection must be a Set to guaranty uniqueness.
     *
     */
+
+    private enum FetchRelationSelector {
+        POST(BASE_POST_SELECT, BASE_POST_FROM, true, null),
+        TAGS(TAGS_SELECT, TAGS_FROM, true, null),
+        MOVIES(MOVIES_SELECT, MOVIES_FROM, false, FetchRelation.MOVIES),
+        COMMENTS(COMMENTS_SELECT, COMMENTS_FROM, false, FetchRelation.COMMENTS);
+
+        private static final Map<EnumSet<FetchRelation>, ResultSetExtractor<Collection<Post>>>
+                relationsToRSEMap = initializeRelationsToRSEMap();
+
+        private final String select;
+        private final String from;
+        private final boolean required;
+        private final FetchRelation relation;
+
+        FetchRelationSelector(String select, String from, boolean required, FetchRelation relation) {
+            this.select = select;
+            this.from = from;
+            this.required = required;
+            this.relation = relation;
+        }
+
+        public static EnumSet<FetchRelationSelector> getSelectorsFromFetchRelations(EnumSet<FetchRelation> fetchRelations) {
+            EnumSet<FetchRelationSelector> result = EnumSet.noneOf(FetchRelationSelector.class);
+
+            for(FetchRelationSelector selector : FetchRelationSelector.values()) {
+                if(selector.isRequired() || fetchRelations.contains(selector.getRelation()))
+                    result.add(selector);
+            }
+
+            return result;
+        }
+
+        public static ResultSetExtractor<Collection<Post>> getMapper(EnumSet<FetchRelation> fetchRelations) {
+            return relationsToRSEMap.get(fetchRelations);
+        }
+
+        public String getSelect() {
+            return select;
+        }
+
+        public String getFrom() {
+            return from;
+        }
+
+        public boolean isRequired() {
+            return required;
+        }
+
+        private FetchRelation getRelation() {
+            return relation;
+        }
+
+        private static Map<EnumSet<FetchRelation>, ResultSetExtractor<Collection<Post>>> initializeRelationsToRSEMap() {
+            Map<EnumSet<FetchRelation>, ResultSetExtractor<Collection<Post>>> relationsToRSEMap = new HashMap<>();
+            Set<EnumSet<FetchRelation>> relationsCombinations = new HashSet<>();
+
+            // Add all FetchRelation combinations. TODO: Better way?
+            relationsCombinations.add(EnumSet.noneOf(FetchRelation.class));
+            relationsCombinations.add(EnumSet.of(FetchRelation.MOVIES));
+            relationsCombinations.add(EnumSet.of(FetchRelation.COMMENTS));
+            relationsCombinations.add(EnumSet.allOf(FetchRelation.class));
+
+            for(EnumSet<FetchRelation> relationSet : relationsCombinations)
+                relationsToRSEMap.put(relationSet, buildResultSetExtractor(relationSet));
+
+            return relationsToRSEMap;
+        }
+
+        private static ResultSetExtractor<Collection<Post>> buildResultSetExtractor(EnumSet<FetchRelation> fetchRelations) {
+            return (rs) -> {
+
+                // Important use of LinkedHashMap to maintain Post insertion order
+                final Map<Long, Post> idToPostMap = new LinkedHashMap<>();
+                final Map<Long, Movie> idToMovieMap = new HashMap<>();
+                final Map<Long, Comment> idToCommentMap = new HashMap<>();
+                final Map<Long, Collection<Comment>> childrenWithoutParentMap = new HashMap<>();
+
+                while(rs.next()) {
+
+                    // Base Mapper Required
+                    BASE_POST_ROW_MAPPER.accept(rs, idToPostMap);
+
+                    // Tags Mapper Required - Business decision
+                    TAGS_ROW_MAPPER.accept(rs, idToPostMap);
+
+                    if (fetchRelations.contains(FetchRelation.MOVIES))
+                        MOVIES_ROW_MAPPER.accept(rs, idToPostMap, idToMovieMap);
+
+                    if (fetchRelations.contains(FetchRelation.COMMENTS))
+                        COMMENTS_ROW_MAPPER.accept(rs, idToPostMap, idToCommentMap, childrenWithoutParentMap);
+                }
+
+                return idToPostMap.values();
+            };
+        }
+    }
 
 
     // Mapper and Select for simple post retrieval.
@@ -246,24 +346,22 @@ public class PostDaoImpl implements PostDao {
     }
 
     // This method abstract the logic needed to perform select queries with or without movies.
-    private Collection<Post> findPostsBy(String customWhereStatement, String[] orderByParams, Object[] args, boolean withMovies, boolean withComments){
+    private Collection<Post> findPostsBy(String customWhereStatement, String[] orderByParams, Object[] args, EnumSet<FetchRelation> includedRelations){
 
-        final String select = BASE_POST_SELECT
-                + ", " + TAGS_SELECT
-                + (withMovies? ", " + MOVIES_SELECT : "")
-                + (withComments? ", " + COMMENTS_SELECT : "");
+        EnumSet<FetchRelationSelector> selectorSet = FetchRelationSelector.getSelectorsFromFetchRelations(includedRelations);
 
-        final String from = BASE_POST_FROM
-               + " " + TAGS_FROM
-                + (withMovies? " " + MOVIES_FROM : "")
-                + (withComments? " " + COMMENTS_FROM : "");
+        final String select = selectorSet.stream()
+                .reduce("", (ac, selector) -> ac + ", " + selector.getSelect(), String::concat)
+                .substring(1); // Remove first ','
+
+        final String from = selectorSet.stream()
+                .reduce("", (ac, selector) -> ac + " " + selector.getFrom(), String::concat);
 
         final String orderByStatement = buildOrderByStatement(orderByParams);
 
         final String query = select + " " + from + " " + customWhereStatement + " " + orderByStatement;
 
-        final ResultSetExtractor<Collection<Post>> rowMapper = getPostRowMapper(withMovies, withComments);
-
+        final ResultSetExtractor<Collection<Post>> rowMapper = FetchRelationSelector.getMapper(includedRelations);
 
         if(args != null)
             return jdbcTemplate.query(query, args, rowMapper);
@@ -274,24 +372,24 @@ public class PostDaoImpl implements PostDao {
 
     // TODO con que sobrecargas nos quedamos? Decidi que no hay una sin args. Ponele null.
 
-    private Collection<Post> findPostsBy(String customWhereStatement, String orderByParam, Object[] args, boolean withMovies, boolean withComments){
-        return findPostsBy(customWhereStatement, new String[]{ orderByParam }, args, withMovies, withComments);
+    private Collection<Post> findPostsBy(String customWhereStatement, String orderByParam, Object[] args, EnumSet<FetchRelation> includedRelations){
+        return findPostsBy(customWhereStatement, new String[]{ orderByParam }, args,  includedRelations);
     }
 
-    private Collection<Post> findPostsBy(String[] orderByParams, boolean withMovies, boolean withComments){
-        return findPostsBy("", orderByParams, null, withMovies, withComments);
+    private Collection<Post> findPostsBy(String[] orderByParams, EnumSet<FetchRelation> includedRelations){
+        return findPostsBy("", orderByParams, null, includedRelations);
     }
 
-    private Collection<Post> findPostsBy(String orderByParam, boolean withMovies, boolean withComments){
-        return findPostsBy("", orderByParam, null, withMovies, withComments);
+    private Collection<Post> findPostsBy(String orderByParam, EnumSet<FetchRelation> includedRelations){
+        return findPostsBy("", orderByParam, null, includedRelations);
     }
 
-    private Collection<Post> findPostsBy(FilterCriteria[] filters, String[] orderByParams, Object[] args, boolean withMovies, boolean withComments) {
-        return findPostsBy(buildWhereStatement(filters), orderByParams, args, withMovies, withComments);
+    private Collection<Post> findPostsBy(FilterCriteria[] filters, String[] orderByParams, Object[] args, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(buildWhereStatement(filters), orderByParams, args, includedRelations);
     }
 
-    private Collection<Post> findPostsBy(FilterCriteria[] filters, String orderByParam, Object[] args, boolean withMovies, boolean withComments) {
-        return findPostsBy(buildWhereStatement(filters), orderByParam, args, withMovies, withComments);
+    private Collection<Post> findPostsBy(FilterCriteria[] filters, String orderByParam, Object[] args, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(buildWhereStatement(filters), orderByParam, args, includedRelations);
     }
 
     // TODO discutir dar la posibilidad de elegir OR o AND
@@ -323,141 +421,110 @@ public class PostDaoImpl implements PostDao {
         return queryBuilder.substring(0, queryBuilder.length() - separator.length());
     }
 
-    private ResultSetExtractor<Collection<Post>> getPostRowMapper(final boolean withMovies, final boolean withComments) {
-        // TODO: Take a final decision on options
-        // Option 2 (current approach)
-
-        return (rs) -> {
-            // Important use of LinkedHashMap to maintain Post insertion order
-            final Map<Long, Post> idToPostMap = new LinkedHashMap<>();
-            final Map<Long, Movie> idToMovieMap = new HashMap<>();
-            final Map<Long, Comment> idToCommentMap = new HashMap<>();
-            final Map<Long, Collection<Comment>> childrenWithoutParentMap = new HashMap<>();
-
-            while(rs.next()) {
-
-                BASE_POST_ROW_MAPPER.accept(rs, idToPostMap);
-
-                TAGS_ROW_MAPPER.accept(rs, idToPostMap);
-
-                if (withMovies)
-                    MOVIES_ROW_MAPPER.accept(rs, idToPostMap, idToMovieMap);
-
-                if (withComments)
-                    COMMENTS_ROW_MAPPER.accept(rs, idToPostMap, idToCommentMap, childrenWithoutParentMap);
-
-            }
-
-            return idToPostMap.values();
-        };
-
-        // Option 3: Dynamically generate all ResultSetExtractor options and store it statically. Best of both worlds.
-    }
-
     @Override
-    public Optional<Post> findPostById(long id, boolean withMovies, boolean withComments){
+    public Optional<Post> findPostById(long id, EnumSet<FetchRelation> includedRelations){
         return findPostsBy(
-                new FilterCriteria[]{ FilterCriteria.BY_POST_ID }, (String[]) null, new Object[]{ id }, withMovies, withComments)
+                new FilterCriteria[]{ FilterCriteria.BY_POST_ID }, (String[]) null, new Object[]{ id }, includedRelations)
                 .stream().findFirst();
     }
 
     @Override
-    public Collection<Post> findPostsByTitleOrderByNewest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE}, SortCriteria.NEWEST.query, new Object[] {title} , withMovies,withComments);
+    public Collection<Post> findPostsByTitleOrderByNewest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE}, SortCriteria.NEWEST.query, new Object[] {title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTitleOrderByOldest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE}, SortCriteria.OLDEST.query, new Object[] {title} , withMovies,withComments);
+    public Collection<Post> findPostsByTitleOrderByOldest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE}, SortCriteria.OLDEST.query, new Object[] {title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByMoviesOrderByNewest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.NEWEST.query, new Object[] {title} , withMovies,withComments);
+    public Collection<Post> findPostsByMoviesOrderByNewest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.NEWEST.query, new Object[] {title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByMoviesOrderByOldest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.OLDEST.query, new Object[] {title} , withMovies,withComments);
+    public Collection<Post> findPostsByMoviesOrderByOldest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.OLDEST.query, new Object[] {title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTagsOrderByNewest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_TAGS}, SortCriteria.NEWEST.query, new Object[] {title} , withMovies,withComments);
+    public Collection<Post> findPostsByTagsOrderByNewest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_TAGS}, SortCriteria.NEWEST.query, new Object[] {title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTagsOrderByOldest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_TAGS}, SortCriteria.OLDEST.query, new Object[] {title} , withMovies,withComments);
+    public Collection<Post> findPostsByTagsOrderByOldest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_TAGS}, SortCriteria.OLDEST.query, new Object[] {title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTitleAndMoviesOrderByNewest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.NEWEST.query, new Object[] {title, title} , withMovies,withComments);
+    public Collection<Post> findPostsByTitleAndMoviesOrderByNewest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.NEWEST.query, new Object[] {title, title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTitleAndMoviesOrderByOldest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.OLDEST.query, new Object[] {title, title} , withMovies,withComments);
+    public Collection<Post> findPostsByTitleAndMoviesOrderByOldest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.OLDEST.query, new Object[] {title, title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTitleAndTagsOrderByNewest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_TAGS}, SortCriteria.NEWEST.query, new Object[] {title, title} , withMovies,withComments);
+    public Collection<Post> findPostsByTitleAndTagsOrderByNewest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_TAGS}, SortCriteria.NEWEST.query, new Object[] {title, title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTitleAndTagsOrderByOldest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_TAGS}, SortCriteria.OLDEST.query, new Object[] {title, title} , withMovies,withComments);
+    public Collection<Post> findPostsByTitleAndTagsOrderByOldest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_TAGS}, SortCriteria.OLDEST.query, new Object[] {title, title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTagsAndMoviesOrderByNewest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_TAGS, FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.NEWEST.query, new Object[] {title, title} , withMovies,withComments);
+    public Collection<Post> findPostsByTagsAndMoviesOrderByNewest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_TAGS, FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.NEWEST.query, new Object[] {title, title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTagsAndMoviesOrderByOldest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_TAGS, FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.OLDEST.query, new Object[] {title, title} , withMovies,withComments);
+    public Collection<Post> findPostsByTagsAndMoviesOrderByOldest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_TAGS, FilterCriteria.BY_MOVIE_TITLE}, SortCriteria.OLDEST.query, new Object[] {title, title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTitleAndTagsAndMoviesOrderByNewest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_MOVIE_TITLE, FilterCriteria.BY_TAGS}, SortCriteria.NEWEST.query, new Object[] {title, title, title} , withMovies,withComments);
+    public Collection<Post> findPostsByTitleAndTagsAndMoviesOrderByNewest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_MOVIE_TITLE, FilterCriteria.BY_TAGS}, SortCriteria.NEWEST.query, new Object[] {title, title, title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByTitleAndTagsAndMoviesOrderByOldest(String title, boolean withMovies, boolean withComments) {
-        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_MOVIE_TITLE, FilterCriteria.BY_TAGS}, SortCriteria.OLDEST.query, new Object[] {title, title, title} , withMovies,withComments);
+    public Collection<Post> findPostsByTitleAndTagsAndMoviesOrderByOldest(String title, EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(new FilterCriteria[]{FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_MOVIE_TITLE, FilterCriteria.BY_TAGS}, SortCriteria.OLDEST.query, new Object[] {title, title, title}, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies, boolean withComments) {
+    public Collection<Post> findPostsByMovieId(long movie_id, EnumSet<FetchRelation> includedRelations) {
         return findPostsBy(new FilterCriteria[]{ FilterCriteria.BY_MOVIE_ID },
                 POSTS + ".creation_date",
-                new Object[] { movie_id }, withMovies, withComments);
+                new Object[] { movie_id }, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies, boolean withComments) {
+    public Collection<Post> findPostsByMovieTitle(String movie_title, EnumSet<FetchRelation> includedRelations) {
         return findPostsBy(new FilterCriteria[]{ FilterCriteria.BY_MOVIE_TITLE },
-                SortCriteria.NEWEST.query, new Object[]{ movie_title }, withMovies, withComments);
+                SortCriteria.NEWEST.query, new Object[]{ movie_title }, includedRelations);
     }
 
     @Override
-    public Collection<Post> getAllPostsOrderByNewest(boolean withMovies, boolean withComments) {
-        return findPostsBy(SortCriteria.NEWEST.query, withMovies, withComments);
+    public Collection<Post> getAllPostsOrderByNewest(EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(SortCriteria.NEWEST.query, includedRelations);
     }
 
     @Override
-    public Collection<Post> getAllPostsOrderByOldest(boolean withMovies, boolean withComments) {
-        return findPostsBy(SortCriteria.OLDEST.query, withMovies, withComments);
+    public Collection<Post> getAllPostsOrderByOldest(EnumSet<FetchRelation> includedRelations) {
+        return findPostsBy(SortCriteria.OLDEST.query, includedRelations);
     }
 
     @Override
-    public Collection<Post> findPostsByPostAndMovieTitle(String title, boolean withMovies, boolean withComments) {
+    public Collection<Post> findPostsByPostAndMovieTitle(String title, EnumSet<FetchRelation> includedRelations) {
         return findPostsBy(new FilterCriteria[]{ FilterCriteria.BY_POST_TITLE, FilterCriteria.BY_MOVIE_TITLE },
-                SortCriteria.NEWEST.query, new Object[]{ title, title }, withMovies, withComments);
+                SortCriteria.NEWEST.query, new Object[]{ title, title }, includedRelations);
     }
 
 
@@ -507,72 +574,4 @@ public class PostDaoImpl implements PostDao {
             this.query = query;
         }
     }
-
-    // TODO borrar una vez determiando el estado final de la creacion de queries
-
-
-    //TODO por que me pidio statico? La clase interna se podria modelarla con un builder¿?
-//    static class PostSearchCriteria{
-//
-//        String query;
-//        SortCriteria sortCriteria;
-//        FilterCriteria[] filterCriteria;
-//
-//        public PostSearchCriteria(String query, SortCriteria sortCriteria, FilterCriteria[] filterCriteria) {
-//            this.query = query;
-//            this.sortCriteria = sortCriteria;
-//            this.filterCriteria = filterCriteria;
-//        }
-//
-//        public PostSearchCriteria(SortCriteria sortCriteria, FilterCriteria[] filterCriteria) {
-//            this.query = ""; // TODO determinar el valor default cuando no se usa una query
-//            this.sortCriteria = sortCriteria;
-//            this.filterCriteria = filterCriteria;
-//        }
-//
-//        public String getQuery() {
-//            return query;
-//        }
-//
-//        public SortCriteria getSortCriteria() {
-//            return sortCriteria;
-//        }
-//
-//        public FilterCriteria[] getFilterCriteria() {
-//            return filterCriteria;
-//        }
-//
-//
-//    }
-
-//    private Collection<Post> findPosts(PostSearchCriteria criteria, boolean withMovies, boolean withComments) {
-//
-//        StringBuilder sqlQuery = new StringBuilder();
-//        List<Object> placeHolders = new ArrayList<>();
-//
-//        if(criteria.getFilterCriteria().length != 0){
-//            sqlQuery.append(" WHERE ");
-//            for( PostSearchCriteria.FilterCriteria filterCriteria : criteria.getFilterCriteria()){
-//                if(filterCriteriaImplementations.containsKey(filterCriteria)){
-//                    sqlQuery.append(filterCriteriaImplementations.get(filterCriteria));
-//                    sqlQuery.append("OR");
-//                    placeHolders.add(criteria.getQuery());
-//                }
-//            }
-//            //Delete the last OR
-//            sqlQuery.delete(sqlQuery.length() - 2, sqlQuery.length());
-//        }
-//
-//        // SortCriteria is always included else, an if statement would be necessary.
-//        sqlQuery.append(" ORDER BY ");
-//        if(sortCriteriaImplementations.containsKey(criteria.getSortCriteria()))
-//            sqlQuery.append(sortCriteriaImplementations.get(criteria.getSortCriteria()));
-//
-//
-//        // TODO se puede mejorar el manejo de placeholder vacio
-//        if(placeHolders.size() == 0)
-//            return findPostsBy(sqlQuery.toString(), withMovies, withComments);
-//
-//        return findPostsBy(sqlQuery.toString(), placeHolders.toArray(), withMovies, withComments);
-//    }
 }

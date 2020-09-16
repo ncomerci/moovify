@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface SearchService {
 
-    Optional<Collection<Post>> findPostsBy(String query, Collection<String> filterCriteria, String sortCriteria, boolean withMovies, boolean withComments);
+    Optional<Collection<Post>> findPostsBy(String query, Collection<String> filterCriteria, String sortCriteria);
 
 }
