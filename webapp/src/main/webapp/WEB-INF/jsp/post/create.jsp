@@ -44,10 +44,11 @@
     </div>
 
     <div class="uk-margin-left uk-margin-bottom">
-        <label class="uk-form-label uk-text-secondary uk-margin-auto" for="category-select">Select the Post Category</label>
+        <label class="uk-form-label uk-text-secondary uk-margin-auto" for="category-select">Select the post category</label>
         <div class="uk-form-controls">
             <select name="category" class="uk-select" id="category-select" required>
                 <c:forEach items="${categories}" var="category">
+                    <option hidden disabled selected value> -- select a category -- </option>
 <%--                    TODO: Change category name from c:out to spring:value for i18n   --%>
                     <option value="${category.id}"><c:out value="${category.name}" /></option>
                 </c:forEach>
