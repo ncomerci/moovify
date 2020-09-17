@@ -43,6 +43,18 @@
         </div>
     </div>
 
+    <div class="uk-margin-left uk-margin-bottom">
+        <label class="uk-form-label uk-text-secondary uk-margin-auto" for="category-select">Select the Post Category</label>
+        <div class="uk-form-controls">
+            <select name="category" class="uk-select" id="category-select" required>
+                <c:forEach items="${categories}" var="category">
+<%--                    TODO: Change category name from c:out to spring:value for i18n   --%>
+                    <option value="${category.id}"><c:out value="${category.name}" /></option>
+                </c:forEach>
+            </select>
+        </div>
+    </div>
+
     <div class="uk-margin-auto">
         <label for="create-post-data"></label>
         <textarea id="create-post-data" name="body" required ></textarea>

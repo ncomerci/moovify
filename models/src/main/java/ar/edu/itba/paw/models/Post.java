@@ -11,6 +11,7 @@ public class Post {
     private final String body;
     private final int wordCount;
     private final String email;
+    private final PostCategory category;
     private final Collection<String> tags;
     private final Collection<Movie> movies;
     private final Collection<Comment> comments;
@@ -22,13 +23,14 @@ public class Post {
     */
     private static final int EN_WORDS_PER_MINUTE = 238;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email, Collection<String> tags, Collection<Movie> movies, Collection<Comment> comments) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email, PostCategory category, Collection<String> tags, Collection<Movie> movies, Collection<Comment> comments) {
         this.id = id;
         this.creationDate = creationDate;
         this.title = title;
         this.body = body;
         this.wordCount = wordCount;
         this.email = email;
+        this.category = category;
         this.tags = tags;
         this.movies = movies;
         this.comments = comments;
@@ -56,6 +58,10 @@ public class Post {
 
     public String getEmail() {
         return email;
+    }
+
+    public PostCategory getCategory() {
+        return category;
     }
 
     public Collection<String> getTags() {

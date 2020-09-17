@@ -13,7 +13,7 @@ public interface PostDao {
         MOVIES, COMMENTS
     }
 
-    Post register(String title, String email, String body, Collection<String> tags, Set<Long> movies);
+    long register(String title, String email, String body, long category, Set<String> tags, Set<Long> movies);
 
     Optional<Post> findPostById(long id, EnumSet<FetchRelation> includedRelations);
 

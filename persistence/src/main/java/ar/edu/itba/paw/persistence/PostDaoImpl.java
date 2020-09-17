@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.PostCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -26,6 +27,7 @@ public class PostDaoImpl implements PostDao {
     private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
     private static final String TAGS = TableNames.TAGS.getTableName();
     private static final String COMMENTS = TableNames.COMMENTS.getTableName();
+    private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
 
     /*
     *
@@ -58,6 +60,7 @@ public class PostDaoImpl implements PostDao {
 
     private enum FetchRelationSelector {
         POST(BASE_POST_SELECT, BASE_POST_FROM, true, null),
+        CATEGORY(CATEGORY_SELECT, CATEGORY_FROM, true, null),
         TAGS(TAGS_SELECT, TAGS_FROM, true, null),
         MOVIES(MOVIES_SELECT, MOVIES_FROM, false, FetchRelation.MOVIES),
         COMMENTS(COMMENTS_SELECT, COMMENTS_FROM, false, FetchRelation.COMMENTS);
@@ -164,6 +167,11 @@ public class PostDaoImpl implements PostDao {
             ".word_count p_word_count, " +
             POSTS + ".email p_email";
 
+    private static final String CATEGORY_SELECT =
+            POST_CATEGORY + ".category_id pc_category_id, " +
+            POST_CATEGORY + ".creation_date pc_creation_date, " +
+            POST_CATEGORY + ".name pc_name";
+
     private static final String TAGS_SELECT = TAGS + ".tag p_tag";
 
     private static final String MOVIES_SELECT =
@@ -181,6 +189,9 @@ public class PostDaoImpl implements PostDao {
             COMMENTS + ".body c_body";
 
     private static final String BASE_POST_FROM = "FROM " + POSTS;
+
+    private static final String CATEGORY_FROM =
+            "LEFT OUTER JOIN " + POST_CATEGORY + " ON " + POSTS + ".category_id = " + POST_CATEGORY + ".category_id";
 
     private static final String TAGS_FROM =
             "LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id";
@@ -206,6 +217,12 @@ public class PostDaoImpl implements PostDao {
                             post_id, rs.getObject("p_creation_date", LocalDateTime.class),
                             rs.getString("p_title"), rs.getString("p_body"),
                             rs.getInt("p_word_count"), rs.getString("p_email"),
+
+                            new PostCategory(rs.getLong("pc_category_id"),
+                                    rs.getObject("pc_creation_date", LocalDateTime.class),
+                                    rs.getString("pc_name")),
+
+                            // tags, movies, comments
                             new LinkedHashSet<>(), new LinkedHashSet<>(), new ArrayList<>()
                     )
             );
@@ -312,7 +329,7 @@ public class PostDaoImpl implements PostDao {
 
 
     @Override
-    public Post register(String title, String email, String body, Collection<String> tags, Set<Long> movies) {
+    public long register(String title, String email, String body, long category, Set<String> tags, Set<Long> movies) {
 
         body = body.trim();
         LocalDateTime creationDate = LocalDateTime.now();
@@ -324,7 +341,8 @@ public class PostDaoImpl implements PostDao {
         map.put("email", email);
         map.put("word_count", wordCount);
         map.put("body", body);
-        map.put("tags", tags);
+        map.put("category_id", category);
+        map.put("tags", tags); // TODO: WAT SACAR!!
 
         final long postId = postInsert.executeAndReturnKey(map).longValue();
 
@@ -342,7 +360,7 @@ public class PostDaoImpl implements PostDao {
             tagsInsert.execute(map);
         }
 
-        return new Post(postId, creationDate, title, body, wordCount, email, tags, Collections.emptyList(), Collections.emptyList());
+        return postId;
     }
 
     // This method abstract the logic needed to perform select queries with or without movies.

@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
-import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,9 +24,6 @@ public class PostController {
     @Autowired
     private MovieService movieService;
 
-    @Autowired
-    private CommentService commentService;
-
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long postId) {
@@ -45,13 +40,15 @@ public class PostController {
 
         final ModelAndView mv = new ModelAndView("post/create");
         mv.addObject("movies", movieService.getAllMovies());
+        mv.addObject("categories", postService.getAllPostCategories());
 
         return mv;
     }
+
     // TODO unificar tags y movies, uno es collection y el otro es set
     @RequestMapping(path = "/post/create" , method = RequestMethod.POST)
     public ModelAndView create(@RequestParam final String title, @RequestParam final String email,
-                               @RequestParam final String body, @RequestParam(value = "tags[]" , required = false) Collection<String> tags, @RequestParam(value = "movies[]", required = false) Set<Long> movies){
+                               @RequestParam final String body, @RequestParam final long category, @RequestParam(value = "tags[]" , required = false) Set<String> tags, @RequestParam(value = "movies[]", required = false) Set<Long> movies){
 
         // movies default value is an empty Set. (Overrides Spring default value of null)
         if(movies == null)
@@ -60,8 +57,8 @@ public class PostController {
         if(tags == null)
             tags = Collections.emptySet();
 
-        final Post post = postService.register(title, email, body, tags, movies);
-        return new ModelAndView("redirect:/post/" + post.getId());
+        final long postId = postService.register(title, email, body, category, tags, movies);
+        return new ModelAndView("redirect:/post/" + postId);
 
     }
 }

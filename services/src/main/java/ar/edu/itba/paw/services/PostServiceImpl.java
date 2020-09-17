@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
+import ar.edu.itba.paw.models.PostCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +20,12 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostDao postDao;
 
+    @Autowired
+    private PostCategoryDao categoryDao;
+
     @Override
-    public Post register(String title, String email, String body, Collection<String> tags, Set<Long> movies){
-        return postDao.register(title, email, body, tags, movies);
+    public long register(String title, String email, String body, long category, Set<String> tags, Set<Long> movies){
+        return postDao.register(title, email, body, category, tags, movies);
     }
 
     @Override
@@ -41,5 +46,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public Collection<Post> getAllPostsOrderByOldest() {
         return postDao.getAllPostsOrderByOldest(EnumSet.noneOf(PostDao.FetchRelation.class));
+    }
+
+    @Override
+    public Collection<PostCategory> getAllPostCategories() {
+        return categoryDao.getAllPostCategories();
     }
 }
