@@ -106,7 +106,8 @@ function addMovie(formElem, inputElem, datalistElem, moviesSelectedElem){
     let movieId = movieOption.dataset.id;
 
     let newInput = document.createElement("input");
-    newInput.setAttribute('name', `movies[]`);
+    newInput.setAttribute('id', 'movies');
+    newInput.setAttribute('name', 'movies');
     newInput.setAttribute('type', 'number');
     newInput.setAttribute('value', movieId);
     newInput.setAttribute('data-movie-name', movieName);
@@ -165,7 +166,8 @@ function addTag( formElem, inputElem, tagsSelectedElem){
         return;
 
     let newInput = document.createElement("input");
-    newInput.setAttribute('name', `tags[]`);
+    newInput.setAttribute('id', 'tags');
+    newInput.setAttribute('name', 'tags');
     newInput.setAttribute('type', 'text');
     newInput.setAttribute('value', tagName);
     newInput.style.display = 'none';
