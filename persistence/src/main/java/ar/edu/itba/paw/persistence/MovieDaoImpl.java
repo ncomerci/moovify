@@ -41,6 +41,8 @@ public class MovieDaoImpl implements MovieDao {
 
     @Override
     public Movie register(String title, LocalDate premierDate) {
+
+        // TODO; Require Not Null ????
         Objects.requireNonNull(title);
         Objects.requireNonNull(premierDate);
 
@@ -51,8 +53,8 @@ public class MovieDaoImpl implements MovieDao {
         map.put("title", title);
         map.put("premier_date", premierDate);
 
-        final Number key = jdbcInsert.executeAndReturnKey(map);
-        return new Movie(key.longValue(), creationDate, title, premierDate);
+        final long id = jdbcInsert.executeAndReturnKey(map).longValue();
+        return new Movie(id, creationDate, title, premierDate);
     }
 
     @Override

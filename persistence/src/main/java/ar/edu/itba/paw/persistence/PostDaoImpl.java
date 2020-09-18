@@ -342,7 +342,6 @@ public class PostDaoImpl implements PostDao {
         map.put("word_count", wordCount);
         map.put("body", body);
         map.put("category_id", category);
-        map.put("tags", tags); // TODO: WAT SACAR!!
 
         final long postId = postInsert.executeAndReturnKey(map).longValue();
 

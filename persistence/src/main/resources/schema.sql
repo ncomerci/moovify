@@ -1,3 +1,13 @@
+CREATE TABLE IF NOT EXISTS USERS
+(
+    user_id         SERIAL       PRIMARY KEY,
+    creation_date   TIMESTAMP    NOT NULL,
+    username        VARCHAR(50)  UNIQUE NOT NULL,
+    password        VARCHAR(200) NOT NULL,
+    name            VARCHAR(50) NOT NULL,
+    email           VARCHAR(200) UNIQUE NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS POST_CATEGORY
 (
     category_id     SERIAL       PRIMARY KEY,
