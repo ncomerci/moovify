@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
@@ -16,6 +17,9 @@ public class PostCreateForm {
 
     @Size( min = 1, max = 100000)
     private String body;
+
+    @Min(1)
+    private long category;
 
     @MaxTagsSizeConstraint
     private Set<String> tags;
@@ -57,6 +61,14 @@ public class PostCreateForm {
 
     public Set<Long> getMovies() {
         return movies;
+    }
+
+    public long getCategory() {
+        return category;
+    }
+
+    public void setCategory(long category) {
+        this.category = category;
     }
 
     public void setMovies(Set<Long> movies) {

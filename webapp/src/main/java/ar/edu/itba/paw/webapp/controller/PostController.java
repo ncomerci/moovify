@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
+
 
 @Controller
 public class PostController {
@@ -51,7 +50,7 @@ public class PostController {
             return showPostCreateForm(postCreateForm);
         }
 
-        final Post post = postService.register(postCreateForm.getTitle(), postCreateForm.getEmail(), postCreateForm.getBody(), postCreateForm.getTags() == null ? Collections.emptySet():  postCreateForm.getTags() , postCreateForm.getMovies());
-        return new ModelAndView("redirect:/post/" + post.getId());
+        final long post = postService.register(postCreateForm.getTitle(), postCreateForm.getEmail(), postCreateForm.getBody(), postCreateForm.getCategory(), postCreateForm.getTags() == null ? Collections.emptySet():  postCreateForm.getTags() , postCreateForm.getMovies());
+        return new ModelAndView("redirect:/post/" + post);
     }
 }

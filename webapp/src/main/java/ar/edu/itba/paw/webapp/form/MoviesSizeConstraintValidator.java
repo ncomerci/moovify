@@ -9,6 +9,6 @@ public class MoviesSizeConstraintValidator implements ConstraintValidator<Movies
    }
 
    public boolean isValid(Set<Long> movies, ConstraintValidatorContext context) {
-      return movies != null;
+      return movies != null && movies.size() < 20;
    }
 }

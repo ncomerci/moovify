@@ -29,8 +29,19 @@
             <form:input path="email"  class="uk-input uk-form-small" id="email-text" type="email" placeholder="${emailPlaceholder}"/>
         </form:label>
         <form:errors path="email" element="p" cssClass="error" />
-
     </div>
+
+    <div class="uk-margin-left uk-margin-bottom">
+        <form:label path="category" class="uk-form-label uk-text-secondary uk-margin-auto" for="category-select" ><spring:message code="post.create.newPostCategory"/></form:label>
+        <div class="uk-form-controls">
+            <form:select path="category"  class="uk-select" id="category-select">
+                <c:forEach items="${categories}" var="category">
+                    <option hidden disabled selected value> <spring:message code="post.create.selectCategory"/> </option>
+                    <option value="${category.id}"><spring:message code="${category.name}"/></option>
+                </c:forEach>
+            </form:select>
+            <form:errors path="category" element="p" cssClass="error"/>
+        </div>
 
     <div class="uk-margin-auto">
         <form:errors path="body" element="p" cssClass="error" />
