@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <html>
@@ -21,16 +22,14 @@
                     <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">
                         <c:out value="${tag}"/>
                     </a>
-                    </c:forEach>
-                </h3>
-                <p class="uk-article-meta">Category: <c:out value="${post.category.name}" /> </p>
-                <p class="uk-article-meta"> Written on
+                </c:forEach></h3>
+                <p class="uk-article-meta"> <spring:message code="post.view.written"/>
 <%--                TODO: Is there a better way to handle LocalDateTime formatting?    --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
                     <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                     <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
                 </p>
-                <p class="uk-article-meta"> <span data-uk-icon="icon: future" class="uk-margin-small-right"></span> Takes <c:out value="${post.readingTimeMinutes}"/> min reading.</p>
+                <p class="uk-article-meta"> <span data-uk-icon="icon: future" class="uk-margin-small-right"></span><spring:message code="post.view.minReading" arguments="${post.readingTimeMinutes}"/></p>
             </div>
             <hr>
             <div>

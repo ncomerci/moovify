@@ -1,9 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <html>
 <head>
-    <title>Title</title>
+    <title><spring:message code="search.posts.searchTitle" arguments="${query}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body>
@@ -15,7 +16,7 @@
         </div>
         <div class="uk-width-expand">
             <h1>
-                Search results for: <c:out value="${query}"/>
+            <spring:message code="search.posts.searchTitle" arguments="${query}"/>
             </h1>
         </div>
     </div>

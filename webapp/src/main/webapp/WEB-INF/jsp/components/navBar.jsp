@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
     <nav class="uk-navbar-container" uk-navbar>
@@ -10,13 +11,13 @@
                     <div class="uk-drop" data-uk-drop="mode: click; pos: right-center; offset: 0; boundary: #navbar">
                         <form action="<c:url value="/search" />" class="uk-search uk-search-navbar uk-width-1-1">
                             <label for="nav-search"></label>
-                            <input id="nav-search" name="query" class="uk-search-input" type="search" placeholder="Search..." >
-                            <button id="submit-navbar-search-button" class="uk-button uk-button-text" type="submit">Search</button>
+                            <input id="nav-search" name="query" class="uk-search-input" type="search" placeholder="<spring:message code="navbar.searchDots"/>" >
+                            <button id="submit-navbar-search-button" class="uk-button uk-button-text" type="submit"><spring:message code="navbar.search"/></button>
                         </form>
                     </div>
                 </li>
 <%--                <li class="nav-item"><a class="uk-light" href="<c:url value="/" />">Home</a></li>  --%>
-                <li class="uk-navbar-item"><a href="<c:url value="/post/create" />">Create Post</a></li>
+                <li class="uk-navbar-item"><a href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a></li>
             </ul>
 
         </div>

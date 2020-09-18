@@ -1,7 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 <html>
 <head>
-    <title>Moovify | Page not found</title>
+    <title><spring:message code="error.moovifyNotFound"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body>
@@ -9,8 +11,8 @@
 
 <main class="uk-container uk-container-large">
     <div class="uk-margin-auto">
-        <h1 class="uk-margin-auto uk-text-center uk-text-bold uk-margin-medium-top">ERROR 404</h1>
-        <h1 class="uk-margin-auto uk-text-center uk-text-large uk-margin-remove-top mid-bold">Page not found</h1>
+        <h1 class="uk-margin-auto uk-text-center uk-text-bold uk-margin-medium-top"><spring:message code="error.error404"/></h1>
+        <h1 class="uk-margin-auto uk-text-center uk-text-large uk-margin-remove-top mid-bold"><spring:message code="error.pageNotFound"/></h1>
     </div>
     <br>
     <div class="uk-margin-auto">
@@ -18,7 +20,7 @@
                 type="button"
                 onclick="goBack()"
         >
-            Go back
+            <spring:message code="error.goBack"/>
         </button>
     </div>
 
