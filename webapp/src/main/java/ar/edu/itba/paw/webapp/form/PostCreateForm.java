@@ -14,9 +14,8 @@ public class PostCreateForm {
     @Email
     private String email;
 
-    @Size( min = 6, max = 200)
+    @Size( min = 1, max = 100000)
     private String body;
-
 
     @MaxTagsSizeConstraint
     private Set<String> tags;

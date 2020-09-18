@@ -55,7 +55,7 @@ public class PostController {
             return showPostCreateForm(postCreateForm);
         }
 
-        final Post post = postService.register(postCreateForm.getTitle(), postCreateForm.getEmail(), postCreateForm.getBody(), postCreateForm.getTags() == null ? Collections.emptySet():  postCreateForm.getTags() , postCreateForm.getMovies() );
+        final Post post = postService.register(postCreateForm.getTitle(), postCreateForm.getEmail(), postCreateForm.getBody(), postCreateForm.getTags() == null ? Collections.emptySet():  postCreateForm.getTags() , postCreateForm.getMovies());
         return new ModelAndView("redirect:/post/" + post.getId());
     }
 
