@@ -25,7 +25,7 @@ public class MoovifyUserDetailsService implements UserDetailsService {
         User user = userService.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username + "not found"));
 
         Collection<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
         return new org.springframework.security.core.userdetails.User(username, user.getPassword(), authorities);
     }

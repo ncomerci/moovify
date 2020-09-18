@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.security.Principal;
+
 @Controller
 public class UserController {
 
@@ -47,6 +49,17 @@ public class UserController {
         final ModelAndView mv = new ModelAndView("user/view");
 
         mv.addObject("user", userService.findById(userId)
+                .orElseThrow(UserNotFoundException::new));
+
+        return mv;
+    }
+
+    @RequestMapping(path = "/user/profile", method = RequestMethod.GET)
+    public ModelAndView view(Principal principal) {
+
+        final ModelAndView mv = new ModelAndView("user/profile");
+
+        mv.addObject("user", userService.findByUsername(principal.getName())
                 .orElseThrow(UserNotFoundException::new));
 
         return mv;
