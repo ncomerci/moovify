@@ -1,4 +1,4 @@
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+
 <%--
   Created by IntelliJ IDEA.
   User: tobias
@@ -8,6 +8,8 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -26,28 +28,9 @@
     <h1 class="uk-article-title uk-margin-auto uk-text-center uk-text-primary"><spring:message code="post.create.newPost"/></h1>
     <hr class="uk-divider-icon">
 </div>
-
-<form method="post" class="uk-form-horizontal uk-margin-auto uk-padding-large uk-padding-remove-vertical" action="<c:url value="/post/create" />" id="new-post-form">
-
-    <div class="uk-margin-left uk-margin-bottom" >
-        <label class="uk-form-label uk-text-secondary uk-margin-auto" for="title-text"><spring:message code="post.create.newPostTitle"/></label>
-        <div class="uk-form-controls">
-            <input name="title" class="uk-input uk-form-small" id="title-text" type="text" placeholder="<spring:message code="post.create.titlePlaceholder"/>" required />
-        </div>
-    </div>
-
-    <div class="uk-margin-left uk-margin-bottom">
-        <label class="uk-form-label uk-text-secondary uk-margin-auto" for="email-text"><spring:message code="post.create.newPostEmail"/></label>
-        <div class="uk-form-controls">
-            <input name="email" class="uk-input uk-form-small" id="email-text" type="email" placeholder="<spring:message code="post.create.emailPlaceholder"/>" required />
-        </div>
-    </div>
-
-    <div class="uk-margin-auto">
-        <label for="create-post-data"></label>
-        <textarea id="create-post-data" name="body" required ></textarea>
-    </div>
-</form>
+<div>
+    <jsp:include page="form.jsp"/>
+</div>
     <div class="uk-text-center">
         <button id="open-modal-button" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="button"><spring:message code="post.create.createButton"/></button>
     </div>
@@ -58,7 +41,7 @@
         <p class="uk-text-right uk-margin-remove">
             <button class="uk-modal-close" type="button" uk-close></button>
         </p>
-        <h2 class="uk-modal-title uk-margin-remove-top"><spring:message code="post.create.modal.moviewDiscussed"/></h2>
+        <h2 class="uk-modal-title uk-margin-remove-top"><spring:message code="post.create.modal.moviesDiscussed"/></h2>
         <div>
             <div>
                 <label for="add-movie-input" class="uk-margin-bottom" ></label>

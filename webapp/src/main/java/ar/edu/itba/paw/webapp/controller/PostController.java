@@ -5,14 +5,14 @@ import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
+import ar.edu.itba.paw.webapp.form.PostCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -40,28 +40,23 @@ public class PostController {
         return mv;
     }
 
-    @RequestMapping(path = "/post/create", method = RequestMethod.GET)
-    public ModelAndView write() {
 
+    @RequestMapping(path = "/post/create", method = RequestMethod.GET )
+    public ModelAndView showPostCreateForm(@ModelAttribute("postCreateForm") final PostCreateForm postCreateForm) {
         final ModelAndView mv = new ModelAndView("post/create");
         mv.addObject("movies", movieService.getAllMovies());
 
         return mv;
     }
-    // TODO unificar tags y movies, uno es collection y el otro es set
-    @RequestMapping(path = "/post/create" , method = RequestMethod.POST)
-    public ModelAndView create(@RequestParam final String title, @RequestParam final String email,
-                               @RequestParam final String body, @RequestParam(value = "tags[]" , required = false) Collection<String> tags, @RequestParam(value = "movies[]", required = false) Set<Long> movies){
 
-        // movies default value is an empty Set. (Overrides Spring default value of null)
-        if(movies == null)
-            movies = Collections.emptySet();
+    @RequestMapping(path = "/post/create", method = RequestMethod.POST )
+    public ModelAndView showPostCreateForm(@Valid @ModelAttribute("postCreateForm") final PostCreateForm postCreateForm, final BindingResult errors) {
+        if (errors.hasErrors()) {
+            return showPostCreateForm(postCreateForm);
+        }
 
-        if(tags == null)
-            tags = Collections.emptySet();
-
-        final Post post = postService.register(title, email, body, tags, movies);
+        final Post post = postService.register(postCreateForm.getTitle(), postCreateForm.getEmail(), postCreateForm.getBody(), postCreateForm.getTags() == null ? Collections.emptySet():  postCreateForm.getTags() , postCreateForm.getMovies() );
         return new ModelAndView("redirect:/post/" + post.getId());
-
     }
+
 }
