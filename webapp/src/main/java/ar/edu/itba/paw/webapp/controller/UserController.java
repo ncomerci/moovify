@@ -59,6 +59,7 @@ public class UserController {
         return mv;
     }
 
+    // TODO: NOT WORKING!!!11!!!
     @RequestMapping(path = "/user/profile", method = RequestMethod.GET)
     public ModelAndView view(Principal principal) {
 

@@ -40,7 +40,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetails).passwordEncoder(passwordEncoder());
     }
 
-    // TODO: Hay algo mal, te manda a login la primera vez que entras
+    // TODO: Hay algo mal, te manda a login cuando tenes una cookie invalida (reseteo el server)
+    // TODO: Make a redirect, change browser url
     @Override
     protected void configure(HttpSecurity http) throws Exception {
             http
@@ -49,7 +50,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                 .and().authorizeRequests()
                     .antMatchers("/login", "/user/create").anonymous()
-                    .antMatchers("/user/{userId}").anonymous()
+                    .antMatchers("/user/{userId:[\\d+]}").permitAll()
                     .antMatchers("/user/**").hasRole("USER")
                     .antMatchers("/post/create").hasRole("USER")
                     .antMatchers("/movie/create").hasRole("ADMIN")
@@ -71,7 +72,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .logoutSuccessUrl("/")
 
                 .and().exceptionHandling()
-                    // TODO: Make a redirect, change browser url
                     .accessDeniedPage("/")
 
                 .and().csrf().disable();
