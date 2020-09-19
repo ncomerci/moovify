@@ -1713,7 +1713,7 @@ select.uk-form-width-xsmall {
   /* 6 */
   background-repeat: no-repeat;
   background-position: 50% 50%;
-  border: 1px solid #cccccc;
+  border: 1px solid #30475e;
   transition: 0.2s ease-in-out;
   transition-property: background-color, border;
 }
@@ -2428,7 +2428,7 @@ select.uk-form-width-xsmall {
 /* Size modifier
  ========================================================================== */
 .uk-container-xsmall {
-  max-width: 750px;
+  max-width: 500px;
 }
 .uk-container-small {
   max-width: 900px;

@@ -12,45 +12,43 @@
 
 <html>
 <head>
-<title><spring:message code="user.login"/></title>
+    <title><spring:message code="user.login"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 
-    </head>
-    <body>
+</head>
+<body>
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
-    <div>
-    <form action="${action}" method="post" >
-        <div>
-            <label >
-                <spring:message code="user.login.enterUsername"/>
-                <input name="username"  type="text" placeholder="<spring:message code="user.create.Username"/>"/>
-            </label>
-        </div>
-
-        <div>
-            <label>
-                <spring:message code="user.login.enterPassword"/>
-                <input name="password" type="password" placeholder="<spring:message code="user.create.Password"/>" />
-            </label>
-            <c:if test="${param.error != null}">
-                <div id="error">
-                    <p class="uk-text-danger"><spring:message code="user.login.badCredentials"/></p>
+    <div class="uk-container uk-container-xsmall uk-margin-medium-top">
+        <form action="${action}" method="post" >
+            <fieldset class="uk-fieldset">
+                <legend class="uk-legend uk-text-uppercase uk-text-center uk-text-bold uk-text-large uk-text-primary"><spring:message code="user.login.loginTitle"/></legend>
+                <div class="uk-margin">
+                    <label>
+                        <input class="uk-input" name="username" type="text" placeholder="<spring:message code="user.create.Username"/>"/>
+                    </label>
                 </div>
-            </c:if>
+                <div class="uk-margin">
+                    <label>
+                        <input class="uk-input" name="password" type="password" placeholder="<spring:message code="user.create.Password"/>" />
+                    </label>
+                    <c:if test="${param.error != null}">
+                        <div id="error">
+                            <p class="uk-text-danger"><spring:message code="user.login.badCredentials"/></p>
+                        </div>
+                    </c:if>
+                </div>
+                <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid uk-align-center">
+                    <label class="uk-text-center">
+                        <input class="uk-checkbox" type="checkbox">
+                        <span class="uk-text-primary"><spring:message code="user.login.rememberMe"/></span>
+                    </label>
+                </div>
+                <div class="uk-text-center">
+                    <input class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="submit" value="<spring:message code="user.login.loginTitle"/>" />
+                </div>
+            </fieldset>
+        </form>
         </div>
 
-        <div>
-            <label>
-                <spring:message code="user.login.rememberMe"/>
-                <input name="remember-me" type="checkbox" />
-            </label>
-        </div>
-
-        <div>
-            <input type="submit" value="Login!" />
-        </div>
-    </form>
-    </div>
-
-    </body>
-    </html>
+</body>
+</html>
