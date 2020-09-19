@@ -4,8 +4,23 @@ CREATE TABLE IF NOT EXISTS USERS
     creation_date   TIMESTAMP    NOT NULL,
     username        VARCHAR(50)  UNIQUE NOT NULL,
     password        VARCHAR(200) NOT NULL,
-    name            VARCHAR(50) NOT NULL,
+    name            VARCHAR(50)  NOT NULL,
     email           VARCHAR(200) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS ROLES
+(
+    role_id SERIAL      PRIMARY KEY,
+    role    VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS USER_ROLE
+(
+    user_id    INTEGER     NOT NULL,
+    role_id    INTEGER     NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id),
+    FOREIGN KEY (role_id) REFERENCES ROLES (role_id)
 );
 
 CREATE TABLE IF NOT EXISTS POST_CATEGORY

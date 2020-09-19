@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.models;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 public class User {
 
@@ -10,14 +11,16 @@ public class User {
     private final String password;
     private final String name;
     private final String email;
+    private final Collection<Role> roles;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email) {
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, Collection<Role> roles) {
         this.id = id;
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
+        this.roles = roles;
     }
 
     public long getId() {
@@ -42,5 +45,9 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
     }
 }

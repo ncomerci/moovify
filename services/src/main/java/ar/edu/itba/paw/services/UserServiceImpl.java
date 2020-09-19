@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -16,11 +18,15 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDao userDao;
 
+    // All users are created with this role by default
+    private static final String defaultUserRole = "ROLE_USER";
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Override
     public User register(String username, String password, String name, String email) {
-        return userDao.register(username, passwordEncoder.encode(password), name, email);
+        return userDao.register(username, passwordEncoder.encode(password), name, email, Collections.singletonList(defaultUserRole));
     }
 
     @Override
