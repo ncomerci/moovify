@@ -123,6 +123,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public Optional<User> findByEmail(String email) {
+        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".email = ?",
+                new Object[]{ email }, USER_ROW_MAPPER).stream().findFirst();
+    }
+
+    @Override
     public Collection<User> getAllUsers() {
         return jdbcTemplate.query(
                 SELECT_FROM_USERS, USER_ROW_MAPPER);

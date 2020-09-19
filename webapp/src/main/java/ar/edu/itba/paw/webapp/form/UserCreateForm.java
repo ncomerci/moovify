@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 public class UserCreateForm {
 
     @Size(min = 6, max = 50)
+    @UniqueUsername
     @Pattern(regexp = "[a-zA-Z0-9#_]+")
     private String username;
 
@@ -22,6 +23,7 @@ public class UserCreateForm {
     private String name;
 
     @Email
+    @UniqueEmail
     private String email;
 
     public String getUsername() {
