@@ -46,35 +46,34 @@ public class SearchServiceImpl implements SearchService {
         EnumSet<SearchOptions> options = EnumSet.noneOf(SearchOptions.class);
         PostDao.SortCriteria sc;
 
-        if(category != null && categoriesOptions.contains(category) ){
+        if(category != null && categoriesOptions.contains(category))
             options.add(SearchOptions.BY_CATEGORY);
-        }
 
-        if(period != null && periodOptions.containsKey(period)){
+
+        if(period != null && periodOptions.containsKey(period))
             options.add(SearchOptions.OLDER_THAN);
-        }
 
-        if(sortCriteria != null && sortCriteriaMap.containsKey(sortCriteria)){
+
+        if(sortCriteria != null && sortCriteriaMap.containsKey(sortCriteria))
             sc = sortCriteriaMap.get(sortCriteria);
-        }
-        else{
-            sc = sortCriteriaMap.get("default");
-        }
 
-        if(options.equals(EnumSet.noneOf(SearchOptions.class))){
+        else
+            sc = sortCriteriaMap.get("default");
+
+
+        if(options.equals(EnumSet.noneOf(SearchOptions.class)))
             return postDao.searchPosts(query, fetchRelation, sc);
-        }
-        else if(options.equals(EnumSet.of(SearchOptions.OLDER_THAN))){
+
+        else if(options.equals(EnumSet.of(SearchOptions.OLDER_THAN)))
             return postDao.searchPostsOlderThan(query, periodOptions.get(period), fetchRelation, sc);
-        }
-        else if(options.equals(EnumSet.of(SearchOptions.BY_CATEGORY))){
+
+        else if(options.equals(EnumSet.of(SearchOptions.BY_CATEGORY)))
             return postDao.searchPostsByCategory(query, category, fetchRelation, sc);
-        }
-        else if(options.equals(EnumSet.of(SearchOptions.BY_CATEGORY, SearchOptions.OLDER_THAN))){
+
+        else if(options.equals(EnumSet.of(SearchOptions.BY_CATEGORY, SearchOptions.OLDER_THAN)))
             return postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptions.get(period), fetchRelation, sc);
-        }
-        else{
+
+        else
             return new ArrayList<>();
-        }
     }
 }
