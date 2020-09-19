@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface UserDao {
 
-    User register(String username, String password, String name, String email);
+    User register(String username, String password, String name, String email, Collection<String> roleNames);
 
     Optional<User> findById(long id);
 

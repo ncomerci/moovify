@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET)
-    public ModelAndView view(@PathVariable final long userId) {
+    public ModelAndView view(@PathVariable final long userId, Principal principal) {
 
         final ModelAndView mv = new ModelAndView("user/view");
 
