@@ -40,7 +40,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Collection<Post> searchPosts(String query, String category, String period, String sortCriteria) {
+    public Optional<Collection<Post>> searchPosts(String query, String category, String period, String sortCriteria) {
 
         EnumSet<PostDao.FetchRelation> fetchRelation = EnumSet.noneOf(PostDao.FetchRelation.class);
         EnumSet<SearchOptions> options = EnumSet.noneOf(SearchOptions.class);
@@ -62,19 +62,19 @@ public class SearchServiceImpl implements SearchService {
         }
 
         if(options.equals(EnumSet.noneOf(SearchOptions.class))){
-            return postDao.searchPosts(query, fetchRelation, sc);
+            return Optional.of(postDao.searchPosts(query, fetchRelation, sc));
         }
         else if(options.equals(EnumSet.of(SearchOptions.OLDER_THAN))){
-            return postDao.searchPostsOlderThan(query, periodOptions.get(period), fetchRelation, sc);
+            return Optional.of(postDao.searchPostsOlderThan(query, periodOptions.get(period), fetchRelation, sc));
         }
         else if(options.equals(EnumSet.of(SearchOptions.BY_CATEGORY))){
-            return postDao.searchPostsByCategory(query, category, fetchRelation, sc);
+            return Optional.of(postDao.searchPostsByCategory(query, category, fetchRelation, sc));
         }
         else if(options.equals(EnumSet.of(SearchOptions.BY_CATEGORY, SearchOptions.OLDER_THAN))){
-            return postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptions.get(period), fetchRelation, sc);
+            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptions.get(period), fetchRelation, sc));
         }
         else{
-            return new ArrayList<>();
+            return Optional.empty();
         }
     }
 }

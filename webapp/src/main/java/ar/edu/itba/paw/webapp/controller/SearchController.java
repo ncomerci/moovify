@@ -2,14 +2,14 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.webapp.exceptions.NonExistingSearchCriteriaException;
+import ar.edu.itba.paw.webapp.form.SearchPostsForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.Collection;
 
 
 @Controller
@@ -19,14 +19,13 @@ public class SearchController {
     private SearchService searchService;
 
     @RequestMapping(path = "/search/posts/", method = RequestMethod.GET)
-    public ModelAndView searchPosts(@RequestParam() final String query,
-                                    @RequestParam(value = "sort-criteria", defaultValue = "newest") final String sortCriteria,
-                                    @RequestParam(value = "post-category", defaultValue = "all") final String postCategory,
-                                    @RequestParam(value = "post-age", defaultValue = "all-time") final String postAge) {
+    public ModelAndView searchPosts(@ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm) {
 
         final ModelAndView mv = new ModelAndView("search/posts");
-        mv.addObject("query", query);
-        mv.addObject("posts", searchService.searchPosts(query, postCategory, postAge, sortCriteria));
+
+        mv.addObject("query", searchPostsForm.getQuery());
+        mv.addObject("posts",
+                searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(), searchPostsForm.getSortCriteria()).orElseThrow(NonExistingSearchCriteriaException::new));
         return mv;
     }
 

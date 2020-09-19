@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface SearchService {
 
-    Collection<Post> searchPosts(String query, String category, String period, String sortCriteria);
+    Optional<Collection<Post>> searchPosts(String query, String category, String period, String sortCriteria);
 
 }

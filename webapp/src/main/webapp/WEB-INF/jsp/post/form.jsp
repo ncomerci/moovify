@@ -36,8 +36,8 @@
         <div class="uk-form-controls">
             <form:select path="category"  class="uk-select" id="category-select">
                 <c:forEach items="${categories}" var="category">
-                    <option hidden disabled selected value> <spring:message code="post.create.selectCategory"/> </option>
-                    <option value="${category.id}"><spring:message code="${category.name}"/></option>
+                    <form:option value="default"> <spring:message code="post.create.selectCategory"/> </form:option  >
+                    <form:option value="${category.id}"><spring:message code="${category.name}"/></form:option>
                 </c:forEach>
             </form:select>
             <form:errors path="category" element="p" cssClass="error"/>
