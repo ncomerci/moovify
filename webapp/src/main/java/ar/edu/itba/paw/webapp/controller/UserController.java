@@ -57,9 +57,6 @@ public class UserController {
                                   HttpServletRequest request, final RedirectAttributes redirectAttributes) {
 
         if(bindingResult.hasErrors()){
-            // TODO: Delete comment ? (tobi)
-            /*if(bindingResult.hasGlobalErrors())
-                bindingResult.addError(new FieldError(bindingResult.getObjectName(), "password", "{javax.validation.constraints.PasswordEqualConstraint.message}"));*/
             return showUserCreateForm(userCreateForm);
         }
 

@@ -16,14 +16,6 @@
     <%--@elvariable id="userCreateForm" type=""--%>
     <form:form modelAttribute="userCreateForm" action="${action}" method="post">
         <div>
-           <%-- <spring:hasBindErrors name="userCreateForm">
-                <c:forEach var="error" items="${errors.globalErrors}">
-                    <b><spring:message message="${error}" /></b>
-                    <br/>
-                </c:forEach>
-            </spring:hasBindErrors>--%>
-        </div>
-        <div>
             <form:label path="username">
                 <spring:message code="user.create.Username"/>
                 <spring:message code="user.create.Username" var="username"/>
