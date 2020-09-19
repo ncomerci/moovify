@@ -40,8 +40,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetails).passwordEncoder(passwordEncoder());
     }
 
+    // Spring Security Unresolved Issues
     // TODO: Hay algo mal, te manda a login cuando tenes una cookie invalida (reseteo el server)
     // TODO: Make a redirect, change browser url
+    // TODO: Login after create
     @Override
     protected void configure(HttpSecurity http) throws Exception {
             http
