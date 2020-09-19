@@ -1,10 +1,19 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.UserCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,7 +27,9 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class UserController {
@@ -26,11 +37,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    @Lazy
+    AuthenticationManager authManager;
+
     @RequestMapping(path = "/login", method = RequestMethod.GET)
     public ModelAndView login() {
-        final ModelAndView mv = new ModelAndView("user/login");
-
-        return mv;
+        return new ModelAndView("user/login");
     }
 
     @RequestMapping(path = "/user/create", method = RequestMethod.GET)
@@ -41,7 +54,7 @@ public class UserController {
 
     @RequestMapping(path = "/user/create", method = RequestMethod.POST)
     public ModelAndView register(@Valid @ModelAttribute("userCreateForm") final UserCreateForm userCreateForm, final BindingResult bindingResult,
-                                  final RedirectAttributes redirectAttributes) {
+                                  HttpServletRequest request, final RedirectAttributes redirectAttributes) {
 
         if(bindingResult.hasErrors()){
             // TODO: Delete comment ? (tobi)
@@ -52,11 +65,10 @@ public class UserController {
 
         final User user = userService.register(userCreateForm.getUsername(), userCreateForm.getPassword(), userCreateForm.getName(), userCreateForm.getEmail());
 
-        //autoLogin(request, authManager, user);
+        autoLogin(request, authManager, user.getUsername(), userCreateForm.getPassword(), user.getRoles());
 
         redirectAttributes.addFlashAttribute("user", user);
 
-        // TODO: Temporal hasta tener autoLogin. Deberia ser a /user/profile
         return new ModelAndView("redirect:/user/" + user.getId());
     }
 
@@ -86,19 +98,18 @@ public class UserController {
     }
 
     // TODO: Consultar por una mejor manera, que involucre a Spring Security. No tengo AuthenticationManager
-//    private void autoLogin(HttpServletRequest request, AuthenticationManager authManager, User user) {
-//
-//        Authentication token = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(),
-//            user.getRoles().stream().map((role) -> new SimpleGrantedAuthority(role.getRole())).collect(Collectors.toList()));
-//
-//        Authentication authentication = authManager.authenticate(token);
-//
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        //this step is important, otherwise the new login is not in session which is required by Spring Security
-//        request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
-//
-//    }
+    private void autoLogin(HttpServletRequest request, AuthenticationManager authManager, String username, String password, Collection<Role> roles) {
 
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password,
+            roles.stream().map((role) -> new SimpleGrantedAuthority(role.getRole())).collect(Collectors.toList()));
 
+        token.setDetails(new WebAuthenticationDetails(request));
+
+        Authentication authentication = authManager.authenticate(token);
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        //this step is important, otherwise the new login is not in session which is required by Spring Security
+        request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+    }
 }
