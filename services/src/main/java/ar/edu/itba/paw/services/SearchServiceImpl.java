@@ -87,26 +87,26 @@ public class SearchServiceImpl implements SearchService {
 
     private Map<Integer, Map<Integer, PostFindMethod>> initializeFindMethodsMap() {
         Map<Integer, Map<Integer, PostFindMethod>> resultMap = new HashMap<>();
-
-        // Newest
-        resultMap.put(SortCriteria.NEWEST.id, new HashMap<>());
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id, postDao::findPostsByTitleOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_TAGS.id, postDao::findPostsByTagsOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByMoviesOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id, postDao::findPostsByTitleAndTagsOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndMoviesOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTagsAndMoviesOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndTagsAndMoviesOrderByNewest);
-
-        // Oldest
-        resultMap.put(SortCriteria.OLDEST.id, new HashMap<>());
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id , postDao::findPostsByTitleOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_TAGS.id, postDao::findPostsByTagsOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByMoviesOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id, postDao::findPostsByTitleAndTagsOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndMoviesOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTagsAndMoviesOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndTagsAndMoviesOrderByOldest);
+//
+//        // Newest
+//        resultMap.put(SortCriteria.NEWEST.id, new HashMap<>());
+//        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id, postDao::findPostsByTitleOrderByNewest);
+//        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_TAGS.id, postDao::findPostsByTagsOrderByNewest);
+//        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByMoviesOrderByNewest);
+//        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id, postDao::findPostsByTitleAndTagsOrderByNewest);
+//        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndMoviesOrderByNewest);
+//        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTagsAndMoviesOrderByNewest);
+//        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndTagsAndMoviesOrderByNewest);
+//
+//        // Oldest
+//        resultMap.put(SortCriteria.OLDEST.id, new HashMap<>());
+//        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id , postDao::findPostsByTitleOrderByOldest);
+//        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_TAGS.id, postDao::findPostsByTagsOrderByOldest);
+//        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByMoviesOrderByOldest);
+//        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id, postDao::findPostsByTitleAndTagsOrderByOldest);
+//        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndMoviesOrderByOldest);
+//        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTagsAndMoviesOrderByOldest);
+//        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndTagsAndMoviesOrderByOldest);
 
         return resultMap;
     }
@@ -123,6 +123,11 @@ public class SearchServiceImpl implements SearchService {
                 .get(filterCollection.stream().map(FilterCriteria::getId).reduce(0, Integer::sum))
                 .find(query, EnumSet.noneOf(PostDao.FetchRelation.class))
         );
+    }
+
+    @Override
+    public Collection<Post> searchPosts(String query, String category, String period, String sortCriteria) {
+        return null;
     }
 
     @FunctionalInterface
