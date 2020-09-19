@@ -45,7 +45,7 @@
 
     <javax.validation-api.version>1.0.0.GA</javax.validation-api.version>
     <org.hibernate.validator>4.3.1.Final</org.hibernate.validator>
-
+    <org.passay.version>1.0</org.passay.version>
   </properties>
 
 
@@ -182,6 +182,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${org.hibernate.validator}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.passay</groupId>
+        <artifactId>passay</artifactId>
+        <version>${org.passay.version}</version>
       </dependency>
 
     </dependencies>

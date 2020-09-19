@@ -3,14 +3,16 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.form.UserCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.security.Principal;
 
 @Controller
@@ -27,18 +29,21 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/create", method = RequestMethod.GET)
-    public ModelAndView create() {
-        final ModelAndView mv = new ModelAndView("user/create");
+    public ModelAndView showUserCreateForm(@ModelAttribute("userCreateForm") final UserCreateForm userCreateForm) {
 
-        return mv;
+        return new ModelAndView("user/create");
     }
 
     @RequestMapping(path = "/user/create", method = RequestMethod.POST)
-    public ModelAndView register(@RequestParam final String username, @RequestParam final String password,
-                                 @RequestParam final String name, @RequestParam final String email) {
+    public ModelAndView register(@Valid @ModelAttribute("userCreateForm") final UserCreateForm userCreateForm, final BindingResult bindingResult) {
 
-        final User user = userService.register(username, password, name, email);
+        if(bindingResult.hasErrors()){
+            /*if(bindingResult.hasGlobalErrors())
+                bindingResult.addError(new FieldError(bindingResult.getObjectName(), "password", "{javax.validation.constraints.PasswordEqualConstraint.message}"));*/
+            return showUserCreateForm(userCreateForm);
+        }
 
+        final User user = userService.register(userCreateForm.getUsername(), userCreateForm.getPassword(), userCreateForm.getName(), userCreateForm.getEmail());
         // TODO: Solve better Post-Get with Flash Params
         return new ModelAndView("redirect:/user/" + user.getId());
     }
