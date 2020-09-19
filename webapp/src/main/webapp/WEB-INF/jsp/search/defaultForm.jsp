@@ -6,9 +6,7 @@
 
 <div class="uk-search uk-search-large">
     <span uk-search-icon></span>
-    <label>
-        <input class="uk-search-input" type="search" name="query" value="<c:out value="${query}"/>">
-    </label>
+    <input class="uk-search-input" type="search" name="query" value="<c:out value="${query}"/>">
 </div>
 <p class="uk-text-meta">
     <spring:message code="search.searchResults"/>

@@ -20,17 +20,13 @@ public class SearchController {
 
     @RequestMapping(path = "/search/posts/", method = RequestMethod.GET)
     public ModelAndView searchPosts(@RequestParam() final String query,
-                                    @RequestParam(value = "filter_criteria[]", defaultValue = "by_post_title") Collection<String> filterCriteria,
                                     @RequestParam(value = "sort-criteria", defaultValue = "newest") final String sortCriteria,
                                     @RequestParam(value = "post-category", defaultValue = "all") final String postCategory,
                                     @RequestParam(value = "post-age", defaultValue = "all-time") final String postAge) {
 
         final ModelAndView mv = new ModelAndView("search/posts");
-
         mv.addObject("query", query);
-        mv.addObject("posts",
-                searchService.findPostsBy(query, filterCriteria, sortCriteria)
-                        .orElseThrow(NonExistingSearchCriteriaException::new));
+        mv.addObject("posts", searchService.searchPosts(query, postCategory, postAge, sortCriteria));
         return mv;
     }
 
