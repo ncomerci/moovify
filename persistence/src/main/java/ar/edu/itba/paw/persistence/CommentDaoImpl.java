@@ -110,6 +110,9 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public Comment register(long postId, Long parentId, String body, String userMail) {
 
+        Objects.requireNonNull(body);
+        Objects.requireNonNull(userMail);
+
         body = body.trim();
         LocalDateTime creationDate = LocalDateTime.now();
 

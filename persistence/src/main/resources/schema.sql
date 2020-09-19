@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS POSTS
     creation_date TIMESTAMP    NOT NULL,
     title         VARCHAR(200) NOT NULL,
     email         VARCHAR(200) NOT NULL,
-    category_id   INTEGER  NOT NULL,
+    category_id   INTEGER NOT NULL,
     word_count    INTEGER      NOT NULL,
     body          TEXT         NOT NULL,
 
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS COMMENTS
     user_email    VARCHAR(320) NOT NULL,
     creation_date TIMESTAMP    NOT NULL,
     body          TEXT         NOT NULL,
-    FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id),
+    FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id)
 );
 
