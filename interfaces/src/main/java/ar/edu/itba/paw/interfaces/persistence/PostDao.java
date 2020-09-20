@@ -34,37 +34,3 @@ public interface PostDao {
 
     Collection<Post> searchPostsByCategoryAndOlderThan(String title, String category, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 }
-
-/*
-    Collection<Post> findPostsByMovieTitle(String movie_title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByPostAndMovieTitle(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTitleOrderByNewest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTitleOrderByOldest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByMoviesOrderByNewest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByMoviesOrderByOldest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTagsOrderByNewest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTagsOrderByOldest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTitleAndMoviesOrderByNewest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTitleAndMoviesOrderByOldest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTitleAndTagsOrderByNewest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTitleAndTagsOrderByOldest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTagsAndMoviesOrderByNewest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTagsAndMoviesOrderByOldest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTitleAndTagsAndMoviesOrderByNewest(String title, EnumSet<FetchRelation> includedRelations);
-
-    Collection<Post> findPostsByTitleAndTagsAndMoviesOrderByOldest(String title, EnumSet<FetchRelation> includedRelations);
- */

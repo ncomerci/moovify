@@ -1,56 +1,69 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
+import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.PostCategory;
+import ar.edu.itba.paw.services.exceptions.NonReachableStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SearchServiceImpl implements SearchService {
 
-    private final PostDao postDao;
+    @Autowired
+    private PostDao postDao;
 
     private enum SearchOptions{
         BY_CATEGORY, OLDER_THAN
     }
 
-    private final List<String> categoriesOptions = Arrays.asList("critique", "debate", "watchlist", "news");
-    private final Map<String, PostDao.SortCriteria> sortCriteriaMap;
-    private final Map<String, LocalDateTime> periodOptions;
+    private final List<String> categoriesOptions;
+    private final static Map<String, SortCriteria> sortCriteriaMap = getSortCriteriaMap();
+    private final static Map<String, LocalDateTime> periodOptionsMap = getPeriodOptionsMap();
 
-    @Autowired
-    public SearchServiceImpl(PostDao postDao) {
+    private static Map<String, SortCriteria> getSortCriteriaMap(){
+        Map<String, SortCriteria> sortCriteriaMap = new HashMap<>();
+        sortCriteriaMap.put("newest", SortCriteria.NEWEST);
+        sortCriteriaMap.put("oldest", SortCriteria.OLDEST);
+        sortCriteriaMap.put("default", SortCriteria.NEWEST);
+        return sortCriteriaMap;
+    }
 
-        this.postDao = postDao;
-
-        sortCriteriaMap = new HashMap<>();
-        sortCriteriaMap.put("newest", PostDao.SortCriteria.NEWEST);
-        sortCriteriaMap.put("oldest", PostDao.SortCriteria.OLDEST);
-        sortCriteriaMap.put("default", PostDao.SortCriteria.NEWEST);
-
-        periodOptions = new HashMap<>();
+    private static Map<String, LocalDateTime> getPeriodOptionsMap(){
+        Map<String, LocalDateTime> periodOptions = new HashMap<>();
         periodOptions.put("past-year", LocalDateTime.now().minusYears(1));
         periodOptions.put("past-month", LocalDateTime.now().minusMonths(1));
         periodOptions.put("past-week", LocalDateTime.now().minusWeeks(1));
         periodOptions.put("past-day", LocalDateTime.now().minusDays(1));
+        return periodOptions;
+    }
+
+    @Autowired
+    public SearchServiceImpl(PostCategoryDao postCategoryDao) {
+        categoriesOptions = postCategoryDao.getAllPostCategories().stream().map(PostCategory::getName).collect(Collectors.toList());
     }
 
     @Override
     public Collection<Post> searchPosts(String query, String category, String period, String sortCriteria) {
 
-        EnumSet<PostDao.FetchRelation> fetchRelation = EnumSet.noneOf(PostDao.FetchRelation.class);
-        EnumSet<SearchOptions> options = EnumSet.noneOf(SearchOptions.class);
-        PostDao.SortCriteria sc;
+        Objects.requireNonNull(query);
+
+        final EnumSet<PostDao.FetchRelation> fetchRelation = EnumSet.noneOf(PostDao.FetchRelation.class);
+        final EnumSet<SearchOptions> options = EnumSet.noneOf(SearchOptions.class);
+        final SortCriteria sc;
 
         if(category != null && categoriesOptions.contains(category) ){
             options.add(SearchOptions.BY_CATEGORY);
         }
 
-        if(period != null && periodOptions.containsKey(period)){
+        if(period != null && periodOptionsMap.containsKey(period)){
             options.add(SearchOptions.OLDER_THAN);
         }
 
@@ -61,20 +74,19 @@ public class SearchServiceImpl implements SearchService {
             sc = sortCriteriaMap.get("default");
         }
 
-        if(options.equals(EnumSet.noneOf(SearchOptions.class))){
+        if(options.isEmpty()){
             return postDao.searchPosts(query, fetchRelation, sc);
         }
-        else if(options.equals(EnumSet.of(SearchOptions.OLDER_THAN))){
-            return postDao.searchPostsOlderThan(query, periodOptions.get(period), fetchRelation, sc);
+        else if(options.size() == 1){
+            if(options.contains(SearchOptions.OLDER_THAN))
+                return postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), fetchRelation, sc);
+            else if(options.contains(SearchOptions.BY_CATEGORY))
+                return postDao.searchPostsByCategory(query, category, fetchRelation, sc);
         }
-        else if(options.equals(EnumSet.of(SearchOptions.BY_CATEGORY))){
-            return postDao.searchPostsByCategory(query, category, fetchRelation, sc);
+        else if(options.contains(SearchOptions.OLDER_THAN) && options.contains(SearchOptions.BY_CATEGORY) && options.size() == 2){
+            return postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), fetchRelation, sc);
         }
-        else if(options.equals(EnumSet.of(SearchOptions.BY_CATEGORY, SearchOptions.OLDER_THAN))){
-            return postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptions.get(period), fetchRelation, sc);
-        }
-        else{
-            return new ArrayList<>();
-        }
+
+        throw new NonReachableStateException();
     }
 }
