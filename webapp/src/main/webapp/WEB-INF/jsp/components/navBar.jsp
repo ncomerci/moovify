@@ -20,24 +20,32 @@
                 </li>
                 <li>
                     <a class="uk-padding-remove" href="">
-                    <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
+                        <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
                     </a>
                     <div class="uk-navbar-dropdown">
                         <ul class="uk-nav uk-navbar-dropdown-nav">
                             <li>
                                 <sec:authorize access="!isAuthenticated()">
-                                    <a href="<c:url value="/login"/>">Login</a>
+                                    <a class="uk-text-center" href="<c:url value="/login"/>">
+                                        <button class="uk-button uk-button-primary uk-border-rounded user-login-button" type="button"><spring:message code="user.login"/></button>
+                                    </a>
                                 </sec:authorize>
                                 <sec:authorize access="isAuthenticated()">
-                                    <a href="<c:url value="/user/profile"/>">My profile</a>
+                                    <a class="uk-text-center" href="<c:url value="/user/profile"/>">
+                                        <button class="uk-button uk-button-default uk-border-rounded user-profile-button" type="button"><spring:message code="user.profile"/></button>
+                                    </a>
                                 </sec:authorize>
                             </li>
                             <li>
                                 <sec:authorize access="!isAuthenticated()">
-                                    <a href="<c:url value="/user/create"/>">Sign up</a>
+                                    <a class="uk-text-center" href="<c:url value="/user/create"/>">
+                                        <button class="uk-button uk-button-secondary uk-border-rounded" type="button"><spring:message code="user.signup"/></button>
+                                    </a>
                                 </sec:authorize>
                                 <sec:authorize access="isAuthenticated()">
-                                    <a href="<c:url value="/logout"/>">Logout</a>
+                                    <a class="uk-text-center" href="<c:url value="/logout"/>">
+                                        <button class="uk-button uk-button-default uk-border-rounded logout-button" type="button"><spring:message code="user.logout"/></button>
+                                    </a>
                                 </sec:authorize>
                             </li>
                         </ul>
