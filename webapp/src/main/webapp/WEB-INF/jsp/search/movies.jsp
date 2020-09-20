@@ -21,7 +21,7 @@
     <dl class="uk-description-list ">
         <c:forEach items="${movies}" var="movie">
             <dt>
-                <a href="<c:url value="/post/${movie.id}"/>">
+                <a href="<c:url value="/movie/${movie.id}"/>">
                     <c:out value="${movie.title}"/>
                 </a>
             </dt>
