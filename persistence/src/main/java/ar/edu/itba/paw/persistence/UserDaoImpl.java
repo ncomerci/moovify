@@ -129,6 +129,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public Collection<User> searchUsers(String query) {
+        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".username ILIKE '%' || ? || '%'", new Object[]{query}, USER_ROW_MAPPER);
+    }
+
+    @Override
     public Collection<User> getAllUsers() {
         return jdbcTemplate.query(
                 SELECT_FROM_USERS, USER_ROW_MAPPER);

@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.webapp.exceptions.NonExistingSearchCriteriaException;
 import ar.edu.itba.paw.webapp.form.SearchPostsForm;
+import ar.edu.itba.paw.webapp.form.SearchUsersForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -39,12 +40,16 @@ public class SearchController {
     }
 
     @RequestMapping(path = "/search/users/", method = RequestMethod.GET)
-    public ModelAndView searchUsers(@RequestParam() final String query) {
+    public ModelAndView searchUsers(@ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm) {
 
         //TODO la vista esta vacia, no hay metodo que permita conseguir los usuarios
         // y tampoco hay un rendereado listo en la vista
         final ModelAndView mv = new ModelAndView("search/users");
-        mv.addObject("query", query);
+
+        mv.addObject("query", searchUsersForm.getQuery());
+        mv.addObject("users",
+                searchService.searchUsers(searchUsersForm.getQuery()).orElseThrow(NonExistingSearchCriteriaException::new));
+
         return mv;
     }
 
