@@ -1,5 +1,9 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.form.Annotations.PasswordsEqualConstraint;
+import ar.edu.itba.paw.webapp.form.Annotations.UniqueEmail;
+import ar.edu.itba.paw.webapp.form.Annotations.UniqueUsername;
+import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
 
 import javax.validation.constraints.Pattern;

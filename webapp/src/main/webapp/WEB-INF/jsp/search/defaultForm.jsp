@@ -1,12 +1,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ page contentType="text/html;charset=UTF-8" %>
 
 <jsp:useBean id="currentSearch" scope="request" type="java.lang.String"/>
 <jsp:useBean id="query" scope="request" type="java.lang.String"/>
 
 <div class="uk-search uk-search-large">
     <span uk-search-icon></span>
-    <input class="uk-search-input" type="search" name="query" value="<c:out value="${query}"/>">
+    <form:input path="query" class="uk-search-input" type="search"/>
 </div>
 <p class="uk-text-meta">
     <spring:message code="search.searchResults"/>
