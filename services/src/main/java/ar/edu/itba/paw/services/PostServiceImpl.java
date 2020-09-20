@@ -2,12 +2,11 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
+import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.interfaces.services.PostService;
 
 import java.util.Collection;
 import java.util.EnumSet;
@@ -24,8 +23,8 @@ public class PostServiceImpl implements PostService {
     private PostCategoryDao categoryDao;
 
     @Override
-    public long register(String title, String email, String body, long category, Set<String> tags, Set<Long> movies){
-        return postDao.register(title, email, body, category, tags, movies);
+    public long register(String title, String body, long category, long user, Set<String> tags, Set<Long> movies){
+        return postDao.register(title, body, category, user, tags, movies);
     }
 
     @Override

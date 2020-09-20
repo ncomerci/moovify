@@ -65,11 +65,6 @@
                             <c:out value="${post.title}"/>
                         </a>
                     </dt>
-                    <dd>
-                    <span class="uk-text-light uk-text-muted uk-text-small">
-                        <c:out value="${post.email}"/>
-                    </span>
-                    </dd>
                 </c:forEach>
 
             </dl>
