@@ -17,7 +17,7 @@ public class PostCategoryDaoImpl implements PostCategoryDao {
 
     private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
 
-    private static final RowMapper<PostCategory> POST_CATEGORY_ROW_MAPPER = (rs, rowNum) ->
+    public static final RowMapper<PostCategory> POST_CATEGORY_ROW_MAPPER = (rs, rowNum) ->
             new PostCategory(rs.getLong("category_id"), rs.getObject("creation_date", LocalDateTime.class),
                     rs.getString("name"));
 

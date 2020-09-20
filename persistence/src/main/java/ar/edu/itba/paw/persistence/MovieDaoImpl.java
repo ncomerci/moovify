@@ -67,7 +67,7 @@ public class MovieDaoImpl implements MovieDao {
         return jdbcTemplate.query(
                 "SELECT * FROM " + MOVIES +
                         " WHERE " + MOVIES + ".movie_id IN (" +
-                        "SELECT " + POST_MOVIE + ".movie_id FROM " + POST_MOVIE + " WHERE " + POSTS + ".post_id = ?)",
+                        "SELECT " + POST_MOVIE + ".movie_id FROM " + POST_MOVIE + " WHERE " + POST_MOVIE + ".post_id = ?)",
                 new Object[]{ postId }, MOVIE_ROW_MAPPER
         );
     }

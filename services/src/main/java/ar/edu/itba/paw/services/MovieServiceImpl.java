@@ -24,9 +24,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Movie register(String title, LocalDate premierDate) {
-        return movieDao.register(title, premierDate);
-    }
+    public Movie register(String title, LocalDate premierDate) { return movieDao.register(title, premierDate); }
 
     @Override
     public Collection<Movie> getAllMovies() {

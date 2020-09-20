@@ -246,7 +246,7 @@ public class PostDaoImpl implements PostDao {
             "LEFT OUTER JOIN " + COMMENTS + " ON " + POSTS + ".post_id = " + COMMENTS + ".post_id";
 
 
-    private static final ResultSetMonoConsumer<Map<Long, Post>> BASE_POST_ROW_MAPPER = (rs, idToPostMap) -> {
+    public static final ResultSetMonoConsumer<Map<Long, Post>> BASE_POST_ROW_MAPPER = (rs, idToPostMap) -> {
         final long post_id = rs.getLong("p_post_id");
 
         if (!idToPostMap.containsKey(post_id)) {
@@ -368,6 +368,11 @@ public class PostDaoImpl implements PostDao {
     @Override
     public long register(String title, String email, String body, long category, Set<String> tags, Set<Long> movies) {
 
+        Objects.requireNonNull(title);
+        Objects.requireNonNull(email);
+        Objects.requireNonNull(body);
+        Objects.requireNonNull(movies);
+
         body = body.trim();
         LocalDateTime creationDate = LocalDateTime.now();
         int wordCount = body.split("\\s+").length;
@@ -390,11 +395,13 @@ public class PostDaoImpl implements PostDao {
             postMoviesInsert.execute(map);
         }
 
-        for(String tag: tags){
-            map = new HashMap<>();
-            map.put("tag", tag);
-            map.put("post_id", postId);
-            tagsInsert.execute(map);
+        if(tags != null) {
+            for (String tag : tags) {
+                map = new HashMap<>();
+                map.put("tag", tag);
+                map.put("post_id", postId);
+                tagsInsert.execute(map);
+            }
         }
 
         return postId;
