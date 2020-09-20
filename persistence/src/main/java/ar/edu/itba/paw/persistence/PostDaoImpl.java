@@ -495,21 +495,21 @@ public class PostDaoImpl implements PostDao {
     }
     
     @Override
-    public Collection<Post> searchPosts(String title, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
+    public Collection<Post> searchPosts(String query, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
 
         FilterCriteria[] filterCriteria = new FilterCriteria[]{
                 FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS
         };
 
         Object[] args = new Object[]{
-                title, title, title,
+                query, query, query,
         };
 
         return searchPostsByIntersectingFilterCriteria(filterCriteria, args, includedRelations, sortCriteria);
     }
 
     @Override
-    public Collection<Post> searchPostsByCategory(String title, String category, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
+    public Collection<Post> searchPostsByCategory(String query, String category, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
 
         FilterCriteria[] filterCriteria = new FilterCriteria[]{
                 FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
@@ -517,7 +517,7 @@ public class PostDaoImpl implements PostDao {
         };
 
         Object[] args = new Object[]{
-                title, title, title,
+                query, query, query,
                 category
         };
 
@@ -525,7 +525,7 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Collection<Post> searchPostsOlderThan(String title, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
+    public Collection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
 
         FilterCriteria[] filterCriteria = new FilterCriteria[]{
                 FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
@@ -533,7 +533,7 @@ public class PostDaoImpl implements PostDao {
         };
 
         Object[] args = new Object[]{
-                title, title, title,
+                query, query, query,
                 Timestamp.valueOf(fromDate)
         };
 
@@ -541,7 +541,7 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Collection<Post> searchPostsByCategoryAndOlderThan(String title, String category, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
+    public Collection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
 
         FilterCriteria[] filterCriteria = new FilterCriteria[]{
                 FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
@@ -550,7 +550,7 @@ public class PostDaoImpl implements PostDao {
         };
 
         Object[] args = new Object[]{
-                title, title, title,
+                query, query, query,
                 category,
                 Timestamp.valueOf(fromDate)
         };

@@ -34,9 +34,8 @@ public class SearchController {
     public ModelAndView searchMovies(@RequestParam() final String query) {
 
         final ModelAndView mv = new ModelAndView("search/movies");
-        //TODO la vista esta vacia, no hay metodo que permita conseguir las peliculas
-        // y tampoco hay un rendereado listo en la vista
         mv.addObject("query", query);
+        mv.addObject("movies", searchService.searchMovies(query));
         return mv;
     }
 

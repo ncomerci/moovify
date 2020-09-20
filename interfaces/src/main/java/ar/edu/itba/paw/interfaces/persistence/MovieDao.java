@@ -15,4 +15,6 @@ public interface MovieDao {
     Collection<Movie> findMoviesByPostId(long postId);
 
     Collection<Movie> getAllMovies();
+
+    Collection<Movie> searchMovies(String query);
 }
