@@ -38,19 +38,14 @@
 
         <section id="posts">
             <h1 class="uk-heading-small"><spring:message code="user.view.Posts" arguments="${user.username}"/></h1>
-            <dl class="uk-description-list ">
-                <dt>
-                    <a>post uno</a>
-                </dt>
-                <dt>
-                    <a>post dos</a>
-                </dt>
-                <dt>
-                    <a>post tres</a>
-                </dt>
-                <dt>
-                    <a>post cuatro 5</a>
-                </dt>
+            <dl class="uk-description-list "><%--TODO cuando no hay posts se ve feo--%>
+                <c:forEach items="${posts}" var="post">
+                    <dt>
+                        <a href="<c:url value="/post/${post.id}"/>">
+                            <c:out value="${post.title}"/>
+                        </a>
+                    </dt>
+                </c:forEach>
             </dl>
         </section>
         <section id="hottest-posts">
