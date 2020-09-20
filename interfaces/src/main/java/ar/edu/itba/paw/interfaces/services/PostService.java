@@ -9,7 +9,7 @@ import java.util.Set;
 
 public interface PostService {
 
-    long register(String title, String email, String body, long category, Set<String> tags, Set<Long> movies);
+    long register(String title, String body, long category, long user, Set<String> tags, Set<Long> movies);
 
     Optional<Post> findPostById(long id);
 

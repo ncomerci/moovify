@@ -17,7 +17,6 @@
         <form method="post" action="<c:url value="/comment/create"/>">
             <input type="number" name="postId" class="uk-input uk-form-width-large" placeholder="<spring:message code="comment.create.postIdPlaceholder"/>" required />
             <input type="number" name="parentId" class="uk-input uk-form-width-large" placeholder="<spring:message code="comment.create.parentIdPlaceholder"/>" />
-            <input type="email" name="userEmail" class="uk-input uk-form-width-large" placeholder="<spring:message code="comment.create.emailPlaceholder"/>" required />
             <input type="text" name="body" class="uk-input uk-form-width-large" placeholder="<spring:message code="comment.create.writeCommentPlaceholder"/>" required />
             <input type="submit" value="Enviar"/>
         </form>

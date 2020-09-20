@@ -35,12 +35,13 @@ CREATE TABLE IF NOT EXISTS POSTS
     post_id       SERIAL       PRIMARY KEY,
     creation_date TIMESTAMP    NOT NULL,
     title         VARCHAR(200) NOT NULL,
-    email         VARCHAR(200) NOT NULL,
-    category_id   INTEGER  NOT NULL,
+    user_id       INTEGER      NOT NULL,
+    category_id   INTEGER      NOT NULL,
     word_count    INTEGER      NOT NULL,
     body          TEXT         NOT NULL,
 
-    FOREIGN KEY (category_id) REFERENCES POST_CATEGORY (category_id)
+    FOREIGN KEY (category_id) REFERENCES POST_CATEGORY (category_id),
+    FOREIGN KEY (user_id)     REFERENCES USERS (user_id)
 );
 
 
@@ -74,13 +75,15 @@ CREATE TABLE IF NOT EXISTS POST_MOVIE
 
 CREATE TABLE IF NOT EXISTS COMMENTS
 (
-    comment_id    SERIAL PRIMARY KEY,
+    comment_id    SERIAL       PRIMARY KEY,
     parent_id     INT,
     post_id       INT          NOT NULL,
-    user_email    VARCHAR(320) NOT NULL,
+    user_id       INTEGER      NOT NULL,
     creation_date TIMESTAMP    NOT NULL,
     body          TEXT         NOT NULL,
-    FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id),
-    FOREIGN KEY (post_id) REFERENCES POSTS (post_id)
+
+    FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES POSTS (post_id),
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
 );
 

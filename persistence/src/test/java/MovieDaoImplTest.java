@@ -11,15 +11,18 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 
 import javax.sql.DataSource;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -46,7 +49,10 @@ public class MovieDaoImplTest {
                 .usingGeneratedKeyColumns("movie_id");
     }
 
+
+
     @Test
+    @Sql(scripts = "classpath:clean-up.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testRegister() {
 //        1. precondiciones
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), "title = ?", MOVIE_TITLE);
@@ -65,11 +71,13 @@ public class MovieDaoImplTest {
     }
 
     @Test(expected = NullPointerException.class)
+    @Sql(scripts = "classpath:clean-up.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testInvalidRegister() {
         movieDao.register(null, null);
     }
 
     @Test(expected = DuplicateKeyException.class)
+    @Sql(scripts = "classpath:clean-up.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     public void testRegisterAlreadyExists() {
 //        1. precondiciones
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), "title = ?", MOVIE_TITLE);
@@ -80,7 +88,7 @@ public class MovieDaoImplTest {
         jdbcInsert.execute(map);
 
 //        2. ejercitar
-        Movie movie = movieDao.register(MOVIE_TITLE, RELEASE_DATE);
+        movieDao.register(MOVIE_TITLE, RELEASE_DATE);
 
 //        3. post-condiciones
         Assert.assertEquals(1,
@@ -89,4 +97,50 @@ public class MovieDaoImplTest {
 
     }
 
+    @Test
+    @Sql(scripts = "classpath:clean-up.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void testValidFindById() {
+//        1. precondiciones
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("creation_date", Timestamp.valueOf(LocalDateTime.now()));
+        map.put("title", "MOVIE_TITLE");
+        map.put("premier_date", RELEASE_DATE);
+        Number key = jdbcInsert.executeAndReturnKey(map);
+
+//        2. ejercitar
+        Optional<Movie> movie = movieDao.findById(key.longValue());
+
+//        3. post-condiciones
+        Assert.assertTrue(movie.isPresent());
+        Assert.assertEquals("MOVIE_TITLE", movie.get().getTitle());
+    }
+
+    @Test
+    @Sql("classpath:test_inserts.sql")
+    @Sql(scripts = "classpath:clean-up.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void testFindMoviesByPostId() {
+//        1. precondiciones
+
+//        2. ejercitar
+        ArrayList<Movie> movies = (ArrayList<Movie>) movieDao.findMoviesByPostId(1);
+
+//        3. post-condiciones
+        Assert.assertNotNull(movies);
+        Assert.assertEquals(JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POST_MOVIE.getTableName(), "post_id = 1"),
+                movies.size());
+    }
+
+    @Test
+    @Sql("classpath:test_inserts.sql")
+    @Sql(scripts = "classpath:clean-up.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void testGetAllMovies() {
+//        1. precondiciones
+
+//        2. ejercitar
+        Collection<Movie> movies = movieDao.getAllMovies();
+
+//        3. post-condiciones
+        Assert.assertNotNull(movies);
+        Assert.assertEquals(JdbcTestUtils.countRowsInTable(jdbcTemplate, TableNames.MOVIES.getTableName()), movies.size());
+    }
 }

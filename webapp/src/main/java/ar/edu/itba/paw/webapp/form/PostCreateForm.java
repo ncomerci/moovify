@@ -2,18 +2,12 @@ package ar.edu.itba.paw.webapp.form;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
-
-import org.hibernate.validator.constraints.Email;
-
 import java.util.Set;
 
 public class PostCreateForm {
 
     @Size( min = 6, max = 200)
     private String title;
-
-    @Email
-    private String email;
 
     @Size( min = 1, max = 100000)
     private String body;
@@ -33,14 +27,6 @@ public class PostCreateForm {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getBody() {

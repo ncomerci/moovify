@@ -59,10 +59,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                 .and().authorizeRequests()
                     .antMatchers("/login", "/user/create").anonymous()
-                    .antMatchers("/user/{userId:[\\d+]}").permitAll()
+                    .antMatchers("/user/{userId:[\\d]+}").permitAll()
                     .antMatchers("/user/**").hasRole("USER")
                     .antMatchers("/post/create").hasRole("USER")
-                    .antMatchers("/movie/create").hasRole("ADMIN")
+                    .antMatchers("/movie/create").hasRole("USER")
                     .antMatchers("/**").permitAll()
 
                 .and().formLogin()

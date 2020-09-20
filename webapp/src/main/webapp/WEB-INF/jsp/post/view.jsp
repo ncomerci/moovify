@@ -29,6 +29,7 @@
                     <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                     <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
                 </p>
+                <p class="uk-article-meta">Autor: <a href="<c:url value="/user/${post.user.id}" />"><c:out value="${post.user.name}" /></a></p>
                 <p class="uk-article-meta"> <span data-uk-icon="icon: future" class="uk-margin-small-right"></span><spring:message code="post.view.minReading" arguments="${post.readingTimeMinutes}"/></p>
             </div>
             <hr>
