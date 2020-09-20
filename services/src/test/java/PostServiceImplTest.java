@@ -17,7 +17,7 @@ import java.util.*;
 public class PostServiceImplTest {
     private static final Long CATEGORY_ID = 1L;
     private static final String TITLE = "POST TEST";
-    private static final String EMAIL = "abc@test.com";
+    private static final Long USER_ID = 1L;
     private static final String BODY = "testing";
     private static final Set<Long> MOVIES = new HashSet<>(Collections.singletonList(1L));
 
@@ -32,18 +32,18 @@ public class PostServiceImplTest {
 
     // TODO: Rehacer test
 
-//    @Test
-//    public void testRegister() {
-////        1. Setup: Establezco las pre-condiociones
-//        Mockito.when(dao.register(Mockito.eq(TITLE), Mockito.eq(EMAIL), Mockito.eq(BODY), Mockito.eq(CATEGORY_ID),Mockito.eq(null), Mockito.eq(MOVIES)))
-//                .thenReturn(2L);
-//
-////        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-//        final Long id = postService.register(TITLE, EMAIL, BODY, CATEGORY_ID, null, MOVIES);
-//
-////        3. Validaciones: Confirmo las postcondiciones
-//        Assert.assertEquals(new Long(2), id);
-//    }
+    @Test
+    public void testRegister() {
+//        1. Setup: Establezco las pre-condiociones
+        Mockito.when(dao.register(Mockito.eq(TITLE), Mockito.eq(BODY), Mockito.eq(CATEGORY_ID),Mockito.eq(USER_ID), Mockito.eq(null), Mockito.eq(MOVIES)))
+                .thenReturn(2L);
+
+//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
+        final Long id = postService.register(TITLE,  BODY, CATEGORY_ID, USER_ID,null, MOVIES);
+
+//        3. Validaciones: Confirmo las postcondiciones
+        Assert.assertEquals(new Long(2), id);
+    }
 
     @Test
     public void testFindPostById() {

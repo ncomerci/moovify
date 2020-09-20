@@ -26,7 +26,7 @@ public class PostDaoImplTest {
 
     private static final long CATEGORY_ID = 1;
     private static final String TITLE = "POST TEST";
-    private static final String EMAIL = "abc@test.com";
+    private static final long USER_ID = 1;
     private static final String BODY = "testing";
     private static final Set<Long> MOVIES = new HashSet<>(Collections.singletonList(1L));
 
@@ -48,33 +48,29 @@ public class PostDaoImplTest {
                 .usingGeneratedKeyColumns("post_id");
     }
 
-// TODO: Rehacer test
+    @Test
+    @Sql("classpath:test_inserts.sql")
+    @Sql(scripts = "classpath:clean-up.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void testRegister() {
+//        1. precondiciones
 
-//    @Test
-//    @Sql("classpath:test_inserts.sql")
-//    @Sql(scripts = "classpath:clean-up.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-//    public void testRegister() {
-////        1. precondiciones
-//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), "email = ?", EMAIL);
-//
-////        2. ejercitar
-//        final long post_id = postDao.register(TITLE, BODY, CATEGORY_ID, USER_ID, null, MOVIES);
-//
-////        3. post-condiciones
-//        final String whereClause = "post_id = " + post_id + " AND title = " + "'" + TITLE + "'" + " AND email = " + "'" + EMAIL + "'" +
-//                " AND body = " + "'" + BODY + "'" + " AND category_id = " + CATEGORY_ID ;
-//        Assert.assertEquals(1,
-//                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), whereClause)
-//        );
-//    }
+//        2. ejercitar
+        final long post_id = postDao.register(TITLE, BODY, CATEGORY_ID, USER_ID, null, MOVIES);
 
-    // TODO: Rehacer test
+//        3. post-condiciones
+        final String whereClause = "post_id = " + post_id + " AND title = " + "'" + TITLE + "'" + " AND user_id = " + USER_ID +
+                " AND body = " + "'" + BODY + "'" + " AND category_id = " + CATEGORY_ID ;
+        Assert.assertEquals(1,
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), whereClause)
+        );
+    }
 
-//    @Test(expected = NullPointerException.class)
-//    public void testInvalidRegister() {
-////        2. ejercitar
-//        postDao.register(null, null, null, CATEGORY_ID, null, null);
-//    }
+
+    @Test(expected = NullPointerException.class)
+    public void testInvalidRegister() {
+//        2. ejercitar
+        postDao.register(null, null, CATEGORY_ID, USER_ID,null, null);
+    }
 
     @Test
     @Sql("classpath:test_inserts.sql")
@@ -84,7 +80,7 @@ public class PostDaoImplTest {
         Map<String, Object> map = new HashMap<String, Object>() {{
            put("creation_date", Timestamp.valueOf(LocalDateTime.now()));
            put("title", TITLE);
-           put("email", EMAIL);
+           put("user_id", USER_ID);
            put("category_id", CATEGORY_ID);
            put("word_count", 1);
            put("body", BODY);
