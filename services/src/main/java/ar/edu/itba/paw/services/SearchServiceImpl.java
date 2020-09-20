@@ -59,33 +59,32 @@ public class SearchServiceImpl implements SearchService {
         final EnumSet<SearchOptions> options = EnumSet.noneOf(SearchOptions.class);
         final SortCriteria sc;
 
-        if(category != null && categoriesOptions.contains(category) ){
+        if(category != null && categoriesOptions.contains(category))
             options.add(SearchOptions.BY_CATEGORY);
-        }
 
-        if(period != null && periodOptionsMap.containsKey(period)){
+
+        if(period != null && periodOptionsMap.containsKey(period))
             options.add(SearchOptions.OLDER_THAN);
-        }
 
-        if(sortCriteria != null && sortCriteriaMap.containsKey(sortCriteria)){
+
+        if(sortCriteria != null && sortCriteriaMap.containsKey(sortCriteria))
             sc = sortCriteriaMap.get(sortCriteria);
-        }
-        else{
-            sc = sortCriteriaMap.get("default");
-        }
 
-        if(options.isEmpty()){
+        else
+            sc = sortCriteriaMap.get("default");
+
+
+        if(options.isEmpty())
             return postDao.searchPosts(query, fetchRelation, sc);
-        }
+
         else if(options.size() == 1){
             if(options.contains(SearchOptions.OLDER_THAN))
                 return postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), fetchRelation, sc);
             else if(options.contains(SearchOptions.BY_CATEGORY))
                 return postDao.searchPostsByCategory(query, category, fetchRelation, sc);
         }
-        else if(options.contains(SearchOptions.OLDER_THAN) && options.contains(SearchOptions.BY_CATEGORY) && options.size() == 2){
+        else if(options.contains(SearchOptions.OLDER_THAN) && options.contains(SearchOptions.BY_CATEGORY) && options.size() == 2)
             return postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), fetchRelation, sc);
-        }
 
         throw new NonReachableStateException();
     }
