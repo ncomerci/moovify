@@ -123,7 +123,7 @@ public class PostDaoImplTest {
 //        1. precondiciones
 
 //        2. ejercitar
-        final Collection<Post> allPosts = postDao.getAllPostsOrderByNewest(EnumSet.noneOf(PostDao.FetchRelation.class));
+        final Collection<Post> allPosts = postDao.getAllPosts(EnumSet.noneOf(PostDao.FetchRelation.class), PostDao.SortCriteria.NEWEST);
 
 //        3. post-condiciones
         Assert.assertNotNull(allPosts);

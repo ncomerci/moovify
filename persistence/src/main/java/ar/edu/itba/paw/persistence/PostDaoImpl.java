@@ -491,7 +491,7 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Collection<Post> getAllPosts(EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
-        return buildAndExecuteQuery("", SortCriteria.NEWEST, null, includedRelations);
+        return buildAndExecuteQuery("", sortCriteria, null, includedRelations);
     }
     
     @Override
