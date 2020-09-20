@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS COMMENTS
     creation_date TIMESTAMP    NOT NULL,
     body          TEXT         NOT NULL,
 
-    FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id),
+    FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id),
     FOREIGN KEY (user_id) REFERENCES USERS (user_id)
 );

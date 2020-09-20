@@ -39,12 +39,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Collection<Post> getAllPostsOrderByNewest() {
-        return postDao.getAllPostsOrderByNewest(EnumSet.noneOf(PostDao.FetchRelation.class));
+        return postDao.getAllPosts(EnumSet.noneOf(PostDao.FetchRelation.class), PostDao.SortCriteria.NEWEST);
     }
 
     @Override
     public Collection<Post> getAllPostsOrderByOldest() {
-        return postDao.getAllPostsOrderByOldest(EnumSet.noneOf(PostDao.FetchRelation.class));
+        return postDao.getAllPosts(EnumSet.noneOf(PostDao.FetchRelation.class), PostDao.SortCriteria.OLDEST);
     }
 
     @Override

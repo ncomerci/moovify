@@ -10,8 +10,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class MovieServiceImplTest {
     private static final String MOVIE_TITLE = "MovieTest";
     private static final LocalDate RELEASE_DATE = LocalDate.now();
@@ -21,6 +24,21 @@ public class MovieServiceImplTest {
 
     @InjectMocks
     private final MovieServiceImpl movieService = new MovieServiceImpl();
+
+    @Test
+    public void testfindById() {
+//        1. Setup: Establezco las pre-condiociones
+        Optional<Movie> optional = Optional.empty();
+        Mockito.when(dao.findById(Mockito.eq(1)))
+                .thenReturn(optional);
+
+//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
+        Optional<Movie> movie = movieService.findById(1);
+
+//        3. Validaciones: Confirmo las postcondiciones
+        Assert.assertNotNull(movie);
+        Assert.assertFalse(movie.isPresent());
+    }
 
     @Test
     public void testRegisterValidMovie() {
@@ -33,5 +51,45 @@ public class MovieServiceImplTest {
 
 //        3. Validaciones: Confirmo las postcondiciones
         Assert.assertNotNull(movie);
+    }
+
+    @Test
+    public void testgetAllMovies() {
+//        1. Setup: Establezco las pre-condiociones
+        final ArrayList<Movie> list = new ArrayList<Movie>(){{
+            add(Mockito.mock(Movie.class));
+            add(Mockito.mock(Movie.class));
+            add(Mockito.mock(Movie.class));
+        }};
+
+        Mockito.when(dao.getAllMovies())
+                .thenReturn(list);
+
+//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
+        Collection<Movie> movies = movieService.getAllMovies();
+
+//        3. Validaciones: Confirmo las postcondiciones
+        Assert.assertNotNull(movies);
+        Assert.assertEquals(3, movies.size());
+    }
+
+    @Test
+    public void testfindMoviesByPostId() {
+//        1. Setup: Establezco las pre-condiociones
+        final ArrayList<Movie> list = new ArrayList<Movie>(){{
+            add(Mockito.mock(Movie.class));
+            add(Mockito.mock(Movie.class));
+            add(Mockito.mock(Movie.class));
+        }};
+
+        Mockito.when(dao.findMoviesByPostId(1))
+                .thenReturn(list);
+
+//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
+        Collection<Movie> movies = movieService.findMoviesByPostId(1);
+
+//        3. Validaciones: Confirmo las postcondiciones
+        Assert.assertNotNull(movies);
+        Assert.assertEquals(3, movies.size());
     }
 }
