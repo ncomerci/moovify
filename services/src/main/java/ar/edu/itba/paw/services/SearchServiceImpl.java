@@ -59,7 +59,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Collection<Post> searchPosts(String query, String category, String period, String sortCriteria) {
+    public Optional<Collection<Post>> searchPosts(String query, String category, String period, String sortCriteria) {
 
         Objects.requireNonNull(query);
 
@@ -83,16 +83,16 @@ public class SearchServiceImpl implements SearchService {
 
 
         if(options.isEmpty())
-            return postDao.searchPosts(query, fetchRelation, sc);
+            return Optional.of(postDao.searchPosts(query, fetchRelation, sc));
 
         else if(options.size() == 1){
             if(options.contains(SearchOptions.OLDER_THAN))
-                return postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), fetchRelation, sc);
+                return Optional.of(postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), fetchRelation, sc));
             else if(options.contains(SearchOptions.BY_CATEGORY))
-                return postDao.searchPostsByCategory(query, category, fetchRelation, sc);
+                return Optional.of(postDao.searchPostsByCategory(query, category, fetchRelation, sc));
         }
         else if(options.contains(SearchOptions.OLDER_THAN) && options.contains(SearchOptions.BY_CATEGORY) && options.size() == 2)
-            return postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), fetchRelation, sc);
+            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), fetchRelation, sc));
 
         throw new NonReachableStateException();
     }
