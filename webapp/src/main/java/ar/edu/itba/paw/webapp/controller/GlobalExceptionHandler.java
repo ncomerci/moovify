@@ -20,37 +20,42 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PostNotFoundException.class)
     public ModelAndView handlePostNotFound(){
-        ModelAndView mv = new ModelAndView("error404");
+        ModelAndView mv = new ModelAndView("errorView");
         mv.addObject("message", messageSource.getMessage("error.postNotFoundException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "404" );
         return mv;
     }
 
     @ExceptionHandler(MovieNotFoundException.class)
     public ModelAndView handleMovieNotFound(){
-        ModelAndView mv = new ModelAndView("error404");
+        ModelAndView mv = new ModelAndView("errorView");
         mv.addObject("message", messageSource.getMessage("error.movieNotFoundException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "404" );
         return mv;
     }
 
     @ExceptionHandler(CommentNotFoundException.class)
     public ModelAndView handleCommentNotFound(){
-        ModelAndView mv = new ModelAndView("error404");
+        ModelAndView mv = new ModelAndView("errorView");
         mv.addObject("message", messageSource.getMessage("error.commentNotFoundException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "404" );
         return mv;
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ModelAndView handleError404(){
-        ModelAndView mv = new ModelAndView("error404");
+        ModelAndView mv = new ModelAndView("errorView");
         mv.addObject("message", messageSource.getMessage("error.noHandlerFoundException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "404" );
         return mv;
     }
 
     @Order
     @ExceptionHandler(Exception.class)
     public ModelAndView handleNonReachableState(){
-        ModelAndView mv = new ModelAndView("error404");
+        ModelAndView mv = new ModelAndView("errorView");
         mv.addObject("message", messageSource.getMessage("error.defaultMessage",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "500" );
         return mv;
     }
 }

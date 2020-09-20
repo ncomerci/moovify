@@ -11,17 +11,13 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <jsp:useBean id="message" scope="request" type="java.lang.String"/>
+<jsp:useBean id="code" scope="request" type="java.lang.String"/>
 
 <main class="uk-container uk-container-large">
     <div class="uk-margin-auto">
-        <h1 class="uk-margin-auto uk-text-center uk-text-bold uk-margin-medium-top"><spring:message code="error.error404"/></h1>
+        <h1 class="uk-margin-auto uk-text-center uk-text-bold uk-margin-medium-top"><spring:message code="error.errorWithCode" arguments="${code}"/></h1>
         <h1 class="uk-margin-auto uk-text-center uk-text-large uk-margin-remove-top mid-bold">
-            <c:if test="${empty message}">
-                <spring:message code="error.pageNotFound"/></h1>
-            </c:if>
-            <c:if test="${not empty message}">
-                <c:out value="${message}"/>
-            </c:if>
+            <c:out value="${message}"/>
     </div>
     <br>
     <div class="uk-margin-auto">
