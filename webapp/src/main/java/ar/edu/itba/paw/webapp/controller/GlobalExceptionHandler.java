@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -38,8 +39,15 @@ public class GlobalExceptionHandler {
         return mv;
     }
 
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ModelAndView handleError404(){
+        ModelAndView mv = new ModelAndView("error404");
+        mv.addObject("message", messageSource.getMessage("error.noHandlerFoundException",null, LocaleContextHolder.getLocale()) );
+        return mv;
+    }
+
     @Order
-    @ExceptionHandler(Throwable.class)
+    @ExceptionHandler(Exception.class)
     public ModelAndView handleNonReachableState(){
         ModelAndView mv = new ModelAndView("error404");
         mv.addObject("message", messageSource.getMessage("error.defaultMessage",null, LocaleContextHolder.getLocale()) );
