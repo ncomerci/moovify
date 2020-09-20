@@ -12,9 +12,13 @@ INSERT INTO public.movies (movie_id, creation_date, premier_date, title) VALUES 
 INSERT INTO ROLES (role_id, role) VALUES (1, 'ROLE_USER');
 INSERT INTO ROLES (role_id, role) VALUES (2, 'ROLE_ADMIN');
 
-INSERT INTO public.users (user_id, creation_date, username, password, name, email) VALUES (1, now(), 'userTest1', 'pass', 'name', 'abc@test.com');
+INSERT INTO public.users (user_id, creation_date, username, password, name, email) VALUES (1, '2020-09-20 12:56:13.160000', 'testUser', '$2a$10$O6SNpY56M8b33xKMe92tEOkEezVsln0ocrREUkCK.OC1JY7G1Nfsm', 'Intelli', 'prueba@prueba.com');
+INSERT INTO public.users (user_id, creation_date, username, password, name, email) VALUES (2, '2020-09-20 12:57:12.108000', 'testUser2', '$2a$10$95/PHiCzqkRvshToPzjym.0oBs1kmpRIyto8dD6oQ0NN31utMtD6i', 'Gitkraken', 'test@abc.com');
+INSERT INTO public.users (user_id, creation_date, username, password, name, email) VALUES (3, '2020-09-20 12:58:17.441000', 'testUser3', '$2a$10$m0KrIioERjnPfLxo6vlaJuwnwDyXDSyGnW9AoLapXV9jkZ/nLVxxG', 'Jorgito', 'Jorge@moovify.com');
 
 INSERT INTO public.user_role (user_id, role_id) VALUES (1, 1);
+INSERT INTO public.user_role (user_id, role_id) VALUES (2, 1);
+INSERT INTO public.user_role (user_id, role_id) VALUES (3, 2);
 
 INSERT INTO POST_CATEGORY (category_id, creation_date, name) VALUES (1, now(), 'watchlist');
 INSERT INTO POST_CATEGORY (category_id, creation_date, name) VALUES (2, now(), 'critique');

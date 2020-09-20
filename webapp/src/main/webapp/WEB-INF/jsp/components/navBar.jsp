@@ -1,5 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 
 <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
     <nav class="uk-navbar-container" uk-navbar>
@@ -16,9 +18,31 @@
                         </form>
                     </div>
                 </li>
-                <li class="uk-navbar-item"><a class="uk-padding-remove" href="<c:url value="/user/login" />">
+                <li>
+                    <a class="uk-padding-remove" href="">
                     <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
-                </a></li>
+                    </a>
+                    <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                            <li>
+                                <sec:authorize access="!isAuthenticated()">
+                                    <a href="<c:url value="/login"/>">Login</a>
+                                </sec:authorize>
+                                <sec:authorize access="isAuthenticated()">
+                                    <a href="<c:url value="/user/profile"/>">My profile</a>
+                                </sec:authorize>
+                            </li>
+                            <li>
+                                <sec:authorize access="!isAuthenticated()">
+                                    <a href="<c:url value="/user/create"/>">Sign up</a>
+                                </sec:authorize>
+                                <sec:authorize access="isAuthenticated()">
+                                    <a href="<c:url value="/logout"/>">Logout</a>
+                                </sec:authorize>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
                 <li class="uk-navbar-item"><a class="uk-padding-remove" href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a></li>
             </ul>
 

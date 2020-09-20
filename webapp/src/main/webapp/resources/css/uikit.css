@@ -5369,7 +5369,8 @@ ul.uk-nav-sub {
   margin-top: -15px;
 }
 [class*='uk-navbar-dropdown-bottom'] {
-  margin-top: 15px;
+  /*margin-top: 15px;*/
+  margin-top: 0px;
 }
 [class*='uk-navbar-dropdown-left'] {
   margin-left: -15px;

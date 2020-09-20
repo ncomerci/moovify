@@ -1,5 +1,4 @@
 import Config.TestConfig;
-import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.persistence.CommentDaoImpl;
 import ar.edu.itba.paw.persistence.TableNames;
 import org.junit.Assert;
