@@ -10,6 +10,7 @@ import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
 import ar.edu.itba.paw.services.exceptions.NonReachableStateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,6 +18,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+// TODO: shady annotation detected. Report to Lord Commander (Sotuyo) ASAP!
+@DependsOn("dataSourceInitializer")
 public class SearchServiceImpl implements SearchService {
 
     @Autowired
