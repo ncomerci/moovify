@@ -12,12 +12,14 @@
                         <form action="<c:url value="/search" />" class="uk-search uk-search-navbar uk-width-1-1">
                             <label for="nav-search"></label>
                             <input id="nav-search" name="query" class="uk-search-input" type="search" placeholder="<spring:message code="navbar.searchDots"/>" >
-                            <button id="submit-navbar-search-button" class="uk-button uk-button-text" type="submit"><spring:message code="navbar.search"/></button>
+                            <button id="submit-navbar-search-button" class="uk-button uk-button-default uk-border-rounded search-button" type="submit"><spring:message code="navbar.search"/></button>
                         </form>
                     </div>
                 </li>
-<%--                <li class="nav-item"><a class="uk-light" href="<c:url value="/" />">Home</a></li>  --%>
-                <li class="uk-navbar-item"><a href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a></li>
+                <li class="uk-navbar-item"><a class="uk-padding-remove" href="<c:url value="/user/login" />">
+                    <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
+                </a></li>
+                <li class="uk-navbar-item"><a class="uk-padding-remove" href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a></li>
             </ul>
 
         </div>
