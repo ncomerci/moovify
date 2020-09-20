@@ -50,7 +50,7 @@ public class PostDaoImpl implements PostDao {
     *
     *   - The use of LinkedHashSet, LinkedHashMap and List collections is of importance to maintain query order.
     *
-    *   - USER:
+    * - USER:
     *   - In BASE_POST_ROW_MAPPER, the roles Collection from User must be a Set to guaranty uniqueness.
     *
     * - TAGS:
@@ -58,6 +58,9 @@ public class PostDaoImpl implements PostDao {
     *
     * - MOVIES:
     *   - In BASE_POST_ROW_MAPPER, the movies Collection must be a Set to guaranty uniqueness.
+    *
+    * - COMMENTS:
+    *   - Users to whom the comments belong are brought without their roles.
     *
     */
 
@@ -201,9 +204,16 @@ public class PostDaoImpl implements PostDao {
             COMMENTS + ".comment_id c_comment_id, " +
             "coalesce(" + COMMENTS + ".parent_id, 0) c_parent_id, " +
             COMMENTS + ".post_id c_post_id, " +
-            COMMENTS + ".user_email c_user_email, " +
             COMMENTS + ".creation_date c_creation_date, " +
-            COMMENTS + ".body c_body";
+            COMMENTS + ".body c_body, " +
+
+            // Users in Post Comments Come without roles
+            COMMENTS + ".cu_user_id, " +
+            COMMENTS + ".cu_creation_date, " +
+            COMMENTS + ".cu_username, " +
+            COMMENTS + ".cu_password, " +
+            COMMENTS + ".cu_name, " +
+            COMMENTS + ".cu_email";
 
     private static final String BASE_POST_FROM = "FROM " + POSTS;
 
@@ -232,7 +242,22 @@ public class PostDaoImpl implements PostDao {
                     ") " + MOVIES + " on " + MOVIES + ".post_id = " + POSTS + ".post_id";
 
     private static final String COMMENTS_FROM =
-            "LEFT OUTER JOIN " + COMMENTS + " ON " + POSTS + ".post_id = " + COMMENTS + ".post_id";
+            "LEFT OUTER JOIN ( " +
+                    "SELECT " +
+                    COMMENTS + ".comment_id, " +
+                    "coalesce(" + COMMENTS + ".parent_id, 0) parent_id, " +
+                    COMMENTS + ".post_id, " +
+                    COMMENTS + ".creation_date, " +
+                    COMMENTS + ".body, " +
+                    USERS + ".user_id cu_user_id, " +
+                    USERS + ".creation_date cu_creation_date, " +
+                    USERS + ".username cu_username, " +
+                    USERS + ".password cu_password, " +
+                    USERS + ".name cu_name, " +
+                    USERS + ".email cu_email " +
+                    "FROM " + USERS +
+                    " INNER JOIN " + COMMENTS + " ON " + USERS + ".user_id = " + COMMENTS + ".user_id " +
+            ") " + COMMENTS + " ON " + POSTS + ".post_id = " + COMMENTS + ".post_id";
 
 
     private static final ResultSetMonoConsumer<Map<Long, Post>> BASE_POST_ROW_MAPPER = (rs, idToPostMap) -> {
@@ -312,7 +337,10 @@ public class PostDaoImpl implements PostDao {
             newComment = new Comment(comment_id,
                     rs.getObject("c_creation_date", LocalDateTime.class),
                     rs.getLong("c_post_id"), rs.getLong("c_parent_id"), new ArrayList<>(),
-                    rs.getString("c_body"), rs.getString("c_user_email"));
+                    rs.getString("c_body"),
+                    new User(rs.getLong("cu_user_id"), rs.getObject("cu_creation_date", LocalDateTime.class),
+                            rs.getString("cu_username"), rs.getString("cu_password"),
+                            rs.getString("cu_name"), rs.getString("cu_email"), Collections.emptyList()));
 
             idToCommentMap.put(comment_id, newComment);
 

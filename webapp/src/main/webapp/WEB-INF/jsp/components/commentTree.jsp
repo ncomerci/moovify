@@ -6,7 +6,7 @@
 <c:forEach items="${comments}" var="comment" >
 
         <li class="li">
-            <div><a href = "mailto: <c:out value="${comment.userEmail}" />"><c:out value="${comment.userEmail}" /> </a>
+            <div><a href = "<c:url value="/user/${comment.user.id}" />"><c:out value="${comment.user.name}" /> </a>
                 <span class="uk-align-right">
                     <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                     <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />

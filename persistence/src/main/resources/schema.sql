@@ -75,13 +75,15 @@ CREATE TABLE IF NOT EXISTS POST_MOVIE
 
 CREATE TABLE IF NOT EXISTS COMMENTS
 (
-    comment_id    SERIAL PRIMARY KEY,
+    comment_id    SERIAL       PRIMARY KEY,
     parent_id     INT,
     post_id       INT          NOT NULL,
-    user_email    VARCHAR(320) NOT NULL,
+    user_id       INTEGER      NOT NULL,
     creation_date TIMESTAMP    NOT NULL,
     body          TEXT         NOT NULL,
+
     FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id),
-    FOREIGN KEY (post_id) REFERENCES POSTS (post_id)
+    FOREIGN KEY (post_id) REFERENCES POSTS (post_id),
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
 );
 
