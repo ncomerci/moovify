@@ -14,7 +14,7 @@
                     </div>
                     <div class="uk-width-expand">
                         <h4 class="uk-comment-title uk-margin-remove">
-                            <a href = "mailto: <c:out value="${comment.userEmail}" />"><c:out value="${comment.userEmail}" /> </a>
+                            <a href = "<c:url value="/user/${comment.user.id}" />"><c:out value="${comment.user.name}" /> </a>
                         </h4>
                         <p class="uk-comment-meta uk-margin-remove-top">
                             <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
@@ -38,26 +38,3 @@
 
 </c:forEach>
 </ul>
-
-<%--
-<ul class="ul">
-    <c:forEach items="${comments}" var="comment" >
-
-        <li class="li">
-            <div><a href = "mailto: <c:out value="${comment.userEmail}" />"><c:out value="${comment.userEmail}" /> </a>
-                <span class="uk-align-right">
-                    <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
-                    <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
-                </span>
-                <br>
-                <c:out value="${comment.body}" />
-                <hr>
-            </div>
-                &lt;%&ndash;  Recursive Call  &ndash;%&gt;
-            <c:set var="comments" value="${comment.children}" scope="request"/>
-            <jsp:include page="commentTree.jsp" />
-        </li>
-
-    </c:forEach>
-</ul>
---%>

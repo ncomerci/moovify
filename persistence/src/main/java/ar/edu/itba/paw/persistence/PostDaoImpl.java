@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Movie;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.PostCategory;
+import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -28,6 +25,9 @@ public class PostDaoImpl implements PostDao {
     private static final String TAGS = TableNames.TAGS.getTableName();
     private static final String COMMENTS = TableNames.COMMENTS.getTableName();
     private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
+    private static final String USERS = TableNames.USERS.getTableName();
+    private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
+    private static final String ROLES = TableNames.ROLES.getTableName();
 
     /*
     *
@@ -50,17 +50,24 @@ public class PostDaoImpl implements PostDao {
     *
     *   - The use of LinkedHashSet, LinkedHashMap and List collections is of importance to maintain query order.
     *
+    * - USER:
+    *   - In BASE_POST_ROW_MAPPER, the roles Collection from User must be a Set to guaranty uniqueness.
+    *
     * - TAGS:
     *   - In BASE_POST_ROW_MAPPER, the tags Collection must be a Set to guaranty uniqueness.
     *
     * - MOVIES:
     *   - In BASE_POST_ROW_MAPPER, the movies Collection must be a Set to guaranty uniqueness.
     *
+    * - COMMENTS:
+    *   - Users to whom the comments belong are brought without their roles.
+    *
     */
 
     private enum FetchRelationSelector {
         POST(BASE_POST_SELECT, BASE_POST_FROM, true, null),
         CATEGORY(CATEGORY_SELECT, CATEGORY_FROM, true, null),
+        USER(USER_SELECT, USER_FROM, true, null),
         TAGS(TAGS_SELECT, TAGS_FROM, true, null),
         MOVIES(MOVIES_SELECT, MOVIES_FROM, false, FetchRelation.MOVIES),
         COMMENTS(COMMENTS_SELECT, COMMENTS_FROM, false, FetchRelation.COMMENTS);
@@ -132,6 +139,7 @@ public class PostDaoImpl implements PostDao {
 
                 // Important use of LinkedHashMap to maintain Post insertion order
                 final Map<Long, Post> idToPostMap = new LinkedHashMap<>();
+                final Map<Long, Role> idToUserRoleMap = new HashMap<>();
                 final Map<Long, Movie> idToMovieMap = new HashMap<>();
                 final Map<Long, Comment> idToCommentMap = new HashMap<>();
                 final Map<Long, Collection<Comment>> childrenWithoutParentMap = new HashMap<>();
@@ -140,6 +148,9 @@ public class PostDaoImpl implements PostDao {
 
                     // Base Mapper Required
                     BASE_POST_ROW_MAPPER.accept(rs, idToPostMap);
+
+                    // User Mapper Required - All posts belong to a User. This User has many Roles
+                    USER_ROW_MAPPER.accept(rs, idToPostMap, idToUserRoleMap);
 
                     // Tags Mapper Required - Business decision
                     TAGS_ROW_MAPPER.accept(rs, idToPostMap);
@@ -202,13 +213,22 @@ public class PostDaoImpl implements PostDao {
             POSTS + ".creation_date p_creation_date, " +
             POSTS + ".title p_title, " +
             POSTS + ".body p_body, " + POSTS +
-            ".word_count p_word_count, " +
-            POSTS + ".email p_email";
+            ".word_count p_word_count";
 
     private static final String CATEGORY_SELECT =
             POST_CATEGORY + ".category_id pc_category_id, " +
             POST_CATEGORY + ".creation_date pc_creation_date, " +
             POST_CATEGORY + ".name pc_name";
+
+    private static final String USER_SELECT =
+            USERS + ".user_id u_user_id, " +
+            USERS + ".creation_date u_creation_date, " +
+            USERS + ".username u_username, " +
+            USERS + ".password u_password, " +
+            USERS + ".name u_name, " +
+            USERS + ".email u_email, " +
+            USERS + ".role_id r_role_id, " +
+            USERS + ".role r_role ";
 
     private static final String TAGS_SELECT = TAGS + ".tag p_tag";
 
@@ -222,14 +242,31 @@ public class PostDaoImpl implements PostDao {
             COMMENTS + ".comment_id c_comment_id, " +
             "coalesce(" + COMMENTS + ".parent_id, 0) c_parent_id, " +
             COMMENTS + ".post_id c_post_id, " +
-            COMMENTS + ".user_email c_user_email, " +
             COMMENTS + ".creation_date c_creation_date, " +
-            COMMENTS + ".body c_body";
+            COMMENTS + ".body c_body, " +
+
+            // Users in Post Comments Come without roles
+            COMMENTS + ".cu_user_id, " +
+            COMMENTS + ".cu_creation_date, " +
+            COMMENTS + ".cu_username, " +
+            COMMENTS + ".cu_password, " +
+            COMMENTS + ".cu_name, " +
+            COMMENTS + ".cu_email";
 
     private static final String BASE_POST_FROM = "FROM " + POSTS;
 
     private static final String CATEGORY_FROM =
-            "LEFT OUTER JOIN " + POST_CATEGORY + " ON " + POSTS + ".category_id = " + POST_CATEGORY + ".category_id";
+            "INNER JOIN " + POST_CATEGORY + " ON " + POSTS + ".category_id = " + POST_CATEGORY + ".category_id";
+
+    private static final String USER_FROM =
+            "INNER JOIN ( " +
+                    "SELECT " +
+                    USERS + ".user_id, " + USERS + ".creation_date, " + USERS + ".username, " + USERS + ".password, " +
+                    USERS + ".name, " + USERS + ".email, " + ROLES + ".role_id, " + ROLES + ".role " +
+                    "FROM " + USERS +
+                    " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
+                    "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
+            ") " + USERS + " ON " + USERS + ".user_id = " + POSTS + ".user_id";
 
     private static final String TAGS_FROM =
             "LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id";
@@ -243,7 +280,22 @@ public class PostDaoImpl implements PostDao {
                     ") " + MOVIES + " on " + MOVIES + ".post_id = " + POSTS + ".post_id";
 
     private static final String COMMENTS_FROM =
-            "LEFT OUTER JOIN " + COMMENTS + " ON " + POSTS + ".post_id = " + COMMENTS + ".post_id";
+            "LEFT OUTER JOIN ( " +
+                    "SELECT " +
+                    COMMENTS + ".comment_id, " +
+                    "coalesce(" + COMMENTS + ".parent_id, 0) parent_id, " +
+                    COMMENTS + ".post_id, " +
+                    COMMENTS + ".creation_date, " +
+                    COMMENTS + ".body, " +
+                    USERS + ".user_id cu_user_id, " +
+                    USERS + ".creation_date cu_creation_date, " +
+                    USERS + ".username cu_username, " +
+                    USERS + ".password cu_password, " +
+                    USERS + ".name cu_name, " +
+                    USERS + ".email cu_email " +
+                    "FROM " + USERS +
+                    " INNER JOIN " + COMMENTS + " ON " + USERS + ".user_id = " + COMMENTS + ".user_id " +
+            ") " + COMMENTS + " ON " + POSTS + ".post_id = " + COMMENTS + ".post_id";
 
 
     public static final ResultSetMonoConsumer<Map<Long, Post>> BASE_POST_ROW_MAPPER = (rs, idToPostMap) -> {
@@ -254,17 +306,31 @@ public class PostDaoImpl implements PostDao {
                     new Post(
                             post_id, rs.getObject("p_creation_date", LocalDateTime.class),
                             rs.getString("p_title"), rs.getString("p_body"),
-                            rs.getInt("p_word_count"), rs.getString("p_email"),
+                            rs.getInt("p_word_count"),
 
                             new PostCategory(rs.getLong("pc_category_id"),
                                     rs.getObject("pc_creation_date", LocalDateTime.class),
                                     rs.getString("pc_name")),
+
+                            new User(rs.getLong("u_user_id"), rs.getObject("p_creation_date", LocalDateTime.class),
+                                    rs.getString("u_username"), rs.getString("u_password"),
+                                    rs.getString("u_name"), rs.getString("u_email"), new HashSet<>()),
 
                             // tags, movies, comments
                             new LinkedHashSet<>(), new LinkedHashSet<>(), new ArrayList<>()
                     )
             );
         }
+    };
+
+    private static final ResultSetBiConsumer<Map<Long, Post>, Map<Long, Role>> USER_ROW_MAPPER = (rs, idToPostMap, idToUserRoleMap) -> {
+        final long post_id = rs.getLong("p_post_id");
+        final long role_id = rs.getLong("r_role_id");
+
+        if(!idToUserRoleMap.containsKey(role_id))
+            idToUserRoleMap.put(role_id, new Role(role_id, rs.getString("r_role")));
+
+        idToPostMap.get(post_id).getUser().getRoles().add(idToUserRoleMap.get(role_id));
     };
 
     private static final ResultSetMonoConsumer<Map<Long, Post>> TAGS_ROW_MAPPER = (rs, idToPostMap) -> {
@@ -309,7 +375,10 @@ public class PostDaoImpl implements PostDao {
             newComment = new Comment(comment_id,
                     rs.getObject("c_creation_date", LocalDateTime.class),
                     rs.getLong("c_post_id"), rs.getLong("c_parent_id"), new ArrayList<>(),
-                    rs.getString("c_body"), rs.getString("c_user_email"));
+                    rs.getString("c_body"),
+                    new User(rs.getLong("cu_user_id"), rs.getObject("cu_creation_date", LocalDateTime.class),
+                            rs.getString("cu_username"), rs.getString("cu_password"),
+                            rs.getString("cu_name"), rs.getString("cu_email"), Collections.emptyList()));
 
             idToCommentMap.put(comment_id, newComment);
 
@@ -366,10 +435,9 @@ public class PostDaoImpl implements PostDao {
     }
     
     @Override
-    public long register(String title, String email, String body, long category, Set<String> tags, Set<Long> movies) {
+    public long register(String title, String body, long categoryId, long userId, Set<String> tags, Set<Long> movies) {
 
         Objects.requireNonNull(title);
-        Objects.requireNonNull(email);
         Objects.requireNonNull(body);
         Objects.requireNonNull(movies);
 
@@ -380,11 +448,10 @@ public class PostDaoImpl implements PostDao {
         HashMap<String, Object> map = new HashMap<>();
         map.put("title", title);
         map.put("creation_date", Timestamp.valueOf(creationDate));
-        map.put("email", email);
         map.put("word_count", wordCount);
         map.put("body", body);
-        map.put("category_id", category);
-        map.put("tags", tags); // TODO: WAT SACAR!!
+        map.put("category_id", categoryId);
+        map.put("user_id", userId);
 
         final long postId = postInsert.executeAndReturnKey(map).longValue();
 

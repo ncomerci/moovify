@@ -6,8 +6,6 @@
 <head>
     <title><spring:message code="index.pagename"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js" ></script>
-    <script src="<c:url value="/resources/js/post/read.js" />"></script>
 </head>
 <body>
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
@@ -24,11 +22,6 @@
                                 <c:out value="${post.title}"/>
                             </a>
                         </dt>
-                        <dd>
-                    <span class="uk-text-light uk-text-muted uk-text-small">
-                        <c:out value="${post.email}"/>
-                    </span>
-                        </dd>
                     </c:forEach>
                 </dl>
             </section>
@@ -41,11 +34,6 @@
                                 <c:out value="${post.title}"/>
                             </a>
                         </dt>
-                        <dd>
-                    <span class="uk-text-light uk-text-muted uk-text-small">
-                        <c:out value="${post.email}"/>
-                    </span>
-                        </dd>
                     </c:forEach>
                 </dl>
             </section>

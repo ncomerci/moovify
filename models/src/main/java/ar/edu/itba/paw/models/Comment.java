@@ -11,16 +11,16 @@ public class Comment {
     private final Long parentId;
     private final Collection<Comment> children;
     private final String body;
-    private final String userEmail; // Temporary
+    private final User user;
 
-    public Comment(long id, LocalDateTime creationDate, long postId, Long parentId, Collection<Comment> children, String body, String userEmail) {
+    public Comment(long id, LocalDateTime creationDate, long postId, Long parentId, Collection<Comment> children, String body, User user) {
         this.id = id;
         this.creationDate = creationDate;
         this.postId = postId;
         this.parentId = parentId;
         this.children = children;
         this.body = body;
-        this.userEmail = userEmail;
+        this.user = user;
     }
 
     public long getId() {
@@ -48,8 +48,8 @@ public class Comment {
         return body;
     }
 
-    public String getUserEmail() {
-        return userEmail;
+    public User getUser() {
+        return user;
     }
 
     public int getDescendantCount() {
