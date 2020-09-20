@@ -7,7 +7,10 @@ import ar.edu.itba.paw.webapp.form.PostCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -23,7 +26,6 @@ public class PostController {
     @Autowired
     private MovieService movieService;
 
-
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long postId) {
 
@@ -33,7 +35,6 @@ public class PostController {
 
         return mv;
     }
-
 
     @RequestMapping(path = "/post/create", method = RequestMethod.GET )
     public ModelAndView showPostCreateForm(@ModelAttribute("postCreateForm") final PostCreateForm postCreateForm) {
