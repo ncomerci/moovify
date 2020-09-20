@@ -1,12 +1,7 @@
 package ar.edu.itba.paw.webapp.form;
 
-import javafx.beans.DefaultProperty;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-
 import javax.validation.constraints.NotNull;
 
-@PropertySource("classpath:")
 public class SearchPostsForm {
 
     @NotNull
