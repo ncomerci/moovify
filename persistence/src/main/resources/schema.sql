@@ -2,10 +2,21 @@ CREATE TABLE IF NOT EXISTS USERS
 (
     user_id         SERIAL       PRIMARY KEY,
     creation_date   TIMESTAMP    NOT NULL,
+    enabled         BOOLEAN      NOT NULL,
     username        VARCHAR(50)  UNIQUE NOT NULL,
     password        VARCHAR(200) NOT NULL,
     name            VARCHAR(50)  NOT NULL,
     email           VARCHAR(200) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS USER_VERIFICATION_TOKEN
+(
+    token_id    SERIAL       PRIMARY KEY,
+    user_id     INTEGER    UNIQUE NOT NULL,
+    token       TEXT         UNIQUE NOT NULL,
+    expiry      TIMESTAMP    NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
 );
 
 CREATE TABLE IF NOT EXISTS ROLES

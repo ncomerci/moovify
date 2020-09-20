@@ -223,6 +223,7 @@ public class PostDaoImpl implements PostDao {
     private static final String USER_SELECT =
             USERS + ".user_id u_user_id, " +
             USERS + ".creation_date u_creation_date, " +
+            USERS + ".enabled u_enabled, " +
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
@@ -248,6 +249,7 @@ public class PostDaoImpl implements PostDao {
             // Users in Post Comments Come without roles
             COMMENTS + ".cu_user_id, " +
             COMMENTS + ".cu_creation_date, " +
+            COMMENTS + ".cu_enabled, " +
             COMMENTS + ".cu_username, " +
             COMMENTS + ".cu_password, " +
             COMMENTS + ".cu_name, " +
@@ -261,8 +263,15 @@ public class PostDaoImpl implements PostDao {
     private static final String USER_FROM =
             "INNER JOIN ( " +
                     "SELECT " +
-                    USERS + ".user_id, " + USERS + ".creation_date, " + USERS + ".username, " + USERS + ".password, " +
-                    USERS + ".name, " + USERS + ".email, " + ROLES + ".role_id, " + ROLES + ".role " +
+                    USERS + ".user_id, " +
+                    USERS + ".creation_date, " +
+                    USERS + ".enabled, " +
+                    USERS + ".username, " +
+                    USERS + ".password, " +
+                    USERS + ".name, " +
+                    USERS + ".email, " +
+                    ROLES + ".role_id, " +
+                    ROLES + ".role " +
                     "FROM " + USERS +
                     " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
                     "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
@@ -272,11 +281,15 @@ public class PostDaoImpl implements PostDao {
             "LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id";
 
     private static final String MOVIES_FROM =
-            "LEFT OUTER JOIN (" +
-                    " SELECT " + MOVIES + ".movie_id, " + MOVIES + ".creation_date, " +
-                    MOVIES + ".title, " + MOVIES + ".premier_date, " + "post_id" +
+            "LEFT OUTER JOIN ( " +
+                    "SELECT " +
+                    MOVIES + ".movie_id, " +
+                    MOVIES + ".creation_date, " +
+                    MOVIES + ".title, " +
+                    MOVIES + ".premier_date, " +
+                    "post_id" +
                     " FROM "+ POST_MOVIE +
-                    " INNER JOIN " + MOVIES + " ON " + POST_MOVIE+ ".movie_id = " + MOVIES + ".movie_id" +
+                    " INNER JOIN " + MOVIES + " ON " + POST_MOVIE+ ".movie_id = " + MOVIES + ".movie_id " +
                     ") " + MOVIES + " on " + MOVIES + ".post_id = " + POSTS + ".post_id";
 
     private static final String COMMENTS_FROM =
@@ -289,6 +302,7 @@ public class PostDaoImpl implements PostDao {
                     COMMENTS + ".body, " +
                     USERS + ".user_id cu_user_id, " +
                     USERS + ".creation_date cu_creation_date, " +
+                    USERS + ".enabled cu_enabled, " +
                     USERS + ".username cu_username, " +
                     USERS + ".password cu_password, " +
                     USERS + ".name cu_name, " +
@@ -312,9 +326,10 @@ public class PostDaoImpl implements PostDao {
                                     rs.getObject("pc_creation_date", LocalDateTime.class),
                                     rs.getString("pc_name")),
 
-                            new User(rs.getLong("u_user_id"), rs.getObject("p_creation_date", LocalDateTime.class),
-                                    rs.getString("u_username"), rs.getString("u_password"),
-                                    rs.getString("u_name"), rs.getString("u_email"), new HashSet<>()),
+                            new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
+                                    rs.getBoolean("u_enabled"), rs.getString("u_username"),
+                                    rs.getString("u_password"), rs.getString("u_name"),
+                                    rs.getString("u_email"), new HashSet<>()),
 
                             // tags, movies, comments
                             new LinkedHashSet<>(), new LinkedHashSet<>(), new ArrayList<>()
@@ -377,8 +392,9 @@ public class PostDaoImpl implements PostDao {
                     rs.getLong("c_post_id"), rs.getLong("c_parent_id"), new ArrayList<>(),
                     rs.getString("c_body"),
                     new User(rs.getLong("cu_user_id"), rs.getObject("cu_creation_date", LocalDateTime.class),
-                            rs.getString("cu_username"), rs.getString("cu_password"),
-                            rs.getString("cu_name"), rs.getString("cu_email"), Collections.emptyList()));
+                            rs.getBoolean("cu_enabled"), rs.getString("cu_username"),
+                            rs.getString("cu_password"), rs.getString("cu_name"),
+                            rs.getString("cu_email"), Collections.emptyList()));
 
             idToCommentMap.put(comment_id, newComment);
 

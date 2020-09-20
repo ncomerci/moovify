@@ -38,6 +38,7 @@ public class CommentDaoImpl implements CommentDao {
 
             USERS + ".user_id u_user_id, " +
             USERS + ".creation_date u_creation_date, " +
+            USERS + ".enabled u_enabled, " +
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
@@ -55,6 +56,7 @@ public class CommentDaoImpl implements CommentDao {
 
             USERS + ".user_id u_user_id, " +
             USERS + ".creation_date u_creation_date, " +
+            USERS + ".enabled u_enabled, " +
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
@@ -78,8 +80,9 @@ public class CommentDaoImpl implements CommentDao {
                     rs.getLong("post_id"), rs.getLong("parent_id"),
                     null, rs.getString("body"),
                     new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
-                            rs.getString("u_username"), rs.getString("u_password"),
-                            rs.getString("u_name"), rs.getString("u_email"), Collections.emptyList()));
+                            rs.getBoolean("u_enabled"), rs.getString("u_username"),
+                            rs.getString("u_password"), rs.getString("u_name"),
+                            rs.getString("u_email"), Collections.emptyList()));
 
     // Coalesce parent_id = null to parent_id = 0.
     private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER_WITH_CHILDREN = (rs) -> {
@@ -105,8 +108,11 @@ public class CommentDaoImpl implements CommentDao {
                         rs.getLong("post_id"), rs.getLong("parent_id"), new ArrayList<>(),
                         rs.getString("body"),
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
-                        rs.getString("u_username"), rs.getString("u_password"),
-                        rs.getString("u_name"), rs.getString("u_email"), new HashSet<>()));
+                                rs.getBoolean("u_enabled"), rs.getString("u_username"),
+                                rs.getString("u_password"), rs.getString("u_name"),
+                                rs.getString("u_email"), new HashSet<>()
+                        )
+                );
 
                 idToCommentMap.put(comment_id, currentComment);
 

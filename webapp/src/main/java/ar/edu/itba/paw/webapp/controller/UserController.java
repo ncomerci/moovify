@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
@@ -16,19 +17,18 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -36,6 +36,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MailService mailService;
 
     @Autowired
     @Lazy
@@ -60,7 +63,14 @@ public class UserController {
             return showUserCreateForm(userCreateForm);
         }
 
-        final User user = userService.register(userCreateForm.getUsername(), userCreateForm.getPassword(), userCreateForm.getName(), userCreateForm.getEmail());
+        final User user = userService.register(userCreateForm.getUsername(),
+                userCreateForm.getPassword(), userCreateForm.getName(), userCreateForm.getEmail());
+
+        final String token = userService.createVerificationToken(user.getId());
+
+        mailService.sendSimpleEmail(user.getEmail(), "Confirmation Email",
+                ServletUriComponentsBuilder.fromRequestUri(request)
+                        .replacePath("/registrationConfirm").queryParam("token", token).build().toUriString());
 
         autoLogin(request, authManager, user.getUsername(), userCreateForm.getPassword(), user.getRoles());
 
@@ -94,7 +104,33 @@ public class UserController {
         return mv;
     }
 
-    // TODO: Consultar por una mejor manera, que involucre a Spring Security. No tengo AuthenticationManager
+    @RequestMapping(path = "/registrationConfirm", method = RequestMethod.GET)
+    public ModelAndView confirmRegistration(@RequestParam String token) {
+
+        Optional<User> optUser = userService.confirmRegistration(token);
+        boolean success = false;
+        ModelAndView mv = new ModelAndView("/user/registrationConfirm");
+
+        if(!optUser.isPresent())
+            mv.addObject("errorMessage", "Confirmation link was invalid");
+
+        else {
+
+            User user = optUser.get();
+            mv.addObject("user", user);
+
+            if (!user.getEnabled())
+                mv.addObject("errorMessage", "Confirmation link was expired");
+
+            else
+                success = true;
+        }
+
+        mv.addObject("success", success);
+        return mv;
+    }
+
+    // TODO: Consultar por una mejor manera, que involucre a Spring Security.
     private void autoLogin(HttpServletRequest request, AuthenticationManager authManager, String username, String password, Collection<Role> roles) {
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password,

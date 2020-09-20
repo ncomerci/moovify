@@ -4,6 +4,7 @@ import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.Post;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface SearchService {
 

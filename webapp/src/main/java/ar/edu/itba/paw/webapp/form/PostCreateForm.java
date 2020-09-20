@@ -1,11 +1,10 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.form.Annotations.MaxTagsSizeConstraint;
+import ar.edu.itba.paw.webapp.form.Annotations.MoviesSizeConstraint;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
-
-
-import org.hibernate.validator.constraints.Email;
-
 import java.util.Set;
 
 public class PostCreateForm {
