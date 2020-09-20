@@ -435,10 +435,9 @@ public class PostDaoImpl implements PostDao {
     }
     
     @Override
-    public long register(String title, String body, long category, long user, Set<String> tags, Set<Long> movies) {
+    public long register(String title, String body, long categoryId, long userId, Set<String> tags, Set<Long> movies) {
 
         Objects.requireNonNull(title);
-        Objects.requireNonNull(email);
         Objects.requireNonNull(body);
         Objects.requireNonNull(movies);
 
@@ -451,8 +450,8 @@ public class PostDaoImpl implements PostDao {
         map.put("creation_date", Timestamp.valueOf(creationDate));
         map.put("word_count", wordCount);
         map.put("body", body);
-        map.put("category_id", category);
-        map.put("user_id", user);
+        map.put("category_id", categoryId);
+        map.put("user_id", userId);
 
         final long postId = postInsert.executeAndReturnKey(map).longValue();
 
