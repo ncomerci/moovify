@@ -1,15 +1,12 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.SearchService;
-import ar.edu.itba.paw.webapp.exceptions.NonExistingSearchCriteriaException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.util.Collection;
 
 
 @Controller
@@ -34,9 +31,8 @@ public class SearchController {
     public ModelAndView searchMovies(@RequestParam() final String query) {
 
         final ModelAndView mv = new ModelAndView("search/movies");
-        //TODO la vista esta vacia, no hay metodo que permita conseguir las peliculas
-        // y tampoco hay un rendereado listo en la vista
         mv.addObject("query", query);
+        mv.addObject("movies", searchService.searchMovies(query));
         return mv;
     }
 

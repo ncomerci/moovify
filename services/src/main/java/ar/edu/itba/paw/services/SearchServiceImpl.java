@@ -1,13 +1,16 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
 import ar.edu.itba.paw.interfaces.services.SearchService;
+import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
 import ar.edu.itba.paw.services.exceptions.NonReachableStateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,10 +18,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+// TODO: shady annotation detected. Report to Lord Commander (Sotuyo) ASAP!
+@DependsOn("dataSourceInitializer")
 public class SearchServiceImpl implements SearchService {
 
     @Autowired
     private PostDao postDao;
+
+    @Autowired
+    private MovieDao movieDao;
 
     private enum SearchOptions{
         BY_CATEGORY, OLDER_THAN
@@ -87,5 +95,11 @@ public class SearchServiceImpl implements SearchService {
             return postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), fetchRelation, sc);
 
         throw new NonReachableStateException();
+    }
+
+    @Override
+    public Collection<Movie> searchMovies(String query){
+        Objects.requireNonNull(query);
+        return movieDao.searchMovies(query);
     }
 }

@@ -79,4 +79,10 @@ public class MovieDaoImpl implements MovieDao {
         return jdbcTemplate.query(
                 "SELECT * FROM " + MOVIES, MOVIE_ROW_MAPPER);
     }
+
+    @Override
+    public Collection<Movie> searchMovies(String query) {
+        return jdbcTemplate.query("SELECT * FROM " + MOVIES + " WHERE " + MOVIES + ".title ILIKE '%' || ? || '%'",
+                new Object[]{ query }, MOVIE_ROW_MAPPER);
+    }
 }

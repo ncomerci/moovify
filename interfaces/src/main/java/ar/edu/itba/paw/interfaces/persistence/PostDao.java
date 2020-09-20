@@ -26,11 +26,11 @@ public interface PostDao {
 
     Collection<Post> findPostsByMovieId(long id, EnumSet<FetchRelation> includedRelations);
 
-    Collection<Post> searchPosts(String title, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Collection<Post> searchPosts(String query, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 
-    Collection<Post> searchPostsByCategory(String title, String category, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Collection<Post> searchPostsByCategory(String query, String category, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 
-    Collection<Post> searchPostsOlderThan(String title, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Collection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 
-    Collection<Post> searchPostsByCategoryAndOlderThan(String title, String category, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Collection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 }

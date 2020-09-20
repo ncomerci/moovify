@@ -18,6 +18,20 @@
         <c:set var="currentSearch" value="1" scope="request" />
         <jsp:include page="/WEB-INF/jsp/search/defaultForm.jsp"/>
     </form>
+    <dl class="uk-description-list ">
+        <c:forEach items="${movies}" var="movie">
+            <dt>
+                <a href="<c:url value="/movie/${movie.id}"/>">
+                    <c:out value="${movie.title}"/>
+                </a>
+            </dt>
+            <dd>
+                    <span class="uk-text-light uk-text-muted uk-text-small">
+                       Fecha de estreno: <c:out value="${movie.premierDate}"/>
+                    </span>
+            </dd>
+        </c:forEach>
+    </dl>
 </main>
 </body>
 </html>

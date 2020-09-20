@@ -33,7 +33,6 @@ public class CommentDaoImpl implements CommentDao {
             COMMENTS + ".comment_id c_comment_id, " +
             "coalesce(" + COMMENTS + ".parent_id, 0) c_parent_id, " +
             COMMENTS + ".post_id c_post_id, " +
-            COMMENTS + ".user_email c_user_email, " +
             COMMENTS + ".creation_date c_creation_date, " +
             COMMENTS + ".body c_body, " +
 
@@ -51,7 +50,6 @@ public class CommentDaoImpl implements CommentDao {
             COMMENTS + ".comment_id c_comment_id, " +
             "coalesce(" + COMMENTS + ".parent_id, 0) c_parent_id, " +
             COMMENTS + ".post_id c_post_id, " +
-            COMMENTS + ".user_email c_user_email, " +
             COMMENTS + ".creation_date c_creation_date, " +
             COMMENTS + ".body c_body, " +
 

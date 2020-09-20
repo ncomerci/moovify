@@ -43,7 +43,6 @@ public class PostController {
         return mv;
     }
 
-
     @RequestMapping(path = "/post/create", method = RequestMethod.GET )
     public ModelAndView showPostCreateForm(@ModelAttribute("postCreateForm") final PostCreateForm postCreateForm) {
         final ModelAndView mv = new ModelAndView("post/create");

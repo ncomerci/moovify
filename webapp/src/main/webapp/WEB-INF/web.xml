@@ -30,7 +30,13 @@
       <param-name>contextClass</param-name>
       <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
     </init-param>
-    
+
+    <!-- This exception is handle by the applications like every other exception -->
+    <init-param>
+      <param-name>throwExceptionIfNoHandlerFound</param-name>
+      <param-value>true</param-value>
+    </init-param>
+
     <load-on-startup>1</load-on-startup>
   </servlet>
 
@@ -65,15 +71,10 @@
     <url-pattern>/</url-pattern>
   </servlet-mapping>
 
-<!--  TODO: Estos dos de abajo son los que me da duda si pueden ir e Web Config o en otro lado-->
+<!--  TODO: Este de abajo es el que me da duda si puede ir e Web Config o en otro lado-->
   <mime-mapping>
     <extension>ico</extension>
     <mime-type>image/x-icon</mime-type>
   </mime-mapping>
-
-  <error-page>
-    <error-code>404</error-code>
-    <location>/WEB-INF/jsp/error404.jsp</location>
-  </error-page>
 
 </web-app>
