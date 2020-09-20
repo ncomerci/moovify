@@ -557,6 +557,12 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
+    public Collection<Post> findPostsByUserId(long user_id, EnumSet<FetchRelation> includedRelations) {
+        return buildAndExecuteQuery("WHERE " + POSTS + ".user_id = ?",  SortCriteria.NEWEST,
+                new Object[]{ user_id }, includedRelations);
+    }
+
+    @Override
     public Collection<Post> getAllPosts(EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
         return buildAndExecuteQuery("", sortCriteria, null, includedRelations);
     }
