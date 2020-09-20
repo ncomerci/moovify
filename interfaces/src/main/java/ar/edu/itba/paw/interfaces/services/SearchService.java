@@ -11,7 +11,7 @@ public interface SearchService {
 
     Optional<Collection<Post>> searchPosts(String query, String category, String period, String sortCriteria);
 
-    Collection<Movie> searchMovies(String query);
+    Optional<Collection<Movie>> searchMovies(String query);
 
     Optional<Collection<User>> searchUsers(String query);
 }

@@ -103,9 +103,9 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Collection<Movie> searchMovies(String query){
+    public Optional<Collection<Movie>> searchMovies(String query){
         Objects.requireNonNull(query);
-        return movieDao.searchMovies(query);
+        return Optional.of(movieDao.searchMovies(query));
     }
 
     @Override
