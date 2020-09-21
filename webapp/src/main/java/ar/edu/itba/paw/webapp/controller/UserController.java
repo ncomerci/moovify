@@ -7,13 +7,12 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.UserCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -40,10 +39,6 @@ public class UserController {
     @Autowired
     private MailService mailService;
 
-    @Autowired
-    @Lazy
-    AuthenticationManager authManager;
-
     @RequestMapping(path = "/login", method = RequestMethod.GET)
     public ModelAndView login() {
         return new ModelAndView("user/login");
@@ -66,13 +61,9 @@ public class UserController {
         final User user = userService.register(userCreateForm.getUsername(),
                 userCreateForm.getPassword(), userCreateForm.getName(), userCreateForm.getEmail());
 
-        final String token = userService.createVerificationToken(user.getId());
+        createVerificationToken(user, request);
 
-        mailService.sendSimpleEmail(user.getEmail(), "Confirmation Email",
-                ServletUriComponentsBuilder.fromRequestUri(request)
-                        .replacePath("/registrationConfirm").queryParam("token", token).build().toUriString());
-
-        autoLogin(request, authManager, user.getUsername(), userCreateForm.getPassword(), user.getRoles());
+        manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
 
         redirectAttributes.addFlashAttribute("user", user);
 
@@ -104,45 +95,80 @@ public class UserController {
         return mv;
     }
 
-    @RequestMapping(path = "/registrationConfirm", method = RequestMethod.GET)
-    public ModelAndView confirmRegistration(@RequestParam String token) {
+    // TODO: Hacer vista
+    @RequestMapping(path = "/user/registrationConfirm", method = RequestMethod.GET)
+    public ModelAndView confirmRegistration(HttpServletRequest request, @RequestParam String token, Authentication authentication) {
 
         Optional<User> optUser = userService.confirmRegistration(token);
-        boolean success = false;
-        ModelAndView mv = new ModelAndView("/user/registrationConfirm");
+        boolean success = true;
+        User user;
 
-        if(!optUser.isPresent())
+        ModelAndView mv = new ModelAndView("user/registrationConfirm");
+
+        if(!optUser.isPresent()) {
             mv.addObject("errorMessage", "Confirmation link was invalid");
+            success = false;
+        }
 
         else {
-
-            User user = optUser.get();
+            user = optUser.get();
             mv.addObject("user", user);
 
-            if (!user.getEnabled())
+            if (!optUser.get().hasRole("USER")) {
                 mv.addObject("errorMessage", "Confirmation link was expired");
+                success = false;
+            }
 
+            // User roles have been updates. We need to refresh authorities
             else
-                success = true;
+                manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
+
         }
 
         mv.addObject("success", success);
+
         return mv;
     }
 
-    // TODO: Consultar por una mejor manera, que involucre a Spring Security.
-    private void autoLogin(HttpServletRequest request, AuthenticationManager authManager, String username, String password, Collection<Role> roles) {
+    // TODO: Hacer vista
+    // TODO: Migrate to Spring Form. Validate username with userService.userExistsAndIsNotValidated(username)
+    @RequestMapping(path = "/user/resendConfirmation", method = RequestMethod.GET)
+    public ModelAndView confirmRegistration(HttpServletRequest request, Principal principal) {
 
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password,
-            roles.stream().map((role) -> new SimpleGrantedAuthority(role.getRole())).collect(Collectors.toList()));
+        // TODO: Validate url with Spring Security
+        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        createVerificationToken(user, request);
+
+        ModelAndView mv = new ModelAndView("user/resendConfirmation");
+
+        mv.addObject("user", user);
+
+        return mv;
+    }
+
+    private void createVerificationToken(User user, HttpServletRequest request) {
+        final String token = userService.createVerificationToken(user.getId());
+
+        mailService.sendSimpleEmail(user.getEmail(), "Confirmation Email",
+                ServletUriComponentsBuilder.fromRequestUri(request)
+                        .replacePath("/user/registrationConfirm").queryParam("token", token).build().toUriString());
+    }
+
+    private void manualLogin(HttpServletRequest request, String username, String password, Collection<Role> roles) {
+
+        PreAuthenticatedAuthenticationToken token =
+                new PreAuthenticatedAuthenticationToken(username, password, getGrantedAuthorities(roles));
 
         token.setDetails(new WebAuthenticationDetails(request));
 
-        Authentication authentication = authManager.authenticate(token);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        SecurityContextHolder.getContext().setAuthentication(token);
 
         //this step is important, otherwise the new login is not in session which is required by Spring Security
         request.getSession().setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, SecurityContextHolder.getContext());
+    }
+
+    private Collection<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
+        return roles.stream().map((role) -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).collect(Collectors.toList());
     }
 }

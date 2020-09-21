@@ -7,17 +7,15 @@ public class User {
 
     private final long id;
     private final LocalDateTime creationDate;
-    private final boolean enabled;
     private final String username;
     private final String password;
     private final String name;
     private final String email;
     private final Collection<Role> roles;
 
-    public User(long id, LocalDateTime creationDate, boolean enabled, String username, String password, String name, String email, Collection<Role> roles) {
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, Collection<Role> roles) {
         this.id = id;
         this.creationDate = creationDate;
-        this.enabled = enabled;
         this.username = username;
         this.password = password;
         this.name = name;
@@ -31,10 +29,6 @@ public class User {
 
     public LocalDateTime getCreationDate() {
         return creationDate;
-    }
-
-    public boolean getEnabled() {
-        return enabled;
     }
 
     public String getUsername() {
@@ -55,5 +49,9 @@ public class User {
 
     public Collection<Role> getRoles() {
         return roles;
+    }
+
+    public boolean hasRole(String role) {
+        return roles.stream().anyMatch(r -> r.getRole().equals(role));
     }
 }

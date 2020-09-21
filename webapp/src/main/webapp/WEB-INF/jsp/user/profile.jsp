@@ -21,5 +21,10 @@
         <p>Sos un admin!!!</p>
     </sec:authorize>
 
+    <sec:authorize access="hasRole('NOT_VALIDATED')" >
+        <p>Por favor no olvides de validar tu cuenta mediante el mail que te mandamos!</p>
+        <a href="<c:url value="/user/resendConfirmation" /> ">Reenviar mail</a>
+    </sec:authorize>
+
 </body>
 </html>

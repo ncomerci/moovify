@@ -28,7 +28,6 @@ public class UserDaoImpl implements UserDao {
     private static final String SELECT_FROM_USERS = "SELECT " +
             USERS + ".user_id u_user_id, " +
             USERS + ".creation_date u_creation_date, " +
-            USERS + ".enabled u_enabled, " +
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
@@ -54,9 +53,9 @@ public class UserDaoImpl implements UserDao {
             if(!idToUserMap.containsKey(userId)) {
                 idToUserMap.put(userId,
                         new User(userId, rs.getObject("u_creation_date", LocalDateTime.class),
-                        rs.getBoolean("u_enabled"), rs.getString("u_username"),
-                        rs.getString("u_password"), rs.getString("u_name"),
-                        rs.getString("u_email"), new ArrayList<>())
+                                rs.getString("u_username"), rs.getString("u_password"),
+                                rs.getString("u_name"), rs.getString("u_email"),
+                                new ArrayList<>())
                 );
             }
 
@@ -93,7 +92,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User register(String username, String password, boolean enabled, String name, String email, Collection<String> roleNames) {
+    public User register(String username, String password, String name, String email, Collection<String> roleNames) {
 
         LocalDateTime creationDate = LocalDateTime.now();
 
@@ -104,7 +103,6 @@ public class UserDaoImpl implements UserDao {
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("creation_date", Timestamp.valueOf(creationDate));
-        map.put("enabled", enabled);
         map.put("username", username);
         map.put("password", password);
         map.put("name", name);
@@ -119,11 +117,13 @@ public class UserDaoImpl implements UserDao {
             jdbcUserRoleInsert.execute(map);
         }
 
-        return new User(userId, creationDate, enabled, username, password, name, email, roles);
+        return new User(userId, creationDate, username, password, name, email, roles);
     }
 
     @Override
     public long createVerificationToken(String token, LocalDateTime expiryTimestamp, long userId) {
+
+        jdbcTemplate.update("DELETE FROM " + TOKEN + " WHERE user_id = ?", userId);
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("token", token);
@@ -134,9 +134,43 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void enableUser(long userId) {
-        // Enable user
-        jdbcTemplate.update("UPDATE " + USERS + " SET enabled = TRUE WHERE user_id = ?", userId);
+    public Collection<Role> addRoles(long userId, Collection<String> roleNames) {
+        Collection<Role> roles = roleDao.findRolesByName(roleNames);
+
+        HashMap<String, Object> map;
+
+        for (Role role: roles) {
+            map = new HashMap<>();
+            map.put("user_id", userId);
+            map.put("role_id", role.getId());
+            jdbcUserRoleInsert.execute(map);
+        }
+
+        return roles;
+    }
+
+    @Override
+    public boolean userHasRole(long userId, String role) {
+        return jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM " + USER_ROLE +
+                        " INNER JOIN " + ROLES + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
+                        " WHERE user_id = ? AND role = ?", new Object[]{ userId, role}, Integer.class) > 0;
+    }
+
+    // TODO: El update se puede hacer en una sola query seguro
+    @Override
+    public void enableUser(final long userId, final String fullAccessRole, final String notValidatedRole) {
+
+        Collection<Role> roles = roleDao.findRolesByName(Arrays.asList(fullAccessRole, notValidatedRole));
+
+        long fullAccessRoleId = roles.stream().filter(role -> role.getRole().equals(fullAccessRole)).findFirst()
+                .orElseThrow(() -> new RuntimeException(fullAccessRole + " is not a valid user role")).getId();
+
+        long notValidatedRoleId = roles.stream().filter(role -> role.getRole().equals(notValidatedRole)).findFirst()
+                .orElseThrow(() -> new RuntimeException(notValidatedRole + " is not a valid user role")).getId();
+
+        // Enable user. Change role from notValidatedRole to fullAccessRole
+        jdbcTemplate.update("UPDATE " + USER_ROLE + " SET role_id = ? WHERE user_id = ? AND role_id = ?", fullAccessRoleId, userId, notValidatedRoleId);
 
         // Delete row from token table. It is not needed anymore
         jdbcTemplate.update("DELETE FROM " + TOKEN + " WHERE user_id = ?", userId);
@@ -169,7 +203,6 @@ public class UserDaoImpl implements UserDao {
     private static final String SELECT_TOKEN_QUERY = "SELECT " +
             USERS + ".user_id u_user_id, " +
             USERS + ".creation_date u_creation_date, " +
-            USERS + ".enabled u_enabled, " +
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
@@ -196,9 +229,9 @@ public class UserDaoImpl implements UserDao {
                 new UserVerificationToken(rs.getLong("t_token_id"), rs.getString("t_token"),
                         rs.getObject("t_expiry", LocalDateTime.class),
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
-                                rs.getBoolean("u_enabled"), rs.getString("u_username"),
-                                rs.getString("u_password"), rs.getString("u_name"),
-                                rs.getString("u_email"), new ArrayList<>()
+                                rs.getString("u_username"), rs.getString("u_password"),
+                                rs.getString("u_name"), rs.getString("u_email"),
+                                new ArrayList<>()
                         )
                 );
 

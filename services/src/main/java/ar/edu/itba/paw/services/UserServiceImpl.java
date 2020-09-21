@@ -19,17 +19,16 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDao userDao;
 
-    // All users are created with this role by default
-    private static final String DEFAULT_USER_ROLE = "ROLE_USER";
-
-    private static final boolean DEFAULT_ENABLED = false;
+    // All users are created with NOT_VALIDATED_ROLE by default
+    private static final String NOT_VALIDATED_ROLE = "NOT_VALIDATED";
+    private static final String FULL_ACCESS_ROLE = "USER";
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     public User register(String username, String password, String name, String email) {
-        return userDao.register(username, passwordEncoder.encode(password), DEFAULT_ENABLED, name, email, Collections.singletonList(DEFAULT_USER_ROLE));
+        return userDao.register(username, passwordEncoder.encode(password), name, email, Collections.singletonList(NOT_VALIDATED_ROLE));
     }
 
     @Override
@@ -54,11 +53,9 @@ public class UserServiceImpl implements UserService {
         User user = verificationToken.getUser();
 
         if(verificationToken.isValid()) {
-            userDao.enableUser(user.getId());
+            userDao.enableUser(user.getId(), FULL_ACCESS_ROLE, NOT_VALIDATED_ROLE);
 
-            user = new User(user.getId(), user.getCreationDate(), true,
-                    user.getUsername(), user.getPassword(), user.getName(),
-                    user.getEmail(), user.getRoles());
+            return userDao.findById(user.getId());
         }
 
         return Optional.of(user);

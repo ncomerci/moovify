@@ -25,6 +25,7 @@ public class MailServiceImpl implements MailService {
         email.setTo(to);
         email.setFrom(FROM);
         email.setSentDate(Timestamp.valueOf(LocalDateTime.now()));
+        email.setSubject(subject);
         email.setText(text);
 
         emailSender.send(email);
