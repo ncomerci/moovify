@@ -24,6 +24,8 @@ public interface UserDao {
 
     Optional<User> findByEmail(String email);
 
+    Collection<User> searchUsers(String query);
+
     Collection<User> getAllUsers();
 
     long createVerificationToken(String token, LocalDateTime expiryTimestamp, long userId);

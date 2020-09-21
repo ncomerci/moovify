@@ -4,10 +4,12 @@ import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
+import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
+import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.services.exceptions.NonReachableStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
@@ -27,6 +29,9 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     private MovieDao movieDao;
+
+    @Autowired
+    private UserDao userDao;
 
     private enum SearchOptions{
         BY_CATEGORY, OLDER_THAN
@@ -98,8 +103,14 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Collection<Movie> searchMovies(String query){
+    public Optional<Collection<Movie>> searchMovies(String query){
         Objects.requireNonNull(query);
-        return movieDao.searchMovies(query);
+        return Optional.of(movieDao.searchMovies(query));
+    }
+
+    @Override
+    public Optional<Collection<User>> searchUsers(String query) {
+        Objects.requireNonNull(query);
+        return Optional.of(userDao.searchUsers(query));
     }
 }

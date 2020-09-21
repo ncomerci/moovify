@@ -1528,7 +1528,7 @@ button.uk-icon:not(:disabled) {
   outline: none;
   background-color: #fff;
   color: #666;
-  border-color: #1e87f0;
+  border-color: #f2a365;
 }
 /* Disabled */
 .uk-input:disabled,
@@ -2047,14 +2047,14 @@ select.uk-form-width-xsmall {
  * Secondary
  */
 .uk-button-secondary {
-  background-color: #222;
+  background-color: #30475e;
   color: #fff;
   border: 1px solid transparent;
 }
 /* Hover + Focus */
 .uk-button-secondary:hover,
 .uk-button-secondary:focus {
-  background-color: #151515;
+  background-color: #222831;
   color: #fff;
 }
 /* OnClick + Active */
@@ -3176,7 +3176,7 @@ select.uk-form-width-xsmall {
  * Default
  */
 .uk-overlay-default {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(34, 40, 49, 0.8);
 }
 /*
  * Primary
@@ -5352,7 +5352,7 @@ ul.uk-nav-sub {
   box-sizing: border-box;
   width: 200px;
   /* 4 */
-  padding: 25px;
+  padding: 10px;
   background: #fff;
   color: #666;
   box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
@@ -5369,7 +5369,8 @@ ul.uk-nav-sub {
   margin-top: -15px;
 }
 [class*='uk-navbar-dropdown-bottom'] {
-  margin-top: 15px;
+  /*margin-top: 15px;*/
+  margin-top: 0px;
 }
 [class*='uk-navbar-dropdown-left'] {
   margin-left: -15px;
@@ -7995,7 +7996,7 @@ iframe.uk-cover {
  */
 [class*='uk-inline'] {
   /* 1 */
-  display: inline-block;
+  /*display: inline-block;*/
   /* 2 */
   position: relative;
   /* 3 */
@@ -12563,7 +12564,48 @@ iframe.uk-cover {
   color: #fa8a32;
 }
 
+.userTitle {
+  color: #f2a365;
+}
+
 .search-button {
   padding-left: 10px !important;
   padding-right: 10px !important;
 }
+.user-login-button {
+  padding-left: 35px !important;
+  padding-right: 35px !important;
+}
+
+.user-profile-button {
+  border: 1px solid #30475e;
+  color: #30475e;
+}
+
+.user-profile-button:hover,
+.user-profile-button:focus{
+  border: 1px solid #222831;
+  color: #222831;
+}
+
+.logout-button {
+  padding-left: 42px !important;
+  padding-right: 42px !important;
+  border: 1px solid #cf1b1b;
+  color: #cf1b1b;
+}
+
+.logout-button:hover,
+.logout-button:focus {
+  border: 1px solid #900d0d;
+  color: #900d0d;
+}
+
+.icon-error {
+  color: #f0506e;
+}
+
+.signup-login-button {
+  width: 100% !important;
+}
+

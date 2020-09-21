@@ -80,6 +80,8 @@ public class UserController {
         if(inputFlashMap == null || !inputFlashMap.containsKey("user"))
             mv.addObject("user", userService.findById(userId)
                 .orElseThrow(UserNotFoundException::new));
+            mv.addObject("posts", userService.findPostsByUserId(userId));
+
 
         return mv;
     }
@@ -89,9 +91,10 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/profile");
 
-        mv.addObject("user", userService.findByUsername(principal.getName())
-                .orElseThrow(UserNotFoundException::new));
-
+        User user = userService.findByUsername(principal.getName())
+                .orElseThrow(UserNotFoundException::new);
+        mv.addObject("user", user);
+        mv.addObject("posts", userService.findPostsByUserId(user.getId()));
         return mv;
     }
 

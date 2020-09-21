@@ -63,7 +63,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </form:form>
     <dl class="uk-description-list ">

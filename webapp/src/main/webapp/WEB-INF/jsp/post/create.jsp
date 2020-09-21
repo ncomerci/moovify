@@ -42,14 +42,6 @@
     </div>
 
     <div class="uk-margin-left uk-margin-bottom">
-        <spring:message code="post.create.emailPlaceholder" var="emailPlaceholder"/>
-        <form:label path="email" class="uk-form-label uk-text-secondary uk-margin-auto" for="email-text"><spring:message code="post.create.newPostEmail"/>
-            <form:input path="email"  class="uk-input uk-form-small" id="email-text" type="email" placeholder="${emailPlaceholder}"/>
-        </form:label>
-        <form:errors path="email" element="p" cssClass="error" cssStyle="color:red;" />
-    </div>
-
-    <div class="uk-margin-left uk-margin-bottom">
         <form:label path="category" class="uk-form-label uk-text-secondary uk-margin-auto" for="category-select" ><spring:message code="post.create.newPostCategory"/></form:label>
         <div class="uk-form-controls">
             <form:select path="category"  class="uk-select" id="category-select">

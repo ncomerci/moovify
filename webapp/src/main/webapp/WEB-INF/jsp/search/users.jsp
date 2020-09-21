@@ -12,12 +12,23 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <main class="uk-container-small uk-margin-auto uk-padding-small">
-    <form method="get" action="<c:url value="/search/users/"/>">
+    <c:url value="/search/users/" var="action"/>
+    <form:form modelAttribute="searchUsersForm" method="get" action="${action}">
 
         <c:set var="query" value="${query}" scope="request" />
         <c:set var="currentSearch" value="2" scope="request" />
         <jsp:include page="/WEB-INF/jsp/search/defaultForm.jsp"/>
-    </form>
+    </form:form>
+    <dl class="uk-description-list ">
+        <c:forEach items="${users}" var="user">
+            <dt>
+                <a href="<c:url value="/user/${user.id}"/>">
+                    <c:out value="${user.username}"/>
+                </a>
+            </dt>
+        </c:forEach>
+    </dl>
+
 </main>
 </body>
 </html>
