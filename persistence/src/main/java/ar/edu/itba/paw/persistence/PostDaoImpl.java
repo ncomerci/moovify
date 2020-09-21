@@ -552,9 +552,10 @@ public class PostDaoImpl implements PostDao {
         return queryBuilder.substring(0, queryBuilder.length() - separator.length());
     }
 
+//    TODO: descablear el order by de los comentarios
     @Override
     public Optional<Post> findPostById(long id, EnumSet<FetchRelation> includedRelations){
-        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ?", "", 
+        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ?", "ORDER BY " + COMMENTS + ".creation_date",
                 new Object[]{ id }, includedRelations).stream().findFirst();
     }
 
