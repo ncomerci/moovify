@@ -67,7 +67,7 @@ public class UserController {
 
         redirectAttributes.addFlashAttribute("user", user);
 
-        return new ModelAndView("redirect:/user/" + user.getId());
+        return new ModelAndView("redirect:/user/profile");
     }
 
     @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET)
@@ -80,19 +80,26 @@ public class UserController {
         if(inputFlashMap == null || !inputFlashMap.containsKey("user"))
             mv.addObject("user", userService.findById(userId)
                 .orElseThrow(UserNotFoundException::new));
-            mv.addObject("posts", userService.findPostsByUserId(userId));
 
+        mv.addObject("posts", userService.findPostsByUserId(userId));
 
         return mv;
     }
 
     @RequestMapping(path = "/user/profile", method = RequestMethod.GET)
-    public ModelAndView profile(Principal principal) {
+    public ModelAndView profile(HttpServletRequest request, Principal principal) {
 
         final ModelAndView mv = new ModelAndView("user/profile");
 
-        User user = userService.findByUsername(principal.getName())
+        User user;
+        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+
+        if(inputFlashMap == null || !inputFlashMap.containsKey("user"))
+            user = userService.findByUsername(principal.getName())
                 .orElseThrow(UserNotFoundException::new);
+        else
+            user = (User) inputFlashMap.get("user");
+
         mv.addObject("user", user);
         mv.addObject("posts", userService.findPostsByUserId(user.getId()));
         return mv;
