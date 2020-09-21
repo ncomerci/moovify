@@ -3176,7 +3176,7 @@ select.uk-form-width-xsmall {
  * Default
  */
 .uk-overlay-default {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(34, 40, 49, 0.8);
 }
 /*
  * Primary
@@ -12562,6 +12562,10 @@ iframe.uk-cover {
 .iconify:hover,
 .iconify:focus {
   color: #fa8a32;
+}
+
+.userTitle {
+  color: #f2a365;
 }
 
 .search-button {
