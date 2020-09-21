@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 public enum TableNames {
-    //TODO: preguntar si es una buena forma de generalizar el nombre de la tabla
+
     USERS("users"),
     ROLES("roles"),
     USER_ROLE("user_role"),
@@ -10,7 +10,8 @@ public enum TableNames {
     POST_MOVIE("post_movie"),
     TAGS("tags"),
     COMMENTS("comments"),
-    POST_CATEGORY("post_category");
+    POST_CATEGORY("post_category"),
+    USER_VERIFICATION_TOKEN("user_verification_token");
 
     private final String tableName;
 

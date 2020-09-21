@@ -10,6 +10,10 @@ public interface UserService {
 
     User register(String username, String password, String name, String email);
 
+    Optional<User> confirmRegistration(String token);
+
+    String createVerificationToken(long userId);
+
     Optional<User> findById(long id);
 
     Optional<User> findByUsername(String username);

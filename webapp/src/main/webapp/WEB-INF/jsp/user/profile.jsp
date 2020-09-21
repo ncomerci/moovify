@@ -33,10 +33,19 @@
             <p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>
             <p class="uk-text-center"><button id="edit-button" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="button"><spring:message code="user.profile.EditProfile"/></button></p>
         </div>
+
         <div class="uk-width-1-3@m uk-flex-first uk-text-center">
             <img class="uk-border-circle uk-margin-left" alt="" height="250" width="250" data-src="<c:url value="/resources/images/avatar.jpg"/>" uk-img>
         </div>
     </div>
+</div>
+
+<%-- TODO: Tobi hdp como vas a clavar esto aca--%>
+<div>
+    <sec:authorize access="hasRole('NOT_VALIDATED')" >
+        <p>Por favor no olvides de validar tu cuenta mediante el mail que te mandamos!</p>
+        <a href="<c:url value="/user/resendConfirmation" /> ">Reenviar mail</a>
+    </sec:authorize>
 </div>
 
 <div class="uk-container uk-margin-top">
