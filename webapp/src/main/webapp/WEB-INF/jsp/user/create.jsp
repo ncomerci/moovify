@@ -4,7 +4,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>Create User</title>
+    <title><spring:message code="user.create.signUpTitle"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 
 </head>
