@@ -17,7 +17,7 @@
         <canvas height="400"></canvas>
         <img src="<c:url value="/resources/images/background.jpg"/>"  alt="" uk-cover>
     </div>
-    <div class="uk-cover uk-overlay uk-overlay-default uk-flex uk-flex-middle" uk-grid>
+    <div class="uk-position-medium uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle" uk-grid>
         <div class="uk-width-2-3@m">
             <h3 class="uk-card-title uk-margin-remove-bottom userTitle"><c:out value="${user.username}" /></h3>
             <p class="uk-text-meta uk-margin-remove-top"><spring:message code="user.profile.inMoovifySince"/><fmt:parseDate value="${user.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
@@ -34,7 +34,7 @@
             <p class="uk-text-center"><button id="edit-button" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="button"><spring:message code="user.profile.EditProfile"/></button></p>
         </div>
         <div class="uk-width-1-3@m uk-flex-first uk-text-center">
-            <img class="uk-border-circle uk-margin-left" alt="" height="200" width="200" data-src="<c:url value="/resources/images/avatar.jpg"/>" uk-img>
+            <img class="uk-border-circle uk-margin-left" alt="" height="250" width="250" data-src="<c:url value="/resources/images/avatar.jpg"/>" uk-img>
         </div>
     </div>
 </div>
