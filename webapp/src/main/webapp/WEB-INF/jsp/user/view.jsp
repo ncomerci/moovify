@@ -12,7 +12,7 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 
-<div class="uk-inline">
+<div class="uk-inline ">
     <div class="uk-cover-container">
         <canvas height="350"></canvas>
         <img src="<c:url value="/resources/images/background.jpg"/>"  uk-cover>

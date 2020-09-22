@@ -14,7 +14,7 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 <div class="uk-inline">
     <div class="uk-cover-container">
-        <canvas height="400"></canvas>
+        <canvas height="430"></canvas>
         <img src="<c:url value="/resources/images/background.jpg"/>"  alt="" uk-cover>
     </div>
     <div class="uk-position-medium uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle" uk-grid>
@@ -30,12 +30,17 @@
                 </sec:authorize>
                 <li class="userTitle"><spring:message code="user.profile.Description"/></li>
             </ul>
-            <p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>
+             <p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>
             <p class="uk-text-center"><button id="edit-button" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="button"><spring:message code="user.profile.EditProfile"/></button></p>
         </div>
 
         <div class="uk-width-1-3@m uk-flex-first uk-text-center">
-            <img class="uk-border-circle uk-margin-left" alt="" height="250" width="250" data-src="<c:url value="/resources/images/avatar.jpg"/>" uk-img>
+            <div class="uk-inline-clip uk-transition-toggle" tabindex="0">
+                <img class="uk-border-circle uk-margin-left" alt="" height="250" width="250" data-src="<c:url value="/resources/images/avatar.jpg"/>" uk-img>
+                <div class="uk-position-center uk-text-center">
+                    <span class="uk-transition-fade" uk-icon="icon: plus; ratio: 2"></span>
+                </div>
+            </div>
         </div>
     </div>
 </div>
