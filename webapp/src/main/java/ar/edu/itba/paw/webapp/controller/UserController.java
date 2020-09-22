@@ -22,10 +22,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -160,9 +162,20 @@ public class UserController {
     private void createVerificationToken(User user, HttpServletRequest request) {
         final String token = userService.createVerificationToken(user.getId());
 
-        mailService.sendSimpleEmail(user.getEmail(), "Confirmation Email",
+        Map<String, Object> emailVariables = new HashMap<>();
+        emailVariables.put("confirmationURL",
                 ServletUriComponentsBuilder.fromRequestUri(request)
-                        .replacePath("/user/registrationConfirm").queryParam("token", token).build().toUriString());
+                .replacePath("/user/registrationConfirm").queryParam("token", token).build().toUriString()
+        );
+
+
+        try {
+            mailService.sendEmail(user.getEmail(), "Confirmation Email", "confirmEmail", emailVariables);
+        }
+        catch (MessagingException e) {
+            // TODO: Log
+            System.out.println("Confirmation email failed to send");
+        }
     }
 
     private void manualLogin(HttpServletRequest request, String username, String password, Collection<Role> roles) {

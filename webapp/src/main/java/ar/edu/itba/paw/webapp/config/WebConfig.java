@@ -31,6 +31,7 @@ import java.util.Properties;
         "ar.edu.itba.paw.persistence",
     })
 @Configuration
+// TODO: Set Up @PropertySource
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Value("classpath:schema.sql")
@@ -92,11 +93,22 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public JavaMailSender getJavaMailSender() {
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+    public MessageSource messageSource(){
+        final ReloadableResourceBundleMessageSource msgSource = new ReloadableResourceBundleMessageSource();
+
+        msgSource.setBasename("classpath:i18n/messages");
+        msgSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
+        msgSource.setCacheSeconds(10);
+
+        return msgSource;
+    }
+
+    @Bean
+    public JavaMailSender mailSender() {
+
+        final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost("smtp.mailtrap.io");
         mailSender.setPort(587);
-
         mailSender.setUsername("26c112e85ad5d0");
         mailSender.setPassword("2ef99bfa48cad0");
 
@@ -107,16 +119,5 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         props.put("mail.debug", "true");
 
         return mailSender;
-    }
-
-    @Bean
-    public MessageSource messageSource(){
-        final ReloadableResourceBundleMessageSource msgSource = new ReloadableResourceBundleMessageSource();
-
-        msgSource.setBasename("classpath:i18n/messages");
-        msgSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
-        msgSource.setCacheSeconds(10);
-
-        return msgSource;
     }
 }
