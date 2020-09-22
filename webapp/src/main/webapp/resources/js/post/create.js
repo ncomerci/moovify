@@ -22,6 +22,14 @@ window.addEventListener('load', function(){
         () => addMovie(formElem, addMovieInputElem, datalistElem, moviesSelectedElem),
         false);
 
+    addMovieInputElem.addEventListener('input', () =>  addMovie(formElem, addMovieInputElem, datalistElem, moviesSelectedElem));
+
+    addTagInputElem.addEventListener('keypress', (k) => {
+        if(k.key === 'Enter')
+            addTag(formElem, addTagInputElem, tagsSelectedElem)
+    });
+
+
     addTagButtonElem.addEventListener('click',
         () => addTag(formElem, addTagInputElem, tagsSelectedElem),
         false);
