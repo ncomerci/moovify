@@ -1,26 +1,27 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>Email Confirmation</title>
+    <title><spring:message code="email.emailConfirmation"/>></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
-    <div>
-        <p>${user.name}</p>
-        <p>${errorMessage}</p>
-        <p>${success}</p>
+<c:if test="${success}" >
+    <div class="uk-text-center uk-margin-auto">
+        <h2 class="userTitle"> <spring:message code="email.registrationConfirm" arguments="${user.name}"/></h2>
     </div>
+</c:if>
 
-    <c:if test="${!success}" >
-        <p>If you wish to resend the email, you can do it in your <a href="<c:url value="/user/profile" /> ">profile</a></p>
-    </c:if>
-    <div>
+<c:if test="${!success}" >
+    <h2 class="userTitle"><spring:message code="email.errorResendEmail"/>  <a href="<c:url value="/user/resendConfirmation" /> "><spring:message code="user.profile.ResendEmail"/></a></h2>
+</c:if>
+<div>
 
-    </div>
+</div>
 </body>
 </html>
