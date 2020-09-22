@@ -98,7 +98,7 @@ function addMovie(formElem, inputElem, datalistElem, moviesSelectedElem){
     if(!movieName)
         return;
 
-    let movieOption = datalistElem.querySelector(`option[value = '${movieName}']`);
+    let movieOption = datalistElem.querySelector(`option[value = "${movieName}"]`);
 
     if(!movieOption)
         return;

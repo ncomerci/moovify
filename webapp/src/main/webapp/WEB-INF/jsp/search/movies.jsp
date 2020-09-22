@@ -27,7 +27,7 @@
             </dt>
             <dd>
                     <span class="uk-text-light uk-text-muted uk-text-small">
-                       Fecha de estreno: <c:out value="${movie.premierDate}"/>
+                       Fecha de estreno: <c:out value="${movie.releaseDate}"/>
                     </span>
             </dd>
         </c:forEach>

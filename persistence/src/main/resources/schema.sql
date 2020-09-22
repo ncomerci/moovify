@@ -44,7 +44,6 @@ CREATE TABLE IF NOT EXISTS POSTS
     FOREIGN KEY (user_id)     REFERENCES USERS (user_id)
 );
 
-
 CREATE TABLE IF NOT EXISTS TAGS
 (
     post_id INTEGER     NOT NULL,
@@ -53,20 +52,43 @@ CREATE TABLE IF NOT EXISTS TAGS
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id)
 );
 
+CREATE TABLE IF NOT EXISTS MOVIE_CATEGORIES
+(
+    category_id             SERIAL          PRIMARY KEY,
+    tmdb_category_id        INTEGER         NOT NULL    UNIQUE,
+    name                    VARCHAR(50)     NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS MOVIES
 (
-    movie_id      SERIAL PRIMARY KEY,
-    creation_date TIMESTAMP    NOT NULL,
-    premier_date  DATE         NOT NULL,
-    title         VARCHAR(200) NOT NULL,
+    movie_id                SERIAL          PRIMARY KEY,
+    creation_date           TIMESTAMP       NOT NULL    DEFAULT now(),
+    release_date            DATE            NOT NULL,
+    title                   VARCHAR(200)    NOT NULL,
+    original_title          VARCHAR(200)    NOT NULL,
+    tmdb_id                 INTEGER         NOT NULL    UNIQUE,
+    imdb_id                 VARCHAR(20)     NOT NULL    UNIQUE,
+    original_language       VARCHAR(10)     NOT NULL,
+    overview                TEXT            NOT NULL,
+    popularity              FLOAT           NOT NULL,
+    runtime                 FLOAT           NOT NULL,
+    vote_average            FLOAT           NOT NULL
 
-    UNIQUE (title, premier_date)
+);
+
+CREATE TABLE IF NOT EXISTS MOVIE_TO_MOVIE_CATEGORY
+(
+    tmdb_category_id     INTEGER    NOT NULL,
+    tmdb_id         INTEGER    NOT NULL,
+    PRIMARY KEY (tmdb_category_id, tmdb_id),
+    FOREIGN KEY (tmdb_category_id) REFERENCES MOVIE_CATEGORIES(tmdb_category_id),
+    FOREIGN KEY (tmdb_id) REFERENCES MOVIES (tmdb_id)
 );
 
 CREATE TABLE IF NOT EXISTS POST_MOVIE
 (
-    post_id  INTEGER    NOT NULL,
-    movie_id INTEGER    NOT NULL,
+    post_id         INTEGER    NOT NULL,
+    movie_id        INTEGER    NOT NULL,
     PRIMARY KEY (post_id, movie_id),
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id),
     FOREIGN KEY (movie_id) REFERENCES MOVIES (movie_id)
