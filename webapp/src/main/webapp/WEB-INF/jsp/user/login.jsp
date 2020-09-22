@@ -12,7 +12,7 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 <div class="uk-container uk-container-xsmall uk-margin-medium-top">
-    <form action="${action}" method="post" >
+    <form method="post">
         <fieldset class="uk-fieldset">
             <legend class="uk-legend uk-text-uppercase uk-text-center uk-text-bold uk-text-large uk-text-primary"><spring:message code="user.login.loginTitle"/></legend>
             <div class="uk-margin">
@@ -66,6 +66,10 @@
             <div class="uk-text-center uk-text-bold uk-text-muted uk-margin"><spring:message code="user.login.noAccount"/> <a href="<c:url value="/user/create"/>"><spring:message code="user.create.signUpTitle"/></a></div>
         </fieldset>
     </form>
+
+    <div>
+        <a href="<c:url value="/user/resetPassword" /> "><spring:message code="user.login.resetPassword"/></a>
+    </div>
 
 </div>
 

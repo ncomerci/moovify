@@ -10,17 +10,13 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
-    <div>
-        <p>${user.name}</p>
-        <p>${errorMessage}</p>
-        <p>${success}</p>
-    </div>
-
+    <c:if test="${success}" >
+        <h1>You have successfully confirmed your account! Thank you for choosing Moovify</h1>
+    </c:if>
     <c:if test="${!success}" >
+        <h1>The confirmation link was invalid or had already expired :(</h1>
         <p>If you wish to resend the email, you can do it in your <a href="<c:url value="/user/profile" /> ">profile</a></p>
     </c:if>
-    <div>
 
-    </div>
 </body>
 </html>

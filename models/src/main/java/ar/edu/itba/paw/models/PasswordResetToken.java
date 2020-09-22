@@ -2,36 +2,40 @@ package ar.edu.itba.paw.models;
 
 import java.time.LocalDateTime;
 
-public class UserVerificationToken {
+public class PasswordResetToken {
 
     private static final int VALID_DAYS = 1;
 
-    private final long id;
-    private final String token;
+    private final long tokenId;
     private final User user;
+    private final String token;
     private final LocalDateTime expiryDate;
 
     public static LocalDateTime calculateExpiryDate() {
         return LocalDateTime.now().plusDays(VALID_DAYS);
     }
 
-    public UserVerificationToken(Long id, String token, LocalDateTime expiryDate, User user) {
-        this.id = id;
+    public PasswordResetToken(long tokenId, String token, LocalDateTime expiryDate, User user) {
+        this.tokenId = tokenId;
         this.token = token;
         this.expiryDate = expiryDate;
         this.user = user;
     }
 
-    public Long getId() {
-        return id;
+    public long getTokenId() {
+        return tokenId;
+    }
+
+    public User getUser() {
+        return user;
     }
 
     public String getToken() {
         return token;
     }
 
-    public User getUser() {
-        return user;
+    public LocalDateTime getExpiryDate() {
+        return expiryDate;
     }
 
     public boolean isValid() {

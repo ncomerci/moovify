@@ -20,7 +20,8 @@
     <div class="uk-position-medium uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle" uk-grid>
         <div class="uk-width-2-3@m">
             <h3 class="uk-card-title uk-margin-remove-bottom userTitle"><c:out value="${user.username}" /></h3>
-            <p class="uk-text-meta uk-margin-remove-top"><spring:message code="user.profile.inMoovifySince"/><fmt:parseDate value="${user.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+            <p class="uk-text-meta uk-margin-remove-top"><spring:message code="user.profile.inMoovifySince"/>
+                <fmt:parseDate value="${user.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                 <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" /></p>
             <ul class="uk-list uk-list-bullet">
                 <li class="userTitle"><spring:message code="user.profile.Name" arguments="${user.name}"/></li>

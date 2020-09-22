@@ -4,10 +4,12 @@ import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
+import ar.edu.itba.paw.webapp.form.UpdatePasswordForm;
 import ar.edu.itba.paw.webapp.form.UserCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -109,41 +111,55 @@ public class UserController {
 
     // TODO: Hacer vista
     @RequestMapping(path = "/user/registrationConfirm", method = RequestMethod.GET)
-    public ModelAndView confirmRegistration(HttpServletRequest request, @RequestParam String token, Authentication authentication) {
+    public ModelAndView confirmRegistration(HttpServletRequest request, @RequestParam String token) {
 
         Optional<User> optUser = userService.confirmRegistration(token);
-        boolean success = true;
-        User user;
+        boolean success;
+
 
         ModelAndView mv = new ModelAndView("user/registrationConfirm");
 
-        if(!optUser.isPresent()) {
-            mv.addObject("errorMessage", "Confirmation link was invalid");
-            success = false;
-        }
+        if(optUser.isPresent()) {
+            success = true;
+            final User user = optUser.get();
 
-        else {
-            user = optUser.get();
             mv.addObject("user", user);
 
-            if (!optUser.get().hasRole("USER")) {
-                mv.addObject("errorMessage", "Confirmation link was expired");
-                success = false;
-            }
-
             // User roles have been updates. We need to refresh authorities
-            else
-                manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
-
+            manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
         }
+        else
+            success = false;
 
         mv.addObject("success", success);
 
         return mv;
     }
 
+    @RequestMapping(path = "/user/resetPassword", method = RequestMethod.GET)
+    public ModelAndView showResetPassword(@ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm) {
+        return new ModelAndView("user/resetPassword");
+    }
+
+    @RequestMapping(path = "/user/resetPassword", method = RequestMethod.POST)
+    public ModelAndView resetPassword(@Valid @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm,
+                                      HttpServletRequest request, final BindingResult bindingResult) {
+
+        if(bindingResult.hasErrors())
+            return showResetPassword(resetPasswordForm);
+
+        final User user = userService.findByEmail(resetPasswordForm.getEmail()).orElseThrow(UserNotFoundException::new);
+
+        createPasswordResetToken(user, request);
+
+        final ModelAndView mv = new ModelAndView("user/resetPasswordTokenGenerated");
+
+        mv.addObject("user", user);
+
+        return mv;
+    }
+
     // TODO: Hacer vista
-    // TODO: Migrate to Spring Form. Validate username with userService.userExistsAndIsNotValidated(username)
     @RequestMapping(path = "/user/resendConfirmation", method = RequestMethod.GET)
     public ModelAndView confirmRegistration(HttpServletRequest request, Principal principal) {
 
@@ -159,6 +175,50 @@ public class UserController {
         return mv;
     }
 
+    @RequestMapping(path = "/user/updatePassword/token", method = RequestMethod.GET)
+    public ModelAndView validateResetPasswordToken(@RequestParam String token, RedirectAttributes redirectAttributes) {
+        boolean validToken = userService.validatePasswordResetToken(token);
+
+        if(validToken){
+            redirectAttributes.addFlashAttribute("token", token);
+
+            return new ModelAndView("redirect:/user/updatePassword");
+        }
+
+        return new ModelAndView("user/updatePasswordError");
+    }
+
+    @RequestMapping(path = "/user/updatePassword", method = RequestMethod.GET)
+    public ModelAndView showUpdatePassword(@ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm,
+                                           HttpServletRequest request) {
+
+        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+
+        if(inputFlashMap != null && inputFlashMap.containsKey("token"))
+            updatePasswordForm.setToken((String) inputFlashMap.get("token"));
+
+        return new ModelAndView("user/updatePassword");
+    }
+
+    @RequestMapping(path = "/user/updatePassword", method = RequestMethod.POST)
+    public ModelAndView updatePassword(@Valid @ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm,
+                                        HttpServletRequest request, final BindingResult bindingResult) {
+
+        if(bindingResult.hasErrors())
+            return showUpdatePassword(updatePasswordForm, request);
+
+        User user = userService.updatePassword(updatePasswordForm.getPassword(), updatePasswordForm.getToken())
+                .orElseThrow(InvalidResetPasswordToken::new);
+
+        manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
+
+        ModelAndView mv = new ModelAndView("user/passwordResetSuccess");
+
+        mv.addObject("user", user);
+
+        return mv;
+    }
+
     private void createVerificationToken(User user, HttpServletRequest request) {
         final String token = userService.createVerificationToken(user.getId());
 
@@ -168,13 +228,30 @@ public class UserController {
                 .replacePath("/user/registrationConfirm").queryParam("token", token).build().toUriString()
         );
 
-
         try {
             mailService.sendEmail(user.getEmail(), "Confirmation Email", "confirmEmail", emailVariables);
         }
         catch (MessagingException e) {
             // TODO: Log
             System.out.println("Confirmation email failed to send");
+        }
+    }
+
+    private void createPasswordResetToken(User user, HttpServletRequest request) {
+        final String token = userService.createPasswordResetToken(user.getId());
+
+        Map<String, Object> emailVariables = new HashMap<>();
+        emailVariables.put("confirmationURL",
+                ServletUriComponentsBuilder.fromRequestUri(request)
+                        .replacePath("/user/updatePassword/token").queryParam("token", token).build().toUriString()
+        );
+
+        try {
+            mailService.sendEmail(user.getEmail(), "Password Reset", "passwordResetEmail", emailVariables);
+        }
+        catch (MessagingException e) {
+            // TODO: Log
+            System.out.println("Password reset email failed to send");
         }
     }
 

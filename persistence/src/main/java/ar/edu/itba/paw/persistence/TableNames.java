@@ -11,7 +11,8 @@ public enum TableNames {
     TAGS("tags"),
     COMMENTS("comments"),
     POST_CATEGORY("post_category"),
-    USER_VERIFICATION_TOKEN("user_verification_token");
+    USER_VERIFICATION_TOKEN("user_verification_token"),
+    PASSWORD_RESET_TOKEN("password_reset_token");
 
     private final String tableName;
 

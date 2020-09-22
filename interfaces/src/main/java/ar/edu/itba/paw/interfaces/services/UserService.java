@@ -14,6 +14,14 @@ public interface UserService {
 
     String createVerificationToken(long userId);
 
+    String createPasswordResetToken(long userId);
+
+    boolean validatePasswordResetToken(String token);
+
+    Optional<User> updatePassword(String password, String token);
+
+    boolean emailExistsAndIsValidated(String email);
+
     Optional<User> findById(long id);
 
     Optional<User> findByUsername(String username);

@@ -20,6 +20,7 @@ public class UserCreateForm {
     @ValidPassword
     private String password;
 
+    // TODO: no es necesaria la constrain de ValidPassword aca
     @ValidPassword
     private String repeatPassword;
 
