@@ -2,7 +2,6 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="sprin" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <html>
@@ -47,13 +46,12 @@
 </div>
 
 <%-- TODO: Tobi hdp como vas a clavar esto aca--%>
-<div>
+<div class="uk-text-center uk-margin-auto">
     <sec:authorize access="hasRole('NOT_VALIDATED')" >
-        <p>Por favor no olvides de validar tu cuenta mediante el mail que te mandamos!</p>
-        <a href="<c:url value="/user/resendConfirmation" /> ">Reenviar mail</a>
+        <h2><spring:message code="user.profile.ConfirmationEmail"/>  <a href="<c:url value="/user/resendConfirmation" /> "><spring:message code="user.profile.ResendEmail"/></a></h2>
     </sec:authorize>
 </div>
-
+<sec:authorize access="hasAnyRole('ADMIN','USER')">
 <div class="uk-container uk-margin-top">
     <div class="uk-flex-middle" uk-grid>
         <section id="posts" class="uk-width-1-2@m uk-flex-first">
@@ -87,5 +85,6 @@
         </section>
     </div>
 </div>
+</sec:authorize>
 </body>
 </html>
