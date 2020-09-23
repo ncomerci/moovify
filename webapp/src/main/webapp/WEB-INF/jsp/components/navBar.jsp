@@ -2,6 +2,9 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
+<sec:authorize access="isAuthenticated()">
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+</sec:authorize>
 
 <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
     <nav class="uk-navbar-container" uk-navbar>
@@ -21,14 +24,21 @@
                     </div>
                 </li>
                 <sec:authorize access="isAuthenticated()">
-                        <sec:authorize access="hasAnyRole('USER', 'ADMIN')">
-                            <li class="uk-navbar-item">
-                                <a class="uk-padding-remove" href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a>
-                            </li>
+                    <li class="uk-navbar-item">
+                        <sec:authorize access="hasRole('NOT_VALIDATED')">
+                            <!-- This is a button toggling the modal -->
+                            <a class="uk-padding-remove" href="<c:url value="/post/create" />" uk-toggle="target: #confirm-email-modal">
+                                <spring:message code="navbar.createPost"/>
+                            </a>
                         </sec:authorize>
+                        <sec:authorize access="!hasRole('NOT_VALIDATED')">
+                            <a class="uk-padding-remove" href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a>
+                        </sec:authorize>
+                    </li>
                     <li>
-                        <a class="uk-padding-remove" href="">
-                            <span class="iconify uk-margin-right uk-margin-small-left" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
+                        <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" href="">
+                            <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
+                            <span class="uk-text-bold uk-margin-small-left">${loggedUser.username}</span>
                         </a>
                         <div class="uk-navbar-dropdown">
                             <ul class="uk-nav uk-navbar-dropdown-nav">
@@ -60,3 +70,15 @@
         </div>
     </nav>
 </header>
+
+<!-- Confirm email modal -->
+<div id="confirm-email-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title"><spring:message code="user.emailConfirm.title"/></h2>
+        <p><spring:message code="user.emailConfirm.text"/></p>
+        <p class="uk-text-right">
+            <a class="uk-button uk-button-secondary uk-border-rounded uk-text-bolder" href="<c:url value="/user/resendConfirmation" /> "><spring:message code="user.profile.ResendEmail"/></a>
+            <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-modal-close" type="button"><spring:message code="user.emailConfirm.closeModal"/></button>
+        </p>
+    </div>
+</div>

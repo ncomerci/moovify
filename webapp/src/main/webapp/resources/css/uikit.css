@@ -5297,7 +5297,7 @@ ul.uk-nav-sub {
 }
 /* OnClick */
 .uk-navbar-nav > li > a:active {
-  color: #333;
+  color: #fa8a32;
 }
 /* Active */
 .uk-navbar-nav > li.uk-active > a {
@@ -12556,11 +12556,15 @@ iframe.uk-cover {
 .iconify {
   width: 32px;
   height: 32px;
+}
+
+.nav-user {
   color: #f2a365;
 }
 
-.iconify:hover,
-.iconify:focus {
+.nav-user:hover,
+.nav-user:focus,
+.nav-user:active {
   color: #fa8a32;
 }
 
