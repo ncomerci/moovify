@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Role;
@@ -42,6 +43,9 @@ public class UserController {
 
     @Autowired
     private MailService mailService;
+
+    @Autowired
+    private CommentService commentService;
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)
     public ModelAndView login() {
@@ -86,7 +90,7 @@ public class UserController {
                 .orElseThrow(UserNotFoundException::new));
 
         mv.addObject("posts", userService.findPostsByUserId(userId));
-
+        mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(userId));
         return mv;
     }
 
@@ -106,6 +110,7 @@ public class UserController {
 
         mv.addObject("loggedUser", user);
         mv.addObject("posts", userService.findPostsByUserId(user.getId()));
+        mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(user.getId()));
         return mv;
     }
 
