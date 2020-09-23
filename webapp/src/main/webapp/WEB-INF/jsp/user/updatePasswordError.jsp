@@ -10,8 +10,9 @@
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
-
-<h1><spring:message code="user.updatePassword.failure"/></h1>
+<div class="uk-text-center uk-margin-auto">
+    <h2 class="userTitle"><spring:message code="user.updatePassword.failure"/></h2>
+</div>
 
 </body>
 </html>

@@ -137,7 +137,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/resetPassword", method = RequestMethod.GET)
-    public ModelAndView showResetPassword(@ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm) {
+    public ModelAndView showResetPassword( @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm) {
         return new ModelAndView("user/resetPassword");
     }
 

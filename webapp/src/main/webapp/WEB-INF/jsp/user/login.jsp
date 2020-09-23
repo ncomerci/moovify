@@ -67,7 +67,7 @@
         </fieldset>
     </form>
 
-    <div>
+    <div class="uk-text-center">
         <a href="<c:url value="/user/resetPassword" /> "><spring:message code="user.login.resetPassword"/></a>
     </div>
 
