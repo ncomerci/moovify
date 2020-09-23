@@ -20,6 +20,9 @@
         <jsp:include page="/WEB-INF/jsp/search/defaultForm.jsp"/>
     </form:form>
     <dl class="uk-description-list ">
+        <c:if test="${empty users}">
+            <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.user.userNotFound"/> </h2>
+        </c:if>
         <c:forEach items="${users}" var="user">
             <dt>
                 <a href="<c:url value="/user/${user.id}"/>">
@@ -28,7 +31,6 @@
             </dt>
         </c:forEach>
     </dl>
-
 </main>
 </body>
 </html>

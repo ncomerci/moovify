@@ -63,15 +63,18 @@
             </div>
         </div>
     </form:form>
+    <c:if test="${empty posts}">
+        <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.posts.postsNotFound"/> </h2>
+    </c:if>
     <dl class="uk-description-list ">
-            <c:forEach items="${posts}" var="post">
-                <dt>
-                    <a href="<c:url value="/post/${post.id}"/>">
-                        <c:out value="${post.title}"/>
-                    </a>
-                </dt>
-            </c:forEach>
-        </dl>
+        <c:forEach items="${posts}" var="post">
+            <dt>
+                <a href="<c:url value="/post/${post.id}"/>">
+                    <c:out value="${post.title}"/>
+                </a>
+            </dt>
+        </c:forEach>
+    </dl>
 </main>
 </body>
 </html>

@@ -20,6 +20,9 @@
         <jsp:include page="/WEB-INF/jsp/search/defaultForm.jsp"/>
     </form:form>
     <dl class="uk-description-list ">
+        <c:if test="${empty movies}">
+            <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.movies.moviesNotFound"/> </h2>
+        </c:if>
         <c:forEach items="${movies}" var="movie">
             <dt>
                 <a href="<c:url value="/movie/${movie.id}"/>">
@@ -27,9 +30,9 @@
                 </a>
             </dt>
             <dd>
-                    <span class="uk-text-light uk-text-muted uk-text-small">
-                       Fecha de estreno: <c:out value="${movie.releaseDate}"/>
-                    </span>
+                <span class="uk-text-light uk-text-muted uk-text-small">
+                   Fecha de estreno: <c:out value="${movie.releaseDate}"/>
+                </span>
             </dd>
         </c:forEach>
     </dl>
