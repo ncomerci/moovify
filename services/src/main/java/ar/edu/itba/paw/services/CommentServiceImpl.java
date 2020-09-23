@@ -40,4 +40,16 @@ public class CommentServiceImpl implements CommentService {
     public Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id) {
         return commentDao.findCommentsByPostIdWithoutChildren(post_id);
     }
+
+    @Override
+    public Collection<Comment> findCommentsByUserIdWithChildren(long user_id) {
+        return commentDao.findCommentsByUserIdWithChildren(user_id);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id) {
+        return commentDao.findCommentsByUserIdWithoutChildren(user_id);
+    }
+
+
 }
