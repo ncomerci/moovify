@@ -18,7 +18,20 @@
 
 <form method="post" action="<c:url value="/movie/register"/>">
     <input type="text" name="title" class="uk-input uk-form-width-large" placeholder="Titulo" required />
-    <input type="date" name="premierDate" class="uk-input uk-form-width-large" placeholder="Premier Date" required />
+    <input type="text" name="originalTitle" class="uk-input uk-form-width-large" placeholder="Original Title" required />
+    <input type="number" name="tmdbId" class="uk-input uk-form-width-large" placeholder="The movie data base ID" required />
+    <input type="text" name="imdbId" class="uk-input uk-form-width-large" placeholder="TIMDB ID" required />
+    <input type="text" name="originalLanguage" class="uk-input uk-form-width-large" placeholder="originalLanguage" required />
+    <textarea name="overview" class="uk-input uk-form-width-large" placeholder="overview" required></textarea>
+    <input type="text" name="popularity" class="uk-input uk-form-width-large" placeholder="Popularity" required />
+    <input type="text" name="runtime" class="uk-input uk-form-width-large" placeholder="Runtime" required />
+    <input type="text" name="voteAverage" class="uk-input uk-form-width-large" placeholder="Vote Average" required />
+    <input type="date" name="releaseDate" class="uk-input uk-form-width-large" placeholder="Release Date" required />
+
+    <c:forEach items="${categories}" var="category">
+        <input type="checkbox" id="${category.name}" name="categories" value="${category.tmdb_id}">
+        <label for="${category.name}"><c:out value="${category.name}"/></label><br>
+    </c:forEach>
 
     <input type="submit" value="Enviar">
 
