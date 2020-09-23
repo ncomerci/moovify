@@ -36,7 +36,7 @@
 
         <div class="uk-width-1-3@m uk-flex-first uk-text-center">
             <div class="uk-inline-clip uk-transition-toggle" tabindex="0">
-                <img class="uk-border-circle uk-margin-left" alt="" height="250" width="250" data-src="<c:url value="/resources/images/avatar.jpg"/>" uk-img>
+                <img class="uk-border-circle" alt="" height="250" width="250" data-src="<c:url value="/resources/images/avatar.jpg"/>" uk-img>
                 <div class="uk-position-center uk-text-center">
                     <span class="uk-transition-fade" uk-icon="icon: plus; ratio: 2"></span>
                 </div>
