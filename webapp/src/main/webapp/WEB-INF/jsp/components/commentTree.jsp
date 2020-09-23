@@ -25,7 +25,7 @@
                                 </p>
                             </div>
                         </div>
-                        <sec:authorize access="isAuthenticated()">
+                        <sec:authorize access="hasAnyRole('USER', 'ADMIN')">
                             <div class="uk-position-top-right uk-position-small uk-hidden-hover">
                                 <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button"><spring:message code="comment.create.reply"/></a>
                             </div>

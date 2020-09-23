@@ -58,7 +58,7 @@
 <hr>
 <div class="uk-container uk-container-small">
     <h2>Comments (${post.totalCommentCount})</h2>
-    <sec:authorize access="isAuthenticated()">
+    <sec:authorize access="hasAnyRole('USER', 'ADMIN')">
         <div style="padding-bottom: 25px">
             <c:url value="/comment/create" var="action"/>
                 <%--@elvariable id="CommentCreateForm" type=""--%>
@@ -81,6 +81,9 @@
                 </div>
             </form:form>
         </div>
+    </sec:authorize>
+    <sec:authorize access="hasRole('NOT_VALIDATED')">
+        <div class="uk-text-bold uk-text-italic uk-text-secondary uk-text-center"><spring:message code="comment.create.not_validated"/></div>
     </sec:authorize>
     <div class="uk-margin-large-top">
         <hr>

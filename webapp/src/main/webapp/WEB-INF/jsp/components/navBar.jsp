@@ -9,51 +9,54 @@
         <div class="uk-navbar-right">
             <ul class="uk-navbar-nav">
                 <li class="uk-visible@s">
-                    <a id="nav-search-toggle" class="uk-navbar-toggle" data-uk-search-icon ></a>
+                    <a id="nav-search-toggle" class="uk-navbar-toggle">
+                        <span uk-icon="icon: search; ratio: 1.7"></span>
+                    </a>
                     <div class="uk-drop" data-uk-drop="mode: click; pos: right-center; offset: 0; boundary: #navbar">
                         <form action="<c:url value="/search/posts/"/>" class="uk-search uk-search-navbar uk-width-1-1">
                             <label for="nav-search"></label>
-                            <input id="nav-search" name="query" class="uk-search-input" type="search" placeholder="<spring:message code="navbar.searchDots"/>" >
+                            <input autofocus id="nav-search" name="query" class="uk-search-input" type="search" placeholder="<spring:message code="navbar.searchDots"/>" >
                             <button id="submit-navbar-search-button" class="uk-button uk-button-default uk-border-rounded search-button" type="submit"><spring:message code="navbar.search"/></button>
                         </form>
                     </div>
                 </li>
-                <li>
-                    <a class="uk-padding-remove" href="">
-                        <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
-                    </a>
-                    <div class="uk-navbar-dropdown">
-                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                            <li>
-                                <sec:authorize access="!isAuthenticated()">
-                                    <a class="uk-text-center" href="<c:url value="/login"/>">
-                                        <button class="uk-button uk-button-primary uk-border-rounded user-login-button" type="button"><spring:message code="user.login"/></button>
-                                    </a>
-                                </sec:authorize>
-                                <sec:authorize access="isAuthenticated()">
+                <sec:authorize access="isAuthenticated()">
+                        <sec:authorize access="hasAnyRole('USER', 'ADMIN')">
+                            <li class="uk-navbar-item">
+                                <a class="uk-padding-remove" href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a>
+                            </li>
+                        </sec:authorize>
+                    <li>
+                        <a class="uk-padding-remove" href="">
+                            <span class="iconify uk-margin-right uk-margin-small-left" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
+                        </a>
+                        <div class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                <li>
                                     <a class="uk-text-center" href="<c:url value="/user/profile"/>">
                                         <button class="uk-button uk-button-default uk-border-rounded user-profile-button" type="button"><spring:message code="user.profile"/></button>
                                     </a>
-                                </sec:authorize>
-                            </li>
-                            <li>
-                                <sec:authorize access="!isAuthenticated()">
-                                    <a class="uk-text-center" href="<c:url value="/user/create"/>">
-                                        <button class="uk-button uk-button-secondary uk-border-rounded" type="button"><spring:message code="user.signup"/></button>
-                                    </a>
-                                </sec:authorize>
-                                <sec:authorize access="isAuthenticated()">
+                                </li>
+                                <li>
                                     <a class="uk-text-center" href="<c:url value="/logout"/>">
                                         <button class="uk-button uk-button-default uk-border-rounded logout-button" type="button"><spring:message code="user.logout"/></button>
                                     </a>
-                                </sec:authorize>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="uk-navbar-item"><a class="uk-padding-remove" href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a></li>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </sec:authorize>
+                <sec:authorize access="!isAuthenticated()">
+                    <li class="uk-navbar-item">
+                        <a href="<c:url value="/login"/>"><spring:message code="user.login"/></a>
+                    </li>
+                    <li>
+                        <a class="uk-text-center" href="<c:url value="/user/create"/>">
+                            <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder" style="color: #30475e" type="button"><spring:message code="user.signup"/></button>
+                        </a>
+                    </li>
+                </sec:authorize>
             </ul>
-
         </div>
     </nav>
 </header>
