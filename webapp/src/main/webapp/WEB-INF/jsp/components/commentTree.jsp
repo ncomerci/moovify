@@ -32,7 +32,7 @@
                         </sec:authorize>
                     </header>
                     <div class="uk-comment-body">
-                        <p><c:out value="${comment.body}" /></p>
+                        <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
                     </div>
                 </article>
                 <hr>
