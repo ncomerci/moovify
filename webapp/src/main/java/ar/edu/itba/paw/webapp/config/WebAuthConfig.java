@@ -56,7 +56,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // User Controller
                         // "/user/{userId:[\d]+}
                     .antMatchers("/login", "/user/create").anonymous()
-                    .antMatchers("/user/profile").hasRole("NOT_VALIDATED")
+                    .antMatchers("/user/profile").authenticated()
                     .antMatchers(
                             "/user/registrationConfirm",
                             "/user/resendConfirmation").hasRole("NOT_VALIDATED")

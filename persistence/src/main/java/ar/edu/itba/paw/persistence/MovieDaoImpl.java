@@ -82,12 +82,14 @@ public class MovieDaoImpl implements MovieDao {
                                     new LinkedHashSet<>())
                     );
                 }
+
                 if(!idToMovieCategoryMap.containsKey(movie_category_tmdb_id)) {
                     idToMovieCategoryMap.put(movie_category_tmdb_id, new MovieCategory(
                             rs.getLong("mc_category_id"),
                             rs.getLong("mc_tmdb_category_id"),
                             rs.getString("mc_name")));
                 }
+
                 idToMovieMap.get(movie_id).getCategories().add(idToMovieCategoryMap.get(movie_category_tmdb_id));
             }
 

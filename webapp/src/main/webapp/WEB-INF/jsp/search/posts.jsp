@@ -66,15 +66,27 @@
     <c:if test="${empty posts}">
         <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.posts.postsNotFound"/> </h2>
     </c:if>
-    <dl class="uk-description-list ">
-        <c:forEach items="${posts}" var="post">
-            <dt>
-                <a href="<c:url value="/post/${post.id}"/>">
-                    <c:out value="${post.title}"/>
-                </a>
-            </dt>
-        </c:forEach>
-    </dl>
+
+        <dl class="uk-description-list ">
+            <div class="uk-flex">
+            <c:forEach items="${posts}" var="post">
+                <div class="uk-width-3-5">
+                    <dt>
+                        <a href="<c:url value="/post/${post.id}"/>">
+                            <c:out value="${post.title}"/>
+                        </a>
+                    </dt>
+                    <dd>
+                        <p class="uk-text-meta"><c:out value="${post.category.name}"/> | By <c:out value="${post.user.name}"/></p>
+                    </dd>
+                </div>
+                <div class="uk-width-2-5">
+                    <p class="uk-text-meta">15 min</p>
+                </div>
+            </c:forEach>
+            </div>
+        </dl>
+
 </main>
 </body>
 </html>
