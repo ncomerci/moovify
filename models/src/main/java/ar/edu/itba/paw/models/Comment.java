@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
@@ -54,5 +55,9 @@ public class Comment {
 
     public int getDescendantCount() {
         return children.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount() + 1, Integer::sum);
+    }
+
+    public Duration getTimeSinceCreation() {
+        return Duration.between(creationDate, LocalDateTime.now());
     }
 }
