@@ -22,7 +22,7 @@ public class Post {
     * Extracted from
     * https://www.researchgate.net/publication/332380784_How_many_words_do_we_read_per_minute_A_review_and_meta-analysis_of_reading_rate
     */
-    private static final int EN_WORDS_PER_MINUTE = 238;
+    private static final int EN_WORDS_PER_MINUTE = 150;
 
     public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, Collection<Movie> movies, Collection<Comment> comments) {
         this.id = id;

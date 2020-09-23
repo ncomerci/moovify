@@ -5,12 +5,7 @@
 <html lang="en" >
 <head>
     <title>New Movie</title>
-
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
-    <jsp:include page="/WEB-INF/jsp/dependencies/mdEditor.jsp" />
-
-    <script src="<c:url value="/resources/js/post/create.js" />"></script>
-
 </head>
 
 <body>

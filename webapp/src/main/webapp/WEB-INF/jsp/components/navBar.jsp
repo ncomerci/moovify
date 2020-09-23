@@ -27,7 +27,7 @@
                     <li class="uk-navbar-item">
                         <sec:authorize access="hasRole('NOT_VALIDATED')">
                             <!-- This is a button toggling the modal -->
-                            <a class="uk-padding-remove" href="<c:url value="/post/create" />" uk-toggle="target: #confirm-email-modal">
+                            <a class="uk-padding-remove" href="#" uk-toggle="target: #confirm-email-modal">
                                 <spring:message code="navbar.createPost"/>
                             </a>
                         </sec:authorize>
@@ -36,7 +36,7 @@
                         </sec:authorize>
                     </li>
                     <li>
-                        <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" href="">
+                        <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left">
                             <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
                             <span class="uk-text-bold uk-margin-small-left">${loggedUser.username}</span>
                         </a>
