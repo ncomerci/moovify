@@ -2004,14 +2004,14 @@ select.uk-form-width-xsmall {
  */
 .uk-button-default {
   background-color: transparent;
-  color: #333;
+  color: #f2a365;
   border: 1px solid #f2a365;
 }
 /* Hover + Focus */
 .uk-button-default:hover,
 .uk-button-default:focus {
   background-color: transparent;
-  color: #333;
+  color: #fa8a32;
   border-color: #fa8a32;
 }
 /* OnClick + Active */

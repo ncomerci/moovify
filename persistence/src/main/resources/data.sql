@@ -44,14 +44,18 @@ INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(53, 'Thriller') ON 
 INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10752, 'War') ON CONFLICT DO NOTHING;
 INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(37, 'Western') ON CONFLICT DO NOTHING;
 
--- -- Populate Movies --
+-- Populate Movies --
 -- COPY movies(tmdb_id, imdb_id, original_language, original_title, overview, popularity, release_date, runtime, title, vote_average)
---     FROM '/home/isagues/PAW/paw-project/persistence/src/main/resources/movies.csv'
+--     FROM '/home/tobias/Documents/ITBA/PAW/paw-2020b-3/persistence/src/main/resources/movies.csv'
 --     DELIMITER ','
 --     CSV HEADER;
--- --
--- -- -- Populate Genre Movies --
+--
+-- -- --
+-- -- -- -- Populate Genre Movies --
 -- COPY movie_to_movie_category(tmdb_category_id, tmdb_id)
---     FROM '/home/isagues/PAW/paw-project/persistence/src/main/resources/genre_movie.csv'
+--     FROM '/home/tobias/Documents/ITBA/PAW/paw-2020b-3/persistence/src/main/resources/genre_movie.csv'
 --     DELIMITER ','
 --     CSV HEADER;
+
+-- Path Tobi --
+-- /home/tobias/Documents/ITBA/PAW/paw-2020b-3/persistence/src/main/resources/

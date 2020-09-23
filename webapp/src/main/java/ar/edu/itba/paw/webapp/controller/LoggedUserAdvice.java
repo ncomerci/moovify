@@ -4,7 +4,6 @@ import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
@@ -25,9 +24,13 @@ public class LoggedUserAdvice {
 
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if(auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken))
+        if(auth.isAuthenticated() && !isAnonymous(auth))
             return userService.findByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
 
         return null;
+    }
+
+    private boolean isAnonymous(Authentication auth) {
+        return auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ANONYMOUS"));
     }
 }
