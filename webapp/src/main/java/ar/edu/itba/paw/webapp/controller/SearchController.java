@@ -45,8 +45,6 @@ public class SearchController {
     @RequestMapping(path = "/search/users/", method = RequestMethod.GET)
     public ModelAndView searchUsers(@ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm) {
 
-        //TODO la vista esta vacia, no hay metodo que permita conseguir los usuarios
-        // y tampoco hay un rendereado listo en la vista
         final ModelAndView mv = new ModelAndView("search/users");
 
         mv.addObject("query", searchUsersForm.getQuery());

@@ -59,8 +59,8 @@ public class CommentDaoImpl implements CommentDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
-            USERS + ".role_id r_role_id, " +
-            USERS + ".role r_role " +
+            USERS + ".role_id u_role_id, " +
+            USERS + ".role u_role " +
 
             "FROM " + COMMENTS +
             " INNER JOIN ( " +
