@@ -263,7 +263,7 @@ public class UserController {
         Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("confirmationURL",
                 ServletUriComponentsBuilder.fromRequestUri(request)
-                .replacePath("/user/registrationConfirm").queryParam("token", token).build().toUriString()
+                .replacePath("/paw-2020b-3/user/registrationConfirm").queryParam("token", token).build().toUriString()
         );
 
         try {
@@ -281,7 +281,7 @@ public class UserController {
         Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("confirmationURL",
                 ServletUriComponentsBuilder.fromRequestUri(request)
-                        .replacePath("/user/updatePassword/token").queryParam("token", token).build().toUriString()
+                        .replacePath("/paw-2020b-3/user/updatePassword/token").queryParam("token", token).build().toUriString()
         );
 
         try {
