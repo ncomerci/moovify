@@ -13,6 +13,6 @@ public class SpacesNormalizationConstrainValidator implements ConstraintValidato
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return  !s.replaceAll("\\s+", " ").replaceAll("^ ", "").equals("");
+        return  !s.replaceAll("[ \t\r\n]+", "").equals("");
     }
 }

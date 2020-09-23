@@ -3,7 +3,7 @@
 
 <jsp:useBean id="posts" scope="request" type="java.util.Collection"/>
 
-<div class="uk-flex uk-margin-medium-top uk-flex-wrap">
+<div class="uk-flex uk-flex-wrap">
     <c:forEach items="${posts}" var="post">
         <div class="uk-width-1-1">
             <div class="uk-flex">
