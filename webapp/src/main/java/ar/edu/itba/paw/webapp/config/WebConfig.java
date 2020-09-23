@@ -62,14 +62,15 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
         ds.setDriverClass(org.postgresql.Driver.class);
-        ds.setUrl("jdbc:postgresql://localhost/moovify");
-        ds.setUsername("admin");
-        ds.setPassword("papanata");
+//        ds.setUrl("jdbc:postgresql://localhost/moovify");
+//        ds.setUsername("admin");
+//        ds.setPassword("papanata");
 
         // FOR DEPLOYMENT
-//        ds.setUrl("jdbc:postgresql://10.16.1.110/paw-2020b-3");
-//        ds.setUsername("paw-2020b-3");
-//        ds.setPassword("ce3Xh7mfS");
+
+        ds.setUrl("jdbc:postgresql://10.16.1.110/paw-2020b-3");
+        ds.setUsername("paw-2020b-3");
+        ds.setPassword("ce3Xh7mfS");
 
         return ds;
     }
@@ -109,16 +110,16 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
         // Deploy Mail Server
-//        mailSender.setHost("smtp.gmail.com");
-//        mailSender.setPort(587);
-//        mailSender.setUsername("MoovifyCo@gmail.com");
-//        mailSender.setPassword("#Papanata");
+        mailSender.setHost("smtp.gmail.com");
+        mailSender.setPort(587);
+        mailSender.setUsername("MoovifyCo@gmail.com");
+        mailSender.setPassword("#Papanata");
 
         // Development Mail Server
-        mailSender.setHost("smtp.mailtrap.io");
-        mailSender.setPort(587);
-        mailSender.setUsername("e6c828d95e9959");
-        mailSender.setPassword("bbfccd607177ac");
+//        mailSender.setHost("smtp.mailtrap.io");
+//        mailSender.setPort(587);
+//        mailSender.setUsername("e6c828d95e9959");
+//        mailSender.setPassword("bbfccd607177ac");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
