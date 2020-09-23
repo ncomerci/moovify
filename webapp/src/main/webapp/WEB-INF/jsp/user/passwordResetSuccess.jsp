@@ -9,7 +9,7 @@
 <body>
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
-    <h1><spring:message code="user.passwordResetSuccess" arguments="${user.name}" /></h1>
+    <h1><spring:message code="user.passwordResetSuccess" arguments="${loggedUser.name}" /></h1>
 
 </body>
 </html>

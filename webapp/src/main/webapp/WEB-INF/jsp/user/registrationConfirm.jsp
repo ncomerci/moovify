@@ -13,7 +13,7 @@
 
 <c:if test="${success}" >
     <div class="uk-text-center uk-margin-auto">
-        <h2 class="userTitle"> <spring:message code="email.registrationConfirm" arguments="${user.name}"/></h2>
+        <h2 class="userTitle"> <spring:message code="email.registrationConfirm" arguments="${loggedUser.name}"/></h2>
     </div>
 </c:if>
 

@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
@@ -63,7 +62,14 @@ public class PostController {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        final long post = postService.register(postCreateForm.getTitle(), postCreateForm.getBody(), postCreateForm.getCategory(), user.getId(), postCreateForm.getTags() == null ? Collections.emptySet():  postCreateForm.getTags() , postCreateForm.getMovies());
-        return new ModelAndView("redirect:/post/" + post);
+        final long post = postService.register(postCreateForm.getTitle(), postCreateForm.getBody(),
+                postCreateForm.getCategory(), user.getId(),
+                postCreateForm.getTags() == null ? Collections.emptySet():  postCreateForm.getTags(),
+                postCreateForm.getMovies());
+
+        final ModelAndView mv = new ModelAndView("redirect:/post/" + post);
+        mv.addObject("loggedUser", user);
+
+        return mv;
     }
 }

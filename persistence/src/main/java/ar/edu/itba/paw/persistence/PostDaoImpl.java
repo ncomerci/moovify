@@ -447,15 +447,13 @@ public class PostDaoImpl implements PostDao {
     }
     
     @Override
-    public long register(String title, String body, long categoryId, long userId, Set<String> tags, Set<Long> movies) {
+    public long register(String title, String body, int wordCount, long categoryId, long userId, Set<String> tags, Set<Long> movies) {
 
         Objects.requireNonNull(title);
         Objects.requireNonNull(body);
         Objects.requireNonNull(movies);
 
-        body = body.trim();
         LocalDateTime creationDate = LocalDateTime.now();
-        int wordCount = body.split("\\s+").length;
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("title", title);
