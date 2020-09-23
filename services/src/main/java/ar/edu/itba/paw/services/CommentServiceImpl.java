@@ -19,7 +19,7 @@ public class CommentServiceImpl implements CommentService {
     public long register(long postId, Long parentId, String body, long userId) {
         return commentDao.register(postId, parentId,
                 body.replaceAll("[ \t]+", " ")
-                        .replaceAll("(\r\n)+", "\n")
+                        .replaceAll("((\r\n)|(\n))+", "\n")
                         .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId);
     }
 
