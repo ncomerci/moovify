@@ -29,7 +29,7 @@
         <spring:message code="post.create.titlePlaceholder" var="titlePlaceholder"/>
     <div class="uk-margin-left uk-margin-bottom" >
         <form:label path="title" class="uk-form-label uk-text-secondary uk-margin-auto" for="title-text" ><spring:message code="post.create.newPostTitle"/>
-            <form:input path="title" class="uk-input uk-form-small" id="title-text" type="text" placeholder="${titlePlaceholder}"/>
+            <form:input path="title" class="uk-input uk-form-small" id="title-text" type="text" placeholder="${titlePlaceholder}" required="required" />
         </form:label>
         <form:errors path="title" element="p" cssClass="error" cssStyle="color:red;" />
     </div>
@@ -37,7 +37,7 @@
     <div class="uk-margin-left uk-margin-bottom">
         <form:label path="category" class="uk-form-label uk-text-secondary uk-margin-auto" for="category-select" ><spring:message code="post.create.newPostCategory"/></form:label>
         <div class="uk-form-controls">
-            <form:select path="category"  class="uk-select" id="category-select">
+            <form:select path="category"  class="uk-select" id="category-select" required="required">
                 <option hidden disabled selected value> <spring:message code="post.create.selectCategory"/> </option>
                 <c:forEach items="${categories}" var="category">
                     <form:option value="${category.id}"><spring:message code="${category.name}"/></form:option>
@@ -67,6 +67,7 @@
         <h2 class="uk-modal-title uk-margin-remove-top"><spring:message code="post.create.modal.moviesDiscussed"/></h2>
         <div>
             <div>
+                <p id="movie-error" style="display: none; color: red" ><spring:message code="post.create.modal.movieError.client"/></p>
                 <label for="add-movie-input" class="uk-margin-bottom" ></label>
                 <input id="add-movie-input" class="uk-input uk-margin-right uk-input uk-margin-bottom uk-border-rounded" list="movie-list" placeholder="<spring:message code="post.create.modal.moviesPlaceholder"/>">
                 <button id="add-movie-button" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="post.create.modal.addButton"/></button>

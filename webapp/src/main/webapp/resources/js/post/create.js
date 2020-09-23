@@ -11,6 +11,7 @@ window.addEventListener('load', function(){
     let datalistElem = document.getElementById('movie-list');
     let openModalButtonElem = document.getElementById('open-modal-button');
     let moviesModalElem = document.getElementById('movies-modal');
+    let movieErrorElem = document.getElementById('movie-error');
 
     let easyMDE = configureEasyMDE(formElem, moviesModalElem);
 
@@ -22,12 +23,9 @@ window.addEventListener('load', function(){
         () => addMovie(formElem, addMovieInputElem, datalistElem, moviesSelectedElem),
         false);
 
-    addMovieInputElem.addEventListener('input', () =>  addMovie(formElem, addMovieInputElem, datalistElem, moviesSelectedElem));
+    addMovieInputElem.addEventListener('change', () => addMovie(formElem, addMovieInputElem, datalistElem, moviesSelectedElem));
 
-    addTagInputElem.addEventListener('keypress', (k) => {
-        if(k.key === 'Enter')
-            addTag(formElem, addTagInputElem, tagsSelectedElem)
-    });
+    addTagInputElem.addEventListener('change', () => addTag(formElem, addTagInputElem, tagsSelectedElem));
 
 
     addTagButtonElem.addEventListener('click',
@@ -35,11 +33,13 @@ window.addEventListener('load', function(){
         false);
 
     submitFormButton.addEventListener('click', () => {
-        easyMDE.clearAutosavedValue();
-        formElem.submit();
+        if(validateModal(formElem, movieErrorElem)) {
+            easyMDE.clearAutosavedValue();
+            formElem.submit();
+        }
     }, false);
 
-    moviesModalElem.addEventListener('beforehide', () => cancelModal(formElem, datalistElem, moviesSelectedElem), false);
+    // moviesModalElem.addEventListener('beforehide', () => cancelModal(formElem, datalistElem, moviesSelectedElem), false);
 
 }, false);
 
@@ -131,44 +131,31 @@ function addMovie(formElem, inputElem, datalistElem, moviesSelectedElem){
     inputElem.value = "";
 
     // Add movie to movies selected list
-    /* <span class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">
-         ${movieName}
-         <button class="uk-margin-small-left uk-light" type="button" uk-close></button>
-       </span> */
+    let movieBadge = createBadge(moviesSelectedElem, movieName);
 
-    let closeElem = document.createElement("button");
-    closeElem.setAttribute('class', 'uk-margin-small-left uk-light');
-    closeElem.setAttribute('type', 'button');
-    closeElem.setAttribute('uk-close', '');
+    movieBadge.closeElem.addEventListener('click',
+        () => unselectMovie(formElem, datalistElem, inputElem, newInput, moviesSelectedElem, movieBadge.badgeElem), false);
 
-    let movieBadgeElem = document.createElement("span");
-
-    movieBadgeElem.setAttribute('class', 'uk-badge disabled uk-padding-small uk-margin-small-right uk-margin-small-bottom');
-
-    movieBadgeElem.appendChild(document.createTextNode(movieName));
-    movieBadgeElem.appendChild(closeElem);
-
-    moviesSelectedElem.appendChild(movieBadgeElem);
-
-    closeElem.addEventListener('click',
-        () => unselectMovie(formElem, datalistElem, newInput, moviesSelectedElem, movieBadgeElem), false);
+    updateMoviesEnabledStatus(formElem, inputElem)
 }
 
-function unselectMovie(formElem, datalistElem, inputElem, moviesSelectedElem, movieBadgeElem){
+function unselectMovie(formElem, datalistElem, inputElem, inputToRemove, moviesSelectedElem, movieBadgeElem){
     let opt = document.createElement("option");
 
-    opt.setAttribute('value', inputElem.dataset.movieName);
-    opt.setAttribute('data-id', inputElem.value);
+    opt.setAttribute('value', inputToRemove.dataset.movieName);
+    opt.setAttribute('data-id', inputToRemove.value);
 
     datalistElem.appendChild(opt);
 
-    formElem.removeChild(inputElem);
+    formElem.removeChild(inputToRemove);
 
     if(moviesSelectedElem && movieBadgeElem)
         moviesSelectedElem.removeChild(movieBadgeElem);
+
+    updateMoviesEnabledStatus(formElem, inputElem)
 }
 
-function addTag( formElem, inputElem, tagsSelectedElem){
+function addTag(formElem, inputElem, tagsSelectedElem){
     let tagName = inputElem.value;
     if(!tagName)
         return;
@@ -185,36 +172,74 @@ function addTag( formElem, inputElem, tagsSelectedElem){
 
     inputElem.value = "";
 
+    let tagBadge = createBadge(tagsSelectedElem, tagName);
+
+    tagBadge.closeElem.addEventListener('click',
+        () => unselectTag(formElem, inputElem, newInput, tagsSelectedElem, tagBadge.badgeElem), false);
+
+    updateTagsEnabledStatus(formElem, inputElem);
+}
+
+/* <span class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">
+         ${text}
+         <button class="uk-margin-small-left uk-light" type="button" uk-close></button>
+       </span> */
+function createBadge(parentElem, text) {
     let closeElem = document.createElement("button");
+
     closeElem.setAttribute('class', 'uk-margin-small-left uk-light');
     closeElem.setAttribute('type', 'button');
     closeElem.setAttribute('uk-close', '');
 
-    let tagBadgeElem = document.createElement("span");
+    let badgeElem = document.createElement("span");
 
-    tagBadgeElem.setAttribute('class', 'uk-badge disabled uk-padding-small uk-margin-small-right uk-margin-small-bottom');
+    badgeElem.setAttribute('class', 'uk-badge disabled uk-padding-small uk-margin-small-right uk-margin-small-bottom');
 
-    tagBadgeElem.appendChild(document.createTextNode(tagName));
-    tagBadgeElem.appendChild(closeElem);
+    badgeElem.appendChild(document.createTextNode(text));
+    badgeElem.appendChild(closeElem);
 
-    tagsSelectedElem.appendChild(tagBadgeElem);
+    parentElem.appendChild(badgeElem);
 
-    closeElem.addEventListener('click',
-        () => unselectTag(formElem, newInput, tagsSelectedElem, tagBadgeElem), false);
+    return {badgeElem, closeElem};
 }
 
-function unselectTag(formElem,inputElem, tagsSelectedElem, tagBadgeElem){
+function unselectTag(formElem, inputElem, inputToRemove, tagsSelectedElem, tagBadgeElem){
 
-    formElem.removeChild(inputElem);
+    formElem.removeChild(inputToRemove);
 
     if(tagsSelectedElem && tagBadgeElem)
         tagsSelectedElem.removeChild(tagBadgeElem);
+
+    updateTagsEnabledStatus(formElem, inputElem);
 }
 
-function cancelModal(formElem, datalistElem, moviesSelectedElem) {
+// function cancelModal(formElem, datalistElem, moviesSelectedElem) {
+//
+//     formElem.querySelectorAll("input[name ^= 'movies']")
+//         .forEach(movieInputElem => unselectMovie(formElem, datalistElem, movieInputElem));
+//
+//     moviesSelectedElem.innerHTML = "";
+// }
 
-    formElem.querySelectorAll("input[name ^= 'movies']")
-        .forEach(movieInputElem => unselectMovie(formElem, datalistElem, movieInputElem));
+function updateTagsEnabledStatus(formElem, inputElem) {
+    let tagsCount = formElem.querySelectorAll("input[name ^= 'tags']").length;
 
-    moviesSelectedElem.innerHTML = "";
+    inputElem.disabled = tagsCount >= 5;
+}
+
+function updateMoviesEnabledStatus(formElem, inputElem) {
+    let moviesCount = formElem.querySelectorAll("input[name ^= 'movies']").length;
+
+    inputElem.disabled = moviesCount >= 20;
+}
+
+function validateModal(formElem, movieErrorElem) {
+    let moviesCount = formElem.querySelectorAll("input[name ^= 'movies']").length;
+
+    if(moviesCount <= 0) {
+        movieErrorElem.style.display = "block";
+        return false;
+    }
+
+    return true;
 }
