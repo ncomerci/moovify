@@ -9,8 +9,8 @@
 <body>
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
-    <div>
-        <p><spring:message code="user.resetPasswordTokenGenerated.body" arguments="${loggedUser.email}" /></p>
+    <div class="uk-text-center uk-margin-auto">
+        <h2 class="userTitle"> <spring:message code="user.resetPasswordTokenGenerated.body" arguments="${loggedUser.email}" /></h2>
     </div>
 
 </body>
