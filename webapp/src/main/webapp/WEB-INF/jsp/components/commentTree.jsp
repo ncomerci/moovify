@@ -13,7 +13,7 @@
                     <header class="uk-comment-header uk-position-relative">
                         <div class="uk-grid-medium uk-flex-middle" uk-grid>
                             <div class="uk-width-auto">
-                                <img class="uk-comment-avatar" src="<c:url value="/resources/images/avatar.jpg"/>" width="80" height="80" alt="">
+                                <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/resources/images/avatar.jpg"/>" width="80" height="80" alt="">
                             </div>
                             <div class="uk-width-expand">
                                 <h4 class="uk-comment-title uk-margin-remove">
@@ -37,7 +37,10 @@
                 </article>
                 <hr>
             </div>
-            <ul class="li">
+            <div class="replies-show" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${comment.descendantCount}">
+                <a class="uk-link-muted"><spring:message code="comment.replies.show"/> (${comment.descendantCount}) ...</a>
+            </div>
+            <ul id="${comment.id}-children" class="li uk-hidden">
                     <%--  Recursive Call  --%>
                 <c:set var="comments" value="${comment.children}" scope="request"/>
                 <jsp:include page="commentTree.jsp" />

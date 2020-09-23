@@ -9,12 +9,13 @@
     <title><spring:message code="user.profile.Profile" arguments="${user.username}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
-<body>
+<body style="min-height: 1000px">
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 <div class="uk-inline">
     <div class="uk-cover-container">
-        <canvas height="430"></canvas>
-        <img src="<c:url value="/resources/images/background.jpg"/>"  alt="" uk-cover>
+        <%--<canvas height="430"></canvas>--%>
+        <div class="uk-height-large uk-background-cover uk-light uk-flex" uk-parallax="bgy: -200" style="background-image: url(<c:url value="/resources/images/background.jpg"/>);">
+        </div>
     </div>
     <div class="uk-position-medium uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle" uk-grid>
         <div class="uk-width-2-3@m">
@@ -28,10 +29,10 @@
                 <sec:authorize access="hasRole('ADMIN')" >
                     <li class="userTitle"><spring:message code="user.profile.Administrator"/></li>
                 </sec:authorize>
-                <li class="userTitle"><spring:message code="user.profile.Description"/></li>
+<%--                <li class="userTitle"><spring:message code="user.profile.Description"/></li>--%>
             </ul>
-             <p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>
-            <p class="uk-text-center"><button id="edit-button" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="button"><spring:message code="user.profile.EditProfile"/></button></p>
+<%--             <p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>--%>
+<%--            <p class="uk-text-center"><button id="edit-button" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="button"><spring:message code="user.profile.EditProfile"/></button></p>--%>
         </div>
 
         <div class="uk-width-1-3@m uk-flex-first uk-text-center">

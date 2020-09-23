@@ -21,9 +21,24 @@ window.addEventListener('load', () => {
 
     document.getElementById('send-bt').addEventListener('click', submitCommentReply);
 
+    document.querySelectorAll(".replies-show")
+        .forEach(button => {
+            if (parseInt(button.dataset.amount) === 0) {
+                button.classList.add('uk-hidden');
+            }
+            else {
+                button.addEventListener('click', () => showReplies(button.dataset.id), false)
+            }
+        });
+
     document.querySelectorAll(".reply-button")
-        .forEach(button => button.addEventListener('click', () => openCommentForm(button.dataset.id), false))
+        .forEach(button => button.addEventListener('click', () => openCommentForm(button.dataset.id), false));
 }, false);
+
+function showReplies(commentId) {
+    document.getElementById(commentId + '-replies-show').classList.add('uk-hidden');
+    document.getElementById(commentId + '-children').classList.remove('uk-hidden');
+}
 
 function openCommentForm(parentId) {
     const replyForm = document.forms['reply-form'];
