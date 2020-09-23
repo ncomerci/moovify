@@ -142,14 +142,13 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/resetPassword", method = RequestMethod.GET)
-    public ModelAndView showResetPassword( @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm) {
+    public ModelAndView showResetPassword(@ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm) {
         return new ModelAndView("user/resetPassword/resetPassword");
     }
 
     @RequestMapping(path = "/user/resetPassword", method = RequestMethod.POST)
-    public ModelAndView resetPassword(@Valid @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm,
-                                      HttpServletRequest request, final BindingResult bindingResult) {
-
+    public ModelAndView resetPassword(@Valid @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm, final BindingResult bindingResult,
+                                      HttpServletRequest request) {
         if(bindingResult.hasErrors())
             return showResetPassword(resetPasswordForm);
 
@@ -206,8 +205,8 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/updatePassword", method = RequestMethod.POST)
-    public ModelAndView updatePassword(@Valid @ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm,
-                                        HttpServletRequest request, final BindingResult bindingResult) {
+    public ModelAndView updatePassword(@Valid @ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm, final BindingResult bindingResult,
+                                        HttpServletRequest request) {
 
         if(bindingResult.hasErrors())
             return showUpdatePassword(updatePasswordForm, request);

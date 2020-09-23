@@ -1,8 +1,10 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
+
 public class UpdatePasswordForm {
 
-//    @ValidPassword
+    @ValidPassword
     private String password;
 
     private String token;
