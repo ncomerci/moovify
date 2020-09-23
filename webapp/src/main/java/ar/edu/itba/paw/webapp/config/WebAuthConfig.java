@@ -41,21 +41,48 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     }
 
     // Spring Security Unresolved Issues
-    // TODO: Hay algo mal, te manda a login cuando tenes una cookie invalida (reseteo el server)
     // TODO: Make a redirect, change browser url
-    // TODO: Preguntarle a Sotuyo sobre la implementacion de manualLogin
     @Override
     protected void configure(HttpSecurity http) throws Exception {
             http
                 .sessionManagement()
-                    .invalidSessionUrl("/login")
+                    //.invalidSessionUrl("/")
 
                 .and().authorizeRequests()
+
+                    // Home Controller
+                        // "/"
+
+                    // User Controller
+                        // "/user/{userId:[\d]+}
                     .antMatchers("/login", "/user/create").anonymous()
-                    .antMatchers("/user/{userId:[\\d]+}").permitAll()
-                    .antMatchers("/user/resendConfirmation").hasRole("NOT_VALIDATED")
+                    .antMatchers("/user/profile").hasRole("NOT_VALIDATED")
+                    .antMatchers(
+                            "/user/registrationConfirm",
+                            "/user/resendConfirmation").hasRole("NOT_VALIDATED")
+                    .antMatchers(
+                            "/user/resetPassword",
+                            "/user/updatePassword/token",
+                            "/user/updatePassword").anonymous()
+
+                    // Post Controller
+                        // "/post/{postId}"
                     .antMatchers("/post/create").hasRole("USER")
-                    .antMatchers("/movie/create").hasRole("USER")
+
+                    // Movie Controller
+                        // "/movies/{movieId}
+                    .antMatchers("/movie/create", "/movie/register").hasRole("ADMIN")
+
+                    // Comment Controller
+                    .antMatchers("/comment/create").hasRole("USER")
+                    .antMatchers("/comment/{commentId:[\\d]+}").hasRole("ADMIN")
+
+                    // Search Controller
+                        // "/search/posts"
+                        // "/search/movies"
+                        // "/search/users"
+
+                    // Default
                     .antMatchers("/**").permitAll()
 
                 .and().formLogin()
