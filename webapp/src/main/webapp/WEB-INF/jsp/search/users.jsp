@@ -6,7 +6,7 @@
 <html>
 <head>
     <title><spring:message code="search.pageTitle" arguments="${query}"/></title>
-    <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+    <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp"/>
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
@@ -25,7 +25,7 @@
         </c:if>
         <c:forEach items="${users}" var="user">
             <dt>
-                <a href="<c:url value="/user/${user.id}"/>">
+                <a href="<c:url value="${'/user/'}${user.id}"/>">
                     <c:out value="${user.username}"/>
                 </a>
             </dt>

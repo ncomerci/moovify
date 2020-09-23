@@ -78,10 +78,11 @@ public class UserController {
         return new ModelAndView("redirect:/user/profile");
     }
 
-    @RequestMapping(path = "/user/{userId}", method = RequestMethod.GET)
-    public ModelAndView view(HttpServletRequest request, @PathVariable final long userId) {
 
-        final ModelAndView mv = new ModelAndView("user/view");
+    @RequestMapping(path = {"/user/{userId}", "/user/{userId}/posts"} , method = RequestMethod.GET)
+    public ModelAndView viewPosts(HttpServletRequest request, @PathVariable final long userId) {
+
+        final ModelAndView mv = new ModelAndView("user/view/viewPosts");
 
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
 
@@ -90,14 +91,28 @@ public class UserController {
                 .orElseThrow(UserNotFoundException::new));
 
         mv.addObject("posts", userService.findPostsByUserId(userId));
+        return mv;
+    }
+
+    @RequestMapping(path = "/user/{userId}/comments", method = RequestMethod.GET)
+    public ModelAndView viewComments(HttpServletRequest request, @PathVariable final long userId) {
+
+        final ModelAndView mv = new ModelAndView("user/view/viewComments");
+
+        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+
+        if(inputFlashMap == null || !inputFlashMap.containsKey("user"))
+            mv.addObject("user", userService.findById(userId)
+                    .orElseThrow(UserNotFoundException::new));
+
         mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(userId));
         return mv;
     }
 
-    @RequestMapping(path = "/user/profile", method = RequestMethod.GET)
-    public ModelAndView profile(HttpServletRequest request, Principal principal) {
+    @RequestMapping(path = {"/user/profile", "/user/profile/posts"}, method = RequestMethod.GET)
+    public ModelAndView profilePosts(HttpServletRequest request, Principal principal) {
 
-        final ModelAndView mv = new ModelAndView("user/profile");
+        final ModelAndView mv = new ModelAndView("user/profile/profilePosts");
 
         User user;
         Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
@@ -110,6 +125,25 @@ public class UserController {
 
         mv.addObject("loggedUser", user);
         mv.addObject("posts", userService.findPostsByUserId(user.getId()));
+
+        return mv;
+    }
+
+    @RequestMapping(path = "/user/profile/comments", method = RequestMethod.GET)
+    public ModelAndView profileComments(HttpServletRequest request, Principal principal) {
+
+        final ModelAndView mv = new ModelAndView("user/profile/profileComments");
+
+        User user;
+        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+
+        if(inputFlashMap == null || !inputFlashMap.containsKey("user"))
+            user = userService.findByUsername(principal.getName())
+                    .orElseThrow(UserNotFoundException::new);
+        else
+            user = (User) inputFlashMap.get("user");
+
+        mv.addObject("loggedUser", user);
         mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(user.getId()));
         return mv;
     }
