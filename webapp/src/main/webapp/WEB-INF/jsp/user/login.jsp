@@ -56,7 +56,7 @@
             </div>
             <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid uk-align-center">
                 <label class="uk-text-center">
-                    <input class="uk-checkbox" type="checkbox">
+                    <input name="remember-me" class="uk-checkbox" type="checkbox">
                     <span class="uk-text-primary"><spring:message code="user.login.rememberMe"/></span>
                 </label>
             </div>
