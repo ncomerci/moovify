@@ -16,6 +16,6 @@ public class MaxTagsSizeConstraintValidator implements ConstraintValidator<MaxTa
 
     @Override
     public boolean isValid(Set<String> values, ConstraintValidatorContext context) {
-        return values== null || values.size() <= 5;
+        return values == null || values.size() <= 5;
     }
 }
