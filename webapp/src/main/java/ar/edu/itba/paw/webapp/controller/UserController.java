@@ -122,7 +122,7 @@ public class UserController {
         boolean success;
 
 
-        ModelAndView mv = new ModelAndView("user/registrationConfirm");
+        ModelAndView mv = new ModelAndView("user/confirmRegistration/registrationConfirm");
 
         if(optUser.isPresent()) {
             success = true;
@@ -143,7 +143,7 @@ public class UserController {
 
     @RequestMapping(path = "/user/resetPassword", method = RequestMethod.GET)
     public ModelAndView showResetPassword( @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm) {
-        return new ModelAndView("user/resetPassword");
+        return new ModelAndView("user/resetPassword/resetPassword");
     }
 
     @RequestMapping(path = "/user/resetPassword", method = RequestMethod.POST)
@@ -157,7 +157,7 @@ public class UserController {
 
         createPasswordResetToken(user, request);
 
-        final ModelAndView mv = new ModelAndView("user/resetPasswordTokenGenerated");
+        final ModelAndView mv = new ModelAndView("user/resetPassword/resetPasswordTokenGenerated");
 
         mv.addObject("loggedUser", user);
 
@@ -173,7 +173,7 @@ public class UserController {
 
         createVerificationToken(user, request);
 
-        ModelAndView mv = new ModelAndView("user/resendConfirmation");
+        ModelAndView mv = new ModelAndView("user/confirmRegistration/resendConfirmation");
 
         mv.addObject("loggedUser", user);
 
@@ -190,7 +190,7 @@ public class UserController {
             return new ModelAndView("redirect:/user/updatePassword");
         }
 
-        return new ModelAndView("user/updatePasswordError");
+        return new ModelAndView("user/resetPassword/updatePasswordError");
     }
 
     @RequestMapping(path = "/user/updatePassword", method = RequestMethod.GET)
@@ -202,7 +202,7 @@ public class UserController {
         if(inputFlashMap != null && inputFlashMap.containsKey("token"))
             updatePasswordForm.setToken((String) inputFlashMap.get("token"));
 
-        return new ModelAndView("user/updatePassword");
+        return new ModelAndView("user/resetPassword/updatePassword");
     }
 
     @RequestMapping(path = "/user/updatePassword", method = RequestMethod.POST)
@@ -217,7 +217,7 @@ public class UserController {
 
         manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
 
-        ModelAndView mv = new ModelAndView("user/passwordResetSuccess");
+        ModelAndView mv = new ModelAndView("user/resetPassword/passwordResetSuccess");
 
         mv.addObject("loggedUser", user);
 
