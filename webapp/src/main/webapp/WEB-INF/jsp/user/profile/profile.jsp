@@ -42,13 +42,12 @@
         </div>
     </div>
 </div>
-
-<div class="uk-text-center uk-margin-auto">
-    <sec:authorize access="hasRole('NOT_VALIDATED')" >
-        <h2><spring:message code="user.profile.ConfirmationEmail"/>  <a href="<c:url value="/user/resendConfirmation" /> "><spring:message code="user.profile.ResendEmail"/></a></h2>
-    </sec:authorize>
-</div>
 <div class="uk-container">
+    <div class="uk-text-center uk-margin-auto">
+        <sec:authorize access="hasRole('NOT_VALIDATED')" >
+            <h2><spring:message code="user.profile.ConfirmationEmail"/>  <a href="<c:url value="/user/resendConfirmation" /> "><spring:message code="user.profile.ResendEmail"/></a></h2>
+        </sec:authorize>
+    </div>
 <sec:authorize access="hasAnyRole('ADMIN','USER')">
     <div class="uk-margin-medium-top">
         <ul class="uk-child-width-expand uk-tab">

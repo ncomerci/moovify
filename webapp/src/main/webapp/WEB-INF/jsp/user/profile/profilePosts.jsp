@@ -18,8 +18,10 @@
         <c:if test="${empty posts}">
             <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.posts.postsNotFound"/> </h2>
         </c:if>
-        <c:set var="posts" value="${posts}" scope="request"/>
-        <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
+        <sec:authorize access="hasAnyRole('ADMIN','USER')">
+            <c:set var="posts" value="${posts}" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
+        </sec:authorize>
     </div>
 
 </body>
