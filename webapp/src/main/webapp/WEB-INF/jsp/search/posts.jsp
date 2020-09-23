@@ -24,7 +24,7 @@
         <div class="uk-form-horizontal uk-grid-small" uk-grid>
             <div class="uk-width-1-3">
                 <div class="uk-margin">
-                    <form:label path="postCategory" class="uk-form-label" for="post-category" style="width: auto"><spring:message code="search.posts.categories.label"/>
+                    <form:label path="postCategory" class="uk-form-label" for="post-category" style="width: auto"><spring:message code="search.posts.categories.label"/></form:label>
                     <div class="uk-form-controls" style="margin-left: 100px">
                         <form:select path="postCategory" class="uk-select uk-form-blank">
                             <form:option value="all"><spring:message code="search.posts.categories.all"/></form:option>
@@ -33,13 +33,12 @@
                             <form:option value="news"><spring:message code="search.posts.categories.news"/></form:option>
                             <form:option value="debate"><spring:message code="search.posts.categories.debate"/></form:option>
                         </form:select>
-                        </form:label>
                     </div>
                 </div>
             </div>
             <div class="uk-width-1-3">
                 <div class="uk-margin">
-                    <form:label path="postAge" class="uk-form-label" for="post-age" style="width: auto"><spring:message code="search.posts.postAge.label"/>
+                    <form:label path="postAge" class="uk-form-label" for="post-age" style="width: auto"><spring:message code="search.posts.postAge.label"/></form:label>
                     <div class="uk-form-controls" style="margin-left: 100px">
                         <form:select path="postAge" class="uk-select uk-form-blank">
                             <form:option value="all-time"><spring:message code="search.posts.postAge.allTime"/></form:option>
@@ -48,7 +47,6 @@
                             <form:option value="past-day"><spring:message code="search.posts.postAge.pastDay"/></form:option>
                         </form:select>
                     </div>
-                    </form:label>
                 </div>
             </div>
             <div class="uk-width-1-3">
