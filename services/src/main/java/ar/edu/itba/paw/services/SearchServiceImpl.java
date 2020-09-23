@@ -1,133 +1,116 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.persistence.MovieDao;
+import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
+import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
+import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.services.SearchService;
+import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.PostCategory;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.services.exceptions.NonReachableStateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
+// TODO: shady annotation detected. Report to Lord Commander (Sotuyo) ASAP!
+@DependsOn("dataSourceInitializer")
 public class SearchServiceImpl implements SearchService {
 
+    @Autowired
     private PostDao postDao;
 
-    private enum SortCriteria {
-        NEWEST(0, "newest"),
-        OLDEST(1, "oldest");
-
-        public final int id;
-        public final String name;
-
-        public int getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        SortCriteria(int id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-
-        public static SortCriteria getSortByName(String name) {
-            for(SortCriteria sort : SortCriteria.values()) {
-                if(sort.name.equals(name))
-                    return sort;
-            }
-
-            return null;
-        }
-    }
-
-    // Enum id's are powers of 2 so the sum is unique no matter the combination
-    private enum FilterCriteria{
-        BY_POST_TITLE(1, "by_post_title"),
-        BY_TAGS(2, "by_tags"),
-        BY_MOVIE_TITLE(4, "by_movie_title");
-
-        public final int id;
-        public final String name;
-
-        public int getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        FilterCriteria(int id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-
-        public static FilterCriteria getFilterByName(String name) {
-            for(FilterCriteria filter : FilterCriteria.values()) {
-                if(filter.name.equals(name))
-                    return filter;
-            }
-
-            return null;
-        }
-    }
-
-    private final Map<Integer, Map<Integer, PostFindMethod>> findMethodsMap;
+    @Autowired
+    private MovieDao movieDao;
 
     @Autowired
-    public SearchServiceImpl(PostDao postDao) {
-        this.postDao = postDao;
+    private UserDao userDao;
 
-        findMethodsMap = initializeFindMethodsMap();
+    private enum SearchOptions{
+        BY_CATEGORY, OLDER_THAN
     }
 
-    private Map<Integer, Map<Integer, PostFindMethod>> initializeFindMethodsMap() {
-        Map<Integer, Map<Integer, PostFindMethod>> resultMap = new HashMap<>();
+    private final List<String> categoriesOptions;
+    private final static Map<String, SortCriteria> sortCriteriaMap = getSortCriteriaMap();
+    private final static Map<String, LocalDateTime> periodOptionsMap = getPeriodOptionsMap();
 
-        // Newest
-        resultMap.put(SortCriteria.NEWEST.id, new HashMap<>());
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id, postDao::findPostsByTitleOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_TAGS.id, postDao::findPostsByTagsOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByMoviesOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id, postDao::findPostsByTitleAndTagsOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndMoviesOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTagsAndMoviesOrderByNewest);
-        resultMap.get(SortCriteria.NEWEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndTagsAndMoviesOrderByNewest);
-
-        // Oldest
-        resultMap.put(SortCriteria.OLDEST.id, new HashMap<>());
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id , postDao::findPostsByTitleOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_TAGS.id, postDao::findPostsByTagsOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByMoviesOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id, postDao::findPostsByTitleAndTagsOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndMoviesOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTagsAndMoviesOrderByOldest);
-        resultMap.get(SortCriteria.OLDEST.id).put(FilterCriteria.BY_POST_TITLE.id + FilterCriteria.BY_TAGS.id + FilterCriteria.BY_MOVIE_TITLE.id, postDao::findPostsByTitleAndTagsAndMoviesOrderByOldest);
-
-        return resultMap;
+    private static Map<String, SortCriteria> getSortCriteriaMap(){
+        Map<String, SortCriteria> sortCriteriaMap = new HashMap<>();
+        sortCriteriaMap.put("newest", SortCriteria.NEWEST);
+        sortCriteriaMap.put("oldest", SortCriteria.OLDEST);
+        sortCriteriaMap.put("default", SortCriteria.NEWEST);
+        return sortCriteriaMap;
     }
 
-    public Optional<Collection<Post>> findPostsBy(String query, Collection<String> filterCriteria, String sortCriteria, boolean withMovies, boolean withComments){
-        SortCriteria sort = SortCriteria.getSortByName(sortCriteria.toLowerCase());
-        Collection<FilterCriteria> filterCollection = filterCriteria.stream().map(fc -> FilterCriteria.getFilterByName(fc.toLowerCase())).collect(Collectors.toList());
-
-        if(filterCollection.contains(null) || sort == null)
-            return Optional.empty();
-
-        return Optional.of(
-                findMethodsMap.get(sort.id)
-                .get(filterCollection.stream().map(FilterCriteria::getId).reduce(0, Integer::sum))
-                .find(query, withMovies, withComments)
-        );
+    private static Map<String, LocalDateTime> getPeriodOptionsMap(){
+        Map<String, LocalDateTime> periodOptions = new HashMap<>();
+        periodOptions.put("past-year", LocalDateTime.now().minusYears(1));
+        periodOptions.put("past-month", LocalDateTime.now().minusMonths(1));
+        periodOptions.put("past-week", LocalDateTime.now().minusWeeks(1));
+        periodOptions.put("past-day", LocalDateTime.now().minusDays(1));
+        return periodOptions;
     }
 
-    @FunctionalInterface
-    private interface PostFindMethod{
-        Collection<Post> find(String query, boolean withMovies, boolean withComments);
+    @Autowired
+    public SearchServiceImpl(PostCategoryDao postCategoryDao) {
+        categoriesOptions = postCategoryDao.getAllPostCategories().stream().map(PostCategory::getName).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<Collection<Post>> searchPosts(String query, String category, String period, String sortCriteria) {
+
+        Objects.requireNonNull(query);
+
+        final EnumSet<PostDao.FetchRelation> fetchRelation = EnumSet.noneOf(PostDao.FetchRelation.class);
+        final EnumSet<SearchOptions> options = EnumSet.noneOf(SearchOptions.class);
+        final SortCriteria sc;
+
+        if(category != null && categoriesOptions.contains(category))
+            options.add(SearchOptions.BY_CATEGORY);
+
+
+        if(period != null && periodOptionsMap.containsKey(period))
+            options.add(SearchOptions.OLDER_THAN);
+
+
+        if(sortCriteria != null && sortCriteriaMap.containsKey(sortCriteria))
+            sc = sortCriteriaMap.get(sortCriteria);
+
+        else
+            sc = sortCriteriaMap.get("default");
+
+
+        if(options.isEmpty())
+            return Optional.of(postDao.searchPosts(query, fetchRelation, sc));
+
+        else if(options.size() == 1){
+            if(options.contains(SearchOptions.OLDER_THAN))
+                return Optional.of(postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), fetchRelation, sc));
+            else if(options.contains(SearchOptions.BY_CATEGORY))
+                return Optional.of(postDao.searchPostsByCategory(query, category, fetchRelation, sc));
+        }
+        else if(options.contains(SearchOptions.OLDER_THAN) && options.contains(SearchOptions.BY_CATEGORY) && options.size() == 2)
+            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), fetchRelation, sc));
+
+        throw new NonReachableStateException();
+    }
+
+    @Override
+    public Optional<Collection<Movie>> searchMovies(String query){
+        Objects.requireNonNull(query);
+        return Optional.of(movieDao.searchMovies(query));
+    }
+
+    @Override
+    public Optional<Collection<User>> searchUsers(String query) {
+        Objects.requireNonNull(query);
+        return Optional.of(userDao.searchUsers(query));
     }
 }

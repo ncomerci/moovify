@@ -7,9 +7,17 @@ import java.util.Optional;
 
 public interface CommentDao {
 
-    Comment register(long postId, Long parentId, String body, String userMail);
+    long register(long postId, Long parentId, String body, long userId);
 
-    Optional<Comment> findCommentById(long id, boolean withChildren);
+    Optional<Comment> findCommentByIdWithChildren(long id);
 
-    Collection<Comment> findCommentsByPostId(long post_id, boolean withChildren);
+    Optional<Comment> findCommentByIdWithoutChildren(long id);
+
+    Collection<Comment> findCommentsByPostIdWithChildren(long post_id);
+
+    Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id);
+
+    Collection<Comment> findCommentsByUserIdWithChildren(long user_id);
+
+    Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id);
 }

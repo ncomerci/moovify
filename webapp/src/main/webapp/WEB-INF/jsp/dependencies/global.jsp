@@ -10,6 +10,7 @@
 <%--UIkit JS--%>
 <script src="<c:url value="/resources/js/uikit/uikit.js" />"></script>
 <script src="<c:url value="/resources/js/uikit/uikit-icons.js" />"></script>
+<script src="<c:url value="/resources/js/uikit/iconify.js" />"></script>
 
 <%-- Navbar --%>
 <script src="<c:url value="/resources/js/components/navBar.js" />"></script>

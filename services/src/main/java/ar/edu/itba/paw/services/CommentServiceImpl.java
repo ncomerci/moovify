@@ -16,17 +16,42 @@ public class CommentServiceImpl implements CommentService {
     private CommentDao commentDao;
 
     @Override
-    public Comment register(long postId, Long parentId, String body, String userMail) {
-        return commentDao.register(postId, parentId, body, userMail);
+    public long register(long postId, Long parentId, String body, long userId) {
+        return commentDao.register(postId, parentId,
+                body.replaceAll("[ \t]+", " ")
+                        .replaceAll("(\r\n)+", "\n")
+                        .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId);
     }
 
     @Override
-    public Optional<Comment> findCommentById(long id, boolean withChildren){
-        return commentDao.findCommentById(id, withChildren);
+    public Optional<Comment> findCommentByIdWithChildren(long id){
+        return commentDao.findCommentByIdWithChildren(id);
     }
 
     @Override
-    public Collection<Comment> findCommentsByPostId(long post_id, boolean withChildren){
-        return commentDao.findCommentsByPostId(post_id, withChildren);
+    public Optional<Comment> findCommentByIdWithoutChildren(long id){
+        return commentDao.findCommentByIdWithoutChildren(id);
     }
+
+    @Override
+    public Collection<Comment> findCommentsByPostIdWithChildren(long post_id) {
+        return commentDao.findCommentsByPostIdWithChildren(post_id);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id) {
+        return commentDao.findCommentsByPostIdWithoutChildren(post_id);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByUserIdWithChildren(long user_id) {
+        return commentDao.findCommentsByUserIdWithChildren(user_id);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id) {
+        return commentDao.findCommentsByUserIdWithoutChildren(user_id);
+    }
+
+
 }

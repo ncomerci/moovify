@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
@@ -10,7 +11,8 @@ public class Post {
     private final String title;
     private final String body;
     private final int wordCount;
-    private final String email;
+    private final User user;
+    private final PostCategory category;
     private final Collection<String> tags;
     private final Collection<Movie> movies;
     private final Collection<Comment> comments;
@@ -20,15 +22,16 @@ public class Post {
     * Extracted from
     * https://www.researchgate.net/publication/332380784_How_many_words_do_we_read_per_minute_A_review_and_meta-analysis_of_reading_rate
     */
-    private static final int EN_WORDS_PER_MINUTE = 238;
+    private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, String email, Collection<String> tags, Collection<Movie> movies, Collection<Comment> comments) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, Collection<Movie> movies, Collection<Comment> comments) {
         this.id = id;
         this.creationDate = creationDate;
         this.title = title;
         this.body = body;
         this.wordCount = wordCount;
-        this.email = email;
+        this.user = user;
+        this.category = category;
         this.tags = tags;
         this.movies = movies;
         this.comments = comments;
@@ -54,8 +57,12 @@ public class Post {
         return wordCount;
     }
 
-    public String getEmail() {
-        return email;
+    public User getUser() {
+        return user;
+    }
+
+    public PostCategory getCategory() {
+        return category;
     }
 
     public Collection<String> getTags() {
@@ -76,5 +83,9 @@ public class Post {
 
     public int getReadingTimeMinutes() {
         return getWordCount() / EN_WORDS_PER_MINUTE;
+    }
+
+    public Duration getTimeSinceCreation() {
+        return Duration.between(creationDate, LocalDateTime.now());
     }
 }

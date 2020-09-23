@@ -1,4 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
+<sec:authorize access="isAuthenticated()">
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+</sec:authorize>
 
 <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
     <nav class="uk-navbar-container" uk-navbar>
@@ -6,19 +12,73 @@
         <div class="uk-navbar-right">
             <ul class="uk-navbar-nav">
                 <li class="uk-visible@s">
-                    <a class="uk-navbar-toggle" data-uk-search-icon ></a>
+                    <a id="nav-search-toggle" class="uk-navbar-toggle">
+                        <span uk-icon="icon: search; ratio: 1.7"></span>
+                    </a>
                     <div class="uk-drop" data-uk-drop="mode: click; pos: right-center; offset: 0; boundary: #navbar">
-                        <form action="<c:url value="/search" />" class="uk-search uk-search-navbar uk-width-1-1">
+                        <form action="<c:url value="/search/posts/"/>" class="uk-search uk-search-navbar uk-width-1-1">
                             <label for="nav-search"></label>
-                            <input id="nav-search" name="query" class="uk-search-input" type="search" placeholder="Search..." >
-                            <button id="submit-navbar-search-button" class="uk-button uk-button-text" type="submit">Search</button>
+                            <input autofocus id="nav-search" name="query" class="uk-search-input" type="search" placeholder="<spring:message code="navbar.searchDots"/>" >
+                            <button id="submit-navbar-search-button" class="uk-button uk-button-default uk-border-rounded search-button" type="submit"><spring:message code="navbar.search"/></button>
                         </form>
                     </div>
                 </li>
-<%--                <li class="nav-item"><a class="uk-light" href="<c:url value="/" />">Home</a></li>  --%>
-                <li class="uk-navbar-item"><a href="<c:url value="/post/create" />">Create Post</a></li>
+                <sec:authorize access="isAuthenticated()">
+                    <li class="uk-navbar-item">
+                        <sec:authorize access="hasRole('NOT_VALIDATED')">
+                            <!-- This is a button toggling the modal -->
+                            <a class="uk-padding-remove" href="#" uk-toggle="target: #confirm-email-modal">
+                                <spring:message code="navbar.createPost"/>
+                            </a>
+                        </sec:authorize>
+                        <sec:authorize access="!hasRole('NOT_VALIDATED')">
+                            <a class="uk-padding-remove" href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a>
+                        </sec:authorize>
+                    </li>
+                    <li>
+                        <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left">
+                            <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
+                            <span class="uk-text-bold uk-margin-small-left">${loggedUser.username}</span>
+                        </a>
+                        <div class="uk-navbar-dropdown">
+                            <ul class="uk-nav uk-navbar-dropdown-nav">
+                                <li>
+                                    <a class="uk-text-center" href="<c:url value="/user/profile"/>">
+                                        <button class="uk-button uk-button-default uk-border-rounded user-profile-button" type="button"><spring:message code="user.profile"/></button>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="uk-text-center" href="<c:url value="/logout"/>">
+                                        <button class="uk-button uk-button-default uk-border-rounded logout-button" type="button"><spring:message code="user.logout"/></button>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                </sec:authorize>
+                <sec:authorize access="!isAuthenticated()">
+                    <li class="uk-navbar-item">
+                        <a href="<c:url value="/login"/>"><spring:message code="user.login"/></a>
+                    </li>
+                    <li>
+                        <a class="uk-text-center" href="<c:url value="/user/create"/>">
+                            <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder" style="color: #30475e" type="button"><spring:message code="user.signup"/></button>
+                        </a>
+                    </li>
+                </sec:authorize>
             </ul>
-
         </div>
     </nav>
 </header>
+
+<!-- Confirm email modal -->
+<div id="confirm-email-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title"><spring:message code="user.emailConfirm.title"/></h2>
+        <p><spring:message code="user.emailConfirm.text"/></p>
+        <p class="uk-text-right">
+            <a class="uk-button uk-button-secondary uk-border-rounded uk-text-bolder" href="<c:url value="/user/resendConfirmation" /> "><spring:message code="user.profile.ResendEmail"/></a>
+            <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-modal-close" type="button"><spring:message code="user.emailConfirm.closeModal"/></button>
+        </p>
+    </div>
+</div>

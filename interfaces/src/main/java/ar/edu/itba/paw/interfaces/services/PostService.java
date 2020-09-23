@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.PostCategory;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -8,13 +9,17 @@ import java.util.Set;
 
 public interface PostService {
 
-    Post register(String title, String email, String body, Collection<String> tags, Set<Long> movies);
+    long register(String title, String body, long category, long user, Set<String> tags, Set<Long> movies);
 
-    Optional<Post> findPostById(long id, boolean withMovies, boolean withComments);
+    Optional<Post> findPostById(long id);
 
-    Collection<Post> findPostsByMovieId(long movie_id, boolean withMovies, boolean withComments);
+    Collection<Post> findPostsByMovieId(long movie_id);
 
-    Collection<Post> getAllPostsOrderByNewest(boolean withMovies, boolean withComments);
+    Collection<Post> findPostsByUserId(long user_id);
 
-    Collection<Post> getAllPostsOrderByOldest(boolean withMovies, boolean withComments);
+    Collection<Post> getAllPostsOrderByNewest();
+
+    Collection<Post> getAllPostsOrderByOldest();
+
+    Collection<PostCategory> getAllPostCategories();
 }

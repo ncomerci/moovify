@@ -2,6 +2,8 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.Role;
+import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -18,49 +20,97 @@ import java.util.*;
 public class CommentDaoImpl implements CommentDao {
 
     // Constants with Table Names
-    private static final String POSTS = TableNames.POSTS.getTableName();
-    private static final String MOVIES = TableNames.MOVIES.getTableName();
-    private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
     private static final String COMMENTS = TableNames.COMMENTS.getTableName();
+    private static final String USERS = TableNames.USERS.getTableName();
+    private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
+    private static final String ROLES = TableNames.ROLES.getTableName();
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert commentInsert;
 
 
     private static final String SELECT_COMMENTS = "SELECT " +
-            COMMENTS + ".comment_id, " +
-            "coalesce(" + COMMENTS + ".parent_id, 0) parent_id, " +
-            COMMENTS + ".post_id, " +
-            COMMENTS + ".user_email, " +
-            COMMENTS + ".creation_date, " +
-            COMMENTS + ".body " +
-            "FROM " + COMMENTS;
+            COMMENTS + ".comment_id c_comment_id, " +
+            "coalesce(" + COMMENTS + ".parent_id, 0) c_parent_id, " +
+            COMMENTS + ".post_id c_post_id, " +
+            COMMENTS + ".creation_date c_creation_date, " +
+            COMMENTS + ".body c_body, " +
 
+            USERS + ".user_id u_user_id, " +
+            USERS + ".creation_date u_creation_date, " +
+            USERS + ".username u_username, " +
+            USERS + ".password u_password, " +
+            USERS + ".name u_name, " +
+            USERS + ".email u_email " +
+
+            "FROM " + COMMENTS +
+            " INNER JOIN " + USERS + " ON " + USERS + ".user_id = " + COMMENTS + ".user_id";
+
+    private static final String SELECT_COMMENTS_WITH_CHILDREN = "SELECT " +
+            COMMENTS + ".comment_id c_comment_id, " +
+            "coalesce(" + COMMENTS + ".parent_id, 0) c_parent_id, " +
+            COMMENTS + ".post_id c_post_id, " +
+            COMMENTS + ".creation_date c_creation_date, " +
+            COMMENTS + ".body c_body, " +
+
+            USERS + ".user_id u_user_id, " +
+            USERS + ".creation_date u_creation_date, " +
+            USERS + ".username u_username, " +
+            USERS + ".password u_password, " +
+            USERS + ".name u_name, " +
+            USERS + ".email u_email, " +
+            USERS + ".role_id u_role_id, " +
+            USERS + ".role u_role " +
+
+            "FROM " + COMMENTS +
+            " INNER JOIN ( " +
+                "SELECT " +
+                USERS + ".user_id, " + USERS + ".creation_date, " + USERS + ".username, " + USERS + ".password, " +
+                USERS + ".name, " + USERS + ".email, " + ROLES + ".role_id, " + ROLES + ".role " +
+                "FROM " + USERS +
+                " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
+                "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
+            ") " + USERS + " ON " + USERS + ".user_id = " + COMMENTS + ".user_id";
+
+    // Users come without roles
     private static final RowMapper<Comment> COMMENT_ROW_MAPPER = (rs, rowNum) ->
-            new Comment(rs.getLong("comment_id"), rs.getObject("creation_date", LocalDateTime.class),
-                    rs.getLong("post_id"), rs.getLong("parent_id"), null,
-                    rs.getString("body"), rs.getString("user_email"));
+            new Comment(rs.getLong("c_comment_id"), rs.getObject("c_creation_date", LocalDateTime.class),
+                    rs.getLong("c_post_id"), rs.getLong("c_parent_id"),
+                    null, rs.getString("c_body"),
+                    new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
+                            rs.getString("u_username"), rs.getString("u_password"),
+                            rs.getString("u_name"), rs.getString("u_email"),
+                            Collections.emptyList()));
 
     // Coalesce parent_id = null to parent_id = 0.
     private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER_WITH_CHILDREN = (rs) -> {
         List<Comment> result = new ArrayList<>();
         Map<Long, Comment> idToCommentMap = new HashMap<>();
         Map<Long, Collection<Comment>> childrenWithoutParentMap = new HashMap<>();
+        Map<Long, Role> idToRoleMap = new HashMap<>();
 
         long comment_id;
+        long role_id;
         Comment currentComment;
 
         while(rs.next()){
 
-            comment_id = rs.getLong("comment_id");
+            comment_id = rs.getLong("c_comment_id");
+            role_id = rs.getLong("u_role_id");
 
             // Returns 0 on null
             if(comment_id != 0 && !idToCommentMap.containsKey(comment_id)) {
 
                 currentComment = new Comment(comment_id,
-                        rs.getObject("creation_date", LocalDateTime.class),
-                        rs.getLong("post_id"), rs.getLong("parent_id"), new ArrayList<>(),
-                        rs.getString("body"), rs.getString("user_email"));
+                        rs.getObject("c_creation_date", LocalDateTime.class),
+                        rs.getLong("c_post_id"), rs.getLong("c_parent_id"), new ArrayList<>(),
+                        rs.getString("c_body"),
+                        new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
+                                rs.getString("u_username"), rs.getString("u_password"),
+                                rs.getString("u_name"), rs.getString("u_email"),
+                                new HashSet<>()
+                        )
+                );
 
                 idToCommentMap.put(comment_id, currentComment);
 
@@ -93,6 +143,15 @@ public class CommentDaoImpl implements CommentDao {
                         idToCommentMap.get(currentComment.getParentId()).getChildren().add(currentComment);
                 }
             }
+
+            // Role Id not null
+            if(role_id != 0) {
+
+                if(!idToRoleMap.containsKey(role_id))
+                    idToRoleMap.put(role_id, new Role(role_id, rs.getString("u_role")));
+
+                idToCommentMap.get(comment_id).getUser().getRoles().add(idToRoleMap.get(role_id));
+            }
         }
 
         return result;
@@ -108,7 +167,9 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public Comment register(long postId, Long parentId, String body, String userMail) {
+    public long register(long postId, Long parentId, String body, long userId) {
+
+        Objects.requireNonNull(body);
 
         body = body.trim();
         LocalDateTime creationDate = LocalDateTime.now();
@@ -118,16 +179,14 @@ public class CommentDaoImpl implements CommentDao {
         map.put("post_id", postId);
         map.put("parent_id", parentId);
         map.put("body", body);
-        map.put("user_email", userMail);
+        map.put("user_id", userId);
 
-        final long commentId = commentInsert.executeAndReturnKey(map).longValue();
-
-        return new Comment(commentId, creationDate, postId, parentId, Collections.emptyList(), body, userMail);
+        return commentInsert.executeAndReturnKey(map).longValue();
     }
 
     private Collection<Comment> findCommentsBy(String queryAfterFrom, Object[] args, boolean withChildren) {
 
-        final String query = SELECT_COMMENTS + " " + queryAfterFrom;
+        final String query = (withChildren? SELECT_COMMENTS_WITH_CHILDREN : SELECT_COMMENTS) + " " + queryAfterFrom;
 
         if(args != null){
             if(withChildren)
@@ -143,24 +202,49 @@ public class CommentDaoImpl implements CommentDao {
         }
     }
 
-    private Collection<Comment> findCommentsBy(String whereStatement, boolean withChildren) {
-        return findCommentsBy(whereStatement, null, withChildren);
-    }
-
-    private Collection<Comment> findCommentsBy(boolean withChildren) {
-        return findCommentsBy("", null, withChildren);
-    }
-
-    @Override
-    public Optional<Comment> findCommentById(long id, boolean withChildren){
+    private Optional<Comment> findCommentById(long id, boolean withChildren) {
         return findCommentsBy(
                 "WHERE " + COMMENTS + ".comment_id = ?", new Object[] { id }, withChildren)
                 .stream().findFirst();
     }
 
     @Override
-    public Collection<Comment> findCommentsByPostId(long post_id, boolean withChildren){
+    public Optional<Comment> findCommentByIdWithChildren(long id) {
+        return findCommentById(id, false);
+    }
+
+    @Override
+    public Optional<Comment> findCommentByIdWithoutChildren(long id) {
+        return findCommentById(id, true);
+    }
+
+    private Collection<Comment> findCommentsByPostId(long post_id, boolean withChildren) {
         return findCommentsBy(
                 "WHERE " + COMMENTS + ".post_id = ?", new Object[] { post_id }, withChildren);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByPostIdWithChildren(long post_id) {
+        return findCommentsByPostId(post_id, true);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id) {
+        return findCommentsByPostId(post_id, false);
+    }
+
+    private Collection<Comment> findCommentsByUserId(long user_id, boolean withChildren) {
+        return findCommentsBy(
+                "WHERE " + COMMENTS + ".user_id = ?", new Object[] { user_id }, withChildren);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByUserIdWithChildren(long user_id) {
+        return findCommentsByUserId(user_id, true);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id) {
+        return findCommentsByUserId(user_id, false);
     }
 }

@@ -1,8 +1,10 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.persistence.MovieCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.models.Movie;
+import ar.edu.itba.paw.models.MovieCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,9 @@ public class MovieServiceImpl implements MovieService {
     @Autowired
     private MovieDao movieDao;
 
+    @Autowired
+    private MovieCategoryDao movieCategoryDao;
+
 
     @Override
     public Optional<Movie> findById(long id) {
@@ -23,8 +28,10 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Movie register(String title, LocalDate premierDate) {
-        return movieDao.register(title, premierDate);
+    public Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage,
+                          String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<Long> categories) {
+        return movieDao.register(title, originalTitle,  tmdbId,  imdbId,  originalLanguage,
+                 overview,  popularity,  runtime,  voteAverage,  releaseDate,  categories);
     }
 
     @Override
@@ -37,4 +44,8 @@ public class MovieServiceImpl implements MovieService {
         return movieDao.findMoviesByPostId(postId);
     }
 
+    @Override
+    public Collection<MovieCategory> getAvailableCategories() {
+        return movieCategoryDao.getAllCategories();
+    }
 }

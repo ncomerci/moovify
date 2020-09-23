@@ -2,20 +2,72 @@ package ar.edu.itba.paw.models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.Collection;
 
 public class Movie {
 
     private final long id;
     private final LocalDateTime creationDate;
     private final String title;
-    private final LocalDate premierDate;
+    private final String originalTitle;
+    private final long tmdbId;
+    private final String imdbId;
+    private final String originalLanguage;
+    private final String overview;
+    private final float popularity;
+    private final float runtime;
+    private final float voteAverage;
+    private final LocalDate releaseDate;
+    private final Collection<MovieCategory> categories;
 
-    public Movie(long id, LocalDateTime creationDate, String title, LocalDate premierDate) {
+    public Movie(long id, LocalDateTime creationDate, String title, String originalTitle, long tmdbId,
+                 String imdbId, String originalLanguage, String overview, float popularity, float runtime,
+                 float voteAverage, LocalDate releaseDate, Collection<MovieCategory> categories) {
         this.id = id;
         this.creationDate = creationDate;
         this.title = title;
-        this.premierDate = premierDate;
+        this.originalTitle = originalTitle;
+        this.tmdbId = tmdbId;
+        this.imdbId = imdbId;
+        this.originalLanguage = originalLanguage;
+        this.overview = overview;
+        this.popularity = popularity;
+        this.runtime = runtime;
+        this.voteAverage = voteAverage;
+        this.releaseDate = releaseDate;
+        this.categories = categories;
+    }
+
+    public String getOriginalTitle() {
+        return originalTitle;
+    }
+
+    public long getTmdbId() {
+        return tmdbId;
+    }
+
+    public String getImdbId() {
+        return imdbId;
+    }
+
+    public String getOriginalLanguage() {
+        return originalLanguage;
+    }
+
+    public String getOverview() {
+        return overview;
+    }
+
+    public float getPopularity() {
+        return popularity;
+    }
+
+    public float getRuntime() {
+        return runtime;
+    }
+
+    public float getVoteAverage() {
+        return voteAverage;
     }
 
     public long getId() {
@@ -30,20 +82,11 @@ public class Movie {
         return title;
     }
 
-    public LocalDate getPremierDate() {
-        return premierDate;
+    public LocalDate getReleaseDate() {
+        return releaseDate;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Movie movie = (Movie) o;
-        return id == movie.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    public Collection<MovieCategory> getCategories() {
+        return categories;
     }
 }

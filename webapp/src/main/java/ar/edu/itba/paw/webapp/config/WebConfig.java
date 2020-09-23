@@ -1,14 +1,18 @@
 package ar.edu.itba.paw.webapp.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -17,6 +21,8 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import javax.sql.DataSource;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 @EnableWebMvc
 @ComponentScan({
@@ -25,10 +31,14 @@ import javax.sql.DataSource;
         "ar.edu.itba.paw.persistence",
     })
 @Configuration
+// TODO: Set Up @PropertySource
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Value("classpath:schema.sql")
     private Resource schemaSql;
+
+    @Value("classpath:data.sql")
+    private Resource dataSql;
 
     @Bean
     public ViewResolver viewResolver(){
@@ -77,9 +87,45 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     private DatabasePopulator databasePopulator() {
         final ResourceDatabasePopulator dbp = new ResourceDatabasePopulator();
 
-        dbp.addScript(schemaSql);
+        dbp.addScripts(schemaSql, dataSql);
 
         return dbp;
     }
 
+    @Bean
+    public MessageSource messageSource(){
+        final ReloadableResourceBundleMessageSource msgSource = new ReloadableResourceBundleMessageSource();
+
+        msgSource.setBasename("classpath:i18n/messages");
+        msgSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
+        msgSource.setCacheSeconds(10);
+
+        return msgSource;
+    }
+
+    @Bean
+    public JavaMailSender mailSender() {
+
+        final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+        // Deploy Mail Server
+//        mailSender.setHost("smtp.gmail.com");
+//        mailSender.setPort(587);
+//        mailSender.setUsername("MoovifyCo@gmail.com");
+//        mailSender.setPassword("#Papanata");
+
+        // Development Mail Server
+        mailSender.setHost("smtp.mailtrap.io");
+        mailSender.setPort(587);
+        mailSender.setUsername("e6c828d95e9959");
+        mailSender.setPassword("bbfccd607177ac");
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "true");
+
+        return mailSender;
+    }
 }

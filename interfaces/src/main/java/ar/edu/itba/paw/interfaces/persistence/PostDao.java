@@ -2,51 +2,37 @@ package ar.edu.itba.paw.interfaces.persistence;
 
 import ar.edu.itba.paw.models.Post;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
 public interface PostDao {
 
-    Post register(String title, String email, String body, Collection<String> tags, Set<Long> movies);
+    enum FetchRelation {
+        MOVIES, COMMENTS
+    }
 
-    Optional<Post> findPostById(long id, boolean withMovies, boolean withComments);
+    enum SortCriteria {
+        NEWEST, OLDEST, HOTTEST
+    }
 
-    Collection<Post> getAllPostsOrderByNewest(boolean withMovies, boolean withComments);
+    long register(String title, String body, int wordCount, long category, long user, Set<String> tags, Set<Long> movies);
 
-    Collection<Post> getAllPostsOrderByOldest(boolean withMovies, boolean withComments);
+    Optional<Post> findPostById(long id, EnumSet<FetchRelation> includedRelations);
 
-    Collection<Post> findPostsByTitleOrderByNewest(String title, boolean withMovies, boolean withComments);
+    Collection<Post> getAllPosts(EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 
-    Collection<Post> findPostsByTitleOrderByOldest(String title, boolean withMovies, boolean withComments);
+    Collection<Post> findPostsByMovieId(long movie_id, EnumSet<FetchRelation> includedRelations);
 
-    Collection<Post> findPostsByMoviesOrderByNewest(String title, boolean withMovies, boolean withComments);
+    Collection<Post> findPostsByUserId(long user_id, EnumSet<FetchRelation> includedRelations);
 
-    Collection<Post> findPostsByMoviesOrderByOldest(String title, boolean withMovies, boolean withComments);
+    Collection<Post> searchPosts(String query, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 
-    Collection<Post> findPostsByTagsOrderByNewest(String title, boolean withMovies, boolean withComments);
+    Collection<Post> searchPostsByCategory(String query, String category, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 
-    Collection<Post> findPostsByTagsOrderByOldest(String title, boolean withMovies, boolean withComments);
+    Collection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 
-    Collection<Post> findPostsByTitleAndMoviesOrderByNewest(String title, boolean withMovies, boolean withComments);
-
-    Collection<Post> findPostsByTitleAndMoviesOrderByOldest(String title, boolean withMovies, boolean withComments);
-
-    Collection<Post> findPostsByTitleAndTagsOrderByNewest(String title, boolean withMovies, boolean withComments);
-
-    Collection<Post> findPostsByTitleAndTagsOrderByOldest(String title, boolean withMovies, boolean withComments);
-
-    Collection<Post> findPostsByTagsAndMoviesOrderByNewest(String title, boolean withMovies, boolean withComments);
-
-    Collection<Post> findPostsByTagsAndMoviesOrderByOldest(String title, boolean withMovies, boolean withComments);
-
-    Collection<Post> findPostsByTitleAndTagsAndMoviesOrderByNewest(String title, boolean withMovies, boolean withComments);
-
-    Collection<Post> findPostsByTitleAndTagsAndMoviesOrderByOldest(String title, boolean withMovies, boolean withComments);
-
-    Collection<Post> findPostsByMovieId(long id, boolean withMovies, boolean withComments);
-
-    Collection<Post> findPostsByMovieTitle(String movie_title, boolean withMovies, boolean withComments);
-
-    Collection<Post> findPostsByPostAndMovieTitle(String title, boolean withMovies, boolean withComments);
+    Collection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 }
