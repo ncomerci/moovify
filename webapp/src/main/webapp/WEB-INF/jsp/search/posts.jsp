@@ -66,31 +66,9 @@
     <c:if test="${empty posts}">
         <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.posts.postsNotFound"/> </h2>
     </c:if>
-    <div class="uk-flex uk-margin-medium-top">
-        <c:forEach items="${posts}" var="post">
-            <div class="uk-width-4-5">
-                <a href="<c:url value="/post/${post.id}"/>">
-                    <c:out value="${post.title}"/>
-                </a>
-                <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
-                    <spring:message code="search.posts.results.meta" arguments="${post.category.name},${post.user.name}"/>
-                </p>
-            </div>
-            <div class="uk-width-1-5">
-                <p class="uk-text-meta uk-text-right">
-                    <c:if test="${post.timeSinceCreation.toDays() > 0}">
-                        <spring:message code="search.posts.results.age.days" arguments="${post.timeSinceCreation.toDays()}"/>
-                    </c:if>
-                    <c:if test="${post.timeSinceCreation.toDays() == 0 && post.timeSinceCreation.toHours() > 0}">
-                        <spring:message code="search.posts.results.age.hours" arguments="${post.timeSinceCreation.toHours()}"/>
-                    </c:if>
-                    <c:if test="${post.timeSinceCreation.toDays() == 0 && post.timeSinceCreation.toHours() == 0}">
-                        <spring:message code="search.posts.results.age.minutes" arguments="${post.timeSinceCreation.toMinutes()}"/>
-                    </c:if>
-                </p>
-            </div>
-        </c:forEach>
-    </div>
+
+    <c:set var="posts" value="${posts}" scope="request"/>
+    <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
 </main>
 </body>
 </html>

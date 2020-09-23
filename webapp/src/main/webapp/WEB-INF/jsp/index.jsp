@@ -15,27 +15,13 @@
 
             <section id="newest-posts">
                 <h1 class="uk-heading-small"><spring:message code="index.newestPost"/></h1>
-                <dl class="uk-description-list ">
-                    <c:forEach items="${newestPosts}" var="post">
-                        <dt>
-                            <a href="<c:url value="/post/${post.id}"/>">
-                                <c:out value="${post.title}"/>
-                            </a>
-                        </dt>
-                    </c:forEach>
-                </dl>
+                <c:set value="${newestPosts}" var="posts" scope="request"/>
+                <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
             </section>
             <section id="hottest-posts">
                 <h1 class="uk-heading-small"><spring:message code="index.oldestPost"/></h1>
-                <dl class="uk-description-list ">
-                    <c:forEach items="${oldestPosts}" var="post">
-                        <dt>
-                            <a href="<c:url value="/post/${post.id}"/>">
-                                <c:out value="${post.title}"/>
-                            </a>
-                        </dt>
-                    </c:forEach>
-                </dl>
+                <c:set value="${oldestPosts}" var="posts" scope="request"/>
+                <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
             </section>
         </div>
     </main>
