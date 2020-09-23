@@ -16,4 +16,9 @@ public interface CommentService {
     Collection<Comment> findCommentsByPostIdWithChildren(long post_id);
 
     Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id);
+
+    Collection<Comment> findCommentsByUserIdWithChildren(long user_id);
+
+    Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id);
+
 }

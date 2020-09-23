@@ -17,7 +17,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public long register(long postId, Long parentId, String body, long userId) {
-        return commentDao.register(postId, parentId, body, userId);
+        return commentDao.register(postId, parentId,
+                body.replaceAll("\\s+", " ").replaceAll("^ | $", ""), userId);
     }
 
     @Override
@@ -39,4 +40,16 @@ public class CommentServiceImpl implements CommentService {
     public Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id) {
         return commentDao.findCommentsByPostIdWithoutChildren(post_id);
     }
+
+    @Override
+    public Collection<Comment> findCommentsByUserIdWithChildren(long user_id) {
+        return commentDao.findCommentsByUserIdWithChildren(user_id);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id) {
+        return commentDao.findCommentsByUserIdWithoutChildren(user_id);
+    }
+
+
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 @Controller
 public class MovieController {
@@ -26,12 +27,27 @@ public class MovieController {
 
     @RequestMapping(path = "/movie/create",  method = RequestMethod.GET)
     public ModelAndView create(){
-        return new ModelAndView("movie/create");
+        ModelAndView mv = new ModelAndView("movie/create");
+        mv.addObject("categories", movieService.getAvailableCategories());
+        return mv;
     }
 
     @RequestMapping(path = "/movie/register", method = RequestMethod.POST)
-    public ModelAndView register(@RequestParam final String title, @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") final LocalDate premierDate){
-        final Movie movie = movieService.register(title, premierDate);
+    public ModelAndView register(
+            @RequestParam final String title,
+            @RequestParam final String originalTitle,
+            @RequestParam final long tmdbId,
+            @RequestParam final String imdbId,
+            @RequestParam final String originalLanguage,
+            @RequestParam final String overview,
+            @RequestParam final float popularity,
+            @RequestParam final float runtime,
+            @RequestParam final float voteAverage,
+            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") final LocalDate releaseDate,
+            @RequestParam(name = "categories") Collection<Long> categories){
+
+        final Movie movie = movieService.register(title, originalTitle,  tmdbId,  imdbId,  originalLanguage,
+                overview,  popularity,  runtime,  voteAverage,  releaseDate,  categories);
         return new ModelAndView("redirect:/movie/" + movie.getId());
     }
 

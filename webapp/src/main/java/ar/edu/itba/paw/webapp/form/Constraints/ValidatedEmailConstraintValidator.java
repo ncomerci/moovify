@@ -16,6 +16,8 @@ public class ValidatedEmailConstraintValidator implements ConstraintValidator<Va
     }
 
     public boolean isValid(String obj, ConstraintValidatorContext context) {
-        return userService.emailExistsAndIsValidated(obj);
+        if(obj == null)
+            return false;
+        return obj.isEmpty() || userService.emailExistsAndIsValidated(obj);
     }
 }

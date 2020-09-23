@@ -41,7 +41,7 @@ public class CommentDaoImpl implements CommentDao {
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
-            USERS + ".email u_email, " +
+            USERS + ".email u_email " +
 
             "FROM " + COMMENTS +
             " INNER JOIN " + USERS + " ON " + USERS + ".user_id = " + COMMENTS + ".user_id";
@@ -74,9 +74,9 @@ public class CommentDaoImpl implements CommentDao {
 
     // Users come without roles
     private static final RowMapper<Comment> COMMENT_ROW_MAPPER = (rs, rowNum) ->
-            new Comment(rs.getLong("comment_id"), rs.getObject("creation_date", LocalDateTime.class),
-                    rs.getLong("post_id"), rs.getLong("parent_id"),
-                    null, rs.getString("body"),
+            new Comment(rs.getLong("c_comment_id"), rs.getObject("c_creation_date", LocalDateTime.class),
+                    rs.getLong("c_post_id"), rs.getLong("c_parent_id"),
+                    null, rs.getString("c_body"),
                     new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                             rs.getString("u_username"), rs.getString("u_password"),
                             rs.getString("u_name"), rs.getString("u_email"),
@@ -95,16 +95,16 @@ public class CommentDaoImpl implements CommentDao {
 
         while(rs.next()){
 
-            comment_id = rs.getLong("comment_id");
+            comment_id = rs.getLong("c_comment_id");
             role_id = rs.getLong("u_role_id");
 
             // Returns 0 on null
             if(comment_id != 0 && !idToCommentMap.containsKey(comment_id)) {
 
                 currentComment = new Comment(comment_id,
-                        rs.getObject("creation_date", LocalDateTime.class),
-                        rs.getLong("post_id"), rs.getLong("parent_id"), new ArrayList<>(),
-                        rs.getString("body"),
+                        rs.getObject("c_creation_date", LocalDateTime.class),
+                        rs.getLong("c_post_id"), rs.getLong("c_parent_id"), new ArrayList<>(),
+                        rs.getString("c_body"),
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
@@ -231,5 +231,20 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id) {
         return findCommentsByPostId(post_id, false);
+    }
+
+    private Collection<Comment> findCommentsByUserId(long user_id, boolean withChildren) {
+        return findCommentsBy(
+                "WHERE " + COMMENTS + ".user_id = ?", new Object[] { user_id }, withChildren);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByUserIdWithChildren(long user_id) {
+        return findCommentsByUserId(user_id, true);
+    }
+
+    @Override
+    public Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id) {
+        return findCommentsByUserId(user_id, false);
     }
 }

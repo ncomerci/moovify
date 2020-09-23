@@ -10,7 +10,7 @@
 <body>
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
     <div class="uk-text-center uk-margin-auto">
-        <h2 class="userTitle"> <spring:message code="email.resendMessage" arguments="${user.name}, ${user.email}"/></h2>
+        <h2 class="userTitle"> <spring:message code="email.resendMessage" arguments="${loggedUser.name}, ${loggedUser.email}"/></h2>
     </div>
 </body>
 </html>

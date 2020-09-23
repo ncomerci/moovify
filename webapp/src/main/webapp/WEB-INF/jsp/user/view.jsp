@@ -28,9 +28,9 @@
                     <sec:authorize access="hasRole('ADMIN')" >
                         <li class="userTitle"><spring:message code="user.profile.Administrator"/></li>
                     </sec:authorize>
-                    <li class="userTitle"><spring:message code="user.profile.Description"/></li>
+                    <%--<li class="userTitle"><spring:message code="user.profile.Description"/></li>--%>
                 </ul>
-                <p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>
+                <%--<p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>--%>
             </div>
             <div class="uk-width-1-3@m uk-flex-first uk-text-center">
                 <img class="uk-border-circle uk-margin-left" alt="" height="250" width="250" data-src="<c:url value="/resources/images/avatar.jpg"/>" uk-img>
@@ -54,20 +54,17 @@
         </section>
         <section id="comments" class="uk-width-1-2@m uk-flex-first">
             <h1 ><spring:message code="user.view.Comments" arguments="${user.username}"/></h1>
-            <dl class="uk-description-list">
-                <dt>
-                    <a>comment dos</a>
-                </dt>
-                <dt>
-                    <a>post tres</a>
-                </dt>
-                <dt>
-                    <a>post cuatro</a>
-                </dt>
+            <dl class="uk-description-list "><%--TODO cuando no hay posts se ve feo--%>
+                <c:forEach items="${comments}" var="comment">
+                    <dt>
+                        <a href="<c:url value="/post/${comment.postId}#${comment.id}"/>">
+                            <c:out value="${comment.body}"/>
+                        </a>
+                    </dt>
+                </c:forEach>
             </dl>
         </section>
     </div>
-</div>
 </div>
 </body>
 </html>

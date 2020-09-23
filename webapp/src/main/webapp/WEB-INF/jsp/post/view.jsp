@@ -10,7 +10,7 @@
 <head>
     <title><c:out value="${post.title}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js"></script>
     <script src="<c:url value="/resources/js/post/read.js" />"></script>
 </head>
 <body data-post-body="<c:out value="${post.body}"/>">
@@ -20,12 +20,6 @@
     <div class="uk-container uk-container-small">
         <div>
             <h2 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-medium-top"><c:out value="${post.title}"/></h2>
-            <h3 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-remove-top">
-                <c:forEach items="${post.tags}" var="tag" >
-                    <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">
-                        <c:out value="${tag}"/>
-                    </a>
-                </c:forEach></h3>
             <span class="uk-article-meta"> <spring:message code="post.view.written"/>
 <%--                TODO: Is there a better way to handle LocalDateTime formatting?    --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
@@ -36,7 +30,12 @@
                     <span data-uk-icon="icon: future" class="uk-margin-small-right"></span>
                     <spring:message code="post.view.minReading" arguments="${post.readingTimeMinutes}"/>
                 </span>
-            <span class="uk-article-meta uk-align-right">Autor: <a href="<c:url value="/user/${post.user.id}" />"><c:out value="${post.user.name}" /></a></span>
+            <span class="uk-article-meta uk-align-right">
+                <spring:message code="post.view.writtenBy"/>
+                <a href="<c:url value="/user/${post.user.id}"/>">
+                    <c:out value="${post.user.name}"/>
+                </a>
+            </span>
         </div>
         <hr>
         <div>
@@ -45,14 +44,27 @@
             </noscript>
             <div id="parsedBody"></div>
         </div>
-        <div class="uk-width-3-4">
+        <hr>
+        <div>
+            <h1 class="uk-text-meta"><spring:message code="post.view.movies"/></h1>
             <c:forEach items="${post.movies}" var="movie" >
                 <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
-                   href="/movie/${movie.id}" >
+                   href="<c:url value="/movie/${movie.id}"/>">
                         ${movie.title}
                 </a>
             </c:forEach>
         </div>
+        <div>
+            <h1 class="uk-text-meta"><spring:message code="post.view.tags"/></h1>
+            <c:forEach items="${post.tags}" var="tag" >
+                <c:url var="tagLink" value="/search/posts/?query=${tag}"/>
+                <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
+                    href="${tagLink}">
+                    <c:out value="${tag}"/>
+                </a>
+            </c:forEach>
+        </div>
+
     </div>
 </article>
 <hr>
@@ -102,7 +114,6 @@
             </div>
         </fieldset>
     </form>
-
 </div>
 </body>
 </html>

@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Role;
@@ -43,6 +44,9 @@ public class UserController {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+    private CommentService commentService;
+
     @RequestMapping(path = "/login", method = RequestMethod.GET)
     public ModelAndView login() {
         return new ModelAndView("user/login");
@@ -58,9 +62,9 @@ public class UserController {
     public ModelAndView register(@Valid @ModelAttribute("userCreateForm") final UserCreateForm userCreateForm, final BindingResult bindingResult,
                                   HttpServletRequest request, final RedirectAttributes redirectAttributes) {
 
-        if(bindingResult.hasErrors()){
+        if(bindingResult.hasErrors())
             return showUserCreateForm(userCreateForm);
-        }
+
 
         final User user = userService.register(userCreateForm.getUsername(),
                 userCreateForm.getPassword(), userCreateForm.getName(), userCreateForm.getEmail());
@@ -86,7 +90,7 @@ public class UserController {
                 .orElseThrow(UserNotFoundException::new));
 
         mv.addObject("posts", userService.findPostsByUserId(userId));
-
+        mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(userId));
         return mv;
     }
 
@@ -104,8 +108,9 @@ public class UserController {
         else
             user = (User) inputFlashMap.get("user");
 
-        mv.addObject("user", user);
+        mv.addObject("loggedUser", user);
         mv.addObject("posts", userService.findPostsByUserId(user.getId()));
+        mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(user.getId()));
         return mv;
     }
 
@@ -113,7 +118,7 @@ public class UserController {
     @RequestMapping(path = "/user/registrationConfirm", method = RequestMethod.GET)
     public ModelAndView confirmRegistration(HttpServletRequest request, @RequestParam String token) {
 
-        Optional<User> optUser = userService.confirmRegistration(token);
+        final Optional<User> optUser = userService.confirmRegistration(token);
         boolean success;
 
 
@@ -123,7 +128,7 @@ public class UserController {
             success = true;
             final User user = optUser.get();
 
-            mv.addObject("user", user);
+            mv.addObject("loggedUser", user);
 
             // User roles have been updates. We need to refresh authorities
             manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
@@ -137,7 +142,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/resetPassword", method = RequestMethod.GET)
-    public ModelAndView showResetPassword(@ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm) {
+    public ModelAndView showResetPassword( @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm) {
         return new ModelAndView("user/resetPassword");
     }
 
@@ -154,7 +159,7 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/resetPasswordTokenGenerated");
 
-        mv.addObject("user", user);
+        mv.addObject("loggedUser", user);
 
         return mv;
     }
@@ -170,7 +175,7 @@ public class UserController {
 
         ModelAndView mv = new ModelAndView("user/resendConfirmation");
 
-        mv.addObject("user", user);
+        mv.addObject("loggedUser", user);
 
         return mv;
     }
@@ -214,7 +219,7 @@ public class UserController {
 
         ModelAndView mv = new ModelAndView("user/passwordResetSuccess");
 
-        mv.addObject("user", user);
+        mv.addObject("loggedUser", user);
 
         return mv;
     }

@@ -28,6 +28,8 @@ public class PostDaoImpl implements PostDao {
     private static final String USERS = TableNames.USERS.getTableName();
     private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
     private static final String ROLES = TableNames.ROLES.getTableName();
+    private static final String MOVIE_TO_MOVIE_CATEGORY = TableNames.MOVIE_TO_MOVIE_CATEGORY.getTableName();
+    private static final String MOVIE_CATEGORIES = TableNames.MOVIE_CATEGORIES.getTableName();
 
     /*
     *
@@ -142,6 +144,7 @@ public class PostDaoImpl implements PostDao {
                 final Map<Long, Role> idToUserRoleMap = new HashMap<>();
                 final Map<Long, Movie> idToMovieMap = new HashMap<>();
                 final Map<Long, Comment> idToCommentMap = new HashMap<>();
+                final Map<Long, MovieCategory> idToMovieCategoryMap = new HashMap<>();
                 final Map<Long, Collection<Comment>> childrenWithoutParentMap = new HashMap<>();
 
                 while(rs.next()) {
@@ -156,7 +159,7 @@ public class PostDaoImpl implements PostDao {
                     TAGS_ROW_MAPPER.accept(rs, idToPostMap);
 
                     if (fetchRelations.contains(FetchRelation.MOVIES))
-                        MOVIES_ROW_MAPPER.accept(rs, idToPostMap, idToMovieMap);
+                        MOVIES_ROW_MAPPER.accept(rs, idToPostMap, idToMovieMap, idToMovieCategoryMap);
 
                     if (fetchRelations.contains(FetchRelation.COMMENTS))
                         COMMENTS_ROW_MAPPER.accept(rs, idToPostMap, idToCommentMap, childrenWithoutParentMap);
@@ -235,8 +238,19 @@ public class PostDaoImpl implements PostDao {
     private static final String MOVIES_SELECT =
             MOVIES + ".movie_id m_movie_id, " +
             MOVIES + ".creation_date m_creation_date, " +
+            MOVIES + ".release_date m_release_date, " +
             MOVIES + ".title m_title, " +
-            MOVIES + ".premier_date m_premier_date";
+            MOVIES + ".original_title m_original_title, " +
+            MOVIES + ".tmdb_id m_tmdb_id, " +
+            MOVIES + ".imdb_id m_imdb_id, " +
+            MOVIES + ".original_language m_original_language, " +
+            MOVIES + ".overview m_overview, " +
+            MOVIES + ".popularity m_popularity, " +
+            MOVIES + ".runtime m_runtime, " +
+            MOVIES + ".vote_average m_vote_average, " +
+            MOVIES + ".category_id mc_category_id, " +
+            MOVIES + ".tmdb_category_id mc_tmdb_category_id, " +
+            MOVIES + ".name mc_name";
 
     private static final String COMMENTS_SELECT =
             COMMENTS + ".comment_id c_comment_id, " +
@@ -278,15 +292,27 @@ public class PostDaoImpl implements PostDao {
             "LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id";
 
     private static final String MOVIES_FROM =
-            "LEFT OUTER JOIN ( " +
-                    "SELECT " +
+            "LEFT OUTER JOIN (" + " SELECT " +
                     MOVIES + ".movie_id, " +
                     MOVIES + ".creation_date, " +
+                    MOVIES + ".release_date, " +
                     MOVIES + ".title, " +
-                    MOVIES + ".premier_date, " +
+                    MOVIES + ".original_title, " +
+                    MOVIES + ".tmdb_id, " +
+                    MOVIES + ".imdb_id, " +
+                    MOVIES + ".original_language, " +
+                    MOVIES + ".overview, " +
+                    MOVIES + ".popularity, " +
+                    MOVIES + ".runtime, " +
+                    MOVIES + ".vote_average, " +
+                    MOVIE_CATEGORIES + ".category_id, " +
+                    MOVIE_CATEGORIES + ".tmdb_category_id, " +
+                    MOVIE_CATEGORIES + ".name, " +
                     "post_id" +
                     " FROM "+ POST_MOVIE +
-                    " INNER JOIN " + MOVIES + " ON " + POST_MOVIE+ ".movie_id = " + MOVIES + ".movie_id " +
+                    " INNER JOIN " + MOVIES + " ON " + POST_MOVIE+ ".movie_id = " + MOVIES + ".movie_id" +
+                    " INNER JOIN " + MOVIE_TO_MOVIE_CATEGORY + " ON " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_id = " + MOVIES + ".tmdb_id" +
+                    " INNER JOIN " + MOVIE_CATEGORIES + " ON " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_category_id = " + MOVIE_CATEGORIES + ".tmdb_category_id" +
                     ") " + MOVIES + " on " + MOVIES + ".post_id = " + POSTS + ".post_id";
 
     private static final String COMMENTS_FROM =
@@ -352,11 +378,12 @@ public class PostDaoImpl implements PostDao {
             idToPostMap.get(post_id).getTags().add(tag);
     };
 
-    private static final ResultSetBiConsumer<Map<Long, Post>, Map<Long, Movie>> MOVIES_ROW_MAPPER =
-            (rs, idToPostMap, idToMovieMap) -> {
+    private static final ResultSetTriConsumer<Map<Long, Post>, Map<Long, Movie>, Map<Long, MovieCategory>> MOVIES_ROW_MAPPER =
+            (rs, idToPostMap, idToMovieMap, idToMovieCategory) -> {
 
         final long post_id = rs.getLong("p_post_id");
         final long movie_id = rs.getLong("m_movie_id");
+        final long movie_category_tmdb_id = rs.getLong("mc_tmdb_category_id");
 
         // If movies is not null. (rs.getLong returns 0 on null)
         if(movie_id != 0) {
@@ -365,9 +392,29 @@ public class PostDaoImpl implements PostDao {
                 idToMovieMap.put(movie_id,
                         new Movie(
                                 movie_id, rs.getObject("m_creation_date", LocalDateTime.class),
-                                rs.getString("m_title"), rs.getObject("m_premier_date", LocalDate.class)
-                        ));
+                                rs.getString("m_title"),
+                                rs.getString("m_original_title"),
+                                rs.getLong("m_tmdb_id"),
+                                rs.getString("m_imdb_id"),
+                                rs.getString("m_original_language"),
+                                rs.getString("m_overview"),
+                                rs.getFloat("m_popularity"),
+                                rs.getFloat("m_runtime"),
+                                rs.getFloat("m_vote_average"),
+                                rs.getObject("m_release_date", LocalDate.class),
+                                // categories
+                                new LinkedHashSet<>())
+                );
             }
+
+            if(!idToMovieCategory.containsKey(movie_category_tmdb_id)) {
+                idToMovieCategory.put(movie_category_tmdb_id, new MovieCategory(
+                        rs.getLong("mc_category_id"),
+                        rs.getLong("mc_tmdb_category_id"),
+                        rs.getString("mc_name")));
+            }
+
+            idToMovieMap.get(movie_id).getCategories().add(idToMovieCategory.get(movie_category_tmdb_id));
 
             // If the Post already had the Movie, it won't get added because the Collection is a Set
             idToPostMap.get(post_id).getMovies().add(idToMovieMap.get(movie_id));
@@ -447,15 +494,13 @@ public class PostDaoImpl implements PostDao {
     }
     
     @Override
-    public long register(String title, String body, long categoryId, long userId, Set<String> tags, Set<Long> movies) {
+    public long register(String title, String body, int wordCount, long categoryId, long userId, Set<String> tags, Set<Long> movies) {
 
         Objects.requireNonNull(title);
         Objects.requireNonNull(body);
         Objects.requireNonNull(movies);
 
-        body = body.trim();
         LocalDateTime creationDate = LocalDateTime.now();
-        int wordCount = body.split("\\s+").length;
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("title", title);
