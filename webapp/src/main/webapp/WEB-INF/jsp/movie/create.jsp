@@ -16,7 +16,7 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
-<form method="post" action="<c:url value="/movie/register"/>">
+<form method="post" action="<c:url value="/movie/create"/>">
     <input type="text" name="title" class="uk-input uk-form-width-large" placeholder="Titulo" required />
     <input type="text" name="originalTitle" class="uk-input uk-form-width-large" placeholder="Original Title" required />
     <input type="number" name="tmdbId" class="uk-input uk-form-width-large" placeholder="The movie data base ID" required />

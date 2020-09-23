@@ -32,7 +32,7 @@ public class MovieController {
         return mv;
     }
 
-    @RequestMapping(path = "/movie/register", method = RequestMethod.POST)
+    @RequestMapping(path = "/movie/create", method = RequestMethod.POST)
     public ModelAndView register(
             @RequestParam final String title,
             @RequestParam final String originalTitle,
