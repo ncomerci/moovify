@@ -32,13 +32,15 @@ public class CommentController {
     public ModelAndView post(@Valid @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm,
                              final BindingResult bindingResult, Principal principal, RedirectAttributes redirectAttributes) {
 
-        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
         redirectAttributes.addFlashAttribute(commentCreateForm);
 
         if(!bindingResult.hasErrors()){
+            User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
             commentService.register(commentCreateForm.getPostId(), commentCreateForm.getParentId(),
-                    commentCreateForm.getCommentBody().replaceAll("\\s+", " ").replaceAll("^ | $", ""), user.getId());
+                    commentCreateForm.getCommentBody(), user.getId());
         }
+
         return new ModelAndView("redirect:/post/" + commentCreateForm.getPostId());
     }
 

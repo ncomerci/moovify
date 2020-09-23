@@ -17,7 +17,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public long register(long postId, Long parentId, String body, long userId) {
-        return commentDao.register(postId, parentId, body, userId);
+        return commentDao.register(postId, parentId,
+                body.replaceAll("\\s+", " ").replaceAll("^ | $", ""), userId);
     }
 
     @Override

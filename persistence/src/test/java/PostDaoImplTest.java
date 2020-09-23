@@ -48,29 +48,29 @@ public class PostDaoImplTest {
                 .usingGeneratedKeyColumns("post_id");
     }
 
-    @Test
-    @Sql("classpath:test_inserts.sql")
-    @Sql(scripts = "classpath:clean-up.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    public void testRegister() {
-//        1. precondiciones
-
-//        2. ejercitar
-        final long post_id = postDao.register(TITLE, BODY, CATEGORY_ID, USER_ID, null, MOVIES);
-
-//        3. post-condiciones
-        final String whereClause = "post_id = " + post_id + " AND title = " + "'" + TITLE + "'" + " AND user_id = " + USER_ID +
-                " AND body = " + "'" + BODY + "'" + " AND category_id = " + CATEGORY_ID ;
-        Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), whereClause)
-        );
-    }
-
-
-    @Test(expected = NullPointerException.class)
-    public void testInvalidRegister() {
-//        2. ejercitar
-        postDao.register(null, null, CATEGORY_ID, USER_ID,null, null);
-    }
+//    @Test
+//    @Sql("classpath:test_inserts.sql")
+//    @Sql(scripts = "classpath:clean-up.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+//    public void testRegister() {
+////        1. precondiciones
+//
+////        2. ejercitar
+//        final long post_id = postDao.register(TITLE, BODY, CATEGORY_ID, USER_ID, null, MOVIES);
+//
+////        3. post-condiciones
+//        final String whereClause = "post_id = " + post_id + " AND title = " + "'" + TITLE + "'" + " AND user_id = " + USER_ID +
+//                " AND body = " + "'" + BODY + "'" + " AND category_id = " + CATEGORY_ID ;
+//        Assert.assertEquals(1,
+//                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), whereClause)
+//        );
+//    }
+//
+//
+//    @Test(expected = NullPointerException.class)
+//    public void testInvalidRegister() {
+////        2. ejercitar
+//        postDao.register(null, null, CATEGORY_ID, USER_ID,null, null);
+//    }
 
     @Test
     @Sql("classpath:test_inserts.sql")

@@ -18,7 +18,7 @@ public interface PostDao {
         NEWEST, OLDEST, HOTTEST
     }
 
-    long register(String title, String body, long category, long user, Set<String> tags, Set<Long> movies);
+    long register(String title, String body, int wordCount, long category, long user, Set<String> tags, Set<Long> movies);
 
     Optional<Post> findPostById(long id, EnumSet<FetchRelation> includedRelations);
 

@@ -24,7 +24,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public long register(String title, String body, long category, long user, Set<String> tags, Set<Long> movies){
-        return postDao.register(title, body, category, user, tags, movies);
+        return postDao.register(title, body.trim(), body.split("\\s+").length, category, user, tags, movies);
     }
 
     @Override

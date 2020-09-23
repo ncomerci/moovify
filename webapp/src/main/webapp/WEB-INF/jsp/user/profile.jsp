@@ -6,7 +6,7 @@
 
 <html>
 <head>
-    <title><spring:message code="user.profile.Profile" arguments="${user.username}"/></title>
+    <title><spring:message code="user.profile.Profile" arguments="${loggedUser.username}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body>
@@ -18,13 +18,13 @@
     </div>
     <div class="uk-position-medium uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle" uk-grid>
         <div class="uk-width-2-3@m">
-            <h3 class="uk-card-title uk-margin-remove-bottom userTitle"><c:out value="${user.username}" /></h3>
+            <h3 class="uk-card-title uk-margin-remove-bottom userTitle"><c:out value="${loggedUser.username}" /></h3>
             <p class="uk-text-meta uk-margin-remove-top"><spring:message code="user.profile.inMoovifySince"/>
-                <fmt:parseDate value="${user.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                <fmt:parseDate value="${loggedUser.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                 <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" /></p>
             <ul class="uk-list uk-list-bullet">
-                <li class="userTitle"><spring:message code="user.profile.Name" arguments="${user.name}"/></li>
-                <li class="userTitle"><spring:message code="user.profile.Email" arguments="${user.email}"/></li>
+                <li class="userTitle"><spring:message code="user.profile.Name" arguments="${loggedUser.name}"/></li>
+                <li class="userTitle"><spring:message code="user.profile.Email" arguments="${loggedUser.email}"/></li>
                 <sec:authorize access="hasRole('ADMIN')" >
                     <li class="userTitle"><spring:message code="user.profile.Administrator"/></li>
                 </sec:authorize>
@@ -66,23 +66,23 @@
                 </c:forEach>
             </dl>
         </section>
-        <section id="comments" class="uk-width-1-2@m uk-flex-first">
-            <h1><spring:message code="user.profile.yourComments"/></h1>
-            <dl class="uk-description-list ">
-                <dt>
-                    <a>comment uno</a>
-                </dt>
-                <dt>
-                    <a>comment dos</a>
-                </dt>
-                <dt>
-                    <a>post tres</a>
-                </dt>
-                <dt>
-                    <a>post cuatro</a>
-                </dt>
-            </dl>
-        </section>
+<%--        <section id="comments" class="uk-width-1-2@m uk-flex-first">--%>
+<%--            <h1><spring:message code="user.profile.yourComments"/></h1>--%>
+<%--            <dl class="uk-description-list ">--%>
+<%--                <dt>--%>
+<%--                    <a>comment uno</a>--%>
+<%--                </dt>--%>
+<%--                <dt>--%>
+<%--                    <a>comment dos</a>--%>
+<%--                </dt>--%>
+<%--                <dt>--%>
+<%--                    <a>post tres</a>--%>
+<%--                </dt>--%>
+<%--                <dt>--%>
+<%--                    <a>post cuatro</a>--%>
+<%--                </dt>--%>
+<%--            </dl>--%>
+<%--        </section>--%>
     </div>
 </div>
 </sec:authorize>

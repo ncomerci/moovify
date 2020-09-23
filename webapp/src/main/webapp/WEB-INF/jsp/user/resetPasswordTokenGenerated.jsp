@@ -10,7 +10,7 @@
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
     <div>
-        <p><spring:message code="user.resetPasswordTokenGenerated.body" arguments="${user.email}" /></p>
+        <p><spring:message code="user.resetPasswordTokenGenerated.body" arguments="${loggedUser.email}" /></p>
     </div>
 
 </body>
