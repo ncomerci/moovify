@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
@@ -82,5 +83,9 @@ public class Post {
 
     public int getReadingTimeMinutes() {
         return getWordCount() / EN_WORDS_PER_MINUTE;
+    }
+
+    public Duration getTimeSinceCreation() {
+        return Duration.between(creationDate, LocalDateTime.now());
     }
 }
