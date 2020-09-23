@@ -11,6 +11,8 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 @EnableWebMvc
 @ComponentScan({
@@ -28,6 +31,7 @@ import java.nio.charset.StandardCharsets;
         "ar.edu.itba.paw.persistence",
     })
 @Configuration
+// TODO: Set Up @PropertySource
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Value("classpath:schema.sql")
@@ -87,6 +91,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
         return dbp;
     }
+
     @Bean
     public MessageSource messageSource(){
         final ReloadableResourceBundleMessageSource msgSource = new ReloadableResourceBundleMessageSource();
@@ -96,5 +101,31 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         msgSource.setCacheSeconds(10);
 
         return msgSource;
+    }
+
+    @Bean
+    public JavaMailSender mailSender() {
+
+        final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+        // Deploy Mail Server
+//        mailSender.setHost("smtp.gmail.com");
+//        mailSender.setPort(587);
+//        mailSender.setUsername("MoovifyCo@gmail.com");
+//        mailSender.setPassword("#Papanata");
+
+        // Development Mail Server
+        mailSender.setHost("smtp.mailtrap.io");
+        mailSender.setPort(587);
+        mailSender.setUsername("e6c828d95e9959");
+        mailSender.setPassword("bbfccd607177ac");
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "true");
+
+        return mailSender;
     }
 }

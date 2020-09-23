@@ -1,9 +1,9 @@
 window.addEventListener('load', function(){
 
-    let form = document.getElementById('search-form');
-    let postCategory = document.getElementById('post-category');
-    let postAge = document.getElementById('post-age');
-    let sortCriteria = document.getElementById('sort-criteria');
+    let form = document.getElementById('searchPostsForm');
+    let postCategory = document.getElementById('postCategory');
+    let postAge = document.getElementById('postAge');
+    let sortCriteria = document.getElementById('sortCriteria');
 
     postCategory.addEventListener('change',() => form.submit(),false);
     postAge.addEventListener('change',() => form.submit(),false);

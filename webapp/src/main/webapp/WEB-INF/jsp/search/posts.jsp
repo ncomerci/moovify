@@ -13,55 +13,58 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <main class="uk-container-small uk-margin-auto uk-padding-small">
-    <form method="get" id="search-form" action="<c:url value="/search/posts/"/>">
+    <c:url value="/search/posts/" var="action"/>
+    <form:form modelAttribute="searchPostsForm" method="get" action="${action}">
 
-        <c:set var="query" value="${query}" scope="request" />
+        <c:set var="query" scope="request"><c:out value="${query}"/></c:set>
         <c:set var="currentSearch" value="0" scope="request" />
-        <jsp:include page="/WEB-INF/jsp/search/defaultForm.jsp"/>
-
+        <div>
+            <jsp:include page="defaultForm.jsp"/>
+        </div>
         <div class="uk-form-horizontal uk-grid-small" uk-grid>
             <div class="uk-width-1-3">
                 <div class="uk-margin">
-                    <label class="uk-form-label" for="post-category" style="width: auto"><spring:message code="search.posts.categories.label"/> </label>
+                    <form:label path="postCategory" class="uk-form-label" for="post-category" style="width: auto"><spring:message code="search.posts.categories.label"/>
                     <div class="uk-form-controls" style="margin-left: 100px">
-                        <select class="uk-select uk-form-blank" id="post-category" name="post-category">
-                            <option value="all"><spring:message code="search.posts.categories.all"/></option>
-                            <option value="critique"><spring:message code="search.posts.categories.critique"/></option>
-                            <option value="watchlist"><spring:message code="search.posts.categories.watchlist"/></option>
-                            <option value="news"><spring:message code="search.posts.categories.news"/></option>
-                            <option value="debate"><spring:message code="search.posts.categories.debate"/></option>
-                        </select>
+                        <form:select path="postCategory" class="uk-select uk-form-blank">
+                            <form:option value="all"><spring:message code="search.posts.categories.all"/></form:option>
+                            <form:option value="critique"><spring:message code="search.posts.categories.critique"/></form:option>
+                            <form:option value="watchlist"><spring:message code="search.posts.categories.watchlist"/></form:option>
+                            <form:option value="news"><spring:message code="search.posts.categories.news"/></form:option>
+                            <form:option value="debate"><spring:message code="search.posts.categories.debate"/></form:option>
+                        </form:select>
+                        </form:label>
                     </div>
                 </div>
             </div>
             <div class="uk-width-1-3">
                 <div class="uk-margin">
-                    <label class="uk-form-label" for="post-age" style="width: auto"><spring:message code="search.posts.postAge.label"/> </label>
+                    <form:label path="postAge" class="uk-form-label" for="post-age" style="width: auto"><spring:message code="search.posts.postAge.label"/>
                     <div class="uk-form-controls" style="margin-left: 100px">
-                        <select class="uk-select uk-form-blank" id="post-age" name="post-age">
-                            <option value="all-time"><spring:message code="search.posts.postAge.allTime"/></option>
-                            <option value="past-year"><spring:message code="search.posts.postAge.pastYear"/></option>
-                            <option value="past-month"><spring:message code="search.posts.postAge.pastMonth"/></option>
-                            <option value="past-day"><spring:message code="search.posts.postAge.pastDay"/></option>
-                        </select>
+                        <form:select path="postAge" class="uk-select uk-form-blank">
+                            <form:option value="all-time"><spring:message code="search.posts.postAge.allTime"/></form:option>
+                            <form:option value="past-year"><spring:message code="search.posts.postAge.pastYear"/></form:option>
+                            <form:option value="past-month"><spring:message code="search.posts.postAge.pastMonth"/></form:option>
+                            <form:option value="past-day"><spring:message code="search.posts.postAge.pastDay"/></form:option>
+                        </form:select>
                     </div>
+                    </form:label>
                 </div>
             </div>
             <div class="uk-width-1-3">
                 <div class="uk-margin">
-                    <label class="uk-form-label" for="sort-criteria" style="width: auto"><spring:message code="search.posts.sortCriteria.label"/></label>
+                    <form:label path="sortCriteria" class="uk-form-label" for="sort-criteria" style="width: auto"><spring:message code="search.posts.sortCriteria.label"/></form:label>
                     <div class="uk-form-controls" style="margin-left: 100px">
-                        <select class="uk-select uk-form-blank" id="sort-criteria" name="sort-criteria">
-                            <option value="newest"><spring:message code="search.posts.sortCriteria.newest"/></option>
-                            <option value="hottest"><spring:message code="search.posts.sortCriteria.hottest"/></option>
-                            <option value="oldest"><spring:message code="search.posts.sortCriteria.oldest"/></option>
-                        </select>
+                        <form:select path="sortCriteria" class="uk-select uk-form-blank">
+                            <form:option value="newest"><spring:message code="search.posts.sortCriteria.newest"/></form:option>
+                            <form:option value="hottest"><spring:message code="search.posts.sortCriteria.hottest"/></form:option>
+                            <form:option value="oldest"><spring:message code="search.posts.sortCriteria.oldest"/></form:option>
+                        </form:select>
                     </div>
                 </div>
             </div>
-
         </div>
-    </form>
+    </form:form>
     <dl class="uk-description-list ">
             <c:forEach items="${posts}" var="post">
                 <dt>

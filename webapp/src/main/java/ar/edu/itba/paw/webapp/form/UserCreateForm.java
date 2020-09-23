@@ -1,6 +1,11 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.form.Annotations.PasswordsEqualConstraint;
+import ar.edu.itba.paw.webapp.form.Annotations.UniqueEmail;
+import ar.edu.itba.paw.webapp.form.Annotations.UniqueUsername;
+import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -16,13 +21,14 @@ public class UserCreateForm {
     @ValidPassword
     private String password;
 
-    @ValidPassword
+
     private String repeatPassword;
 
     @Pattern(regexp = "[a-zA-Z]+")
     private String name;
 
     @Email
+    @NotEmpty
     @UniqueEmail
     private String email;
 

@@ -8,6 +8,26 @@ CREATE TABLE IF NOT EXISTS USERS
     email           VARCHAR(200) UNIQUE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS USER_VERIFICATION_TOKEN
+(
+    token_id    SERIAL       PRIMARY KEY,
+    user_id     INTEGER      UNIQUE NOT NULL,
+    token       TEXT         UNIQUE NOT NULL,
+    expiry      TIMESTAMP    NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
+);
+
+CREATE TABLE IF NOT EXISTS PASSWORD_RESET_TOKEN
+(
+    token_id    SERIAL       PRIMARY KEY,
+    user_id     INTEGER      UNIQUE NOT NULL,
+    token       TEXT         UNIQUE NOT NULL,
+    expiry      TIMESTAMP    NOT NULL,
+
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
+);
+
 CREATE TABLE IF NOT EXISTS ROLES
 (
     role_id SERIAL      PRIMARY KEY,

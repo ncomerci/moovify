@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -36,13 +35,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthenticationManager authManager() throws Exception {
-        return this.authenticationManager();
-    }
-
     @Override
-    @Autowired
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetails).passwordEncoder(passwordEncoder());
     }
@@ -50,7 +43,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     // Spring Security Unresolved Issues
     // TODO: Hay algo mal, te manda a login cuando tenes una cookie invalida (reseteo el server)
     // TODO: Make a redirect, change browser url
-    // TODO: Preguntarle a Sotuyo sobre la implementacion de autoLogin
+    // TODO: Preguntarle a Sotuyo sobre la implementacion de manualLogin
     @Override
     protected void configure(HttpSecurity http) throws Exception {
             http
@@ -60,7 +53,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
                     .antMatchers("/login", "/user/create").anonymous()
                     .antMatchers("/user/{userId:[\\d]+}").permitAll()
-                    .antMatchers("/user/**").hasRole("USER")
+                    .antMatchers("/user/resendConfirmation").hasRole("NOT_VALIDATED")
                     .antMatchers("/post/create").hasRole("USER")
                     .antMatchers("/movie/create").hasRole("USER")
                     .antMatchers("/**").permitAll()

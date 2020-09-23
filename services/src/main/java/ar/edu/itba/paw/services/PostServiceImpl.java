@@ -38,6 +38,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Collection<Post> findPostsByUserId(long user_id) {
+        return postDao.findPostsByUserId(user_id, EnumSet.noneOf(PostDao.FetchRelation.class));
+    }
+
+    @Override
     public Collection<Post> getAllPostsOrderByNewest() {
         return postDao.getAllPosts(EnumSet.noneOf(PostDao.FetchRelation.class), PostDao.SortCriteria.NEWEST);
     }

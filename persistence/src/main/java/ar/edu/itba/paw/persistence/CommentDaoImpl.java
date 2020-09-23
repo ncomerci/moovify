@@ -79,7 +79,8 @@ public class CommentDaoImpl implements CommentDao {
                     null, rs.getString("body"),
                     new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                             rs.getString("u_username"), rs.getString("u_password"),
-                            rs.getString("u_name"), rs.getString("u_email"), Collections.emptyList()));
+                            rs.getString("u_name"), rs.getString("u_email"),
+                            Collections.emptyList()));
 
     // Coalesce parent_id = null to parent_id = 0.
     private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER_WITH_CHILDREN = (rs) -> {
@@ -105,8 +106,11 @@ public class CommentDaoImpl implements CommentDao {
                         rs.getLong("post_id"), rs.getLong("parent_id"), new ArrayList<>(),
                         rs.getString("body"),
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
-                        rs.getString("u_username"), rs.getString("u_password"),
-                        rs.getString("u_name"), rs.getString("u_email"), new HashSet<>()));
+                                rs.getString("u_username"), rs.getString("u_password"),
+                                rs.getString("u_name"), rs.getString("u_email"),
+                                new HashSet<>()
+                        )
+                );
 
                 idToCommentMap.put(comment_id, currentComment);
 

@@ -15,6 +15,8 @@ public interface PostService {
 
     Collection<Post> findPostsByMovieId(long movie_id);
 
+    Collection<Post> findPostsByUserId(long user_id);
+
     Collection<Post> getAllPostsOrderByNewest();
 
     Collection<Post> getAllPostsOrderByOldest();

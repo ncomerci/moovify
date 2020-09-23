@@ -24,7 +24,9 @@ public interface PostDao {
 
     Collection<Post> getAllPosts(EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 
-    Collection<Post> findPostsByMovieId(long id, EnumSet<FetchRelation> includedRelations);
+    Collection<Post> findPostsByMovieId(long movie_id, EnumSet<FetchRelation> includedRelations);
+
+    Collection<Post> findPostsByUserId(long user_id, EnumSet<FetchRelation> includedRelations);
 
     Collection<Post> searchPosts(String query, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
 

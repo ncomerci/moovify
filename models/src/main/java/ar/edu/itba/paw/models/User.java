@@ -50,4 +50,8 @@ public class User {
     public Collection<Role> getRoles() {
         return roles;
     }
+
+    public boolean hasRole(String role) {
+        return roles.stream().anyMatch(r -> r.getRole().equals(role));
+    }
 }

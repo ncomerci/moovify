@@ -10,6 +10,12 @@ public class Role {
         this.role = role;
     }
 
+    // 0 stands for invalid id
+    public Role(String role) {
+        this.id = 0;
+        this.role = role;
+    }
+
     public long getId() {
         return id;
     }

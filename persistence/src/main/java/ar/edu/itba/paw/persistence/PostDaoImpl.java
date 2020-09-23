@@ -275,8 +275,14 @@ public class PostDaoImpl implements PostDao {
     private static final String USER_FROM =
             "INNER JOIN ( " +
                     "SELECT " +
-                    USERS + ".user_id, " + USERS + ".creation_date, " + USERS + ".username, " + USERS + ".password, " +
-                    USERS + ".name, " + USERS + ".email, " + ROLES + ".role_id, " + ROLES + ".role " +
+                    USERS + ".user_id, " +
+                    USERS + ".creation_date, " +
+                    USERS + ".username, " +
+                    USERS + ".password, " +
+                    USERS + ".name, " +
+                    USERS + ".email, " +
+                    ROLES + ".role_id, " +
+                    ROLES + ".role " +
                     "FROM " + USERS +
                     " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
                     "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
@@ -342,9 +348,10 @@ public class PostDaoImpl implements PostDao {
                                     rs.getObject("pc_creation_date", LocalDateTime.class),
                                     rs.getString("pc_name")),
 
-                            new User(rs.getLong("u_user_id"), rs.getObject("p_creation_date", LocalDateTime.class),
+                            new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                     rs.getString("u_username"), rs.getString("u_password"),
-                                    rs.getString("u_name"), rs.getString("u_email"), new HashSet<>()),
+                                    rs.getString("u_name"), rs.getString("u_email"),
+                                    new HashSet<>()),
 
                             // tags, movies, comments
                             new LinkedHashSet<>(), new LinkedHashSet<>(), new ArrayList<>()
@@ -429,7 +436,8 @@ public class PostDaoImpl implements PostDao {
                     rs.getString("c_body"),
                     new User(rs.getLong("cu_user_id"), rs.getObject("cu_creation_date", LocalDateTime.class),
                             rs.getString("cu_username"), rs.getString("cu_password"),
-                            rs.getString("cu_name"), rs.getString("cu_email"), Collections.emptyList()));
+                            rs.getString("cu_name"), rs.getString("cu_email"),
+                            Collections.emptyList()));
 
             idToCommentMap.put(comment_id, newComment);
 
@@ -591,9 +599,10 @@ public class PostDaoImpl implements PostDao {
         return queryBuilder.substring(0, queryBuilder.length() - separator.length());
     }
 
+//    TODO: descablear el order by de los comentarios
     @Override
     public Optional<Post> findPostById(long id, EnumSet<FetchRelation> includedRelations){
-        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ?", "", 
+        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ?", "ORDER BY " + COMMENTS + ".creation_date",
                 new Object[]{ id }, includedRelations).stream().findFirst();
     }
 
@@ -605,6 +614,12 @@ public class PostDaoImpl implements PostDao {
                         "FROM " + POST_MOVIE +
                         " WHERE " + POST_MOVIE + ".movie_id = ?)",
                 SortCriteria.NEWEST, new Object[] { movie_id }, includedRelations);
+    }
+
+    @Override
+    public Collection<Post> findPostsByUserId(long user_id, EnumSet<FetchRelation> includedRelations) {
+        return buildAndExecuteQuery("WHERE " + POSTS + ".user_id = ?",  SortCriteria.NEWEST,
+                new Object[]{ user_id }, includedRelations);
     }
 
     @Override

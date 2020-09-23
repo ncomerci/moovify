@@ -38,6 +38,8 @@ public class UserDaoImpl implements UserDao {
             " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
             "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id ";
 
+
+
     private static final ResultSetExtractor<Collection<User>> USER_ROW_MAPPER = (rs) -> {
         Map<Long, User> idToUserMap = new LinkedHashMap<>();
         long userId;
@@ -49,8 +51,9 @@ public class UserDaoImpl implements UserDao {
             if(!idToUserMap.containsKey(userId)) {
                 idToUserMap.put(userId,
                         new User(userId, rs.getObject("u_creation_date", LocalDateTime.class),
-                        rs.getString("u_username"), rs.getString("u_password"),
-                        rs.getString("u_name"), rs.getString("u_email"), new ArrayList<>())
+                                rs.getString("u_username"), rs.getString("u_password"),
+                                rs.getString("u_name"), rs.getString("u_email"),
+                                new ArrayList<>())
                 );
             }
 
@@ -86,6 +89,7 @@ public class UserDaoImpl implements UserDao {
 
         LocalDateTime creationDate = LocalDateTime.now();
 
+        // TODO: Se puede evitar esta query. Importante! Requiere un insert mas complejo.
         Collection<Role> roles = roleDao.findRolesByName(roleNames);
 
         if(roles == null || roles.isEmpty())
@@ -111,6 +115,55 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public void updatePassword(long userId, String password) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET password = ? WHERE user_id = ?", password, userId);
+    }
+
+    @Override
+    public Collection<Role> addRoles(long userId, Collection<String> roleNames) {
+        Collection<Role> roles = roleDao.findRolesByName(roleNames);
+
+        HashMap<String, Object> map;
+
+        for (Role role: roles) {
+            map = new HashMap<>();
+            map.put("user_id", userId);
+            map.put("role_id", role.getId());
+            jdbcUserRoleInsert.execute(map);
+        }
+
+        return roles;
+    }
+
+    @Override
+    public boolean userHasRole(long userId, String role) {
+        return jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM " + USER_ROLE +
+                        " INNER JOIN " + ROLES + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
+                        " WHERE user_id = ? AND role = ?", new Object[]{ userId, role}, Integer.class) > 0;
+    }
+
+    @Override
+    public boolean userHasRole(String email, String role) {
+        return jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM " + USERS +
+                        " INNER JOIN "+ USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id" +
+                        " INNER JOIN " + ROLES + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
+                        " WHERE email = ? AND role = ?", new Object[]{ email, role}, Integer.class) > 0;
+    }
+
+    @Override
+    public void replaceUserRole(final long userId, final String newRole, final String oldRole) {
+
+        jdbcTemplate.update("UPDATE " + USER_ROLE +
+                " SET role_id = (SELECT role_id FROM " + ROLES + " WHERE role = ?)" +
+                "FROM " + ROLES +
+                " WHERE " + USER_ROLE + ".user_id = ?" +
+                "  AND " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
+                "  AND " + ROLES + ".role = ?", newRole, userId, oldRole);
+    }
+
+    @Override
     public Optional<User> findById(long id) {
         return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".user_id = ?",
                 new Object[]{ id }, USER_ROW_MAPPER).stream().findFirst();
@@ -126,6 +179,11 @@ public class UserDaoImpl implements UserDao {
     public Optional<User> findByEmail(String email) {
         return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".email = ?",
                 new Object[]{ email }, USER_ROW_MAPPER).stream().findFirst();
+    }
+
+    @Override
+    public Collection<User> searchUsers(String query) {
+        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".username ILIKE '%' || ? || '%'", new Object[]{query}, USER_ROW_MAPPER);
     }
 
     @Override
