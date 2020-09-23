@@ -18,15 +18,8 @@
     <c:if test="${empty comments}">
         <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.view.CommentsNotFound"/> </h2>
     </c:if>
-    <dl class="uk-description-list">
-        <c:forEach items="${comments}" var="comment">
-            <dt>
-                <a href="<c:url value="/post/${comment.postId}#${comment.id}"/>">
-                    <c:out value="${comment.body}"/>
-                </a>
-            </dt>
-        </c:forEach>
-    </dl>
+        <c:set var="posts" value="${posts}" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/components/commentsDisplay.jsp"/>
 </div>
 </div>
 </body>
