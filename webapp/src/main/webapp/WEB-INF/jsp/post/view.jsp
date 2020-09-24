@@ -20,7 +20,7 @@
     <section id="post-metadata">
         <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
         <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
-<%--                TODO: Is there a better way to handle LocalDateTime formatting?    --%>
+<%--                TODO: Create a custom taglib  --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
                 <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                 <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />

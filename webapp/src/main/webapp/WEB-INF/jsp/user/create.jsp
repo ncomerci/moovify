@@ -11,8 +11,6 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
-<%--TODO: Arreglar los mensajes de error--%>
-
 <div class="uk-container uk-container-xsmall uk-margin-medium-top">
     <c:url value="/user/create" var="action"/>
     <%--@elvariable id="userCreateForm" type=""--%>

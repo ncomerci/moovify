@@ -30,7 +30,7 @@
 //    @InjectMocks
 //    private final PostServiceImpl postService = new PostServiceImpl();
 //
-//    // TODO: Rehacer test
+
 //
 ////    @Test
 ////    public void testRegister() {

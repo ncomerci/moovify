@@ -148,7 +148,6 @@ public class UserController {
         return mv;
     }
 
-    // TODO: Hacer vista
     @RequestMapping(path = "/user/registrationConfirm", method = RequestMethod.GET)
     public ModelAndView confirmRegistration(HttpServletRequest request, @RequestParam String token) {
 
@@ -197,11 +196,9 @@ public class UserController {
         return mv;
     }
 
-    // TODO: Hacer vista
     @RequestMapping(path = "/user/resendConfirmation", method = RequestMethod.GET)
     public ModelAndView confirmRegistration(HttpServletRequest request, Principal principal) {
 
-        // TODO: Validate url with Spring Security
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         createVerificationToken(user, request);

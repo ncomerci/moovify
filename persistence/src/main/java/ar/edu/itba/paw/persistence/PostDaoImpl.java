@@ -124,7 +124,7 @@ public class PostDaoImpl implements PostDao {
             Map<EnumSet<FetchRelation>, ResultSetExtractor<Collection<Post>>> relationsToRSEMap = new HashMap<>();
             Set<EnumSet<FetchRelation>> relationsCombinations = new HashSet<>();
 
-            // Add all FetchRelation combinations. TODO: Better way?
+            // Add all FetchRelation combinations.
             relationsCombinations.add(EnumSet.noneOf(FetchRelation.class));
             relationsCombinations.add(EnumSet.of(FetchRelation.MOVIES));
             relationsCombinations.add(EnumSet.of(FetchRelation.COMMENTS));

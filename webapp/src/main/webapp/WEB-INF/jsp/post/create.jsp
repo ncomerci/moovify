@@ -23,7 +23,6 @@
 <div>
     <c:url value="/post/create" var="action"/>
     <form:form modelAttribute="postCreateForm" class="uk-form-stacked uk-margin-auto uk-padding-large uk-padding-remove-vertical" method="post" action='${action}' id="new-post-form">
-        <%--TODO: mostrar los errores dentro del modal sin que este se cierre, podria ser mas hci--%>
         <form:errors path="movies" element="p" cssClass="error"/>
         <form:errors path="tags" element="p" cssClass="error"/>
         <spring:message code="post.create.titlePlaceholder" var="titlePlaceholder"/>

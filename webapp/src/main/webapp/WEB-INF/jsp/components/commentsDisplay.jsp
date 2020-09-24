@@ -11,7 +11,7 @@
                     <a href="<c:url value="/post/${comment.postId}#${comment.id}"/>">
                         <c:out value="${comment.body}"/>
                     </a>
-                   <%--TODO debieramos agregar el post al que pertenece tipo metadata--%>
+                   <%--TODO una vez que se incluya al post dentro del comment, refactorear la vista para reflejarlo--%>
                     <%--<p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
                         <spring:message code="commentDisplay.meta.description" arguments="${comment.category.name},${post.user.name}"/>
                     </p>--%>
