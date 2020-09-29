@@ -92,6 +92,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .defaultSuccessUrl("/", false)
 
                 .and().rememberMe()
+                    .userDetailsService(userDetails)
                     .rememberMeParameter("remember-me")
                     .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
                     .key(FileCopyUtils.copyToString(new InputStreamReader(rememberMeKeyResource.getInputStream())))

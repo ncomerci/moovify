@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
@@ -295,7 +294,8 @@ public class UserController {
         PreAuthenticatedAuthenticationToken token =
                 new PreAuthenticatedAuthenticationToken(username, password, getGrantedAuthorities(roles));
 
-        token.setDetails(new WebAuthenticationDetails(request));
+        // Juan dijo que no hacia falta
+//        token.setDetails(new WebAuthenticationDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(token);
 
