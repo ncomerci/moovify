@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.services.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,10 @@ public class MailServiceImpl implements MailService {
     @Autowired
     private TemplateEngine templateEngine;
 
+    @Autowired
+    @Qualifier("applicationBasePath")
+    private String applicationBasePath;
+
     private static final String MOOVIFY_EMAIL_ADDRESS = "moovifyCo@gmail.com";
 
     // Send image reference
@@ -38,6 +43,8 @@ public class MailServiceImpl implements MailService {
 
         // Prepare the evaluation context
         final Context context = new Context();
+
+        context.setVariable("applicationBasePath", applicationBasePath);
         context.setVariables(variables);
 
         // Prepare message using a Spring helper

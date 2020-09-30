@@ -4,16 +4,21 @@ import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
+import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private MailService mailService;
 
     @Autowired
     private UserDao userDao;
@@ -35,28 +40,51 @@ public class UserServiceImpl implements UserService {
     private static final String USER_ROLE = "USER";
 
     @Override
-    public User register(String username, String password, String name, String email) {
-        return userDao.register(username, passwordEncoder.encode(password), name, email, Collections.singletonList(NOT_VALIDATED_ROLE));
+    public User register(String username, String password, String name, String email, String confirmationMailTemplate) {
+
+        final User user = userDao.register(username, passwordEncoder.encode(password), name, email, Collections.singletonList(NOT_VALIDATED_ROLE));
+
+        createConfirmationEmail(user, confirmationMailTemplate);
+
+        return user;
     }
 
     @Override
-    public String createVerificationToken(long userId) {
+    public void createConfirmationEmail(User user, String confirmationMailTemplate) {
 
         final String token = UUID.randomUUID().toString();
 
-        userVerificationTokenDao.createVerificationToken(token, UserVerificationToken.calculateExpiryDate(), userId);
+        userVerificationTokenDao.createVerificationToken(token, UserVerificationToken.calculateExpiryDate(), user.getId());
 
-        return token;
+        Map<String, Object> emailVariables = new HashMap<>();
+        emailVariables.put("token", token);
+
+        try {
+            mailService.sendEmail(user.getEmail(), "Moovify - Confirmation Email", confirmationMailTemplate, emailVariables);
+        }
+        catch (MessagingException e) {
+            // TODO: Log and rollback and handle exception better. Por ejemplo, mandarlo a Controller y mostrar un intentar enviar el mail de nuevo
+            System.out.println("Confirmation email failed to send");
+        }
     }
 
     @Override
-    public String createPasswordResetToken(long userId) {
+    public void createPasswordResetEmail(User user, String passwordResetMailTemplate) {
         
         final String token = UUID.randomUUID().toString();
 
-        passwordResetTokenDao.createPasswordResetToken(token, PasswordResetToken.calculateExpiryDate(), userId);
-        
-        return token;
+        passwordResetTokenDao.createPasswordResetToken(token, PasswordResetToken.calculateExpiryDate(), user.getId());
+
+        Map<String, Object> emailVariables = new HashMap<>();
+        emailVariables.put("token", token);
+
+        try {
+            mailService.sendEmail(user.getEmail(), "Moovify - Password Reset", passwordResetMailTemplate, emailVariables);
+        }
+        catch (MessagingException e) {
+            // TODO: Log. Mejor handling del error de mail
+            System.out.println("Password reset email failed to send");
+        }
     }
 
     @Override

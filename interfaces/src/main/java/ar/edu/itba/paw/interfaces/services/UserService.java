@@ -8,13 +8,13 @@ import java.util.Optional;
 
 public interface UserService {
 
-    User register(String username, String password, String name, String email);
+    User register(String username, String password, String name, String email, String confirmationMailTemplate);
 
     Optional<User> confirmRegistration(String token);
 
-    String createVerificationToken(long userId);
+    void createConfirmationEmail(User user, String confirmationMailTemplate);
 
-    String createPasswordResetToken(long userId);
+    void createPasswordResetEmail(User user, String passwordResetMailTemplate);
 
     boolean validatePasswordResetToken(String token);
 

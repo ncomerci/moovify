@@ -90,6 +90,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
                 .usingGeneratedKeyColumns("token_id");
     }
 
+    // TODO: Insert or Update instead of Delete and Insert
     @Override
     public long createVerificationToken(String token, LocalDateTime expiryDate, long userId) {
 
