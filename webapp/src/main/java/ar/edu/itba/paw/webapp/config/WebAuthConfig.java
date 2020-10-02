@@ -41,7 +41,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     }
 
     // Spring Security Unresolved Issues
-    // TODO: Make a redirect, change browser url
+    // TODO: Cambiar URL cuando sucede un redirect por autenticacion
     @Override
     protected void configure(HttpSecurity http) throws Exception {
             http
@@ -92,6 +92,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .defaultSuccessUrl("/", false)
 
                 .and().rememberMe()
+                    .userDetailsService(userDetails)
                     .rememberMeParameter("remember-me")
                     .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
                     .key(FileCopyUtils.copyToString(new InputStreamReader(rememberMeKeyResource.getInputStream())))

@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.CommentService;
-import ar.edu.itba.paw.interfaces.services.MailService;
+import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.stereotype.Controller;
@@ -23,14 +22,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,7 +38,7 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private MailService mailService;
+    private PostService postService;
 
     @Autowired
     private CommentService commentService;
@@ -65,11 +61,9 @@ public class UserController {
         if(bindingResult.hasErrors())
             return showUserCreateForm(userCreateForm);
 
-
         final User user = userService.register(userCreateForm.getUsername(),
-                userCreateForm.getPassword(), userCreateForm.getName(), userCreateForm.getEmail());
-
-        createVerificationToken(user, request);
+                userCreateForm.getPassword(), userCreateForm.getName(),
+                userCreateForm.getEmail(), "confirmEmail");
 
         manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
 
@@ -77,7 +71,6 @@ public class UserController {
 
         return new ModelAndView("redirect:/user/profile");
     }
-
 
     @RequestMapping(path = {"/user/{userId}", "/user/{userId}/posts"} , method = RequestMethod.GET)
     public ModelAndView viewPosts(HttpServletRequest request, @PathVariable final long userId) {
@@ -90,7 +83,7 @@ public class UserController {
             mv.addObject("user", userService.findById(userId)
                 .orElseThrow(UserNotFoundException::new));
 
-        mv.addObject("posts", userService.findPostsByUserId(userId));
+        mv.addObject("posts", postService.findPostsByUserId(userId));
         return mv;
     }
 
@@ -124,37 +117,29 @@ public class UserController {
             user = (User) inputFlashMap.get("user");
 
         mv.addObject("loggedUser", user);
-        mv.addObject("posts", userService.findPostsByUserId(user.getId()));
+        mv.addObject("posts", postService.findPostsByUserId(user.getId()));
 
         return mv;
     }
 
     @RequestMapping(path = "/user/profile/comments", method = RequestMethod.GET)
-    public ModelAndView profileComments(HttpServletRequest request, Principal principal) {
+    public ModelAndView profileComments(Principal principal) {
 
         final ModelAndView mv = new ModelAndView("user/profile/profileComments");
 
-        User user;
-        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
-
-        if(inputFlashMap == null || !inputFlashMap.containsKey("user"))
-            user = userService.findByUsername(principal.getName())
-                    .orElseThrow(UserNotFoundException::new);
-        else
-            user = (User) inputFlashMap.get("user");
+        final User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
         mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(user.getId()));
+
         return mv;
     }
 
-    // TODO: Hacer vista
     @RequestMapping(path = "/user/registrationConfirm", method = RequestMethod.GET)
     public ModelAndView confirmRegistration(HttpServletRequest request, @RequestParam String token) {
 
         final Optional<User> optUser = userService.confirmRegistration(token);
         boolean success;
-
 
         ModelAndView mv = new ModelAndView("user/confirmRegistration/registrationConfirm");
 
@@ -181,14 +166,14 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/resetPassword", method = RequestMethod.POST)
-    public ModelAndView resetPassword(@Valid @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm, final BindingResult bindingResult,
-                                      HttpServletRequest request) {
+    public ModelAndView resetPassword(@Valid @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm, final BindingResult bindingResult) {
+
         if(bindingResult.hasErrors())
             return showResetPassword(resetPasswordForm);
 
         final User user = userService.findByEmail(resetPasswordForm.getEmail()).orElseThrow(UserNotFoundException::new);
 
-        createPasswordResetToken(user, request);
+        userService.createPasswordResetEmail(user, "passwordResetEmail");
 
         final ModelAndView mv = new ModelAndView("user/resetPassword/resetPasswordTokenGenerated");
 
@@ -197,14 +182,12 @@ public class UserController {
         return mv;
     }
 
-    // TODO: Hacer vista
     @RequestMapping(path = "/user/resendConfirmation", method = RequestMethod.GET)
-    public ModelAndView confirmRegistration(HttpServletRequest request, Principal principal) {
+    public ModelAndView confirmRegistration(Principal principal) {
 
-        // TODO: Validate url with Spring Security
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        createVerificationToken(user, request);
+        userService.createConfirmationEmail(user, "confirmEmail");
 
         ModelAndView mv = new ModelAndView("user/confirmRegistration/resendConfirmation");
 
@@ -257,48 +240,13 @@ public class UserController {
         return mv;
     }
 
-    private void createVerificationToken(User user, HttpServletRequest request) {
-        final String token = userService.createVerificationToken(user.getId());
-
-        Map<String, Object> emailVariables = new HashMap<>();
-        emailVariables.put("confirmationURL",
-                ServletUriComponentsBuilder.fromRequestUri(request)
-                .replacePath("/user/registrationConfirm").queryParam("token", token).build().toUriString()
-        );
-
-        try {
-            mailService.sendEmail(user.getEmail(), "Confirmation Email", "confirmEmail", emailVariables);
-        }
-        catch (MessagingException e) {
-            // TODO: Log
-            System.out.println("Confirmation email failed to send");
-        }
-    }
-
-    private void createPasswordResetToken(User user, HttpServletRequest request) {
-        final String token = userService.createPasswordResetToken(user.getId());
-
-        Map<String, Object> emailVariables = new HashMap<>();
-        emailVariables.put("confirmationURL",
-                ServletUriComponentsBuilder.fromRequestUri(request)
-                        .replacePath("/user/updatePassword/token").queryParam("token", token).build().toUriString()
-        );
-
-        try {
-            mailService.sendEmail(user.getEmail(), "Password Reset", "passwordResetEmail", emailVariables);
-        }
-        catch (MessagingException e) {
-            // TODO: Log
-            System.out.println("Password reset email failed to send");
-        }
-    }
-
     private void manualLogin(HttpServletRequest request, String username, String password, Collection<Role> roles) {
 
         PreAuthenticatedAuthenticationToken token =
                 new PreAuthenticatedAuthenticationToken(username, password, getGrantedAuthorities(roles));
 
-        token.setDetails(new WebAuthenticationDetails(request));
+        // Parece que no hace falta
+//        token.setDetails(new WebAuthenticationDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(token);
 

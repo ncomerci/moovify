@@ -17,14 +17,14 @@
                 </div>
                 <div class="uk-width-auto">
                     <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
-                        <c:if test="${post.timeSinceCreation.toDays() > 0}">
-                            <spring:message code="postDisplay.meta.age.days" arguments="${post.timeSinceCreation.toDays()}"/>
+                        <c:if test="${post.daysSinceCreation > 0}">
+                            <spring:message code="postDisplay.meta.age.days" arguments="${post.daysSinceCreation}"/>
                         </c:if>
-                        <c:if test="${post.timeSinceCreation.toDays() == 0 && post.timeSinceCreation.toHours() > 0}">
-                            <spring:message code="postDisplay.meta.age.hours" arguments="${post.timeSinceCreation.toHours()}"/>
+                        <c:if test="${post.daysSinceCreation == 0 && post.hoursSinceCreation > 0}">
+                            <spring:message code="postDisplay.meta.age.hours" arguments="${post.hoursSinceCreation}"/>
                         </c:if>
-                        <c:if test="${post.timeSinceCreation.toDays() == 0 && post.timeSinceCreation.toHours() == 0}">
-                            <spring:message code="postDisplay.meta.age.minutes" arguments="${post.timeSinceCreation.toMinutes()}"/>
+                        <c:if test="${post.daysSinceCreation == 0 && post.hoursSinceCreation == 0}">
+                            <spring:message code="postDisplay.meta.age.minutes" arguments="${post.minutesSinceCreation}"/>
                         </c:if>
                     </p>
                 </div>

@@ -16,12 +16,12 @@
     <jsp:include page="profile.jsp"/>
 
     <div class="uk-container">
-        <sec:authorize access="hasAnyRole('ADMIN','USER')">
         <c:if test="${empty comments}">
-            <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.profile.CommentsNotFound"/> </h2>
+            <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.view.CommentsNotFound"/> </h2>
         </c:if>
 
-            <c:set var="posts" value="${posts}" scope="request"/>
+        <sec:authorize access="hasRole('USER')">
+            <c:set var="comments" value="${comments}" scope="request"/>
             <jsp:include page="/WEB-INF/jsp/components/commentsDisplay.jsp"/>
         </sec:authorize>
     </div>

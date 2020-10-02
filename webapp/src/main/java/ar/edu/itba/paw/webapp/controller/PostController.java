@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
@@ -32,6 +33,9 @@ public class PostController {
     private MovieService movieService;
 
     @Autowired
+    private CommentService commentService;
+
+    @Autowired
     private UserService userService;
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
@@ -39,15 +43,19 @@ public class PostController {
                              @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm) {
 
         final ModelAndView mv = new ModelAndView("post/view");
-        mv.addObject("post", postService.findPostById(postId)
-                .orElseThrow(PostNotFoundException::new));
+
+        mv.addObject("post", postService.findPostById(postId).orElseThrow(PostNotFoundException::new));
+        mv.addObject("movies", movieService.findMoviesByPostId(postId));
+        mv.addObject("comments", commentService.findCommentsByPostIdWithChildren(postId));
 
         return mv;
     }
 
     @RequestMapping(path = "/post/create", method = RequestMethod.GET )
     public ModelAndView showPostCreateForm(@ModelAttribute("postCreateForm") final PostCreateForm postCreateForm) {
+
         final ModelAndView mv = new ModelAndView("post/create");
+
         mv.addObject("movies", movieService.getAllMovies());
         mv.addObject("categories", postService.getAllPostCategories());
 
@@ -56,20 +64,17 @@ public class PostController {
 
     @RequestMapping(path = "/post/create", method = RequestMethod.POST )
     public ModelAndView showPostCreateForm(@Valid @ModelAttribute("postCreateForm") final PostCreateForm postCreateForm, final BindingResult errors, final Principal principal) {
-        if (errors.hasErrors()) {
+
+        if (errors.hasErrors())
             return showPostCreateForm(postCreateForm);
-        }
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         final long post = postService.register(postCreateForm.getTitle(), postCreateForm.getBody(),
                 postCreateForm.getCategory(), user.getId(),
-                postCreateForm.getTags() == null ? Collections.emptySet():  postCreateForm.getTags(),
+                postCreateForm.getTags() == null ? Collections.emptySet() : postCreateForm.getTags(),
                 postCreateForm.getMovies());
 
-        final ModelAndView mv = new ModelAndView("redirect:/post/" + post);
-        mv.addObject("loggedUser", user);
-
-        return mv;
+        return new ModelAndView("redirect:/post/" + post);
     }
 }

@@ -39,7 +39,6 @@ public class UserDaoImpl implements UserDao {
             "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id ";
 
 
-
     private static final ResultSetExtractor<Collection<User>> USER_ROW_MAPPER = (rs) -> {
         Map<Long, User> idToUserMap = new LinkedHashMap<>();
         long userId;

@@ -19,13 +19,12 @@ import java.util.*;
 @Repository
 public class MovieDaoImpl implements MovieDao {
 
-    private static final String POSTS = TableNames.POSTS.getTableName();
     private static final String MOVIES = TableNames.MOVIES.getTableName();
     private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
     private static final String MOVIE_TO_MOVIE_CATEGORY = TableNames.MOVIE_TO_MOVIE_CATEGORY.getTableName();
     private static final String MOVIE_CATEGORIES = TableNames.MOVIE_CATEGORIES.getTableName();
 
-    private static final String MOVIE_SELECT = "SELECT " +
+    private static final String BASE_MOVIE_SELECT = "SELECT " +
             // Movie Table Columns - Alias: m_column_name
             MOVIES + ".movie_id m_movie_id, " +
             MOVIES + ".creation_date m_creation_date, " +
@@ -46,14 +45,14 @@ public class MovieDaoImpl implements MovieDao {
             MOVIE_CATEGORIES + ".tmdb_category_id mc_tmdb_category_id, " +
             MOVIE_CATEGORIES + ".name mc_name";
 
-    private static final String BASE_POST_FROM = "FROM " + MOVIES;
+    private static final String BASE_MOVIE_FROM = "FROM " + MOVIES;
 
     private static final String CATEGORY_FROM =
             " INNER JOIN " + MOVIE_TO_MOVIE_CATEGORY + " ON " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_id = " + MOVIES + ".tmdb_id" +
             " INNER JOIN " + MOVIE_CATEGORIES + " ON " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_category_id = " + MOVIE_CATEGORIES + ".tmdb_category_id";
 
 
-    private static final ResultSetExtractor<Collection<Movie>> MOVIE_RESULT_SET_EXTRACTOR = (rs) -> {
+    private static final ResultSetExtractor<Collection<Movie>> MOVIE_ROW_MAPPER = (rs) -> {
 
             // Important use of LinkedHashMap to maintain Post insertion order
             final Map<Long, Movie> idToMovieMap = new HashMap<>();
@@ -117,17 +116,17 @@ public class MovieDaoImpl implements MovieDao {
 
     private Collection<Movie> buildAndExecuteQuery(String customWhereStatement, String customOrderByStatement, Object[] args){
 
-        final String select = MOVIE_SELECT + ", " + MOVIE_CATEGORY_SELECT;
+        final String select = BASE_MOVIE_SELECT + ", " + MOVIE_CATEGORY_SELECT;
 
-        final String from = BASE_POST_FROM + CATEGORY_FROM;
+        final String from = BASE_MOVIE_FROM + CATEGORY_FROM;
 
         final String query = select + " " + from + " " + customWhereStatement + " " + customOrderByStatement;
 
         if(args != null)
-            return jdbcTemplate.query(query, args, MOVIE_RESULT_SET_EXTRACTOR);
+            return jdbcTemplate.query(query, args, MOVIE_ROW_MAPPER);
 
         else
-            return jdbcTemplate.query(query, MOVIE_RESULT_SET_EXTRACTOR);
+            return jdbcTemplate.query(query, MOVIE_ROW_MAPPER);
     }
 
     @Override

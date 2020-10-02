@@ -4,15 +4,10 @@ import ar.edu.itba.paw.models.Post;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
 public interface PostDao {
-
-    enum FetchRelation {
-        MOVIES, COMMENTS
-    }
 
     enum SortCriteria {
         NEWEST, OLDEST, HOTTEST
@@ -20,19 +15,19 @@ public interface PostDao {
 
     long register(String title, String body, int wordCount, long category, long user, Set<String> tags, Set<Long> movies);
 
-    Optional<Post> findPostById(long id, EnumSet<FetchRelation> includedRelations);
+    Optional<Post> findPostById(long id);
 
-    Collection<Post> getAllPosts(EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Collection<Post> getAllPosts(SortCriteria sortCriteria);
 
-    Collection<Post> findPostsByMovieId(long movie_id, EnumSet<FetchRelation> includedRelations);
+    Collection<Post> findPostsByMovieId(long movie_id, SortCriteria sortCriteria);
 
-    Collection<Post> findPostsByUserId(long user_id, EnumSet<FetchRelation> includedRelations);
+    Collection<Post> findPostsByUserId(long user_id, SortCriteria sortCriteria);
 
-    Collection<Post> searchPosts(String query, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Collection<Post> searchPosts(String query, SortCriteria sortCriteria);
 
-    Collection<Post> searchPostsByCategory(String query, String category, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Collection<Post> searchPostsByCategory(String query, String category, SortCriteria sortCriteria);
 
-    Collection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Collection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, SortCriteria sortCriteria);
 
-    Collection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Collection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, SortCriteria sortCriteria);
 }

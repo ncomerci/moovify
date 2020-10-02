@@ -6,18 +6,22 @@ import java.util.Collection;
 
 public class Comment {
 
+    public static int getTotalComments(Collection<Comment> comments) {
+        return comments.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount() + 1, Integer::sum);
+    }
+
     private final long id;
     private final LocalDateTime creationDate;
-    private final long postId;
+    private final Post post;
     private final Long parentId;
     private final Collection<Comment> children;
     private final String body;
     private final User user;
 
-    public Comment(long id, LocalDateTime creationDate, long postId, Long parentId, Collection<Comment> children, String body, User user) {
+    public Comment(long id, LocalDateTime creationDate, Post post, Long parentId, Collection<Comment> children, String body, User user) {
         this.id = id;
         this.creationDate = creationDate;
-        this.postId = postId;
+        this.post = post;
         this.parentId = parentId;
         this.children = children;
         this.body = body;
@@ -32,8 +36,8 @@ public class Comment {
         return creationDate;
     }
 
-    public long getPostId(){
-        return postId;
+    public Post getPost(){
+        return post;
     }
 
     // May return null when comment is root
@@ -59,5 +63,17 @@ public class Comment {
 
     public Duration getTimeSinceCreation() {
         return Duration.between(creationDate, LocalDateTime.now());
+    }
+
+    public long getDaysSinceCreation() {
+        return getTimeSinceCreation().toDays();
+    }
+
+    public long getHoursSinceCreation() {
+        return getTimeSinceCreation().toHours();
+    }
+
+    public long getMinutesSinceCreation() {
+        return getTimeSinceCreation().toMinutes();
     }
 }

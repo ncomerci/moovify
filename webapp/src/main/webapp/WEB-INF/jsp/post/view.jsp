@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
@@ -20,7 +21,7 @@
     <section id="post-metadata">
         <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
         <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
-<%--                TODO: Is there a better way to handle LocalDateTime formatting?    --%>
+<%--                TODO: Create a custom taglib  --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
                 <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                 <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
@@ -46,7 +47,7 @@
     <hr>
     <section id="post-movies">
         <h1 class="uk-text-meta"><spring:message code="post.view.movies"/></h1>
-        <c:forEach items="${post.movies}" var="movie" >
+        <c:forEach items="${movies}" var="movie" >
             <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
                href="<c:url value="/movie/${movie.id}"/>">
                 <c:out value="${movie.title}"/>
@@ -65,11 +66,10 @@
     </section>
     <hr>
     <section class="uk-container uk-container-small">
-        <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${post.totalCommentCount}"/></h1>
-        <sec:authorize access="hasAnyRole('USER', 'ADMIN')">
+        <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${customTag:totalComments(comments)}"/></h1>
+        <sec:authorize access="hasRole('USER')">
             <div style="padding-bottom: 25px">
                 <c:url value="/comment/create" var="action"/>
-                    <%--@elvariable id="CommentCreateForm" type=""--%>
                 <form:form id="spring-form" modelAttribute="CommentCreateForm" action="${action}" method="post">
                     <c:set var="parentId" value="${null}" scope="request" />
                     <c:set var="placeholder"><spring:message code="comment.create.writeCommentPlaceholder"/></c:set>
@@ -95,7 +95,7 @@
         </sec:authorize>
         <div class="uk-margin-large-top">
             <hr>
-            <c:set var="comments" value="${post.comments}" scope="request" />
+            <c:set var="comments" value="${comments}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp" />
         </div>
 
@@ -103,6 +103,7 @@
         <form id="reply-form" class="uk-hidden">
             <fieldset class="uk-fieldset">
                 <div class="uk-margin">
+                    <label for="textarea"></label>
                     <textarea id="textarea" class="uk-textarea" rows="5" placeholder="<spring:message code="comment.create.replyPlaceholder"/>"></textarea>
                 </div>
                 <div class="uk-align-right">

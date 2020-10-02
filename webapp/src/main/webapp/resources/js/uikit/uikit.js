@@ -8108,7 +8108,6 @@
 
                 handler: function(e) {
 
-                    // TODO better isToggled handling
                     var link;
                     if (closest(e.target, 'a[href="#"], a[href=""]')
                         || (link = closest(e.target, 'a[href]')) && (
