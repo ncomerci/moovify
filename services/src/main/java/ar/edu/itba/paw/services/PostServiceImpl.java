@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,23 +33,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Collection<Post> findPostsByMovieId(long movie_id) {
-        return postDao.findPostsByMovieId(movie_id, PostDao.SortCriteria.NEWEST);
+    public PaginatedCollection<Post> findPostsByMovieId(long movie_id, int pageNumber, int pageSize) {
+        return postDao.findPostsByMovieId(movie_id, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
-    public Collection<Post> findPostsByUserId(long user_id) {
-        return postDao.findPostsByUserId(user_id, PostDao.SortCriteria.NEWEST);
+    public PaginatedCollection<Post> findPostsByUserId(long user_id, int pageNumber, int pageSize) {
+        return postDao.findPostsByUserId(user_id, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
-    public Collection<Post> getAllPostsOrderByNewest() {
-        return postDao.getAllPosts(PostDao.SortCriteria.NEWEST);
+    public PaginatedCollection<Post> getAllPostsOrderByNewest(int pageNumber, int pageSize) {
+        return postDao.getAllPosts(PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
-    public Collection<Post> getAllPostsOrderByOldest() {
-        return postDao.getAllPosts(PostDao.SortCriteria.OLDEST);
+    public PaginatedCollection<Post> getAllPostsOrderByOldest(int pageNumber, int pageSize) {
+        return postDao.getAllPosts(PostDao.SortCriteria.OLDEST, pageNumber, pageSize);
     }
 
     @Override

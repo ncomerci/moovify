@@ -6,10 +6,7 @@ import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.services.SearchService;
-import ar.edu.itba.paw.models.Movie;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.PostCategory;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.exceptions.NonReachableStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
@@ -63,7 +60,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Optional<Collection<Post>> searchPosts(String query, String category, String period, String sortCriteria) {
+    public Optional<PaginatedCollection<Post>> searchPosts(String query, String category, String period, String sortCriteria, int pageNumber, int pageSize) {
 
         Objects.requireNonNull(query);
 
@@ -86,16 +83,19 @@ public class SearchServiceImpl implements SearchService {
 
 
         if(options.isEmpty())
-            return Optional.of(postDao.searchPosts(query, sc));
+            return Optional.of(postDao.searchPosts(query, sc, pageNumber, pageSize));
 
-        else if(options.size() == 1){
+        else if(options.size() == 1) {
+
             if(options.contains(SearchOptions.OLDER_THAN))
-                return Optional.of(postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), sc));
+                return Optional.of(postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), sc, pageNumber, pageSize));
+
             else if(options.contains(SearchOptions.BY_CATEGORY))
-                return Optional.of(postDao.searchPostsByCategory(query, category, sc));
+                return Optional.of(postDao.searchPostsByCategory(query, category, sc, pageNumber, pageSize));
         }
+
         else if(options.contains(SearchOptions.OLDER_THAN) && options.contains(SearchOptions.BY_CATEGORY) && options.size() == 2)
-            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), sc));
+            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), sc, pageNumber, pageSize));
 
         throw new NonReachableStateException();
     }

@@ -83,7 +83,7 @@ public class UserController {
             mv.addObject("user", userService.findById(userId)
                 .orElseThrow(UserNotFoundException::new));
 
-        mv.addObject("posts", postService.findPostsByUserId(userId));
+        mv.addObject("posts", postService.findPostsByUserId(userId, 0, 10));
         return mv;
     }
 
@@ -117,7 +117,7 @@ public class UserController {
             user = (User) inputFlashMap.get("user");
 
         mv.addObject("loggedUser", user);
-        mv.addObject("posts", postService.findPostsByUserId(user.getId()));
+        mv.addObject("posts", postService.findPostsByUserId(user.getId(), 0, 10));
 
         return mv;
     }

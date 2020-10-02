@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.interfaces.services;
 
+import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
 
@@ -13,13 +14,13 @@ public interface PostService {
 
     Optional<Post> findPostById(long id);
 
-    Collection<Post> findPostsByMovieId(long movie_id);
+    PaginatedCollection<Post> findPostsByMovieId(long movie_id, int pageNumber, int pageSize);
 
-    Collection<Post> findPostsByUserId(long user_id);
+    PaginatedCollection<Post> findPostsByUserId(long user_id, int pageNumber, int pageSize);
 
-    Collection<Post> getAllPostsOrderByNewest();
+    PaginatedCollection<Post> getAllPostsOrderByNewest(int pageNumber, int pageSize);
 
-    Collection<Post> getAllPostsOrderByOldest();
+    PaginatedCollection<Post> getAllPostsOrderByOldest(int pageNumber, int pageSize);
 
     Collection<PostCategory> getAllPostCategories();
 }

@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
+import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,17 +17,19 @@ public interface PostDao {
 
     Optional<Post> findPostById(long id);
 
-    Collection<Post> getAllPosts(SortCriteria sortCriteria);
+    int getPostsTotalCount();
 
-    Collection<Post> findPostsByMovieId(long movie_id, SortCriteria sortCriteria);
+    PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Post> findPostsByUserId(long user_id, SortCriteria sortCriteria);
+    PaginatedCollection<Post> findPostsByMovieId(long movie_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Post> searchPosts(String query, SortCriteria sortCriteria);
+    PaginatedCollection<Post> findPostsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Post> searchPostsByCategory(String query, String category, SortCriteria sortCriteria);
+    PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, SortCriteria sortCriteria);
+    PaginatedCollection<Post> searchPostsByCategory(String query, String category, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, SortCriteria sortCriteria);
+    PaginatedCollection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize);
 }

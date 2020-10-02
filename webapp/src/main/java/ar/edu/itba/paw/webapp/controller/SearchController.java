@@ -28,7 +28,7 @@ public class SearchController {
 
         mv.addObject("query", searchPostsForm.getQuery());
         mv.addObject("posts",
-                searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(), searchPostsForm.getSortCriteria()).orElseThrow(NonExistingSearchCriteriaException::new));
+                searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(), searchPostsForm.getSortCriteria(), 0, 10).orElseThrow(NonExistingSearchCriteriaException::new));
         return mv;
     }
 
