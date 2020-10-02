@@ -216,9 +216,11 @@ public class PostDaoImpl implements PostDao {
 
         final String select = BASE_POST_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
 
-        final String from = BASE_POST_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+        final String orderedAndPaginatedBasePostFrom = "FROM (SELECT * " + BASE_POST_FROM + " " + customOrderByStatement + " " + customPaginationStatement + ") " + POSTS;
 
-        final String query = select + " " + from + " " + customWhereStatement + " " + customOrderByStatement + " " + customPaginationStatement;
+        final String from = orderedAndPaginatedBasePostFrom + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+
+        final String query = select + " " + from + " " + customWhereStatement;
 
         if(args != null)
             return jdbcTemplate.query(query, args, POST_ROW_MAPPER);
@@ -239,7 +241,7 @@ public class PostDaoImpl implements PostDao {
     private PaginatedCollection<Post> buildAndExecuteQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
 
         if(pageNumber < 0 || pageSize <= 0)
-            throw new IllegalArgumentException("Illegal pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
+            throw new IllegalArgumentException("Illegal Posts pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
 
         final String paginationStatement = "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
 

@@ -274,6 +274,22 @@ public class CommentDaoImpl implements CommentDao {
                 "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria), args, withChildren);
     }
 
+//    private Collection<Comment> buildAndExecuteQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args, boolean withChildren) {
+//
+//        if(pageNumber < 0 || pageSize <= 0)
+//            throw new IllegalArgumentException("Illegal Comments pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
+//
+//        final String paginationStatement = "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
+//
+//        final Collection<Comment> results = buildAndExecuteQuery(customWhereStatement, sortCriteria, paginationStatement, args, withChildren);
+//
+//        final int totalPostsCount = getPostsTotalCount();
+//
+//        final boolean lastPage = totalPostsCount == 0 || (totalPostsCount - 1)/pageSize == pageNumber;
+//
+//        return new PaginatedCollection<>(results, pageNumber, pageSize, totalPostsCount, lastPage);
+//    }
+
     private Optional<Comment> findCommentById(long id, boolean withChildren) {
         return buildAndExecuteQuery(
                 "WHERE " + COMMENTS + ".comment_id = ?", "",
