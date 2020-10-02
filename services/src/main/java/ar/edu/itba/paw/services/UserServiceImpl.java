@@ -1,12 +1,14 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
-import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.PasswordResetToken;
+import ar.edu.itba.paw.models.Role;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.UserVerificationToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,9 +24,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
-
-    @Autowired
-    private PostDao postDao;
 
     @Autowired
     private UserVerificationTokenDao userVerificationTokenDao;
@@ -146,16 +145,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByEmail(String email) {
         return userDao.findByEmail(email);
-    }
-
-    @Override
-    public Collection<Post> findPostsByUserId(long user_id) {
-        return postDao.findPostsByUserId(user_id, EnumSet.noneOf(PostDao.FetchRelation.class));
-    }
-
-    @Override
-    public Collection<Post> getAllUsers(long user_id) {
-        return postDao.findPostsByUserId(user_id, EnumSet.noneOf(PostDao.FetchRelation.class));
     }
 
     @Override

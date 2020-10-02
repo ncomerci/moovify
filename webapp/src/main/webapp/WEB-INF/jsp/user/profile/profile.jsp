@@ -6,6 +6,7 @@
 
 
 <jsp:useBean id="currentState" scope="request" type="java.lang.String"/>
+<jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
 
 
 <div class="uk-inline">
@@ -48,7 +49,7 @@
             <h2><spring:message code="user.profile.ConfirmationEmail"/>  <a href="<c:url value="/user/resendConfirmation" /> "><spring:message code="user.profile.ResendEmail"/></a></h2>
         </sec:authorize>
     </div>
-<sec:authorize access="hasAnyRole('ADMIN','USER')">
+<sec:authorize access="hasRole('USER')">
     <div class="uk-margin-medium-top">
         <ul class="uk-child-width-expand uk-tab">
             <li class="${currentState == 0 ? 'uk-active' : ''}">

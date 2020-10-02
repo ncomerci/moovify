@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,27 +28,27 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Optional<Post> findPostById(long id) {
-        return postDao.findPostById(id, EnumSet.allOf(PostDao.FetchRelation.class));
+        return postDao.findPostById(id);
     }
 
     @Override
     public Collection<Post> findPostsByMovieId(long movie_id) {
-        return postDao.findPostsByMovieId(movie_id, EnumSet.noneOf(PostDao.FetchRelation.class));
+        return postDao.findPostsByMovieId(movie_id, PostDao.SortCriteria.NEWEST);
     }
 
     @Override
     public Collection<Post> findPostsByUserId(long user_id) {
-        return postDao.findPostsByUserId(user_id, EnumSet.noneOf(PostDao.FetchRelation.class));
+        return postDao.findPostsByUserId(user_id, PostDao.SortCriteria.NEWEST);
     }
 
     @Override
     public Collection<Post> getAllPostsOrderByNewest() {
-        return postDao.getAllPosts(EnumSet.noneOf(PostDao.FetchRelation.class), PostDao.SortCriteria.NEWEST);
+        return postDao.getAllPosts(PostDao.SortCriteria.NEWEST);
     }
 
     @Override
     public Collection<Post> getAllPostsOrderByOldest() {
-        return postDao.getAllPosts(EnumSet.noneOf(PostDao.FetchRelation.class), PostDao.SortCriteria.OLDEST);
+        return postDao.getAllPosts(PostDao.SortCriteria.OLDEST);
     }
 
     @Override

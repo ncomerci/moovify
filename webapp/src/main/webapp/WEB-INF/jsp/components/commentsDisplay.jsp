@@ -8,7 +8,7 @@
         <div class="uk-width-1-1">
             <div class="uk-flex">
                 <div class="uk-width-expand uk-margin-small-top">
-                    <a href="<c:url value="/post/${comment.postId}#${comment.id}"/>">
+                    <a href="<c:url value="/post/${comment.post.id}#${comment.id}"/>">
                         <c:out value="${comment.body}"/>
                     </a>
                    <%--TODO una vez que se incluya al post dentro del comment, refactorear la vista para reflejarlo--%>
@@ -18,14 +18,14 @@
                 </div>
                 <div class="uk-width-auto">
                     <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
-                        <c:if test="${comment.timeSinceCreation.toDays() > 0}">
-                            <spring:message code="postDisplay.meta.age.days" arguments="${comment.timeSinceCreation.toDays()}"/>
+                        <c:if test="${comment.daysSinceCreation > 0}">
+                            <spring:message code="postDisplay.meta.age.days" arguments="${comment.daysSinceCreation}"/>
                         </c:if>
-                        <c:if test="${comment.timeSinceCreation.toDays() == 0 && comment.timeSinceCreation.toHours() > 0}">
-                            <spring:message code="postDisplay.meta.age.hours" arguments="${comment.timeSinceCreation.toHours()}"/>
+                        <c:if test="${comment.daysSinceCreation == 0 && comment.hoursSinceCreation > 0}">
+                            <spring:message code="postDisplay.meta.age.hours" arguments="${comment.hoursSinceCreation}"/>
                         </c:if>
-                        <c:if test="${comment.timeSinceCreation.toDays() == 0 && comment.timeSinceCreation.toHours() == 0}">
-                            <spring:message code="postDisplay.meta.age.minutes" arguments="${comment.timeSinceCreation.toMinutes()}"/>
+                        <c:if test="${comment.daysSinceCreation == 0 && comment.hoursSinceCreation == 0}">
+                            <spring:message code="postDisplay.meta.age.minutes" arguments="${comment.minutesSinceCreation}"/>
                         </c:if>
                     </p>
                 </div>

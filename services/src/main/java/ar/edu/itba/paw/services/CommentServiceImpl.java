@@ -18,7 +18,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public long register(long postId, Long parentId, String body, long userId) {
         return commentDao.register(postId, parentId,
-                body.replaceAll("[ \t]+", " ")
+                body.trim().replaceAll("[ \t]+", " ")
                         .replaceAll("(\r\n)+", "\n")
                         .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId);
     }
@@ -35,23 +35,21 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public Collection<Comment> findCommentsByPostIdWithChildren(long post_id) {
-        return commentDao.findCommentsByPostIdWithChildren(post_id);
+        return commentDao.findCommentsByPostIdWithChildren(post_id, CommentDao.SortCriteria.NEWEST);
     }
 
     @Override
     public Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id) {
-        return commentDao.findCommentsByPostIdWithoutChildren(post_id);
+        return commentDao.findCommentsByPostIdWithoutChildren(post_id, CommentDao.SortCriteria.NEWEST);
     }
 
     @Override
     public Collection<Comment> findCommentsByUserIdWithChildren(long user_id) {
-        return commentDao.findCommentsByUserIdWithChildren(user_id);
+        return commentDao.findCommentsByUserIdWithChildren(user_id, CommentDao.SortCriteria.NEWEST);
     }
 
     @Override
     public Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id) {
-        return commentDao.findCommentsByUserIdWithoutChildren(user_id);
+        return commentDao.findCommentsByUserIdWithoutChildren(user_id, CommentDao.SortCriteria.NEWEST);
     }
-
-
 }

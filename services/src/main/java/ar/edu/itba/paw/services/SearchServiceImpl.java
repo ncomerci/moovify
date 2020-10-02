@@ -20,7 +20,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-// TODO: shady annotation detected. Report to Lord Commander (Sotuyo) ASAP!
 @DependsOn("dataSourceInitializer")
 public class SearchServiceImpl implements SearchService {
 
@@ -68,7 +67,6 @@ public class SearchServiceImpl implements SearchService {
 
         Objects.requireNonNull(query);
 
-        final EnumSet<PostDao.FetchRelation> fetchRelation = EnumSet.noneOf(PostDao.FetchRelation.class);
         final EnumSet<SearchOptions> options = EnumSet.noneOf(SearchOptions.class);
         final SortCriteria sc;
 
@@ -88,16 +86,16 @@ public class SearchServiceImpl implements SearchService {
 
 
         if(options.isEmpty())
-            return Optional.of(postDao.searchPosts(query, fetchRelation, sc));
+            return Optional.of(postDao.searchPosts(query, sc));
 
         else if(options.size() == 1){
             if(options.contains(SearchOptions.OLDER_THAN))
-                return Optional.of(postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), fetchRelation, sc));
+                return Optional.of(postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), sc));
             else if(options.contains(SearchOptions.BY_CATEGORY))
-                return Optional.of(postDao.searchPostsByCategory(query, category, fetchRelation, sc));
+                return Optional.of(postDao.searchPostsByCategory(query, category, sc));
         }
         else if(options.contains(SearchOptions.OLDER_THAN) && options.contains(SearchOptions.BY_CATEGORY) && options.size() == 2)
-            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), fetchRelation, sc));
+            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), sc));
 
         throw new NonReachableStateException();
     }

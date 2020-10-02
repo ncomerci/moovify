@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.CommentService;
+import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
@@ -37,6 +38,9 @@ public class UserController {
     private UserService userService;
 
     @Autowired
+    private PostService postService;
+
+    @Autowired
     private CommentService commentService;
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)
@@ -68,7 +72,6 @@ public class UserController {
         return new ModelAndView("redirect:/user/profile");
     }
 
-
     @RequestMapping(path = {"/user/{userId}", "/user/{userId}/posts"} , method = RequestMethod.GET)
     public ModelAndView viewPosts(HttpServletRequest request, @PathVariable final long userId) {
 
@@ -80,7 +83,7 @@ public class UserController {
             mv.addObject("user", userService.findById(userId)
                 .orElseThrow(UserNotFoundException::new));
 
-        mv.addObject("posts", userService.findPostsByUserId(userId));
+        mv.addObject("posts", postService.findPostsByUserId(userId));
         return mv;
     }
 
@@ -114,27 +117,21 @@ public class UserController {
             user = (User) inputFlashMap.get("user");
 
         mv.addObject("loggedUser", user);
-        mv.addObject("posts", userService.findPostsByUserId(user.getId()));
+        mv.addObject("posts", postService.findPostsByUserId(user.getId()));
 
         return mv;
     }
 
     @RequestMapping(path = "/user/profile/comments", method = RequestMethod.GET)
-    public ModelAndView profileComments(HttpServletRequest request, Principal principal) {
+    public ModelAndView profileComments(Principal principal) {
 
         final ModelAndView mv = new ModelAndView("user/profile/profileComments");
 
-        User user;
-        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
-
-        if(inputFlashMap == null || !inputFlashMap.containsKey("user"))
-            user = userService.findByUsername(principal.getName())
-                    .orElseThrow(UserNotFoundException::new);
-        else
-            user = (User) inputFlashMap.get("user");
+        final User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
         mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(user.getId()));
+
         return mv;
     }
 

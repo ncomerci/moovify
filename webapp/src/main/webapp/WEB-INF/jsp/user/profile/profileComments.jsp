@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <html>
@@ -18,8 +19,9 @@
         <c:if test="${empty comments}">
             <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.view.CommentsNotFound"/> </h2>
         </c:if>
-        <sec:authorize access="hasAnyRole('ADMIN','USER')">
-            <c:set var="posts" value="${posts}" scope="request"/>
+
+        <sec:authorize access="hasRole('USER')">
+            <c:set var="comments" value="${comments}" scope="request"/>
             <jsp:include page="/WEB-INF/jsp/components/commentsDisplay.jsp"/>
         </sec:authorize>
     </div>
