@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.SearchService;
-import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.NonExistingSearchCriteriaException;
-import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.SearchMoviesForm;
 import ar.edu.itba.paw.webapp.form.SearchPostsForm;
 import ar.edu.itba.paw.webapp.form.SearchUsersForm;
@@ -28,7 +25,7 @@ public class SearchController {
 
         mv.addObject("query", searchPostsForm.getQuery());
         mv.addObject("posts",
-                searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(), searchPostsForm.getSortCriteria(), 0, 10).orElseThrow(NonExistingSearchCriteriaException::new));
+                searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(), searchPostsForm.getSortCriteria(), 0, 10)); // TODO: puse 2 para debugging
         return mv;
     }
 
@@ -38,7 +35,7 @@ public class SearchController {
         final ModelAndView mv = new ModelAndView("search/movies");
         mv.addObject("query", searchMoviesForm.getQuery());
         mv.addObject("movies",
-                searchService.searchMovies(searchMoviesForm.getQuery()).orElseThrow(MovieNotFoundException::new));
+                searchService.searchMovies(searchMoviesForm.getQuery()));
         return mv;
     }
 
@@ -49,7 +46,7 @@ public class SearchController {
 
         mv.addObject("query", searchUsersForm.getQuery());
         mv.addObject("users",
-                searchService.searchUsers(searchUsersForm.getQuery()).orElseThrow(UserNotFoundException::new));
+                searchService.searchUsers(searchUsersForm.getQuery()));
 
         return mv;
     }

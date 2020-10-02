@@ -1,10 +1,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
-<jsp:useBean id="posts" scope="request" type="java.util.Collection"/>
+<jsp:useBean id="posts" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection"/>
 
 <div class="uk-flex uk-flex-wrap">
-    <c:forEach items="${posts}" var="post">
+    <c:forEach items="${posts.results}" var="post">
         <div class="uk-width-1-1">
             <div class="uk-flex">
                 <div class="uk-width-expand uk-margin-small-top">

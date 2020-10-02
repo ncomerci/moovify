@@ -60,7 +60,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Optional<PaginatedCollection<Post>> searchPosts(String query, String category, String period, String sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> searchPosts(String query, String category, String period, String sortCriteria, int pageNumber, int pageSize) {
 
         Objects.requireNonNull(query);
 
@@ -83,32 +83,32 @@ public class SearchServiceImpl implements SearchService {
 
 
         if(options.isEmpty())
-            return Optional.of(postDao.searchPosts(query, sc, pageNumber, pageSize));
+            return postDao.searchPosts(query, sc, pageNumber, pageSize);
 
         else if(options.size() == 1) {
 
             if(options.contains(SearchOptions.OLDER_THAN))
-                return Optional.of(postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), sc, pageNumber, pageSize));
+                return postDao.searchPostsOlderThan(query, periodOptionsMap.get(period), sc, pageNumber, pageSize);
 
             else if(options.contains(SearchOptions.BY_CATEGORY))
-                return Optional.of(postDao.searchPostsByCategory(query, category, sc, pageNumber, pageSize));
+                return postDao.searchPostsByCategory(query, category, sc, pageNumber, pageSize);
         }
 
         else if(options.contains(SearchOptions.OLDER_THAN) && options.contains(SearchOptions.BY_CATEGORY) && options.size() == 2)
-            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), sc, pageNumber, pageSize));
+            return postDao.searchPostsByCategoryAndOlderThan(query, category, periodOptionsMap.get(period), sc, pageNumber, pageSize);
 
         throw new NonReachableStateException();
     }
 
     @Override
-    public Optional<Collection<Movie>> searchMovies(String query){
+    public Collection<Movie> searchMovies(String query){
         Objects.requireNonNull(query);
-        return Optional.of(movieDao.searchMovies(query));
+        return movieDao.searchMovies(query);
     }
 
     @Override
-    public Optional<Collection<User>> searchUsers(String query) {
+    public Collection<User> searchUsers(String query) {
         Objects.requireNonNull(query);
-        return Optional.of(userDao.searchUsers(query));
+        return userDao.searchUsers(query);
     }
 }
