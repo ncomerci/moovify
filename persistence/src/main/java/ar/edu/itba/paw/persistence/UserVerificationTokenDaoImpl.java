@@ -32,6 +32,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
+            USERS + ".enabled u_enabled, " +
 
             ROLES + ".role_id r_role_id, " +
             ROLES + ".role r_role, " +
@@ -57,7 +58,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
-                                new ArrayList<>()
+                                new ArrayList<>(), rs.getBoolean("u_enabled")
                         )
                 );
 

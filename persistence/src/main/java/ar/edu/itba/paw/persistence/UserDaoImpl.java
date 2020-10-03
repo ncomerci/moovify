@@ -30,6 +30,7 @@ public class UserDaoImpl implements UserDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
+            USERS + ".enabled u_enabled, " +
 
             ROLES + ".role_id r_role_id, " +
             ROLES + ".role r_role " +
@@ -52,7 +53,7 @@ public class UserDaoImpl implements UserDao {
                         new User(userId, rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
-                                new ArrayList<>())
+                                new ArrayList<>(), rs.getBoolean("u_enabled"))
                 );
             }
 
@@ -100,6 +101,7 @@ public class UserDaoImpl implements UserDao {
         map.put("password", password);
         map.put("name", name);
         map.put("email", email);
+        map.put("enabled", true);
 
         final long userId = jdbcUserInsert.executeAndReturnKey(map).longValue();
 
@@ -110,7 +112,7 @@ public class UserDaoImpl implements UserDao {
             jdbcUserRoleInsert.execute(map);
         }
 
-        return new User(userId, creationDate, username, password, name, email, roles);
+        return new User(userId, creationDate, username, password, name, email, roles, true);
     }
 
     @Override
@@ -164,7 +166,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findById(long id) {
-        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".user_id = ?",
+        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".user_id = ?" + " AND "+ USERS + ".enabled = true",
                 new Object[]{ id }, USER_ROW_MAPPER).stream().findFirst();
     }
 
@@ -182,7 +184,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Collection<User> searchUsers(String query) {
-        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".username ILIKE '%' || ? || '%'", new Object[]{query}, USER_ROW_MAPPER);
+        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".username ILIKE '%' || ? || '%'" + " AND "+ USERS + ".enabled = true", new Object[]{query}, USER_ROW_MAPPER);
     }
 
     @Override

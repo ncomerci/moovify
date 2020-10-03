@@ -56,7 +56,8 @@ public class CommentDaoImpl implements CommentDao {
             POSTS + ".u_username pu_username, " +
             POSTS + ".u_password pu_password, " +
             POSTS + ".u_name pu_name, " +
-            POSTS + ".u_email pu_email";
+            POSTS + ".u_email pu_email, " +
+            POSTS + ".u_enabled pu_enabled";
 
     // Users come without roles
     private static final String USER_SELECT =
@@ -65,7 +66,8 @@ public class CommentDaoImpl implements CommentDao {
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
-            USERS + ".email u_email";
+            USERS + ".email u_email, " +
+            USERS + ".enabled u_enabled";
 
     private static final String BASE_COMMENT_FROM = "FROM " + COMMENTS;
 
@@ -90,7 +92,8 @@ public class CommentDaoImpl implements CommentDao {
                     USERS + ".username u_username, " +
                     USERS + ".password u_password, " +
                     USERS + ".name u_name, " +
-                    USERS + ".email u_email" +
+                    USERS + ".email u_email, " +
+                    USERS + ".enabled u_enabled" +
 
                     " FROM " + POSTS +
                         " INNER JOIN " + POST_CATEGORY + " ON " + POSTS + ".category_id = " + POST_CATEGORY + ".category_id " +
@@ -115,7 +118,7 @@ public class CommentDaoImpl implements CommentDao {
                             new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
                                     rs.getString("pu_username"), rs.getString("pu_password"),
                                     rs.getString("pu_name"), rs.getString("pu_email"),
-                                    null),
+                                    null, rs.getBoolean("pu_enabled")),
 
                             // tags
                             null),
@@ -125,7 +128,7 @@ public class CommentDaoImpl implements CommentDao {
                     new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                             rs.getString("u_username"), rs.getString("u_password"),
                             rs.getString("u_name"), rs.getString("u_email"),
-                            null));
+                            null, rs.getBoolean("u_enabled")));
 
     // Coalesce parent_id = null to parent_id = 0.
     private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER_WITH_CHILDREN = (rs) -> {
@@ -158,7 +161,7 @@ public class CommentDaoImpl implements CommentDao {
                                 new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
                                         rs.getString("pu_username"), rs.getString("pu_password"),
                                         rs.getString("pu_name"), rs.getString("pu_email"),
-                                        null),
+                                        null, rs.getBoolean("pu_enabled")),
 
                                 // tags
                                 null),
@@ -168,7 +171,7 @@ public class CommentDaoImpl implements CommentDao {
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
-                                null)
+                                null, rs.getBoolean("u_enabled"))
                 );
 
                 idToCommentMap.put(comment_id, currentComment);

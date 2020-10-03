@@ -47,7 +47,8 @@ public class PostDaoImpl implements PostDao {
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
-            USERS + ".email u_email";
+            USERS + ".email u_email, " +
+            USERS + ".enabled u_enabled";
 
     private static final String TAGS_SELECT = TAGS + ".tag p_tag";
 
@@ -87,7 +88,7 @@ public class PostDaoImpl implements PostDao {
                                 new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                         rs.getString("u_username"), rs.getString("u_password"),
                                         rs.getString("u_name"), rs.getString("u_email"),
-                                        null),
+                                        null, rs.getBoolean("u_enabled")),
 
                                 // tags
                                 new LinkedHashSet<>()

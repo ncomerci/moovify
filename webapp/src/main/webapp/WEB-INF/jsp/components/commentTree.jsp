@@ -17,7 +17,18 @@
                             </div>
                             <div class="uk-width-expand">
                                 <h4 class="uk-comment-title uk-margin-remove">
-                                    <a href = "<c:url value="/user/${comment.user.id}" />"><c:out value="${comment.user.name}" /> </a>
+                                    <c:choose>
+                                        <c:when test="${comment.user.enabled}">
+                                            <a href = "<c:url value="/user/${comment.user.id}" />">
+                                                <c:out value="${comment.user.name}" />
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="uk-text-italic">
+                                                <spring:message code="user.notEnabled.name"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </h4>
                                 <p class="uk-comment-meta uk-margin-remove-top">
                                     <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
