@@ -247,9 +247,7 @@ public class PostDaoImpl implements PostDao {
 
         final Collection<Post> results = executeQuery(select, from, newWhere, orderBy, args);
 
-        final boolean lastPage = totalPostCount == 0 || (totalPostCount - 1)/pageSize == pageNumber;
-
-        return new PaginatedCollection<>(results, pageNumber, pageSize, totalPostCount, lastPage);
+        return new PaginatedCollection<>(results, pageNumber, pageSize, totalPostCount);
     }
     
     private String buildOrderByStatement(SortCriteria sortCriteria) {

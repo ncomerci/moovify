@@ -8,14 +8,12 @@ public class PaginatedCollection<T> {
     private final int pageNumber;
     private final int pageSize;
     private final int totalCount;
-    private final boolean lastPage;
 
-    public PaginatedCollection(Collection<T> results, int pageNumber, int pageSize, int totalCount, boolean lastPage) {
+    public PaginatedCollection(Collection<T> results, int pageNumber, int pageSize, int totalCount) {
         this.results = results;
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
         this.totalCount = totalCount;
-        this.lastPage = lastPage;
     }
 
     public Collection<T> getResults() {
@@ -32,10 +30,6 @@ public class PaginatedCollection<T> {
 
     public int getTotalCount() {
         return totalCount;
-    }
-
-    public boolean isLastPage() {
-        return lastPage;
     }
 
     public int getLastPageNumber() {
