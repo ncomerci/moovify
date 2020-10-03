@@ -21,5 +21,7 @@ public interface PostService {
 
     Collection<Post> getAllPostsOrderByOldest();
 
+    Collection<Post> getAllPostsOrderByHottest();
+
     Collection<PostCategory> getAllPostCategories();
 }

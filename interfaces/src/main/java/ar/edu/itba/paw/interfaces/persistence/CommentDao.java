@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface CommentDao {
 
     enum SortCriteria {
-        NEWEST, OLDEST
+        NEWEST, OLDEST, HOTTEST
     }
 
     long register(long postId, Long parentId, String body, long userId);

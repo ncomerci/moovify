@@ -14,6 +14,7 @@ import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Optional;
 
 @Repository
@@ -23,6 +24,7 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
     private static final String USERS = TableNames.USERS.getTableName();
     private static final String ROLES = TableNames.ROLES.getTableName();
     private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
+    private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
 
 
     private static final String GET_TOKEN_QUERY = "SELECT " +
@@ -38,12 +40,15 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
 
             PASSWORD_RESET_TOKEN + ".token_id t_token_id, " +
             PASSWORD_RESET_TOKEN + ".token t_token, " +
-            PASSWORD_RESET_TOKEN + ".expiry t_expiry " +
+            PASSWORD_RESET_TOKEN + ".expiry t_expiry, " +
+
+            COMMENTS_LIKES + ".comment_id c_comment_id " +
 
             "FROM " + PASSWORD_RESET_TOKEN +
             " INNER JOIN " + USERS + " ON " + PASSWORD_RESET_TOKEN + ".user_id = " + USERS + ".user_id " +
             "INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
             "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
+            "LEFT OUTER JOIN " + COMMENTS_LIKES + " ON " + COMMENTS_LIKES + ".user_id = " + USERS + ".user_id "+
             "WHERE " + PASSWORD_RESET_TOKEN + ".token = ?";
 
 
@@ -57,13 +62,15 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
-                                new ArrayList<>()
+                                new HashSet<>(), new HashSet<>()
                         )
                 );
 
         token.getUser().getRoles().add(
                 new Role(rs.getLong("r_role_id"), rs.getString("r_role"))
         );
+        token.getUser().getLikedComments().add(rs.getLong("c_comment_id"));
+
 
         // All repeated rows may only change because of the user role
         while(rs.next()) {

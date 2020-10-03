@@ -12,8 +12,9 @@ public class User {
     private final String name;
     private final String email;
     private final Collection<Role> roles;
+    private final Collection<Long> likedComments;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, Collection<Role> roles) {
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, Collection<Role> roles, Collection<Long> likedComments) {
         this.id = id;
         this.creationDate = creationDate;
         this.username = username;
@@ -21,6 +22,7 @@ public class User {
         this.name = name;
         this.email = email;
         this.roles = roles;
+        this.likedComments = likedComments;
     }
 
     public long getId() {
@@ -49,6 +51,10 @@ public class User {
 
     public Collection<Role> getRoles() {
         return roles;
+    }
+
+    public Collection<Long> getLikedComments() {
+        return likedComments;
     }
 
     public boolean hasRole(String role) {

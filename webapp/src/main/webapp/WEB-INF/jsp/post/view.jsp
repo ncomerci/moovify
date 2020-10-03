@@ -18,7 +18,7 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
-    <section id="post-metadata">
+    <div id="post-metadata" >
         <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
         <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
 <%--                TODO: Create a custom taglib  --%>
@@ -36,7 +36,8 @@
                 <c:out value="${post.user.name}"/>
             </a>
         </span>
-    </section>
+    </div>
+
     <hr>
     <article id="post-body">
         <noscript id="unparsedBody">
@@ -63,6 +64,17 @@
                 <c:out value="${tag}"/>
             </a>
         </c:forEach>
+    </section>
+    <section>
+        <h1 class="uk-h2 uk-margin-remove-adjacent ">
+
+            <spring:message code="post.view.likes"/> <c:out value="${post.likes}"/>
+            <sec:authorize access="hasRole('USER')">
+                <c:if test="${isPostLiked}">
+                    <span class="uk-navbar-toggle" uk-icon="icon: heart; ratio: 1.5"></span>
+                </c:if>
+            </sec:authorize>
+        </h1>
     </section>
     <hr>
     <section class="uk-container uk-container-small">

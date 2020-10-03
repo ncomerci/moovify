@@ -23,6 +23,7 @@ public class PostDaoImpl implements PostDao {
     private static final String POSTS = TableNames.POSTS.getTableName();
     private static final String MOVIES = TableNames.MOVIES.getTableName();
     private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
+    private static final String POSTS_LIKES = TableNames.POSTS_LIKES.getTableName();
     private static final String TAGS = TableNames.TAGS.getTableName();
     private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
     private static final String USERS = TableNames.USERS.getTableName();
@@ -34,7 +35,8 @@ public class PostDaoImpl implements PostDao {
             POSTS + ".creation_date p_creation_date, " +
             POSTS + ".title p_title, " +
             POSTS + ".body p_body, " +
-            POSTS + ".word_count p_word_count";
+            POSTS + ".word_count p_word_count, " +
+            POSTS_LIKES + ".likes p_likes";
 
     private static final String CATEGORY_SELECT =
             POST_CATEGORY + ".category_id pc_category_id, " +
@@ -49,9 +51,13 @@ public class PostDaoImpl implements PostDao {
             USERS + ".name u_name, " +
             USERS + ".email u_email";
 
-    private static final String TAGS_SELECT = TAGS + ".tag p_tag";
+    private static final String TAGS_SELECT = TAGS + ".tag p_tag ";
 
-    private static final String BASE_POST_FROM = "FROM " + POSTS;
+    private static final String BASE_POST_FROM =
+            "FROM " + POSTS + " INNER JOIN " +
+                    "(SELECT " + POSTS + ".post_id, COUNT( " + POSTS_LIKES + ".user_id ) likes " +
+                    "FROM " + POSTS + " LEFT OUTER JOIN " + POSTS_LIKES + " on " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id" +
+                    " GROUP BY " + POSTS + ".post_id ) " + POSTS_LIKES + " ON " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id";
 
     private static final String CATEGORY_FROM =
             "INNER JOIN " + POST_CATEGORY + " ON " + POSTS + ".category_id = " + POST_CATEGORY + ".category_id";
@@ -61,7 +67,6 @@ public class PostDaoImpl implements PostDao {
 
     private static final String TAGS_FROM =
             "LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id";
-
 
     private static final ResultSetExtractor<Collection<Post>> POST_ROW_MAPPER = (rs) -> {
 
@@ -87,10 +92,16 @@ public class PostDaoImpl implements PostDao {
                                 new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                         rs.getString("u_username"), rs.getString("u_password"),
                                         rs.getString("u_name"), rs.getString("u_email"),
-                                        null),
+                                        null, null),
 
                                 // tags
-                                new LinkedHashSet<>()
+                                new LinkedHashSet<>(),
+
+                                //likes
+                                rs.getLong("p_likes")
+
+
+
                         )
                 );
             }
@@ -141,6 +152,7 @@ public class PostDaoImpl implements PostDao {
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, POSTS + ".creation_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, POSTS + ".creation_date");
+        sortCriteriaQuery.put(SortCriteria.HOTTEST, POSTS_LIKES + ".likes desc");
 
         return sortCriteriaQuery;
     }

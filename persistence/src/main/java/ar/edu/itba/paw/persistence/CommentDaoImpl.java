@@ -25,6 +25,7 @@ public class CommentDaoImpl implements CommentDao {
     private static final String POSTS = TableNames.POSTS.getTableName();
     private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
     private static final String USERS = TableNames.USERS.getTableName();
+    private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert commentInsert;
@@ -35,7 +36,8 @@ public class CommentDaoImpl implements CommentDao {
             "coalesce(" + COMMENTS + ".parent_id, 0) c_parent_id, " +
             COMMENTS + ".post_id c_post_id, " +
             COMMENTS + ".creation_date c_creation_date, " +
-            COMMENTS + ".body c_body";
+            COMMENTS + ".body c_body, " +
+            COMMENTS_LIKES + ".likes c_likes";
 
     // Posts come without Tags
     private static final String POST_SELECT =
@@ -67,7 +69,14 @@ public class CommentDaoImpl implements CommentDao {
             USERS + ".name u_name, " +
             USERS + ".email u_email";
 
-    private static final String BASE_COMMENT_FROM = "FROM " + COMMENTS;
+    private static final String BASE_COMMENT_FROM = "FROM " + COMMENTS +
+            " LEFT OUTER JOIN ( " +
+                "SELECT " +
+                COMMENTS_LIKES + ".comment_id, " +
+                "COUNT( " + COMMENTS_LIKES + ".user_id ) likes " +
+                "FROM " + COMMENTS_LIKES +
+                " GROUP BY " + COMMENTS_LIKES + ".comment_id" +
+                ") " + COMMENTS_LIKES  + " ON " + COMMENTS + ".comment_id =" + COMMENTS_LIKES + ".comment_id";
 
     private static final String POST_FROM =
             "INNER JOIN ( " +
@@ -115,17 +124,20 @@ public class CommentDaoImpl implements CommentDao {
                             new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
                                     rs.getString("pu_username"), rs.getString("pu_password"),
                                     rs.getString("pu_name"), rs.getString("pu_email"),
-                                    null),
+                                    null, null),
 
                             // tags
-                            null),
+                            null,
+                            0),
 
                     rs.getLong("c_parent_id"), null, rs.getString("c_body"),
 
                     new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                             rs.getString("u_username"), rs.getString("u_password"),
                             rs.getString("u_name"), rs.getString("u_email"),
-                            null));
+                            null,null),
+                    rs.getLong("c_likes")
+                    );
 
     // Coalesce parent_id = null to parent_id = 0.
     private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER_WITH_CHILDREN = (rs) -> {
@@ -158,17 +170,22 @@ public class CommentDaoImpl implements CommentDao {
                                 new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
                                         rs.getString("pu_username"), rs.getString("pu_password"),
                                         rs.getString("pu_name"), rs.getString("pu_email"),
-                                        null),
+                                        null, null),
 
                                 // tags
-                                null),
+                                null,
+                                0),
+
 
                         rs.getLong("c_parent_id"), new ArrayList<>(), rs.getString("c_body"),
 
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
-                                null)
+                                null, null),
+
+                        rs.getLong("c_likes")
+
                 );
 
                 idToCommentMap.put(comment_id, currentComment);
@@ -191,7 +208,7 @@ public class CommentDaoImpl implements CommentDao {
 
                         // Initialize Collection inside Map if necessary
                         if(!childrenWithoutParentMap.containsKey(currentComment.getParentId()))
-                            childrenWithoutParentMap.put(currentComment.getParentId(), new ArrayList<>());
+                            childrenWithoutParentMap.put(currentComment.getParentId(), new HashSet<>());
 
                         // Add children to Parent Children Buffer
                         childrenWithoutParentMap.get(currentComment.getParentId()).add(currentComment);
@@ -212,8 +229,9 @@ public class CommentDaoImpl implements CommentDao {
     private static EnumMap<CommentDao.SortCriteria, String> initializeSortCriteriaQuery() {
         EnumMap<CommentDao.SortCriteria, String> sortCriteriaQuery = new EnumMap<>(CommentDao.SortCriteria.class);
 
-        sortCriteriaQuery.put(CommentDao.SortCriteria.NEWEST, COMMENTS + ".creation_date desc");
-        sortCriteriaQuery.put(CommentDao.SortCriteria.OLDEST, COMMENTS + ".creation_date");
+        sortCriteriaQuery.put(SortCriteria.NEWEST, COMMENTS + ".creation_date desc");
+        sortCriteriaQuery.put(SortCriteria.OLDEST, COMMENTS + ".creation_date");
+        sortCriteriaQuery.put(SortCriteria.HOTTEST, COMMENTS_LIKES + ".likes");
 
         return sortCriteriaQuery;
     }

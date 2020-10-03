@@ -10,6 +10,8 @@ import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
 import ar.edu.itba.paw.webapp.form.PostCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -38,15 +40,22 @@ public class PostController {
     @Autowired
     private UserService userService;
 
+
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long postId,
                              @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm) {
 
         final ModelAndView mv = new ModelAndView("post/view");
 
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         mv.addObject("post", postService.findPostById(postId).orElseThrow(PostNotFoundException::new));
         mv.addObject("movies", movieService.findMoviesByPostId(postId));
         mv.addObject("comments", commentService.findCommentsByPostIdWithChildren(postId));
+
+        if(!isAnonymous(auth)) {
+            mv.addObject("isPostLiked", userService.hasUserLiked(auth.getName(), postId));
+        }
 
         return mv;
     }
@@ -76,5 +85,9 @@ public class PostController {
                 postCreateForm.getMovies());
 
         return new ModelAndView("redirect:/post/" + post);
+    }
+
+    private boolean isAnonymous(Authentication auth) {
+        return auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ANONYMOUS"));
     }
 }

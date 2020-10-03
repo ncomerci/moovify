@@ -17,8 +17,9 @@ public class Comment {
     private final Collection<Comment> children;
     private final String body;
     private final User user;
+    private final long likes;
 
-    public Comment(long id, LocalDateTime creationDate, Post post, Long parentId, Collection<Comment> children, String body, User user) {
+    public Comment(long id, LocalDateTime creationDate, Post post, Long parentId, Collection<Comment> children, String body, User user, long likes) {
         this.id = id;
         this.creationDate = creationDate;
         this.post = post;
@@ -26,6 +27,7 @@ public class Comment {
         this.children = children;
         this.body = body;
         this.user = user;
+        this.likes = likes;
     }
 
     public long getId() {
@@ -55,6 +57,10 @@ public class Comment {
 
     public User getUser() {
         return user;
+    }
+
+    public long getLikes() {
+        return likes;
     }
 
     public int getDescendantCount() {

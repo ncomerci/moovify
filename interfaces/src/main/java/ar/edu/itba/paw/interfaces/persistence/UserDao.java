@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
+import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
@@ -16,6 +17,8 @@ public interface UserDao {
 
     boolean userHasRole(String email, String role);
 
+    boolean hasUserLiked(String username, long postId);
+
     Collection<Role> addRoles(long userId, Collection<String> roleNames);
 
     void updatePassword(long userId, String password);
@@ -27,6 +30,7 @@ public interface UserDao {
     Optional<User> findByEmail(String email);
 
     Collection<User> searchUsers(String query);
+
 
     Collection<User> getAllUsers();
 }

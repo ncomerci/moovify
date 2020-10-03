@@ -31,6 +31,7 @@ public class PostServiceImpl implements PostService {
         return postDao.findPostById(id);
     }
 
+
     @Override
     public Collection<Post> findPostsByMovieId(long movie_id) {
         return postDao.findPostsByMovieId(movie_id, PostDao.SortCriteria.NEWEST);
@@ -49,6 +50,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public Collection<Post> getAllPostsOrderByOldest() {
         return postDao.getAllPosts(PostDao.SortCriteria.OLDEST);
+    }
+
+    @Override
+    public Collection<Post> getAllPostsOrderByHottest() {
+        return postDao.getAllPosts(PostDao.SortCriteria.HOTTEST);
     }
 
     @Override

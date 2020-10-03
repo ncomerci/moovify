@@ -59,9 +59,19 @@ CREATE TABLE IF NOT EXISTS POSTS
     category_id   INTEGER      NOT NULL,
     word_count    INTEGER      NOT NULL,
     body          TEXT         NOT NULL,
+    likes         INTEGER      NOT NULL,
 
     FOREIGN KEY (category_id) REFERENCES POST_CATEGORY (category_id),
     FOREIGN KEY (user_id)     REFERENCES USERS (user_id)
+);
+
+CREATE TABLE IF NOT EXISTS POSTS_LIKES
+(
+    post_id     INTEGER     NOT NULL,
+    user_id     INTEGER     NOT NULL,
+    PRIMARY KEY (post_id, user_id),
+    FOREIGN KEY (post_id) REFERENCES POSTS (post_id),
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
 );
 
 CREATE TABLE IF NOT EXISTS TAGS
@@ -126,6 +136,15 @@ CREATE TABLE IF NOT EXISTS COMMENTS
 
     FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id),
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
+);
+
+CREATE TABLE IF NOT EXISTS COMMENTS_LIKES
+(
+    comment_id     INTEGER     NOT NULL,
+    user_id        INTEGER     NOT NULL,
+    PRIMARY KEY (comment_id, user_id),
+    FOREIGN KEY (comment_id) REFERENCES COMMENTS (comment_id),
     FOREIGN KEY (user_id) REFERENCES USERS (user_id)
 );
 

@@ -20,7 +20,7 @@ public class HomeController {
         final ModelAndView mv = new ModelAndView("index");
 
         mv.addObject("newestPosts", postService.getAllPostsOrderByNewest());
-        mv.addObject("oldestPosts", postService.getAllPostsOrderByOldest());
+        mv.addObject("hottestPosts", postService.getAllPostsOrderByHottest());
 
         return mv;
     }

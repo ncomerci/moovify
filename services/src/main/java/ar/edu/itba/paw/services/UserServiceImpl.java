@@ -111,6 +111,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean hasUserLiked(String username, long postId) {
+        return userDao.hasUserLiked(username, postId);
+    }
+
+    @Override
     public Optional<User> updatePassword(String password, String token) {
         Optional<PasswordResetToken> optToken = passwordResetTokenDao.getResetPasswordToken(token);
 
@@ -160,4 +165,6 @@ public class UserServiceImpl implements UserService {
 
         user.getRoles().add(new Role(newRole));
     }
+
+
 }
