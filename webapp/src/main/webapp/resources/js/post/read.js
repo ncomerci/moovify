@@ -33,6 +33,9 @@ window.addEventListener('load', () => {
 
     document.querySelectorAll(".reply-button")
         .forEach(button => button.addEventListener('click', () => openCommentForm(button.dataset.id), false));
+
+    document.getElementById('pagination-page-size').addEventListener('change',
+        () => document.getElementById('pagination-form').submit())
 }, false);
 
 function showReplies(commentId) {

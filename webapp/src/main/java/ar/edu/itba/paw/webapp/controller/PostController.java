@@ -12,10 +12,7 @@ import ar.edu.itba.paw.webapp.form.PostCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -40,13 +37,15 @@ public class PostController {
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long postId,
+                             @RequestParam(defaultValue = "5") final int pageSize,
+                             @RequestParam(defaultValue = "0") final int pageNumber,
                              @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm) {
 
         final ModelAndView mv = new ModelAndView("post/view");
 
         mv.addObject("post", postService.findPostById(postId).orElseThrow(PostNotFoundException::new));
         mv.addObject("movies", movieService.findMoviesByPostId(postId, 0, 10));
-        mv.addObject("comments", commentService.findCommentsByPostIdWithChildren(postId, 0, 2));
+        mv.addObject("comments", commentService.findCommentsByPostIdWithChildren(postId, pageNumber, pageSize));
 
         return mv;
     }

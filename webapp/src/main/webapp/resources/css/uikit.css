@@ -8421,6 +8421,9 @@ iframe.uk-cover {
 .uk-flex-middle {
   align-items: center;
 }
+.uk-flex-baseline{
+  align-items: baseline;
+}
 .uk-flex-bottom {
   align-items: flex-end;
 }
