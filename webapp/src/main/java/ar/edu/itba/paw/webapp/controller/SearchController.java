@@ -6,29 +6,35 @@ import ar.edu.itba.paw.webapp.form.SearchPostsForm;
 import ar.edu.itba.paw.webapp.form.SearchUsersForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
+
 
 @Controller
 public class SearchController {
-
-    private static final int DEFAULT_PAGE_SIZE = 3;
 
     @Autowired
     private SearchService searchService;
 
     @RequestMapping(path = "/search/posts/", method = RequestMethod.GET)
-    public ModelAndView searchPosts(@ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm) {
+    public ModelAndView searchPosts(@Valid @ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm, BindingResult bindingResult) {
+
+        if(bindingResult.hasErrors())
+            throw new IllegalArgumentException("SearchController: Search params are invalid:" +
+                    bindingResult.getAllErrors().stream().reduce("",
+                            (acc, error) -> acc + " " + error.getObjectName() + " " + error.getDefaultMessage(), String::concat));
 
         final ModelAndView mv = new ModelAndView("search/posts");
 
         mv.addObject("query", searchPostsForm.getQuery());
         mv.addObject("posts",
                 searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(),
-                        searchPostsForm.getSortCriteria(), searchPostsForm.getPageNumber(), searchPostsForm.getPageSize() == 0 ? DEFAULT_PAGE_SIZE : searchPostsForm.getPageSize()));// TODO: puse 2 para debugging
+                        searchPostsForm.getSortCriteria(), searchPostsForm.getPageNumber(), searchPostsForm.getPageSize()));
         return mv;
     }
 
