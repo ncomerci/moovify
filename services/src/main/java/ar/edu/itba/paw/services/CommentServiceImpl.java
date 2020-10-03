@@ -24,8 +24,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Optional<Comment> findCommentByIdWithChildren(long id){
-        return commentDao.findCommentByIdWithChildren(id);
+    public Optional<PaginatedCollection<Comment>> findCommentByIdWithChildren(long id, int pageNumber, int pageSize){
+        return commentDao.findCommentByIdWithChildren(id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
@@ -41,11 +41,6 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public PaginatedCollection<Comment> findCommentsByPostIdWithoutChildren(long post_id, int pageNumber, int pageSize) {
         return commentDao.findCommentsByPostIdWithoutChildren(post_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
-    }
-
-    @Override
-    public PaginatedCollection<Comment> findCommentsByUserIdWithChildren(long user_id, int pageNumber, int pageSize) {
-        return commentDao.findCommentsByUserIdWithChildren(user_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
