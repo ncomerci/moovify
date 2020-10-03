@@ -22,10 +22,10 @@ public class SearchController {
     private SearchService searchService;
 
     @RequestMapping(path = "/search/posts/", method = RequestMethod.GET)
-    public ModelAndView searchPosts(@Valid @ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm, BindingResult bindingResult) {
+    public ModelAndView searchPosts(@Valid @ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm, final BindingResult bindingResult) {
 
         if(bindingResult.hasErrors())
-            throw new IllegalArgumentException("SearchController: Search params are invalid:" +
+            throw new IllegalArgumentException("SearchController: searchPost: Search params are invalid:" +
                     bindingResult.getAllErrors().stream().reduce("",
                             (acc, error) -> acc + " " + error.getObjectName() + " " + error.getDefaultMessage(), String::concat));
 
@@ -39,12 +39,18 @@ public class SearchController {
     }
 
     @RequestMapping(path = "/search/movies/", method = RequestMethod.GET)
-    public ModelAndView searchMovies(@ModelAttribute("searchMoviesForm") final SearchMoviesForm searchMoviesForm) {
+    public ModelAndView searchMovies(@Valid @ModelAttribute("searchMoviesForm") final SearchMoviesForm searchMoviesForm, final BindingResult bindingResult) {
+
+        if(bindingResult.hasErrors())
+            throw new IllegalArgumentException("SearchController: searchMovie: Search params are invalid:" +
+                    bindingResult.getAllErrors().stream().reduce("",
+                            (acc, error) -> acc + " " + error.getObjectName() + " " + error.getDefaultMessage(), String::concat));
+
 
         final ModelAndView mv = new ModelAndView("search/movies");
         mv.addObject("query", searchMoviesForm.getQuery());
         mv.addObject("movies",
-                searchService.searchMovies(searchMoviesForm.getQuery(), 1, 10));
+                searchService.searchMovies(searchMoviesForm.getQuery(), searchMoviesForm.getPageNumber(), searchMoviesForm.getPageSize()));
         return mv;
     }
 

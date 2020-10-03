@@ -21,7 +21,7 @@
                     <a href="#"><spring:message code="search.posts"/></a>
                 </c:when>
                 <c:otherwise>
-                    <a href="<c:url value="${'/search/posts/?query='}${query}"/>"><spring:message code="search.posts"/></a>
+                    <a href="<c:url value="${'/search/posts/?query='}${query}${'&pageSize=5'}"/>"><spring:message code="search.posts"/></a>
                 </c:otherwise>
             </c:choose>
         </li>
@@ -31,7 +31,7 @@
                     <a href="#"><spring:message code="search.movies"/></a>
                 </c:when>
                 <c:otherwise>
-                    <a href="<c:url value="${'/search/movies/?query='}${query}"/>"><spring:message code="search.movies"/></a>
+                    <a href="<c:url value="${'/search/movies/?query='}${query}${'&pageSize=5'}"/>"><spring:message code="search.movies"/></a>
                 </c:otherwise>
             </c:choose>
         </li>
@@ -41,7 +41,7 @@
                     <a href="#"><spring:message code="search.users"/></a>
                 </c:when>
                 <c:otherwise>
-                    <a href="<c:url value="${'/search/users/?query='}${query}"/>"><spring:message code="search.users"/></a>
+                    <a href="<c:url value="${'/search/users/?query='}${query}${'&pageSize=5'}"/>"><spring:message code="search.users"/></a>
                 </c:otherwise>
             </c:choose>
         </li>
