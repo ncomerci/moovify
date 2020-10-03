@@ -5,10 +5,7 @@ import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
-import ar.edu.itba.paw.models.PasswordResetToken;
-import ar.edu.itba.paw.models.Role;
-import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.models.UserVerificationToken;
+import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -148,8 +145,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Collection<User> getAllUsers() {
-        return userDao.getAllUsers();
+    public PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize) {
+        return userDao.getAllUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     private void replaceUserRole(User user, String newRole, String oldRole) {

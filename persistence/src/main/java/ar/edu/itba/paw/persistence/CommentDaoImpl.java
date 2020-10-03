@@ -308,7 +308,12 @@ public class CommentDaoImpl implements CommentDao {
 
         final String from = BASE_COMMENT_FROM + " " + nonBaseFrom;
 
-        final String onlyRootWhereStatement = customWhereStatement + " AND coalesce(" + COMMENTS + ".parent_id, 0) = ?";
+        final String onlyRootWhereStatement = customWhereStatement +
+
+                // customWhereStatement may come empty
+                ((customWhereStatement == null || customWhereStatement.length() < 3)? " WHERE " : " AND ") +
+
+                "coalesce(" + COMMENTS + ".parent_id, 0) = ?";
 
         // Add rootId to args list
         final Object[] newArgs = Arrays.copyOf(args, args.length + 1);

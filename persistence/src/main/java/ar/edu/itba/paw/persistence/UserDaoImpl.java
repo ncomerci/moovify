@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.RoleDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
+import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.exceptions.UserRegistrationWithoutRoleException;
@@ -23,7 +24,7 @@ public class UserDaoImpl implements UserDao {
     private static final String ROLES = TableNames.ROLES.getTableName();
     private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
 
-    private static final String SELECT_FROM_USERS = "SELECT " +
+    private static final String BASE_USER_SELECT = "SELECT " +
             USERS + ".user_id u_user_id, " +
             USERS + ".creation_date u_creation_date, " +
             USERS + ".username u_username, " +
@@ -32,9 +33,10 @@ public class UserDaoImpl implements UserDao {
             USERS + ".email u_email, " +
 
             ROLES + ".role_id r_role_id, " +
-            ROLES + ".role r_role " +
+            ROLES + ".role r_role ";
 
-            "FROM " + USERS +
+
+    private static final String BASE_USER_FROM = "FROM " + USERS +
             " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
             "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id ";
 
@@ -63,6 +65,18 @@ public class UserDaoImpl implements UserDao {
 
         return idToUserMap.values();
     };
+
+    private static final EnumMap<SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQuery();
+
+    private static EnumMap<SortCriteria, String> initializeSortCriteriaQuery() {
+
+        EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
+
+        sortCriteriaQuery.put(SortCriteria.NEWEST, USERS + ".creation_date desc");
+        sortCriteriaQuery.put(SortCriteria.OLDEST, USERS + ".creation_date");
+
+        return sortCriteriaQuery;
+    }
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcUserInsert;
@@ -162,32 +176,92 @@ public class UserDaoImpl implements UserDao {
                 "  AND " + ROLES + ".role = ?", newRole, userId, oldRole);
     }
 
+    private Collection<User> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
+
+        final String query = select + " " + from + " " + where + " " + orderBy;
+
+        if(args != null)
+            return jdbcTemplate.query(query, args, USER_ROW_MAPPER);
+
+        else
+            return jdbcTemplate.query(query, USER_ROW_MAPPER);
+    }
+
+    private Collection<User> buildAndExecuteQuery(String customWhereStatement, Object[] args){
+
+        final String select = BASE_USER_SELECT;
+
+        final String from = BASE_USER_FROM;
+
+        return executeQuery(select, from, customWhereStatement, "", args);
+    }
+
+    private PaginatedCollection<User> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
+
+        final String select = BASE_USER_SELECT;
+
+        final String from = BASE_USER_FROM;
+
+        // Execute original query to count total posts in the query
+        final int totalUserCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT " + USERS + ".user_id) " + from + " " + customWhereStatement, args, Integer.class);
+
+        final String orderBy = buildOrderByStatement(sortCriteria);
+
+        final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
+
+        final String newWhere = "WHERE " + USERS + ".user_id IN (SELECT " + USERS + ".user_id FROM " + USERS + " WHERE " + USERS + ".user_id IN (" +
+                "SELECT " + USERS + ".user_id " + from + " " + customWhereStatement +
+                " ) " + orderBy + " " + pagination + ")";
+
+        final Collection<User> results = executeQuery(select, from, newWhere, orderBy, args);
+
+        return new PaginatedCollection<>(results, pageNumber, pageSize, totalUserCount);
+    }
+
+    private String buildOrderByStatement(SortCriteria sortCriteria) {
+
+        if(!sortCriteriaQueryMap.containsKey(sortCriteria))
+            throw new IllegalArgumentException("SortCriteria implementation not found for " + sortCriteria + " in UserDaoImpl.");
+
+        return "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria);
+    }
+
+    private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
+
+        if(pageNumber < 0 || pageSize <= 0)
+            throw new IllegalArgumentException("Illegal User pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
+
+        return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
+    }
+
     @Override
     public Optional<User> findById(long id) {
-        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".user_id = ?",
-                new Object[]{ id }, USER_ROW_MAPPER).stream().findFirst();
+        return buildAndExecuteQuery("WHERE " + USERS + ".user_id = ?",
+                new Object[]{ id }).stream().findFirst();
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".username = ?",
-                new Object[]{ username }, USER_ROW_MAPPER).stream().findFirst();
+        return buildAndExecuteQuery("WHERE " + USERS + ".username = ?",
+                new Object[]{ username }).stream().findFirst();
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".email = ?",
-                new Object[]{ email }, USER_ROW_MAPPER).stream().findFirst();
+        return buildAndExecuteQuery("WHERE " + USERS + ".email = ?",
+                new Object[]{ email }).stream().findFirst();
     }
 
     @Override
-    public Collection<User> searchUsers(String query) {
-        return jdbcTemplate.query(SELECT_FROM_USERS + " WHERE " + USERS + ".username ILIKE '%' || ? || '%'", new Object[]{query}, USER_ROW_MAPPER);
+    public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%'",
+                sortCriteria, pageNumber, pageSize, new Object[]{query});
     }
 
     @Override
-    public Collection<User> getAllUsers() {
-        return jdbcTemplate.query(
-                SELECT_FROM_USERS, USER_ROW_MAPPER);
+    public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery(
+                "", sortCriteria, pageNumber, pageSize, null);
     }
 }

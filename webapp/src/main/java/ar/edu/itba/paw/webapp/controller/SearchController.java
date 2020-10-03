@@ -55,7 +55,7 @@ public class SearchController {
 
         mv.addObject("query", searchUsersForm.getQuery());
         mv.addObject("users",
-                searchService.searchUsers(searchUsersForm.getQuery()));
+                searchService.searchUsers(searchUsersForm.getQuery(), 1, 2));
 
         return mv;
     }

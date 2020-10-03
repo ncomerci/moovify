@@ -109,8 +109,10 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Collection<User> searchUsers(String query) {
+    public PaginatedCollection<User> searchUsers(String query, int pageNumber, int pageSize) {
+
         Objects.requireNonNull(query);
-        return userDao.searchUsers(query);
+
+        return userDao.searchUsers(query, UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 }
