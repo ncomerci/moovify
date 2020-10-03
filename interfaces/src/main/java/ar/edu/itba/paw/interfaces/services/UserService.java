@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.interfaces.services;
 
+import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.User;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface UserService {
@@ -27,5 +27,5 @@ public interface UserService {
 
     Optional<User> findByEmail(String email);
 
-    Collection<User> getAllUsers();
+    PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize);
 }

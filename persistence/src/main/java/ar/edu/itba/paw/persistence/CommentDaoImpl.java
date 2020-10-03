@@ -308,7 +308,12 @@ public class CommentDaoImpl implements CommentDao {
 
         final String from = BASE_COMMENT_FROM + " " + nonBaseFrom;
 
-        final String onlyRootWhereStatement = customWhereStatement + " AND coalesce(" + COMMENTS + ".parent_id, 0) = ?";
+        final String onlyRootWhereStatement = customWhereStatement +
+
+                // customWhereStatement may come empty
+                ((customWhereStatement == null || customWhereStatement.length() < 3)? " WHERE " : " AND ") +
+
+                "coalesce(" + COMMENTS + ".parent_id, 0) = ?";
 
         // Add rootId to args list
         final Object[] newArgs = Arrays.copyOf(args, args.length + 1);
@@ -316,7 +321,7 @@ public class CommentDaoImpl implements CommentDao {
 
         // Execute original query to count total comments in the query
         final int totalCommentCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id) " + from + " " + customWhereStatement + onlyRootWhereStatement, args, Integer.class);
+                "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id) " + from + " " + onlyRootWhereStatement, newArgs, Integer.class);
 
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
