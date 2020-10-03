@@ -44,6 +44,7 @@ public class CommentDaoImpl implements CommentDao {
             POSTS + ".title p_title, " +
             POSTS + ".body p_body, " +
             POSTS + ".word_count p_word_count, " +
+            POSTS + ".p_enabled p_enabled, " +
 
             // Post Category
             POSTS + ".c_category_id pc_category_id, " +
@@ -80,6 +81,7 @@ public class CommentDaoImpl implements CommentDao {
                     POSTS + ".title, " +
                     POSTS + ".body, " +
                     POSTS + ".word_count, " +
+                    POSTS + ".enabled p_enabled, " +
 
                     // Post Category
                     POST_CATEGORY + ".category_id c_category_id, " +
@@ -121,7 +123,7 @@ public class CommentDaoImpl implements CommentDao {
                                     null, rs.getBoolean("pu_enabled")),
 
                             // tags
-                            null),
+                            null, rs.getBoolean("p_enabled")),
 
                     rs.getLong("c_parent_id"), null, rs.getString("c_body"),
 
@@ -164,7 +166,7 @@ public class CommentDaoImpl implements CommentDao {
                                         null, rs.getBoolean("pu_enabled")),
 
                                 // tags
-                                null),
+                                null, rs.getBoolean("p_enabled")),
 
                         rs.getLong("c_parent_id"), new ArrayList<>(), rs.getString("c_body"),
 

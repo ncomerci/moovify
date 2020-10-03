@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS POSTS
     category_id   INTEGER      NOT NULL,
     word_count    INTEGER      NOT NULL,
     body          TEXT         NOT NULL,
+    enabled       BOOLEAN      NOT NULL,
 
     FOREIGN KEY (category_id) REFERENCES POST_CATEGORY (category_id),
     FOREIGN KEY (user_id)     REFERENCES USERS (user_id)

@@ -34,7 +34,8 @@ public class PostDaoImpl implements PostDao {
             POSTS + ".creation_date p_creation_date, " +
             POSTS + ".title p_title, " +
             POSTS + ".body p_body, " +
-            POSTS + ".word_count p_word_count";
+            POSTS + ".word_count p_word_count, " +
+            POSTS + ".enabled p_enabled";
 
     private static final String CATEGORY_SELECT =
             POST_CATEGORY + ".category_id pc_category_id, " +
@@ -91,7 +92,7 @@ public class PostDaoImpl implements PostDao {
                                         null, rs.getBoolean("u_enabled")),
 
                                 // tags
-                                new LinkedHashSet<>()
+                                new LinkedHashSet<>(), rs.getBoolean("p_enabled")
                         )
                 );
             }
@@ -184,6 +185,7 @@ public class PostDaoImpl implements PostDao {
         map.put("body", body);
         map.put("category_id", categoryId);
         map.put("user_id", userId);
+        map.put("enabled", true);
 
         final long postId = postInsert.executeAndReturnKey(map).longValue();
 
@@ -213,7 +215,10 @@ public class PostDaoImpl implements PostDao {
 
         final String from = BASE_POST_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
 
-        final String query = select + " " + from + " " + customWhereStatement + " " + customOrderByStatement;
+        final String whereEnabledFilter = customWhereStatement == null || customWhereStatement.length() < 3 ?
+                "WHERE " + POSTS + ".enabled = true" : "AND " + POSTS + ".enabled = true";
+
+        final String query = select + " " + from + " " + customWhereStatement + " " + whereEnabledFilter + " " + customOrderByStatement;
 
         if(args != null)
             return jdbcTemplate.query(query, args, POST_ROW_MAPPER);

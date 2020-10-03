@@ -14,10 +14,11 @@ public class Post {
     private final User user;
     private final PostCategory category;
     private final Collection<String> tags;
+    private final boolean enabled;
 
     private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled) {
         this.id = id;
         this.creationDate = creationDate;
         this.title = title;
@@ -26,6 +27,7 @@ public class Post {
         this.user = user;
         this.category = category;
         this.tags = tags;
+        this.enabled = enabled;
     }
 
     public long getId() {
@@ -79,4 +81,6 @@ public class Post {
     public long getMinutesSinceCreation() {
         return getTimeSinceCreation().toMinutes();
     }
+
+    public boolean isEnabled() { return enabled; }
 }
