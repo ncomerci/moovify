@@ -11,7 +11,7 @@ public interface SearchService {
 
     PaginatedCollection<Post> searchPosts(String query, String category, String period, String sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Movie> searchMovies(String query);
+    PaginatedCollection<Movie> searchMovies(String query, int pageNumber, int pageSize);
 
     Collection<User> searchUsers(String query);
 }

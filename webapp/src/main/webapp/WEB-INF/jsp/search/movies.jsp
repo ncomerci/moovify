@@ -22,11 +22,11 @@
         </form:form>
     </section>
     <section id="search-results uk-flex uk-flex-wrap">
-        <c:if test="${empty movies}">
+        <c:if test="${empty movies.results}">
             <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message
                     code="search.movies.moviesNotFound"/></h1>
         </c:if>
-        <c:forEach items="${movies}" var="movie">
+        <c:forEach items="${movies.results}" var="movie">
             <div class="uk-width-1-1">
                 <div class="uk-flex">
                     <div class="uk-width-expand uk-margin-small-top">

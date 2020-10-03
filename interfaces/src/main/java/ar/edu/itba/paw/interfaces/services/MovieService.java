@@ -2,7 +2,7 @@ package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
-
+import ar.edu.itba.paw.models.PaginatedCollection;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -15,9 +15,11 @@ public interface MovieService {
     Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage,
                    String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<Long> categories);
 
-    Collection<Movie> getAllMovies();
+    PaginatedCollection<Movie> getAllMovies(int pageNumber, int pageSize);
 
-    Collection<Movie> findMoviesByPostId(long postId);
+    Collection<Movie> getAllMoviesNotPaginated();
+
+    PaginatedCollection<Movie> findMoviesByPostId(long postId, int pageNumber, int pageSize);
 
     Collection<MovieCategory> getAvailableCategories();
 }

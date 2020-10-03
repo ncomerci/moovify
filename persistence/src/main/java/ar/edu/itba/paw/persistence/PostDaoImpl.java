@@ -138,6 +138,7 @@ public class PostDaoImpl implements PostDao {
     private static final EnumMap<SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQuery();
 
     private static EnumMap<SortCriteria, String> initializeSortCriteriaQuery() {
+
         EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, POSTS + ".creation_date desc");

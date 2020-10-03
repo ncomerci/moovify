@@ -45,7 +45,7 @@ public class PostController {
         final ModelAndView mv = new ModelAndView("post/view");
 
         mv.addObject("post", postService.findPostById(postId).orElseThrow(PostNotFoundException::new));
-        mv.addObject("movies", movieService.findMoviesByPostId(postId));
+        mv.addObject("movies", movieService.findMoviesByPostId(postId, 0, 10));
         mv.addObject("comments", commentService.findCommentsByPostIdWithChildren(postId, 0, 2));
 
         return mv;
@@ -56,7 +56,7 @@ public class PostController {
 
         final ModelAndView mv = new ModelAndView("post/create");
 
-        mv.addObject("movies", movieService.getAllMovies());
+        mv.addObject("movies", movieService.getAllMovies(0, 10));
         mv.addObject("categories", postService.getAllPostCategories());
 
         return mv;

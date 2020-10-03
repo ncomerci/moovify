@@ -101,9 +101,11 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public Collection<Movie> searchMovies(String query){
+    public PaginatedCollection<Movie> searchMovies(String query, int pageNumber, int pageSize){
+
         Objects.requireNonNull(query);
-        return movieDao.searchMovies(query);
+
+        return movieDao.searchMovies(query, MovieDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override

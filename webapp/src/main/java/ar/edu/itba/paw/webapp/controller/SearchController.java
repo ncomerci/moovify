@@ -44,7 +44,7 @@ public class SearchController {
         final ModelAndView mv = new ModelAndView("search/movies");
         mv.addObject("query", searchMoviesForm.getQuery());
         mv.addObject("movies",
-                searchService.searchMovies(searchMoviesForm.getQuery()));
+                searchService.searchMovies(searchMoviesForm.getQuery(), 1, 10));
         return mv;
     }
 
