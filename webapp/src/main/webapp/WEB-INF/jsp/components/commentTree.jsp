@@ -9,6 +9,8 @@
 
         <li>
             <div id="${comment.id}">
+                <c:choose>
+                <c:when test="${comment.enabled}">
                 <article class="uk-comment uk-visible-toggle" tabindex="-1">
                     <header class="uk-comment-header uk-position-relative">
                         <div class="uk-grid-medium uk-flex-middle" uk-grid>
@@ -46,6 +48,25 @@
                         <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
                     </div>
                 </article>
+                </c:when>
+                <c:otherwise>
+                    <article class="uk-comment uk-visible-toggle" tabindex="-1">
+                        <header class="uk-comment-header uk-position-relative uk-margin-remove-bottom">
+                            <div class="uk-grid-medium uk-flex-middle" uk-grid>
+                                <div class="uk-width-expand">
+                                    <p class="uk-comment-meta uk-margin-remove-vertical uk-text-italic">
+                                        <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                                        <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                                    </p>
+                                </div>
+                            </div>
+                        </header>
+                        <div class="uk-comment-body">
+                            <span class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></span>
+                        </div>
+                    </article>
+                </c:otherwise>
+                </c:choose>
                 <hr>
             </div>
             <div class="replies-show" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${comment.descendantCount}">

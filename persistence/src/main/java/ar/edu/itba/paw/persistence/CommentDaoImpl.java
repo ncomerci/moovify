@@ -35,7 +35,8 @@ public class CommentDaoImpl implements CommentDao {
             "coalesce(" + COMMENTS + ".parent_id, 0) c_parent_id, " +
             COMMENTS + ".post_id c_post_id, " +
             COMMENTS + ".creation_date c_creation_date, " +
-            COMMENTS + ".body c_body";
+            COMMENTS + ".body c_body, " +
+            COMMENTS + ".enabled c_enabled";
 
     // Posts come without Tags
     private static final String POST_SELECT =
@@ -130,7 +131,7 @@ public class CommentDaoImpl implements CommentDao {
                     new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                             rs.getString("u_username"), rs.getString("u_password"),
                             rs.getString("u_name"), rs.getString("u_email"),
-                            null, rs.getBoolean("u_enabled")));
+                            null, rs.getBoolean("u_enabled")), rs.getBoolean("c_enabled"));
 
     // Coalesce parent_id = null to parent_id = 0.
     private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER_WITH_CHILDREN = (rs) -> {
@@ -173,7 +174,7 @@ public class CommentDaoImpl implements CommentDao {
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
-                                null, rs.getBoolean("u_enabled"))
+                                null, rs.getBoolean("u_enabled")), rs.getBoolean("c_enabled")
                 );
 
                 idToCommentMap.put(comment_id, currentComment);

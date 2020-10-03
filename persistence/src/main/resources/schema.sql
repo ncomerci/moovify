@@ -125,6 +125,7 @@ CREATE TABLE IF NOT EXISTS COMMENTS
     user_id       INTEGER      NOT NULL,
     creation_date TIMESTAMP    NOT NULL,
     body          TEXT         NOT NULL,
+    enabled       BOOLEAN      NOT NULL,
 
     FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id),

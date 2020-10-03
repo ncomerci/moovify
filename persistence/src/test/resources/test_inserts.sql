@@ -50,9 +50,9 @@ INSERT INTO public.movies (movie_id, creation_date, release_date, title, origina
 INSERT INTO public.movies (movie_id, creation_date, release_date, title, original_title, tmdb_id, imdb_id, original_language, overview, popularity, runtime, vote_average) VALUES (DEFAULT, '2020-09-23 15:24:35.483125', '1993-11-29', 'Schindler''s List', 'Schindler''s List', 424, 'tt0108052', 'en', 'The true story of how businessman Oskar Schindler saved over a thousand Jewish lives from the Nazis while they worked as slaves in his factory during World War II.', 41.725123, 195, 8.3);
 
 INSERT INTO public.users (user_id, creation_date, username, password, name, email, enabled) VALUES (DEFAULT, '2020-09-20 12:56:13.160000', 'testUser', '$2a$10$O6SNpY56M8b33xKMe92tEOkEezVsln0ocrREUkCK.OC1JY7G1Nfsm', 'Intelli', 'prueba@prueba.com', true);
-INSERT INTO public.users (user_id, creation_date, username, password, name, email, enabled) VALUES (DEFAULT, '2020-09-20 12:57:12.108000', 'testUser2', '$2a$10$95/PHiCzqkRvshToPzjym.0oBs1kmpRIyto8dD6oQ0NN31utMtD6i', 'Gitkraken', 'test@abc.com', true);
+INSERT INTO public.users (user_id, creation_date, username, password, name, email, enabled) VALUES (DEFAULT, '2020-09-20 12:57:12.108000', 'testUser2', '$2a$10$95/PHiCzqkRvshToPzjym.0oBs1kmpRIyto8dD6oQ0NN31utMtD6i', 'Gitkraken', 'test@abc.com', false);
 INSERT INTO public.users (user_id, creation_date, username, password, name, email, enabled) VALUES (DEFAULT, '2020-09-20 12:58:17.441000', 'testUser3', '$2a$10$m0KrIioERjnPfLxo6vlaJuwnwDyXDSyGnW9AoLapXV9jkZ/nLVxxG', 'Jorgito', 'Jorge@moovify.com', true);
-INSERT INTO public.users (user_id, creation_date, username, password, name, email, enabled) VALUES (DEFAULT, '2020-09-23 12:28:04.671000', 'testUser4', '$2a$10$Lve0Aj3zbXft74IulXFogevrFkA9C507ZaOsF01V1XVJf8Ypc9ZpO', 'Juancito', 'fanNumber1@gmail.com', false);
+INSERT INTO public.users (user_id, creation_date, username, password, name, email, enabled) VALUES (DEFAULT, '2020-09-23 12:28:04.671000', 'testUser4', '$2a$10$Lve0Aj3zbXft74IulXFogevrFkA9C507ZaOsF01V1XVJf8Ypc9ZpO', 'Juancito', 'fanNumber1@gmail.com', true);
 
 INSERT INTO public.user_role (user_id, role_id) VALUES (1, 1);
 INSERT INTO public.user_role (user_id, role_id) VALUES (2, 1);
@@ -60,7 +60,7 @@ INSERT INTO public.user_role (user_id, role_id) VALUES (3, 2);
 INSERT INTO public.user_role (user_id, role_id) VALUES (4, 3);
 
 INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:26:31.440000', 'Post Test 1', 1, 1, 554, 'body_test', true);
-INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:32:57.415000', 'Post Test 2', 1, 1, 2886, 'body_test', true);
+INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:32:57.415000', 'Post Test 2', 2, 1, 2886, 'body_test', true);
 INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:49:38.898000', 'Post Test 3', 1, 1, 932, 'body_test', true);
 
 INSERT INTO public.post_movie (post_id, movie_id) VALUES (1, 8);
@@ -74,16 +74,16 @@ INSERT INTO public.tags (post_id, tag) VALUES (2, 'Documental');
 INSERT INTO public.tags (post_id, tag) VALUES (2, 'Premiere');
 INSERT INTO public.tags (post_id, tag) VALUES (3, 'Review');
 
-INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body) VALUES (DEFAULT, null, 1, 1, '2020-09-09 15:54:42.389000', 'Comment 1');
-INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body) VALUES (DEFAULT, null, 1, 2, '2020-09-09 15:55:09.674000', 'Comment 2');
-INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body) VALUES (DEFAULT, 1, 1, 1, '2020-09-09 15:56:00.109000', 'Comment 3');
-INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body) VALUES (DEFAULT, 1, 1, 3, '2020-09-09 15:56:28.282000', 'Comment 4');
-INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body) VALUES (DEFAULT, 3, 1, 3, '2020-09-09 15:57:03.564000', 'Comment 5');
-INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body) VALUES (DEFAULT, 5, 1, 2, '2020-09-09 15:57:28.040000', 'Comment 6');
-INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body) VALUES (DEFAULT, null, 3, 1, '2020-09-09 16:00:44.957000', 'Comment 7');
-INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body) VALUES (DEFAULT, null, 3, 2, '2020-09-09 16:01:12.985000', 'Comment 8');
-INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body) VALUES (DEFAULT, 8, 3, 2, '2020-09-09 16:01:57.509000', 'Comment 9');
-INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body) VALUES (DEFAULT, 8, 3, 1, '2020-09-09 16:02:25.878000', 'Comment 10');
+INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body, enabled) VALUES (DEFAULT, null, 1, 1, '2020-09-09 15:54:42.389000', 'Comment 1', true);
+INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body, enabled) VALUES (DEFAULT, null, 1, 2, '2020-09-09 15:55:09.674000', 'Comment 2', true);
+INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body, enabled) VALUES (DEFAULT, 1, 1, 1, '2020-09-09 15:56:00.109000', 'Comment 3', true);
+INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body, enabled) VALUES (DEFAULT, 1, 1, 3, '2020-09-09 15:56:28.282000', 'Comment 4', true);
+INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body, enabled) VALUES (DEFAULT, 3, 1, 3, '2020-09-09 15:57:03.564000', 'Comment 5', true);
+INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body, enabled) VALUES (DEFAULT, 5, 1, 2, '2020-09-09 15:57:28.040000', 'Comment 6', true);
+INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body, enabled) VALUES (DEFAULT, null, 3, 1, '2020-09-09 16:00:44.957000', 'Comment 7', true);
+INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body, enabled) VALUES (DEFAULT, null, 3, 2, '2020-09-09 16:01:12.985000', 'Comment 8', true);
+INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body, enabled) VALUES (DEFAULT, 8, 3, 2, '2020-09-09 16:01:57.509000', 'Comment 9', true);
+INSERT INTO public.comments (comment_id, parent_id, post_id, user_id, creation_date, body, enabled) VALUES (DEFAULT, 8, 3, 1, '2020-09-09 16:02:25.878000', 'Comment 10', true);
 
 INSERT INTO public.user_verification_token (token_id, user_id, token, expiry) VALUES (1, 4, '72b03561-eb02-40ec-ad19-9278584bdd4d', '2020-09-24 12:28:05.212000');
 
