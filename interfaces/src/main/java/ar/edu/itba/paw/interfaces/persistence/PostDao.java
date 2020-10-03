@@ -17,8 +17,6 @@ public interface PostDao {
 
     Optional<Post> findPostById(long id);
 
-    int getPostsTotalCount();
-
     PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> findPostsByMovieId(long movie_id, SortCriteria sortCriteria, int pageNumber, int pageSize);

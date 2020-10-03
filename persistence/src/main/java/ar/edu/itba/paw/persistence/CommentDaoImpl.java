@@ -244,6 +244,10 @@ public class CommentDaoImpl implements CommentDao {
         return commentInsert.executeAndReturnKey(map).longValue();
     }
 
+    public int getCommentsTotalCount() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + COMMENTS, Integer.class);
+    }
+
     private Collection<Comment> buildAndExecuteQuery(String customWhereStatement, String customOrderByStatement, Object[] args, boolean withChildren) {
         
         final String select = BASE_COMMENT_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
