@@ -308,9 +308,15 @@ public class CommentDaoImpl implements CommentDao {
 
         final String from = BASE_COMMENT_FROM + " " + nonBaseFrom;
 
+        final String onlyRootWhereStatement = customWhereStatement + " AND coalesce(" + COMMENTS + ".parent_id, 0) = ?";
+
+        // Add rootId to args list
+        final Object[] newArgs = Arrays.copyOf(args, args.length + 1);
+        newArgs[newArgs.length - 1] = (rootId == null)? 0 : rootId;
+
         // Execute original query to count total comments in the query
         final int totalCommentCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT " + POSTS + ".post_id) " + from + " " + customWhereStatement, args, Integer.class);
+                "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id) " + from + " " + customWhereStatement + onlyRootWhereStatement, args, Integer.class);
 
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
@@ -319,7 +325,7 @@ public class CommentDaoImpl implements CommentDao {
 
         final String newWhere =
                 "WHERE " + COMMENTS + ".comment_id IN (SELECT " + COMMENTS + ".comment_id FROM " + COMMENTS + " WHERE " + COMMENTS + ".comment_id IN (" +
-                "SELECT " + COMMENTS + ".comment_id " + from + " " + customWhereStatement + " AND coalesce(" + COMMENTS + ".parent_id, 0) = ?" +
+                "SELECT " + COMMENTS + ".comment_id " + from + " " + onlyRootWhereStatement +
                 " ) " + orderBy + " " + pagination + ")";
 
         final String recursiveQuery =
@@ -331,10 +337,6 @@ public class CommentDaoImpl implements CommentDao {
 
         // Replaces BASE_COMMENT_FROM. It should not have logic!!
         final String recursiveFrom = "FROM (SELECT * FROM comments_rec) " + COMMENTS + " " + nonBaseFrom;
-
-        // Add rootId to args list
-        final Object[] newArgs = Arrays.copyOf(args, args.length + 1);
-        newArgs[newArgs.length - 1] = (rootId == null)? 0 : rootId;
 
         final Collection<Comment> results = executeQuery(recursiveSelect, recursiveFrom, "", orderBy, newArgs, true);
 
