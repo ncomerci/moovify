@@ -37,4 +37,8 @@ public class PaginatedCollection<T> {
     public boolean isLastPage() {
         return lastPage;
     }
+
+    public int getLastPageNumber() {
+        return (totalCount - 1) / pageSize;
+    }
 }

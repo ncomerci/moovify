@@ -13,6 +13,10 @@ public class SearchPostsForm {
 
     private String postAge;
 
+    private int pageNumber;
+
+    private int pageSize;
+
     public String getQuery() {
         return query;
     }
@@ -43,5 +47,21 @@ public class SearchPostsForm {
 
     public void setPostAge(String postAge) {
         this.postAge = postAge;
+    }
+
+    public int getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(int pageNumber) {
+        this.pageNumber = pageNumber;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
     }
 }

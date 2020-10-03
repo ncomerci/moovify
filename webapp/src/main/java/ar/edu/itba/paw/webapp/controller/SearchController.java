@@ -15,6 +15,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class SearchController {
 
+    private static final int DEFAULT_PAGE_SIZE = 3;
+
     @Autowired
     private SearchService searchService;
 
@@ -25,7 +27,8 @@ public class SearchController {
 
         mv.addObject("query", searchPostsForm.getQuery());
         mv.addObject("posts",
-                searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(), searchPostsForm.getSortCriteria(), 0, 10)); // TODO: puse 2 para debugging
+                searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(),
+                        searchPostsForm.getSortCriteria(), searchPostsForm.getPageNumber(), searchPostsForm.getPageSize() == 0 ? DEFAULT_PAGE_SIZE : searchPostsForm.getPageSize()));// TODO: puse 2 para debugging
         return mv;
     }
 
