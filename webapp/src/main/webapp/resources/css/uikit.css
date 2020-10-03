@@ -5700,6 +5700,7 @@ ul.uk-nav-sub {
   flex-wrap: wrap;
   /* 2 */
   margin-left: -20px;
+  align-items: baseline;
   /* 3 */
   padding: 0;
   list-style: none;

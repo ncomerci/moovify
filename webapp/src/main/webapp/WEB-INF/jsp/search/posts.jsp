@@ -13,14 +13,12 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <main class="uk-container-small uk-margin-auto uk-padding-small">
-    <section id="search-controllers">
-        <c:url value="/search/posts/" var="action"/>
-        <form:form modelAttribute="searchPostsForm" method="get" action="${action}">
-
+    <c:url value="/search/posts/" var="action"/>
+    <form:form modelAttribute="searchPostsForm" method="get" action="${action}">
+        <section id="search-controllers">
             <c:set var="query" scope="request"><c:out value="${query}"/></c:set>
             <c:set var="currentSearch" value="0" scope="request" />
             <div>
-
                 <jsp:include page="defaultForm.jsp"/>
             </div>
             <div class="uk-form-horizontal uk-grid-small" uk-grid>
@@ -64,15 +62,57 @@
                     </div>
                 </div>
             </div>
-        </form:form>
-    </section>
-    <section id="search-results" class="uk-margin-top">
-        <c:if test="${empty posts}">
-            <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.posts.postsNotFound"/> </h1>
-        </c:if>
-        <c:set var="posts" value="${posts}" scope="request"/>
-        <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
-    </section>
+        </section>
+        <section id="search-results" class="uk-margin-top">
+            <c:if test="${empty posts}">
+                <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.posts.postsNotFound"/> </h1>
+            </c:if>
+            <c:set var="posts" value="${posts}" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
+        </section>
+
+        <ul class="uk-pagination uk-flex-center" uk-margin>
+            <c:if test="${posts.pageNumber > 0}">
+                <c:url value = "/search/posts/" var = "pageURL">
+                    <c:param name = "query" value = "${searchPostsForm.query}"/>
+                    <c:param name = "postCategory" value = "${searchPostsForm.postCategory}"/>
+                    <c:param name = "postAge" value = "${searchPostsForm.postAge}"/>
+                    <c:param name = "sortCriteria" value = "${searchPostsForm.sortCriteria}"/>
+                    <c:param name = "pageNumber" value = "${posts.pageNumber - 1}"/>
+                    <c:param name = "pageSize" value = "${posts.pageSize}"/>
+                </c:url>
+                <li><a href="${pageURL}"><span uk-pagination-previous></span></a></li>
+            </c:if>
+
+            <c:set value="${posts.pageNumber - 1 >= 0 ? posts.pageNumber - 1 : 0}" var="firstPage"/>
+            <c:forEach begin="0" end="2" var="index">
+                <c:if test="${firstPage + index <= posts.lastPageNumber}">
+                    <c:url value = "/search/posts/" var = "pageURL">
+                        <c:param name = "query" value = "${searchPostsForm.query}"/>
+                        <c:param name = "postCategory" value = "${searchPostsForm.postCategory}"/>
+                        <c:param name = "postAge" value = "${searchPostsForm.postAge}"/>
+                        <c:param name = "sortCriteria" value = "${searchPostsForm.sortCriteria}"/>
+                        <c:param name = "pageNumber" value = "${firstPage + index}"/>
+                        <c:param name = "pageSize" value = "${posts.pageSize}"/>
+                    </c:url>
+                    <li class="${ firstPage + index == posts.pageNumber ? 'uk-active' : ''}"><a href="${pageURL}"><c:out value="${firstPage + index + 1}"/></a></li>
+                </c:if>
+            </c:forEach>
+
+            <c:if test="${posts.pageNumber < posts.lastPageNumber }">
+                <c:url value = "/search/posts/" var = "pageURL">
+                    <c:param name = "query" value = "${searchPostsForm.query}"/>
+                    <c:param name = "postCategory" value = "${searchPostsForm.postCategory}"/>
+                    <c:param name = "postAge" value = "${searchPostsForm.postAge}"/>
+                    <c:param name = "sortCriteria" value = "${searchPostsForm.sortCriteria}"/>
+                    <c:param name = "pageNumber" value = "${posts.pageNumber + 1}"/>
+                    <c:param name = "pageSize" value = "${posts.pageSize}"/>
+                </c:url>
+                <li><a href="${pageURL}"><span uk-pagination-next></span></a></li>
+            </c:if>
+
+        </ul>
+    </form:form>
 </main>
 </body>
 </html>
