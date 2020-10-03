@@ -206,9 +206,9 @@ public class PostDaoImpl implements PostDao {
         return postId;
     }
 
-    private Collection<Post> executeQuery(String select, String from, String where, Object[] args) {
+    private Collection<Post> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
 
-        final String query = select + " " + from + " " + where;
+        final String query = select + " " + from + " " + where + " " + orderBy;
 
         if(args != null)
             return jdbcTemplate.query(query, args, POST_ROW_MAPPER);
@@ -224,29 +224,28 @@ public class PostDaoImpl implements PostDao {
 
         final String from = BASE_POST_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
 
-        return executeQuery(select, from, customWhereStatement, args);
+        return executeQuery(select, from, customWhereStatement, "", args);
     }
 
     private PaginatedCollection<Post> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
 
-        final String nonPaginatedFrom = BASE_POST_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+        final String select = BASE_POST_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
+
+        final String from = BASE_POST_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
 
         // Execute original query to count total posts in the query
         final int totalPostCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT " + POSTS + ".post_id) " + nonPaginatedFrom, Integer.class);
-
-
-        final String select = BASE_POST_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
+                "SELECT COUNT(DISTINCT " + POSTS + ".post_id) " + from + " " + customWhereStatement, args, Integer.class);
 
         final String orderBy = buildOrderByStatement(sortCriteria);
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
-        final String paginatedBasePostFrom = "FROM (SELECT * " + BASE_POST_FROM + " " + orderBy + " " + pagination + ") " + POSTS;
+        final String newWhere = "WHERE " + POSTS + ".post_id IN (SELECT " + POSTS + ".post_id FROM " + POSTS + " WHERE " + POSTS + ".post_id IN (" +
+                                    "SELECT " + POSTS + ".post_id " + from + " " + customWhereStatement +
+                                " ) " + orderBy + " " + pagination + ")";
 
-        final String paginatedFrom = paginatedBasePostFrom + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
-
-        final Collection<Post> results = executeQuery(select, paginatedFrom, customWhereStatement, args);
+        final Collection<Post> results = executeQuery(select, from, newWhere, orderBy, args);
 
         final boolean lastPage = totalPostCount == 0 || (totalPostCount - 1)/pageSize == pageNumber;
 

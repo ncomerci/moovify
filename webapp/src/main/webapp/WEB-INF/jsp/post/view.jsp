@@ -66,7 +66,7 @@
     </section>
     <hr>
     <section class="uk-container uk-container-small">
-        <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${customTag:totalComments(comments)}"/></h1>
+        <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${customTag:totalComments(comments.results)}"/></h1>
         <sec:authorize access="hasRole('USER')">
             <div style="padding-bottom: 25px">
                 <c:url value="/comment/create" var="action"/>
@@ -95,7 +95,7 @@
         </sec:authorize>
         <div class="uk-margin-large-top">
             <hr>
-            <c:set var="comments" value="${comments}" scope="request" />
+            <c:set var="comments" value="${comments.results}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp" />
         </div>
 

@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.PaginatedCollection;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface CommentDao {
@@ -17,11 +17,11 @@ public interface CommentDao {
 
     Optional<Comment> findCommentByIdWithoutChildren(long id);
 
-    Collection<Comment> findCommentsByPostIdWithChildren(long post_id, SortCriteria sortCriteria);
+    PaginatedCollection<Comment> findCommentsByPostIdWithChildren(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id, SortCriteria sortCriteria);
+    PaginatedCollection<Comment> findCommentsByPostIdWithoutChildren(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Comment> findCommentsByUserIdWithChildren(long user_id, SortCriteria sortCriteria);
+    PaginatedCollection<Comment> findCommentsByUserIdWithChildren(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id, SortCriteria sortCriteria);
+    PaginatedCollection<Comment> findCommentsByUserIdWithoutChildren(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
 }

@@ -3,10 +3,10 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.PaginatedCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Optional;
 
 @Service
@@ -34,22 +34,22 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Collection<Comment> findCommentsByPostIdWithChildren(long post_id) {
-        return commentDao.findCommentsByPostIdWithChildren(post_id, CommentDao.SortCriteria.NEWEST);
+    public PaginatedCollection<Comment> findCommentsByPostIdWithChildren(long post_id, int pageNumber, int pageSize) {
+        return commentDao.findCommentsByPostIdWithChildren(post_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
-    public Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id) {
-        return commentDao.findCommentsByPostIdWithoutChildren(post_id, CommentDao.SortCriteria.NEWEST);
+    public PaginatedCollection<Comment> findCommentsByPostIdWithoutChildren(long post_id, int pageNumber, int pageSize) {
+        return commentDao.findCommentsByPostIdWithoutChildren(post_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
-    public Collection<Comment> findCommentsByUserIdWithChildren(long user_id) {
-        return commentDao.findCommentsByUserIdWithChildren(user_id, CommentDao.SortCriteria.NEWEST);
+    public PaginatedCollection<Comment> findCommentsByUserIdWithChildren(long user_id, int pageNumber, int pageSize) {
+        return commentDao.findCommentsByUserIdWithChildren(user_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
-    public Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id) {
-        return commentDao.findCommentsByUserIdWithoutChildren(user_id, CommentDao.SortCriteria.NEWEST);
+    public PaginatedCollection<Comment> findCommentsByUserIdWithoutChildren(long user_id, int pageNumber, int pageSize) {
+        return commentDao.findCommentsByUserIdWithoutChildren(user_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 }

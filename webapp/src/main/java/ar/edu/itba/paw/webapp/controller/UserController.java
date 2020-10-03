@@ -98,7 +98,7 @@ public class UserController {
             mv.addObject("user", userService.findById(userId)
                     .orElseThrow(UserNotFoundException::new));
 
-        mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(userId));
+        mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(userId, 0, 10));
         return mv;
     }
 
@@ -117,7 +117,7 @@ public class UserController {
             user = (User) inputFlashMap.get("user");
 
         mv.addObject("loggedUser", user);
-        mv.addObject("posts", postService.findPostsByUserId(user.getId(), 1, 1));
+        mv.addObject("posts", postService.findPostsByUserId(user.getId(), 0, 10));
 
         return mv;
     }
@@ -130,7 +130,7 @@ public class UserController {
         final User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
-        mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(user.getId()));
+        mv.addObject("comments", commentService.findCommentsByUserIdWithoutChildren(user.getId(), 0, 10));
 
         return mv;
     }

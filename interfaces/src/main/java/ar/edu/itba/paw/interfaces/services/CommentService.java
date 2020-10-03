@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.PaginatedCollection;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface CommentService {
@@ -13,12 +13,11 @@ public interface CommentService {
 
     Optional<Comment> findCommentByIdWithoutChildren(long id);
 
-    Collection<Comment> findCommentsByPostIdWithChildren(long post_id);
+    PaginatedCollection<Comment> findCommentsByPostIdWithChildren(long post_id, int pageNumber, int pageSize);
 
-    Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id);
+    PaginatedCollection<Comment> findCommentsByPostIdWithoutChildren(long post_id, int pageNumber, int pageSize);
 
-    Collection<Comment> findCommentsByUserIdWithChildren(long user_id);
+    PaginatedCollection<Comment> findCommentsByUserIdWithChildren(long user_id, int pageNumber, int pageSize);
 
-    Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id);
-
+    PaginatedCollection<Comment> findCommentsByUserIdWithoutChildren(long user_id, int pageNumber, int pageSize);
 }
