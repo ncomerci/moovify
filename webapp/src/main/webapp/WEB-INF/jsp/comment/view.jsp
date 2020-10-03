@@ -10,6 +10,9 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
+<c:set var="comments" value="${comment.results}" scope="request"/>
+<jsp:include page="/WEB-INF/jsp/components/commentTree.jsp"/>
+
 <%--  Aca va la vista de un comment si es que queremos  --%>
 </body>
 </html>

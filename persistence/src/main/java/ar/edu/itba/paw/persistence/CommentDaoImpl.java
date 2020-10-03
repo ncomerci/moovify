@@ -356,7 +356,7 @@ public class CommentDaoImpl implements CommentDao {
 
         // Execute original query to count total comments in the query
         final int totalCommentCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT " + POSTS + ".post_id) " + from + " " + customWhereStatement, args, Integer.class);
+                "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id) " + from + " " + customWhereStatement, args, Integer.class);
 
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);

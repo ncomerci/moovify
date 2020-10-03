@@ -25,7 +25,7 @@
                                 </p>
                             </div>
                         </div>
-                        <sec:authorize access="hasAnyRole('USER', 'ADMIN')">
+                        <sec:authorize access="hasRole('USER')">
                             <div class="uk-position-top-right uk-position-small uk-hidden-hover">
                                 <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button"><spring:message code="comment.create.reply"/></a>
                             </div>
@@ -38,7 +38,7 @@
                 <hr>
             </div>
             <div class="replies-show" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${comment.descendantCount}">
-                <a class="uk-link-muted"><spring:message code="comment.replies.show"/> (${comment.descendantCount}) ...</a>
+                <a class="uk-link-muted"><spring:message code="comment.replies.show" arguments="${comment.descendantCount}"/></a>
             </div>
             <ul id="${comment.id}-children" class="li uk-hidden">
                     <%--  Recursive Call  --%>

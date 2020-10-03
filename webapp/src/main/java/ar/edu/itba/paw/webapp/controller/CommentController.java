@@ -9,10 +9,7 @@ import ar.edu.itba.paw.webapp.form.CommentCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -45,10 +42,12 @@ public class CommentController {
     }
 
     @RequestMapping(path = "/comment/{id}", method = RequestMethod.GET)
-    public ModelAndView view(@PathVariable final long id) {
+    public ModelAndView view(@PathVariable final long id,
+                             @RequestParam(defaultValue = "5") final int pageSize,
+                             @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("comment/view");
-        mv.addObject("comment", commentService.findCommentByIdWithoutChildren(id).orElseThrow(CommentNotFoundException::new));
+        mv.addObject("comment", commentService.findCommentByIdWithChildren(id,pageNumber,pageSize).orElseThrow(CommentNotFoundException::new));
         return mv;
     }
 }
