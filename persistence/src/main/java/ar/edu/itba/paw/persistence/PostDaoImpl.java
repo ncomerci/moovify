@@ -206,21 +206,9 @@ public class PostDaoImpl implements PostDao {
         return postId;
     }
 
-    @Override
-    public int getPostsTotalCount() {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + POSTS, Integer.class);
-    }
+    private Collection<Post> executeQuery(String select, String from, String where, Object[] args) {
 
-    // This method abstract the logic needed to perform select queries with or without movies.
-    private Collection<Post> buildAndExecuteQuery(String customWhereStatement, String customOrderByStatement, String customPaginationStatement, Object[] args) {
-
-        final String select = BASE_POST_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
-
-        final String orderedAndPaginatedBasePostFrom = "FROM (SELECT * " + BASE_POST_FROM + " " + customOrderByStatement + " " + customPaginationStatement + ") " + POSTS;
-
-        final String from = orderedAndPaginatedBasePostFrom + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
-
-        final String query = select + " " + from + " " + customWhereStatement;
+        final String query = select + " " + from + " " + where;
 
         if(args != null)
             return jdbcTemplate.query(query, args, POST_ROW_MAPPER);
@@ -228,37 +216,64 @@ public class PostDaoImpl implements PostDao {
         else
             return jdbcTemplate.query(query, POST_ROW_MAPPER);
     }
+
+    // For queries where pagination is not necessary (also no order)
+    private Collection<Post> buildAndExecuteQuery(String customWhereStatement, Object[] args) {
+
+        final String select = BASE_POST_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
+
+        final String from = BASE_POST_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+
+        return executeQuery(select, from, customWhereStatement, args);
+    }
+
+    private PaginatedCollection<Post> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
+
+        final String nonPaginatedFrom = BASE_POST_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+
+        // Execute original query to count total posts in the query
+        final int totalPostCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT " + POSTS + ".post_id) " + nonPaginatedFrom, Integer.class);
+
+
+        final String select = BASE_POST_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
+
+        final String orderBy = buildOrderByStatement(sortCriteria);
+
+        final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
+
+        final String paginatedBasePostFrom = "FROM (SELECT * " + BASE_POST_FROM + " " + orderBy + " " + pagination + ") " + POSTS;
+
+        final String paginatedFrom = paginatedBasePostFrom + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+
+        final Collection<Post> results = executeQuery(select, paginatedFrom, customWhereStatement, args);
+
+        final boolean lastPage = totalPostCount == 0 || (totalPostCount - 1)/pageSize == pageNumber;
+
+        return new PaginatedCollection<>(results, pageNumber, pageSize, totalPostCount, lastPage);
+    }
     
-    private Collection<Post> buildAndExecuteQuery(String customWhereStatement, SortCriteria sortCriteria, String customPaginationStatement, Object[] args) {
+    private String buildOrderByStatement(SortCriteria sortCriteria) {
         
         if(!sortCriteriaQueryMap.containsKey(sortCriteria))
             throw new IllegalArgumentException("SortCriteria implementation not found for " + sortCriteria + " in PostDaoImpl.");
         
-        return buildAndExecuteQuery(customWhereStatement,
-                "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria), customPaginationStatement, args);
+        return "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria);
     }
 
-    private PaginatedCollection<Post> buildAndExecuteQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
+    private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
 
         if(pageNumber < 0 || pageSize <= 0)
             throw new IllegalArgumentException("Illegal Posts pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
 
-        final String paginationStatement = "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
-
-        final Collection<Post> results = buildAndExecuteQuery(customWhereStatement, sortCriteria, paginationStatement, args);
-
-        final int totalPostsCount = getPostsTotalCount();
-
-        final boolean lastPage = totalPostsCount == 0 || (totalPostsCount - 1)/pageSize == pageNumber;
-
-        return new PaginatedCollection<>(results, pageNumber, pageSize, totalPostsCount, lastPage);
+        return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }
 
     private PaginatedCollection<Post> searchPostsByIntersectingFilterCriteria(FilterCriteria[] filterCriteria, Object[] args, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         String customWhereStatement = buildWhereStatement(filterCriteria," AND ");
 
-        return buildAndExecuteQuery(customWhereStatement, sortCriteria, pageNumber, pageSize, args);
+        return buildAndExecutePaginatedQuery(customWhereStatement, sortCriteria, pageNumber, pageSize, args);
     }
 
     private String buildWhereStatement(FilterCriteria[] filters, String criteria) {
@@ -287,14 +302,13 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Optional<Post> findPostById(long id){
-        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ?",
-                "", "", new Object[]{ id })
+        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ?", new Object[]{ id })
                 .stream().findFirst();
     }
 
     @Override
     public PaginatedCollection<Post> findPostsByMovieId(long movie_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecuteQuery("WHERE " +
+        return buildAndExecutePaginatedQuery("WHERE " +
                         POSTS + ".post_id IN ( " +
                         "SELECT " + POST_MOVIE + ".post_id " +
                         "FROM " + POST_MOVIE +
@@ -304,13 +318,13 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> findPostsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecuteQuery("WHERE " + POSTS + ".user_id = ?", sortCriteria, pageNumber, pageSize,
-                new Object[]{ user_id });
+        return buildAndExecutePaginatedQuery("WHERE " + POSTS + ".user_id = ?",
+                sortCriteria, pageNumber, pageSize, new Object[]{ user_id });
     }
 
     @Override
     public PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecuteQuery("", sortCriteria, pageNumber, pageSize, null);
+        return buildAndExecutePaginatedQuery("", sortCriteria, pageNumber, pageSize, null);
     }
     
     @Override

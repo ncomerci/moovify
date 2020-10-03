@@ -117,7 +117,7 @@ public class UserController {
             user = (User) inputFlashMap.get("user");
 
         mv.addObject("loggedUser", user);
-        mv.addObject("posts", postService.findPostsByUserId(user.getId(), 0, 10));
+        mv.addObject("posts", postService.findPostsByUserId(user.getId(), 1, 1));
 
         return mv;
     }
