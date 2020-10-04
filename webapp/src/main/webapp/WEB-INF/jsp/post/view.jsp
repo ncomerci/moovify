@@ -13,7 +13,7 @@
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
     <link rel="stylesheet" href="<c:url value="/resources/css/postView.css" />" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js"></script>
-    <script src="<c:url value="/resources/js/post/read.js"/>"></script>
+    <script src="<c:url value="/resources/js/components/createAndViewComments.js"/>"></script>
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
 </head>
 <body data-post-body="<c:out value="${post.body}"/>">
@@ -98,82 +98,19 @@
         </c:forEach>
     </section>
     <hr>
-    <section id="post-comments" class="uk-container uk-container-small">
-        <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${comments.totalCount}"/></h1>
-        <sec:authorize access="hasRole('USER')">
-            <div style="padding-bottom: 25px">
-                <c:url value="/comment/create" var="action"/>
-                <form:form id="spring-form" modelAttribute="CommentCreateForm" action="${action}" method="post">
-                    <c:set var="parentId" value="${null}" scope="request" />
-                    <c:set var="placeholder"><spring:message code="comment.create.writeCommentPlaceholder"/></c:set>
-                    <div class="uk-margin">
-                        <form:label path="postId">
-                            <form:hidden path="postId" value="${post.id}"/>
-                        </form:label>
-                        <form:label path="parentId">
-                            <form:hidden path="parentId" value="${parentId}"/>
-                        </form:label>
-                        <form:label path="commentBody">
-                            <form:textarea class="uk-textarea" rows="5" path="commentBody" placeholder="${placeholder}" />
-                        </form:label>
-                    </div>
-                    <div class="uk-margin-large-bottom uk-align-right">
-                        <input class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
-                    </div>
-                </form:form>
-            </div>
-        </sec:authorize>
-        <sec:authorize access="hasRole('NOT_VALIDATED')">
-            <div class="uk-text-bold uk-text-italic uk-text-secondary uk-text-center"><spring:message code="comment.create.not_validated"/></div>
-        </sec:authorize>
-        <div class="uk-margin-large-top">
-            <hr>
-            <c:set var="paginatedComments" value="${comments}" scope="request"/>
-            <c:set var="comments" value="${comments.results}" scope="request"/>
-            <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp"/>
-        </div>
-        <c:if test="${not empty paginatedComments.results}">
+    <c:set var="comments" value="${comments}" scope="request"/>
+    <c:set var="postId" value="${post.id}" scope="request"/>
+    <c:set var="parentId" value="${0}" scope="request"/>
+    <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
+    <c:if test="${not empty paginatedComments.results}">
 
-            <c:set var="collection" value="${paginatedComments}" scope="request"/>
-            <c:url var="baseURL" value="/post/${postId}" scope="request"/>
-            <c:set var="numberOfInputs" value="${2}" scope="request"/>
-            <form action="${baseURL}" method="get">
-                <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
-            </form>
-        </c:if>
-
-        <%-- Comment reply textarea --%>
-        <form id="reply-form" class="uk-hidden">
-            <fieldset class="uk-fieldset">
-                <div class="uk-margin">
-                    <label for="textarea"></label>
-                    <textarea id="textarea" class="uk-textarea" rows="5" placeholder="<spring:message code="comment.create.replyPlaceholder"/>"></textarea>
-                </div>
-                <div class="uk-align-right">
-                    <button id="send-bt" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.create.replyBtn"/></button>
-                </div>
-            </fieldset>
+        <c:set var="collection" value="${paginatedComments}" scope="request"/>
+        <c:url var="baseURL" value="/post/${postId}" scope="request"/>
+        <c:set var="numberOfInputs" value="${2}" scope="request"/>
+        <form action="${baseURL}" method="get">
+            <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
         </form>
-    </section>
-    <form class="uk-margin-remove" action="<c:url value="/post/like"/>" method="post" id="post-like-form">
-        <label>
-            <input hidden name="postId" type="number" value="${post.id}"/>
-        </label>
-        <label>
-            <input hidden name="value" id="post-like-value" type="checkbox"/>
-        </label>
-    </form>
-    <form method="post" action="<c:url value="/comment/like"/>" id="comment-like-form">
-        <label>
-            <input hidden type="number" name="post_id" value="${post.id}"/>
-        </label>
-        <label>
-            <input hidden type="number" id="comment-id" name="comment_id"/>
-        </label>
-        <label>
-            <input hidden type="checkbox" id="like-value" name="value"/>
-        </label>
-    </form>
+    </c:if>
 </main>
 
 </body>

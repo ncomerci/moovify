@@ -2,7 +2,7 @@ const localStorageIds = [];
 
 window.addEventListener('load', () => {
 
-    const commentLikeForm =  document.forms['comment-like-form'];
+    const commentLikeForm = document.forms['comment-like-form'];
     const postLikeForm = document.forms['post-like-form'];
 
     interpretBody();

@@ -5,7 +5,6 @@ import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +21,8 @@ public class CommentDaoImpl implements CommentDao {
     private static final String POSTS = TableNames.POSTS.getTableName();
     private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
     private static final String USERS = TableNames.USERS.getTableName();
+    private static final String ROLES = TableNames.ROLES.getTableName();
+    private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
     private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
 
     private static final int MAX_CHILDREN_PAGINATION_DEPTH = 5;
@@ -72,7 +73,9 @@ public class CommentDaoImpl implements CommentDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
-            USERS + ".enabled u_enabled";
+            USERS + ".enabled u_enabled, " +
+            USERS + ".role_id u_role_id, " +
+            USERS + ".role u_role";
 
     private static final String BASE_COMMENT_FROM = "FROM " + COMMENTS;
 
@@ -115,45 +118,92 @@ public class CommentDaoImpl implements CommentDao {
                     ") " + POSTS + " ON " + POSTS + ".post_id = " + COMMENTS + ".post_id";
 
     private static final String USER_FROM =
-            "INNER JOIN " + USERS + " ON " + USERS + ".user_id = " + COMMENTS + ".user_id";
+            "INNER JOIN (" +
+                    "SELECT " +
+                        USERS + ".user_id, " +
+                        USERS + ".creation_date, " +
+                        USERS + ".username, " +
+                        USERS + ".password, " +
+                        USERS + ".name, " +
+                        USERS + ".email, " +
+                        USERS + ".enabled, " +
+                        ROLES + ".role_id, " +
+                        ROLES + ".role " +
+                "FROM " + USERS +
+                " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
+                "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
 
-    private static final RowMapper<Comment> COMMENT_ROW_MAPPER = (rs, rowNum) ->
-            new Comment(rs.getLong("c_comment_id"), rs.getObject("c_creation_date", LocalDateTime.class),
+            ") " + USERS + " ON " + USERS + ".user_id = " + COMMENTS + ".user_id";
 
-                    new Post(
-                            rs.getLong("p_post_id"), rs.getObject("p_creation_date", LocalDateTime.class),
-                            rs.getString("p_title"), rs.getString("p_body"),
-                            rs.getInt("p_word_count"),
 
-                            new PostCategory(rs.getLong("pc_category_id"),
-                                    rs.getObject("pc_creation_date", LocalDateTime.class),
-                                    rs.getString("pc_name")),
 
-                            new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
-                                    rs.getString("pu_username"), rs.getString("pu_password"),
-                                    rs.getString("pu_name"), rs.getString("pu_email"),
-                                    null, rs.getBoolean("pu_enabled"), null),
+    private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER = (rs) -> {
 
-                            // tags
-                            null, rs.getBoolean("p_enabled"), 0),
+        final Map<Long, Comment> idToCommentMap = new LinkedHashMap<>();
+        final Map<Long, Role> idToRoleMap = new HashMap<>();
 
-                    rs.getLong("c_parent_id"), null, rs.getString("c_body"),
+        long comment_id;
+        long role_id;
 
-                    new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
-                            rs.getString("u_username"), rs.getString("u_password"),
-                            rs.getString("u_name"), rs.getString("u_email"),
-                            null, rs.getBoolean("u_enabled"), null),
-                    rs.getBoolean("c_enabled"),
-                    rs.getLong("c_likes")
-                    );
+        while(rs.next()) {
+
+            comment_id = rs.getLong("c_comment_id");
+
+            if(comment_id != 0 && !idToCommentMap.containsKey(comment_id)) {
+
+                idToCommentMap.put(comment_id, new Comment(
+
+                        rs.getLong("c_comment_id"), rs.getObject("c_creation_date", LocalDateTime.class),
+
+                        new Post(
+                                rs.getLong("p_post_id"), rs.getObject("p_creation_date", LocalDateTime.class),
+                                rs.getString("p_title"), rs.getString("p_body"),
+                                rs.getInt("p_word_count"),
+
+                                new PostCategory(rs.getLong("pc_category_id"),
+                                        rs.getObject("pc_creation_date", LocalDateTime.class),
+                                        rs.getString("pc_name")),
+
+                                new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
+                                        rs.getString("pu_username"), rs.getString("pu_password"),
+                                        rs.getString("pu_name"), rs.getString("pu_email"),
+                                        null, rs.getBoolean("pu_enabled"), null),
+
+                                // tags
+                                null, rs.getBoolean("p_enabled"), 0),
+
+                        rs.getLong("c_parent_id"), null, rs.getString("c_body"),
+
+                        new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
+                                rs.getString("u_username"), rs.getString("u_password"),
+                                rs.getString("u_name"), rs.getString("u_email"),
+                                new HashSet<>(), rs.getBoolean("u_enabled"), null),
+
+                        rs.getBoolean("c_enabled"), rs.getLong("c_likes")
+                ));
+            }
+
+            role_id = rs.getLong("u_role_id");
+
+            if(role_id > 0 && !idToRoleMap.containsKey(role_id))
+                idToRoleMap.put(role_id, new Role(role_id, rs.getString("u_role")));
+
+            idToCommentMap.get(comment_id).getUser().getRoles().add(idToRoleMap.get(role_id));
+
+        }
+
+        return idToCommentMap.values();
+    };
 
     // Coalesce parent_id = null to parent_id = 0.
     private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER_WITH_CHILDREN = (rs) -> {
-        List<Comment> result = new ArrayList<>();
-        Map<Long, Comment> idToCommentMap = new HashMap<>();
-        Map<Long, Collection<Comment>> childrenWithoutParentMap = new HashMap<>();
+        final List<Comment> result = new ArrayList<>();
+        final Map<Long, Comment> idToCommentMap = new HashMap<>();
+        final Map<Long, Collection<Comment>> childrenWithoutParentMap = new HashMap<>();
+        final Map<Long, Role> idToRoleMap = new HashMap<>();
 
         long comment_id;
+        long role_id;
         Comment currentComment;
 
         while(rs.next()){
@@ -188,7 +238,7 @@ public class CommentDaoImpl implements CommentDao {
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
-                                null, rs.getBoolean("u_enabled"), null), rs.getBoolean("c_enabled"), rs.getLong("c_likes")
+                                new HashSet<>(), rs.getBoolean("u_enabled"), null), rs.getBoolean("c_enabled"), rs.getLong("c_likes")
                 );
 
                 idToCommentMap.put(comment_id, currentComment);
@@ -222,6 +272,14 @@ public class CommentDaoImpl implements CommentDao {
                         idToCommentMap.get(currentComment.getParentId()).getChildren().add(currentComment);
                 }
             }
+
+            role_id = rs.getLong("u_role_id");
+
+            if(role_id > 0 && !idToRoleMap.containsKey(role_id))
+                idToRoleMap.put(role_id, new Role(role_id, rs.getString("u_role")));
+
+            idToCommentMap.get(comment_id).getUser().getRoles().add(idToRoleMap.get(role_id));
+
         }
 
         // Root comments must also be returned
