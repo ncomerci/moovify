@@ -50,6 +50,9 @@ window.addEventListener('load', () => {
 
     document.getElementById('pagination-page-size').addEventListener('change',
         () => document.getElementById('pagination-form').submit())
+
+    document.querySelectorAll(".delete-comment-button")
+        .forEach(button => button.addEventListener('click', () => deleteComment(button.dataset.id), false));
 }, false);
 
 function likeComment(commentId, commentLikeForm, boolean){
@@ -89,6 +92,23 @@ function submitCommentReply() {
 
     springForm.submit();
     localStorageIds.forEach(id => localStorage.removeItem(`comment-${id}`));
+}
+
+function deleteComment(commentId) {
+   const name = document.getElementById(commentId).getElementsByClassName('comment-user-name')[0].textContent
+       .replace(/\s+/g, ' ').replace(/ $/, '');
+   const body = document.getElementById(commentId).getElementsByClassName('uk-comment-body')[0]
+       .getElementsByTagName('span')[0].textContent;
+
+   document.getElementById('modal-body').textContent = `${name}: ${body}`;
+   document.getElementById('modal-confirm')
+       .addEventListener('click', () => submitDeleteForm(`/comment/${commentId}`), false);
+}
+
+function submitDeleteForm(action) {
+    const deleteForm = document.forms['delete-form'];
+    deleteForm.action = action;
+    deleteForm.submit();
 }
 
 function interpretBody() {

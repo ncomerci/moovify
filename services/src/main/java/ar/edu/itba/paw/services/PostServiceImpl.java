@@ -28,6 +28,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public void delete(long id) {
+        postDao.delete(id);
+    }
+
+    @Override
     public void likePost(long post_id, long user_id, boolean value) {
         if(value)
             postDao.likePost(post_id, user_id);

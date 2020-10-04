@@ -21,16 +21,25 @@
                                 <h4 class="uk-comment-title uk-margin-remove">
                                     <c:choose>
                                         <c:when test="${comment.user.enabled}">
-                                            <a href = "<c:url value="/user/${comment.user.id}" />">
+                                            <a class="comment-user-name" href = "<c:url value="/user/${comment.user.id}" />">
                                                 <c:out value="${comment.user.name}" />
                                             </a>
                                         </c:when>
                                         <c:otherwise>
-                                            <span class="uk-text-italic">
+                                            <span class="comment-user-name" class="uk-text-italic">
                                                 <spring:message code="user.notEnabled.name"/>
                                             </span>
                                         </c:otherwise>
                                     </c:choose>
+                                    <sec:authorize access="hasRole('ADMIN')">
+                                    <a href="#delete-modal"
+                                       data-id="<c:out value="${comment.id}"/>"
+                                       class="uk-link-muted delete-comment-button uk-position-small uk-hidden-hover"
+                                       uk-toggle
+                                    >
+                                        <spring:message code="comment.delete.button"/>
+                                    </a>
+                                    </sec:authorize>
                                 </h4>
                                 <p class="uk-comment-meta uk-margin-remove-top">
                                     <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />

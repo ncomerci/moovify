@@ -14,6 +14,9 @@
     <link rel="stylesheet" href="<c:url value="/resources/css/postView.css" />" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js"></script>
     <script src="<c:url value="/resources/js/components/createAndViewComments.js"/>"></script>
+    <sec:authorize access="hasRole('ADMIN')">
+        <script src="<c:url value="/resources/js/post/delete.js"/>"></script>
+    </sec:authorize>
 </head>
 <body data-post-body="<c:out value="${post.body}"/>">
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
@@ -97,12 +100,34 @@
         </c:forEach>
     </section>
     <hr>
+    <sec:authorize access="hasRole('ADMIN')">
+        <div class="uk-flex uk-flex-right">
+            <button id="post-delete-btn"
+                    class="uk-button uk-button-default logout-button uk-border-rounded"
+                    data-id="${post.id}"
+                    data-msg="<spring:message code="post.delete.modalTitle"/>"
+                    type="button"
+                    uk-toggle="target: #delete-modal"
+            >
+                <spring:message code="post.delete.button"/>
+            </button>
+        </div>
+    </sec:authorize>
     <c:set var="comments" value="${comments}" scope="request"/>
     <c:set var="postId" value="${post.id}" scope="request"/>
     <c:set var="parentId" value="${0}" scope="request"/>
     <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
 </main>
-
 </body>
 </html>
+
+<%-- Post like form --%>
+<form class="uk-margin-remove" action="<c:url value="/post/like"/>" method="post" id="post-like-form">
+    <label>
+        <input hidden name="postId" type="number" value="${postId}"/>
+    </label>
+    <label>
+        <input hidden name="value" id="post-like-value" type="checkbox"/>
+    </label>
+</form>
 

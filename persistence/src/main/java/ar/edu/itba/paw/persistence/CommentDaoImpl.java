@@ -376,6 +376,10 @@ public class CommentDaoImpl implements CommentDao {
                 "DELETE FROM " + COMMENTS_LIKES + " WHERE " + COMMENTS_LIKES + ".comment_id = ? " + " AND "+ COMMENTS_LIKES + ".user_id = ?", comment_id, user_id );
     }
 
+    @Override
+    public void delete(long id) {
+        jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = false WHERE comment_id = " + id);
+    }
 
     private Collection<Comment> executeQuery(String select, String from, String where, String orderBy, Object[] args, boolean withChildren) {
 

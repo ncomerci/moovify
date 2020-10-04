@@ -110,24 +110,39 @@
             </div>
         </fieldset>
     </form>
+
+    <%-- Comment like form --%>
+    <form method="post" action="<c:url value="/comment/like"/>" id="comment-like-form">
+        <label>
+            <input hidden type="number" name="post_id" value="${postId}"/>
+        </label>
+        <label>
+            <input hidden type="number" id="comment-id" name="comment_id"/>
+        </label>
+        <label>
+            <input hidden type="checkbox" id="like-value" name="value"/>
+        </label>
+    </form>
+
+<sec:authorize access="hasRole('ADMIN')">
+    <%--  Delete form  --%>
+    <form method="post" action="" id="delete-form">
+        <label>
+            <input hidden type="number" name="postId" value="${postId}"/>
+        </label>
+    </form>
+
+    <!-- delete confirmation modal -->
+    <div id="delete-modal" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h2 class="uk-modal-title"><spring:message code="comment.delete.confirmTitle"/></h2>
+            <p id="modal-body" class="uk-text-italic"></p>
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="comment.delete.cancelButton"/></button>
+                <button id="modal-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.delete.confirmButton"/></button>
+            </p>
+        </div>
+    </div>
+</sec:authorize>
 </section>
-<form class="uk-margin-remove" action="<c:url value="/post/like"/>" method="post" id="post-like-form">
-    <label>
-        <input hidden name="postId" type="number" value="${postId}"/>
-    </label>
-    <label>
-        <input hidden name="value" id="post-like-value" type="checkbox"/>
-    </label>
-</form>
-<form method="post" action="<c:url value="/comment/like"/>" id="comment-like-form">
-    <label>
-        <input hidden type="number" name="post_id" value="${postId}"/>
-    </label>
-    <label>
-        <input hidden type="number" id="comment-id" name="comment_id"/>
-    </label>
-    <label>
-        <input hidden type="checkbox" id="like-value" name="value"/>
-    </label>
-</form>
 
