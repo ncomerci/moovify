@@ -38,6 +38,7 @@ public class CommentDaoImpl implements CommentDao {
             COMMENTS + ".post_id c_post_id, " +
             COMMENTS + ".creation_date c_creation_date, " +
             COMMENTS + ".body c_body, " +
+            COMMENTS + ".enabled c_enabled, " +
             COMMENTS_LIKES + ".likes c_likes";
 
     // Posts come without Tags
@@ -47,6 +48,7 @@ public class CommentDaoImpl implements CommentDao {
             POSTS + ".title p_title, " +
             POSTS + ".body p_body, " +
             POSTS + ".word_count p_word_count, " +
+            POSTS + ".p_enabled p_enabled, " +
 
             // Post Category
             POSTS + ".c_category_id pc_category_id, " +
@@ -59,7 +61,8 @@ public class CommentDaoImpl implements CommentDao {
             POSTS + ".u_username pu_username, " +
             POSTS + ".u_password pu_password, " +
             POSTS + ".u_name pu_name, " +
-            POSTS + ".u_email pu_email";
+            POSTS + ".u_email pu_email, " +
+            POSTS + ".u_enabled pu_enabled";
 
     // Users come without roles
     private static final String USER_SELECT =
@@ -68,7 +71,8 @@ public class CommentDaoImpl implements CommentDao {
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
-            USERS + ".email u_email";
+            USERS + ".email u_email, " +
+            USERS + ".enabled u_enabled";
 
     private static final String BASE_COMMENT_FROM = "FROM " + COMMENTS ;
 
@@ -89,6 +93,7 @@ public class CommentDaoImpl implements CommentDao {
                     POSTS + ".title, " +
                     POSTS + ".body, " +
                     POSTS + ".word_count, " +
+                    POSTS + ".enabled p_enabled, " +
 
                     // Post Category
                     POST_CATEGORY + ".category_id c_category_id, " +
@@ -101,7 +106,8 @@ public class CommentDaoImpl implements CommentDao {
                     USERS + ".username u_username, " +
                     USERS + ".password u_password, " +
                     USERS + ".name u_name, " +
-                    USERS + ".email u_email" +
+                    USERS + ".email u_email, " +
+                    USERS + ".enabled u_enabled" +
 
                     " FROM " + POSTS +
                         " INNER JOIN " + POST_CATEGORY + " ON " + POSTS + ".category_id = " + POST_CATEGORY + ".category_id " +
@@ -126,18 +132,18 @@ public class CommentDaoImpl implements CommentDao {
                             new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
                                     rs.getString("pu_username"), rs.getString("pu_password"),
                                     rs.getString("pu_name"), rs.getString("pu_email"),
-                                    null, null),
+                                    null, rs.getBoolean("pu_enabled"), null),
 
                             // tags
-                            null,
-                            0),
+                            null, rs.getBoolean("p_enabled"),0),
 
                     rs.getLong("c_parent_id"), null, rs.getString("c_body"),
 
                     new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                             rs.getString("u_username"), rs.getString("u_password"),
                             rs.getString("u_name"), rs.getString("u_email"),
-                            null,null),
+                            null, rs.getBoolean("u_enabled"), null),
+                    rs.getBoolean("c_enabled"),
                     rs.getLong("c_likes")
                     );
 
@@ -172,22 +178,17 @@ public class CommentDaoImpl implements CommentDao {
                                 new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
                                         rs.getString("pu_username"), rs.getString("pu_password"),
                                         rs.getString("pu_name"), rs.getString("pu_email"),
-                                        null, null),
+                                        null, rs.getBoolean("pu_enabled") , null),
 
                                 // tags
-                                null,
-                                0),
-
+                                null, rs.getBoolean("p_enabled"),0),
 
                         rs.getLong("c_parent_id"), new ArrayList<>(), rs.getString("c_body"),
 
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
-                                null, null),
-
-                        rs.getLong("c_likes")
-
+                                null, rs.getBoolean("u_enabled"), null), rs.getBoolean("c_enabled"), rs.getLong("c_likes")
                 );
 
                 idToCommentMap.put(comment_id, currentComment);

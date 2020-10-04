@@ -36,6 +36,7 @@ public class PostDaoImpl implements PostDao {
             POSTS + ".title p_title, " +
             POSTS + ".body p_body, " +
             POSTS + ".word_count p_word_count, " +
+            POSTS + ".enabled p_enabled, " +
             POSTS_LIKES + ".likes p_likes";
 
     private static final String CATEGORY_SELECT =
@@ -49,7 +50,8 @@ public class PostDaoImpl implements PostDao {
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
-            USERS + ".email u_email";
+            USERS + ".email u_email, " +
+            USERS + ".enabled u_enabled";
 
     private static final String TAGS_SELECT = TAGS + ".tag p_tag ";
 
@@ -92,16 +94,15 @@ public class PostDaoImpl implements PostDao {
                                 new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                         rs.getString("u_username"), rs.getString("u_password"),
                                         rs.getString("u_name"), rs.getString("u_email"),
-                                        null, null),
+                                        null, rs.getBoolean("u_enabled"), null),
 
                                 // tags
-                                new LinkedHashSet<>(),
+                                new LinkedHashSet<>()
+
+                                , rs.getBoolean("p_enabled"),
 
                                 //likes
                                 rs.getLong("p_likes")
-
-
-
                         )
                 );
             }
@@ -200,6 +201,7 @@ public class PostDaoImpl implements PostDao {
         map.put("body", body);
         map.put("category_id", categoryId);
         map.put("user_id", userId);
+        map.put("enabled", true);
 
         final long postId = postInsert.executeAndReturnKey(map).longValue();
 
@@ -245,7 +247,10 @@ public class PostDaoImpl implements PostDao {
 
         final String from = BASE_POST_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
 
-        final String query = select + " " + from + " " + customWhereStatement + " " + customOrderByStatement;
+        final String whereEnabledFilter = customWhereStatement == null || customWhereStatement.length() < 3 ?
+                "WHERE " + POSTS + ".enabled = true" : "AND " + POSTS + ".enabled = true";
+
+        final String query = select + " " + from + " " + customWhereStatement + " " + whereEnabledFilter + " " + customOrderByStatement;
 
         if(args != null)
             return jdbcTemplate.query(query, args, POST_ROW_MAPPER);

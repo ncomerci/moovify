@@ -5,7 +5,8 @@ CREATE TABLE IF NOT EXISTS USERS
     username        VARCHAR(50)  UNIQUE NOT NULL,
     password        VARCHAR(200) NOT NULL,
     name            VARCHAR(50)  NOT NULL,
-    email           VARCHAR(200) UNIQUE NOT NULL
+    email           VARCHAR(200) UNIQUE NOT NULL,
+    enabled         BOOLEAN NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS USER_VERIFICATION_TOKEN
@@ -60,6 +61,7 @@ CREATE TABLE IF NOT EXISTS POSTS
     word_count    INTEGER      NOT NULL,
     body          TEXT         NOT NULL,
     likes         INTEGER      NOT NULL,
+    enabled       BOOLEAN      NOT NULL,
 
     FOREIGN KEY (category_id) REFERENCES POST_CATEGORY (category_id),
     FOREIGN KEY (user_id)     REFERENCES USERS (user_id)
@@ -133,6 +135,7 @@ CREATE TABLE IF NOT EXISTS COMMENTS
     user_id       INTEGER      NOT NULL,
     creation_date TIMESTAMP    NOT NULL,
     body          TEXT         NOT NULL,
+    enabled       BOOLEAN      NOT NULL,
 
     FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id),

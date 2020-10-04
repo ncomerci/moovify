@@ -18,8 +18,9 @@ public class Comment {
     private final String body;
     private final User user;
     private final long likes;
+    private final boolean enabled;
 
-    public Comment(long id, LocalDateTime creationDate, Post post, Long parentId, Collection<Comment> children, String body, User user, long likes) {
+    public Comment(long id, LocalDateTime creationDate, Post post, Long parentId, Collection<Comment> children, String body, User user, boolean enabled, long likes) {
         this.id = id;
         this.creationDate = creationDate;
         this.post = post;
@@ -27,6 +28,7 @@ public class Comment {
         this.children = children;
         this.body = body;
         this.user = user;
+        this.enabled = enabled;
         this.likes = likes;
     }
 
@@ -82,4 +84,6 @@ public class Comment {
     public long getMinutesSinceCreation() {
         return getTimeSinceCreation().toMinutes();
     }
+
+    public boolean isEnabled() { return enabled; }
 }

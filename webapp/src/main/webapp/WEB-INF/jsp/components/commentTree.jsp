@@ -9,6 +9,8 @@
 
         <li>
             <div id="${comment.id}">
+                <c:choose>
+                <c:when test="${comment.enabled}">
                 <article class="uk-comment uk-visible-toggle" tabindex="-1">
                     <header class="uk-comment-header uk-position-relative">
                         <div class="uk-grid-medium uk-flex-middle" uk-grid>
@@ -17,7 +19,18 @@
                             </div>
                             <div class="uk-width-expand" >
                                 <h4 class="uk-comment-title uk-margin-remove">
-                                    <a href = "<c:url value="/user/${comment.user.id}" />"><c:out value="${comment.user.name}" /> </a>
+                                    <c:choose>
+                                        <c:when test="${comment.user.enabled}">
+                                            <a href = "<c:url value="/user/${comment.user.id}" />">
+                                                <c:out value="${comment.user.name}" />
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="uk-text-italic">
+                                                <spring:message code="user.notEnabled.name"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </h4>
                                 <p class="uk-comment-meta uk-margin-remove-top">
                                     <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
@@ -25,7 +38,7 @@
                                 </p>
                             </div>
                         </div>
-                        <sec:authorize access="hasAnyRole('USER', 'ADMIN')">
+                        <sec:authorize access="hasRole('USER')">
                             <div class="uk-position-top-right">
                                 <%--TODO no se como hacer para que scrollee automaticamente a los comentarios que son hijos--%>
                                 <c:if test="${!loggedUser.getLikedComments().contains(comment.getId())}">
@@ -52,6 +65,25 @@
                         <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
                     </div>
                 </article>
+                </c:when>
+                <c:otherwise>
+                    <article class="uk-comment uk-visible-toggle" tabindex="-1">
+                        <header class="uk-comment-header uk-position-relative uk-margin-remove-bottom">
+                            <div class="uk-grid-medium uk-flex-middle" uk-grid>
+                                <div class="uk-width-expand">
+                                    <p class="uk-comment-meta uk-margin-remove-vertical uk-text-italic">
+                                        <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                                        <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                                    </p>
+                                </div>
+                            </div>
+                        </header>
+                        <div class="uk-comment-body">
+                            <span class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></span>
+                        </div>
+                    </article>
+                </c:otherwise>
+                </c:choose>
                 <hr>
             </div>
             <div class="replies-show" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${comment.descendantCount}">

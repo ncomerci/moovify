@@ -52,9 +52,19 @@
             </span>
         <span id="post-author" class="uk-article-meta uk-align-right uk-margin-remove-bottom">
             <spring:message code="post.view.writtenBy"/>
-            <a href="<c:url value="/user/${post.user.id}"/>">
-                <c:out value="${post.user.name}"/>
-            </a>
+
+            <c:choose>
+                <c:when test="${post.user.enabled}">
+                    <a href="<c:url value="/user/${post.user.id}"/>">
+                        <c:out value="${post.user.name}"/>
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <span class="uk-text-italic">
+                        <spring:message code="user.notEnabled.name"/>
+                    </span>
+                </c:otherwise>
+            </c:choose>
         </span>
     </div>
 
