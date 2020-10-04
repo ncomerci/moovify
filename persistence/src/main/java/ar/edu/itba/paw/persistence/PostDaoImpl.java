@@ -37,8 +37,9 @@ public class PostDaoImpl implements PostDao {
             POSTS + ".title p_title, " +
             POSTS + ".body p_body, " +
             POSTS + ".word_count p_word_count, " +
-            POSTS + ".enabled p_enabled, " +
-            POSTS_LIKES + ".likes p_likes";
+            POSTS + ".enabled p_enabled";
+
+    private static final String LIKES_SELECT = POSTS_LIKES + ".likes p_likes";
 
     private static final String CATEGORY_SELECT =
             POST_CATEGORY + ".category_id pc_category_id, " +
@@ -56,8 +57,10 @@ public class PostDaoImpl implements PostDao {
 
     private static final String TAGS_SELECT = TAGS + ".tag p_tag";
 
-    private static final String BASE_POST_FROM =
-            "FROM " + POSTS + " INNER JOIN " +
+    private static final String BASE_POST_FROM = "FROM " + POSTS;
+
+    private static final String LIKES_FROM =
+            "INNER JOIN " +
                     "(SELECT " + POSTS + ".post_id, COUNT( " + POSTS_LIKES + ".user_id ) likes " +
                     "FROM " + POSTS + " LEFT OUTER JOIN " + POSTS_LIKES + " on " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id" +
                     " GROUP BY " + POSTS + ".post_id ) " + POSTS_LIKES + " ON " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id";
@@ -168,7 +171,6 @@ public class PostDaoImpl implements PostDao {
     private final SimpleJdbcInsert tagsInsert;
     private final SimpleJdbcInsert postLikesInsert;
 
-
     @Autowired
     public PostDaoImpl(final DataSource ds){
 
@@ -245,7 +247,7 @@ public class PostDaoImpl implements PostDao {
 
     private Collection<Post> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
 
-//        TODO: NICO
+//        TODO: NICO NO SE PUEDE PONER ACA
 //                final String whereEnabledFilter = customWhereStatement == null || customWhereStatement.length() < 3 ?
 //                "WHERE " + POSTS + ".enabled = true" : "AND " + POSTS + ".enabled = true";
 //
@@ -259,23 +261,21 @@ public class PostDaoImpl implements PostDao {
             return jdbcTemplate.query(query, POST_ROW_MAPPER);
     }
 
-
-
     // For queries where pagination is not necessary (also no order)
     private Collection<Post> buildAndExecuteQuery(String customWhereStatement, Object[] args) {
 
-        final String select = BASE_POST_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
+        final String select = BASE_POST_SELECT + ", " + LIKES_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
 
-        final String from = BASE_POST_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+        final String from = BASE_POST_FROM + " " + LIKES_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
 
         return executeQuery(select, from, customWhereStatement, "", args);
     }
 
     private PaginatedCollection<Post> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
 
-        final String select = BASE_POST_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
+        final String select = BASE_POST_SELECT + ", " + LIKES_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
 
-        final String from = BASE_POST_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+        final String from = BASE_POST_FROM + " " + LIKES_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
 
         // Execute original query to count total posts in the query
         final int totalPostCount = jdbcTemplate.queryForObject(

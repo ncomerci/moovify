@@ -62,8 +62,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Collection<Post> getAllPostsOrderByHottest() {
-        return postDao.getAllPosts(PostDao.SortCriteria.HOTTEST);
+    public PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize) {
+        return postDao.getAllPosts(PostDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
     @Override

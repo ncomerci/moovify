@@ -8,7 +8,8 @@
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body>
-<jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
+<%-- La saco porque explota cuando hay errores. De ultima hay que hacer una especial que no pueda fallar, que sea estatica --%>
+<%--<jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />--%>
 
 <jsp:useBean id="message" scope="request" type="java.lang.String"/>
 <jsp:useBean id="code" scope="request" type="java.lang.String"/>

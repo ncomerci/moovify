@@ -30,15 +30,16 @@ public class CommentDaoImpl implements CommentDao {
     private final SimpleJdbcInsert commentInsert;
     private final SimpleJdbcInsert commentLikesInsert;
 
-//    TODO: both in Posts and Comments separate Base Select from Like logic
     private static final String BASE_COMMENT_SELECT = "SELECT " +
             COMMENTS + ".comment_id c_comment_id, " +
             "coalesce(" + COMMENTS + ".parent_id, 0) c_parent_id, " +
             COMMENTS + ".post_id c_post_id, " +
             COMMENTS + ".creation_date c_creation_date, " +
             COMMENTS + ".body c_body, " +
-            COMMENTS + ".enabled c_enabled, " +
-            COMMENTS_LIKES + ".likes c_likes";
+            COMMENTS + ".enabled c_enabled";
+
+
+    private static final String LIKES_SELECT = COMMENTS_LIKES + ".likes c_likes";
 
     // Posts come without Tags
     private static final String POST_SELECT =
@@ -134,7 +135,7 @@ public class CommentDaoImpl implements CommentDao {
                                     null, rs.getBoolean("pu_enabled"), null),
 
                             // tags
-                            null, rs.getBoolean("p_enabled"),0),
+                            null, rs.getBoolean("p_enabled"), 0),
 
                     rs.getLong("c_parent_id"), null, rs.getString("c_body"),
 
@@ -180,7 +181,7 @@ public class CommentDaoImpl implements CommentDao {
                                         null, rs.getBoolean("pu_enabled") , null),
 
                                 // tags
-                                null, rs.getBoolean("p_enabled"),0),
+                                null, rs.getBoolean("p_enabled"), 0),
 
                         rs.getLong("c_parent_id"), new ArrayList<>(), rs.getString("c_body"),
 
@@ -208,7 +209,6 @@ public class CommentDaoImpl implements CommentDao {
                     // If parent doesn't exist yet
                     if(!idToCommentMap.containsKey(currentComment.getParentId())) {
 
-                        // TODO: verificar que los comentarios no se estan duplicando
                         // Initialize Collection inside Map if necessary
                         if(!childrenWithoutParentMap.containsKey(currentComment.getParentId()))
                             childrenWithoutParentMap.put(currentComment.getParentId(), new ArrayList<>());
@@ -242,6 +242,7 @@ public class CommentDaoImpl implements CommentDao {
                     "root_comments.user_id, " +
                     "root_comments.creation_date, " +
                     "root_comments.body, " +
+                    "root_comments.enabled, " +
                     "1 iteration";
 
     private static final String PAGINATION_RECURSIVE_QUERY_LOWER =
@@ -253,6 +254,7 @@ public class CommentDaoImpl implements CommentDao {
                     COMMENTS + ".user_id, " +
                     COMMENTS + ".creation_date, " +
                     COMMENTS + ".body, " +
+                    COMMENTS + ".enabled, " +
                     "iteration+1 iteration " +
                 "FROM " + COMMENTS + ", comments_rec " +
                 "WHERE " + COMMENTS + ".parent_id = comments_rec.comment_id AND iteration < " + MAX_CHILDREN_PAGINATION_DEPTH +
@@ -312,10 +314,10 @@ public class CommentDaoImpl implements CommentDao {
 
     @Override
     public void removeLike(long comment_id, long user_id) {
-        jdbcTemplate.update( "DELETE FROM " + COMMENTS_LIKES + " WHERE " + COMMENTS_LIKES + ".comment_id = ? " + " AND "+ COMMENTS_LIKES + ".user_id = ?", comment_id, user_id );
+        jdbcTemplate.update(
+                "DELETE FROM " + COMMENTS_LIKES + " WHERE " + COMMENTS_LIKES + ".comment_id = ? " + " AND "+ COMMENTS_LIKES + ".user_id = ?", comment_id, user_id );
     }
 
-//    TODO: Add LIKES_FROM: final String from = BASE_COMMENT_FROM + " " + LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
 
     private Collection<Comment> executeQuery(String select, String from, String where, String orderBy, Object[] args, boolean withChildren) {
 
@@ -338,9 +340,9 @@ public class CommentDaoImpl implements CommentDao {
     // You cannot ask comments with children without paginating
     private Collection<Comment> buildAndExecuteQuery(String customWhereStatement, Object[] args) {
 
-        final String select = BASE_COMMENT_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
+        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
 
-        final String from = BASE_COMMENT_FROM + " " + POST_FROM + " " + USER_FROM;
+        final String from = BASE_COMMENT_FROM + " " + LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
 
         return executeQuery(select, from, customWhereStatement, "", args, false);
     }
@@ -351,9 +353,9 @@ public class CommentDaoImpl implements CommentDao {
     // It is important to consider we couldn't limit the width of the tree, only it's height.
     private PaginatedCollection<Comment> getPaginatedChildrenQuery(SortCriteria sortCriteria, int pageNumber, int pageSize, Long rootId, boolean isRootPost) {
 
-        final String select = BASE_COMMENT_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
+        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
 
-        final String nonBaseFrom = POST_FROM + " " + USER_FROM;
+        final String nonBaseFrom = LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
 
         final String from = BASE_COMMENT_FROM + " " + nonBaseFrom;
 
@@ -399,9 +401,9 @@ public class CommentDaoImpl implements CommentDao {
 
     private PaginatedCollection<Comment> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
 
-        final String select = BASE_COMMENT_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
+        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
 
-        final String from = BASE_COMMENT_FROM + " " + POST_FROM + " " + USER_FROM;
+        final String from = BASE_COMMENT_FROM + " " + LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
 
         // Execute original query to count total comments in the query
         final int totalCommentCount = jdbcTemplate.queryForObject(

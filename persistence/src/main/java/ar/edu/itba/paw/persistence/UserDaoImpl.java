@@ -33,23 +33,32 @@ public class UserDaoImpl implements UserDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
-            USERS + ".enabled u_enabled, " +
+            USERS + ".enabled u_enabled";
 
+    private static final String ROLE_SELECT =
             ROLES + ".role_id r_role_id, " +
-            ROLES + ".role r_role, " +
+            ROLES + ".role r_role";
 
+    private static final String LIKES_SELECT =
             COMMENTS_LIKES + ".comment_id c_comment_id";
 
 
-    private static final String BASE_USER_FROM = "FROM " + USERS +
-            " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
-            "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
+    private static final String BASE_USER_FROM = "FROM " + USERS;
+
+    private static final String ROLE_FROM =
+            "INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
+            "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id";
+
+    private static final String LIKES_FROM =
             "LEFT OUTER JOIN " + COMMENTS_LIKES + " ON " + COMMENTS_LIKES + ".user_id = " + USERS + ".user_id ";
 
 
     private static final ResultSetExtractor<Collection<User>> USER_ROW_MAPPER = (rs) -> {
         Map<Long, User> idToUserMap = new LinkedHashMap<>();
+        Map<Long, Role> idToRoleMap = new HashMap<>();
         long userId;
+        long role_id;
+        long comment_id;
 
         while(rs.next()){
 
@@ -64,12 +73,17 @@ public class UserDaoImpl implements UserDao {
                 );
             }
 
-            // TODO: Revisar que no se dupliquen roles
-            idToUserMap.get(userId).getRoles().add(
-                    new Role(rs.getLong("r_role_id"), rs.getString("r_role"))
-            );
+            role_id = rs.getLong("r_role_id");
 
-            idToUserMap.get(userId).getLikedComments().add(rs.getLong("c_comment_id"));
+            if(!idToRoleMap.containsKey(role_id))
+                idToRoleMap.put(role_id, new Role(role_id, rs.getString("r_role")));
+
+            idToUserMap.get(userId).getRoles().add(idToRoleMap.get(role_id));
+
+            comment_id = rs.getLong("c_comment_id");
+
+            if(comment_id > 0)
+                idToUserMap.get(userId).getLikedComments().add(comment_id);
         }
 
         return idToUserMap.values();
@@ -207,18 +221,18 @@ public class UserDaoImpl implements UserDao {
 
     private Collection<User> buildAndExecuteQuery(String customWhereStatement, Object[] args){
 
-        final String select = BASE_USER_SELECT;
+        final String select = BASE_USER_SELECT + ", " + ROLE_SELECT + ", " + LIKES_SELECT;
 
-        final String from = BASE_USER_FROM;
+        final String from = BASE_USER_FROM + " " + ROLE_FROM + " " + LIKES_FROM;
 
         return executeQuery(select, from, customWhereStatement, "", args);
     }
 
     private PaginatedCollection<User> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
 
-        final String select = BASE_USER_SELECT;
+        final String select = BASE_USER_SELECT + ", " + ROLE_SELECT + ", " + LIKES_SELECT;
 
-        final String from = BASE_USER_FROM;
+        final String from = BASE_USER_FROM + " " + ROLE_FROM + " " + LIKES_FROM;
 
         // Execute original query to count total posts in the query
         final int totalUserCount = jdbcTemplate.queryForObject(
