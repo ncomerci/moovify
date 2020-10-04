@@ -112,11 +112,9 @@
 
     <datalist id="movie-list">
         <c:forEach items="${movies.results}" var="movie">
-        <option value="${movie.title}" data-id="${movie.id}">
-            </c:forEach>
+            <option value="${movie.title}" data-id="${movie.id}"></option>
+        </c:forEach>
     </datalist>
 
 </body>
 </html>
-
-</jsp:root>
