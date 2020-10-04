@@ -29,6 +29,7 @@ public class CommentDaoImpl implements CommentDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert commentInsert;
+    private final SimpleJdbcInsert commentLikesInsert;
 
 
     private static final String BASE_COMMENT_SELECT = "SELECT " +
@@ -69,14 +70,15 @@ public class CommentDaoImpl implements CommentDao {
             USERS + ".name u_name, " +
             USERS + ".email u_email";
 
-    private static final String BASE_COMMENT_FROM = "FROM " + COMMENTS +
-            " LEFT OUTER JOIN ( " +
-                "SELECT " +
-                COMMENTS_LIKES + ".comment_id, " +
-                "COUNT( " + COMMENTS_LIKES + ".user_id ) likes " +
-                "FROM " + COMMENTS_LIKES +
-                " GROUP BY " + COMMENTS_LIKES + ".comment_id" +
-                ") " + COMMENTS_LIKES  + " ON " + COMMENTS + ".comment_id =" + COMMENTS_LIKES + ".comment_id";
+    private static final String BASE_COMMENT_FROM = "FROM " + COMMENTS ;
+
+    private static final String LIKES_FROM =  " LEFT OUTER JOIN ( " +
+            "SELECT " +
+            COMMENTS_LIKES + ".comment_id, " +
+            "COUNT( " + COMMENTS_LIKES + ".user_id ) likes " +
+            "FROM " + COMMENTS_LIKES +
+            " GROUP BY " + COMMENTS_LIKES + ".comment_id" +
+            ") " + COMMENTS_LIKES  + " ON " + COMMENTS + ".comment_id =" + COMMENTS_LIKES + ".comment_id";
 
     private static final String POST_FROM =
             "INNER JOIN ( " +
@@ -243,6 +245,9 @@ public class CommentDaoImpl implements CommentDao {
         commentInsert = new SimpleJdbcInsert(ds)
                 .withTableName(COMMENTS)
                 .usingGeneratedKeyColumns("comment_id");
+
+        commentLikesInsert = new SimpleJdbcInsert(ds)
+                .withTableName(COMMENTS_LIKES);
     }
 
     @Override
@@ -262,11 +267,26 @@ public class CommentDaoImpl implements CommentDao {
         return commentInsert.executeAndReturnKey(map).longValue();
     }
 
+    @Override
+    public void likeComment(long comment_id, long user_id) {
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("comment_id", comment_id);
+        map.put("user_id", user_id);
+
+        commentLikesInsert.execute(map);
+    }
+
+    @Override
+    public void removeLike(long comment_id, long user_id) {
+        jdbcTemplate.update( "DELETE FROM " + COMMENTS_LIKES + " WHERE " + COMMENTS_LIKES + ".comment_id = ? " + " AND "+ COMMENTS_LIKES + ".user_id = ?", comment_id, user_id );
+    }
+
     private Collection<Comment> buildAndExecuteQuery(String customWhereStatement, String customOrderByStatement, Object[] args, boolean withChildren) {
         
         final String select = BASE_COMMENT_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
 
-        final String from = BASE_COMMENT_FROM + " " + POST_FROM + " " + USER_FROM;
+        final String from = BASE_COMMENT_FROM + " " + LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
 
         final String query = select + " " + from + " " + customWhereStatement + " " + customOrderByStatement;
 

@@ -24,6 +24,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public void likeComment(long comment_id, long user_id, boolean value) {
+        if(value)
+            commentDao.likeComment(comment_id, user_id);
+        else
+            commentDao.removeLike(comment_id, user_id);
+    }
+
+    @Override
     public Optional<Comment> findCommentByIdWithChildren(long id){
         return commentDao.findCommentByIdWithChildren(id);
     }

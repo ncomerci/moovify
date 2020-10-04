@@ -14,10 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -60,6 +57,18 @@ public class PostController {
         return mv;
     }
 
+    @RequestMapping(path = "/post/like", method = RequestMethod.POST )
+    public ModelAndView showPostCreateForm(@RequestParam final long postId,
+                                           @RequestParam(defaultValue = "false") final boolean value,
+                                           final Principal principal) {
+
+        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        postService.likePost(postId, user.getId(), value);
+
+        return new ModelAndView("redirect:/post/" + postId);
+    }
+
     @RequestMapping(path = "/post/create", method = RequestMethod.GET )
     public ModelAndView showPostCreateForm(@ModelAttribute("postCreateForm") final PostCreateForm postCreateForm) {
 
@@ -86,6 +95,7 @@ public class PostController {
 
         return new ModelAndView("redirect:/post/" + post);
     }
+
 
     private boolean isAnonymous(Authentication auth) {
         return auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ANONYMOUS"));

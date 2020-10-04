@@ -9,6 +9,8 @@ public interface CommentService {
 
     long register(long postId, Long parentId, String body, long userId);
 
+    void likeComment(long comment_id, long user_id, boolean value);
+
     Optional<Comment> findCommentByIdWithChildren(long id);
 
     Optional<Comment> findCommentByIdWithoutChildren(long id);

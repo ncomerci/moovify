@@ -15,6 +15,10 @@ public interface PostDao {
 
     long register(String title, String body, int wordCount, long category, long user, Set<String> tags, Set<Long> movies);
 
+    void likePost(long post_id, long user_id);
+
+    void removeLike(long post_id, long user_id);
+
     Optional<Post> findPostById(long id);
 
     Collection<Post> getAllPosts(SortCriteria sortCriteria);

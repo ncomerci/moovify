@@ -12,14 +12,34 @@
     <title><c:out value="${post.title}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js"></script>
-    <script src="<c:url value="/resources/js/post/read.js" />"></script>
+    <script src="<c:url value="/resources/js/post/read.js"/>"></script>
 </head>
 <body data-post-body="<c:out value="${post.body}"/>">
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
     <div id="post-metadata" >
-        <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
+        <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/>
+
+            <c:if test="${!isPostLiked}">
+                <a class="uk-padding-remove uk-align-right like-post-button"  data-value="true">
+                    <span class="uk-text-right"><c:out value="${post.likes}"/></span>
+                    <sec:authorize access="hasRole('USER')">
+                        <span class="iconify" data-icon="ant-design:heart-outlined" data-inline="false"></span>
+                    </sec:authorize>
+                </a>
+            </c:if>
+            <c:if test="${isPostLiked}">
+                <a class="uk-padding-remove uk-align-right like-post-button" data-value="false">
+                    <span class="uk-text-right"><c:out value="${post.likes}"/></span>
+                    <sec:authorize access="hasRole('USER')">
+                        <span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span>
+                    </sec:authorize>
+                </a>
+            </c:if>
+
+        </h1>
+
         <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
 <%--                TODO: Create a custom taglib  --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
@@ -64,17 +84,6 @@
                 <c:out value="${tag}"/>
             </a>
         </c:forEach>
-    </section>
-    <section>
-        <h1 class="uk-h2 uk-margin-remove-adjacent ">
-
-            <spring:message code="post.view.likes"/> <c:out value="${post.likes}"/>
-            <sec:authorize access="hasRole('USER')">
-                <c:if test="${isPostLiked}">
-                    <span class="uk-navbar-toggle" uk-icon="icon: heart; ratio: 1.5"></span>
-                </c:if>
-            </sec:authorize>
-        </h1>
     </section>
     <hr>
     <section class="uk-container uk-container-small">
@@ -124,7 +133,27 @@
             </fieldset>
         </form>
     </section>
+    <form class="uk-margin-remove" action="<c:url value="/post/like"/>" method="post" id="post-like-form">
+        <label>
+            <input hidden name="postId" type="number" value="${post.id}"/>
+        </label>
+        <label>
+            <input hidden name="value" id="post-like-value" type="checkbox"/>
+        </label>
+    </form>
+    <form method="post" action="<c:url value="/comment/like"/>" id="comment-like-form">
+        <label>
+            <input hidden type="number" name="post_id" value="${post.id}"/>
+        </label>
+        <label>
+            <input hidden type="number" id="comment-id" name="comment_id"/>
+        </label>
+        <label>
+            <input hidden type="checkbox" id="like-value" name="value"/>
+        </label>
+    </form>
 </main>
+
 </body>
 </html>
 

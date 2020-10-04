@@ -27,6 +27,14 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public void likePost(long post_id, long user_id, boolean value) {
+        if(value)
+            postDao.likePost(post_id, user_id);
+        else
+            postDao.removeLike(post_id, user_id);
+    }
+
+    @Override
     public Optional<Post> findPostById(long id) {
         return postDao.findPostById(id);
     }

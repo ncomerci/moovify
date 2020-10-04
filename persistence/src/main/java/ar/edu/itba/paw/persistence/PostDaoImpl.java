@@ -162,6 +162,8 @@ public class PostDaoImpl implements PostDao {
     private final SimpleJdbcInsert postInsert;
     private final SimpleJdbcInsert postMoviesInsert;
     private final SimpleJdbcInsert tagsInsert;
+    private final SimpleJdbcInsert postLikesInsert;
+
 
     @Autowired
     public PostDaoImpl(final DataSource ds){
@@ -177,6 +179,9 @@ public class PostDaoImpl implements PostDao {
 
         tagsInsert = new SimpleJdbcInsert(ds)
                 .withTableName(TAGS);
+
+        postLikesInsert = new SimpleJdbcInsert(ds)
+                .withTableName(POSTS_LIKES);
     }
     
     @Override
@@ -215,6 +220,22 @@ public class PostDaoImpl implements PostDao {
         }
 
         return postId;
+    }
+
+    @Override
+    public void likePost(long post_id, long user_id) {
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("post_id", post_id);
+        map.put("user_id", user_id);
+
+        postLikesInsert.execute(map);
+    }
+
+    @Override
+    public void removeLike(long post_id, long user_id) {
+
+        jdbcTemplate.update( "DELETE FROM " + POSTS_LIKES + " WHERE " + POSTS_LIKES + ".post_id = ? " + " AND "+ POSTS_LIKES + ".user_id = ?", post_id, user_id );
     }
 
     // This method abstract the logic needed to perform select queries with or without movies.
