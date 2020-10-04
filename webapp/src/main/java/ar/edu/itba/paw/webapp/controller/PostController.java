@@ -52,9 +52,8 @@ public class PostController {
         mv.addObject("movies", movieService.findMoviesByPostId(postId, 0, 10));
         mv.addObject("comments", commentService.findPostCommentDescendants(postId, pageNumber, pageSize));
 
-        if(!isAnonymous(auth)) {
+        if(!isAnonymous(auth))
             mv.addObject("isPostLiked", userService.hasUserLiked(auth.getName(), postId));
-        }
 
         return mv;
     }

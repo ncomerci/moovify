@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.PostCategory;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -28,6 +25,8 @@ public class PostDaoImpl implements PostDao {
     private static final String TAGS = TableNames.TAGS.getTableName();
     private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
     private static final String USERS = TableNames.USERS.getTableName();
+    private static final String ROLES = TableNames.ROLES.getTableName();
+    private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
 
 
     private static final String BASE_POST_SELECT = "SELECT " +
@@ -53,7 +52,9 @@ public class PostDaoImpl implements PostDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
-            USERS + ".enabled u_enabled";
+            USERS + ".enabled u_enabled, " +
+            USERS + ".role_id u_role_id, " +
+            USERS + ".role u_role";
 
     private static final String TAGS_SELECT = TAGS + ".tag p_tag";
 
@@ -69,7 +70,22 @@ public class PostDaoImpl implements PostDao {
             "INNER JOIN " + POST_CATEGORY + " ON " + POSTS + ".category_id = " + POST_CATEGORY + ".category_id";
 
     private static final String USER_FROM =
-            "INNER JOIN " + USERS + " ON " + USERS + ".user_id = " + POSTS + ".user_id";
+            "INNER JOIN (" +
+                    "SELECT " +
+                        USERS + ".user_id, " +
+                        USERS + ".creation_date, " +
+                        USERS + ".username, " +
+                        USERS + ".password, " +
+                        USERS + ".name, " +
+                        USERS + ".email, " +
+                        USERS + ".enabled, " +
+                        ROLES + ".role_id, " +
+                        ROLES + ".role " +
+                    "FROM " + USERS +
+                    " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
+                    "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
+
+            ") " + USERS + " ON " + USERS + ".user_id = " + POSTS + ".user_id";
 
     private static final String TAGS_FROM =
             "LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id";
@@ -78,8 +94,11 @@ public class PostDaoImpl implements PostDao {
     private static final ResultSetExtractor<Collection<Post>> POST_ROW_MAPPER = (rs) -> {
 
         final Map<Long, Post> idToPostMap = new LinkedHashMap<>();
+        final Map<Long, Role> idToRoleMap = new HashMap<>();
+
         long post_id;
         String tag;
+        long role_id;
 
         while(rs.next()) {
 
@@ -99,10 +118,10 @@ public class PostDaoImpl implements PostDao {
                                 new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                         rs.getString("u_username"), rs.getString("u_password"),
                                         rs.getString("u_name"), rs.getString("u_email"),
-                                        null, rs.getBoolean("u_enabled"), null),
+                                        new HashSet<>(), rs.getBoolean("u_enabled"), null),
 
                                 // tags
-                                new LinkedHashSet<>()
+                                new HashSet<>()
 
                                 , rs.getBoolean("p_enabled"),
 
@@ -116,6 +135,13 @@ public class PostDaoImpl implements PostDao {
 
             if (tag != null)
                 idToPostMap.get(post_id).getTags().add(tag);
+
+            role_id = rs.getLong("u_role_id");
+
+            if(role_id > 0 && !idToRoleMap.containsKey(role_id))
+                idToRoleMap.put(role_id, new Role(role_id, rs.getString("u_role")));
+
+            idToPostMap.get(post_id).getUser().getRoles().add(idToRoleMap.get(role_id));
         }
 
         return idToPostMap.values();
