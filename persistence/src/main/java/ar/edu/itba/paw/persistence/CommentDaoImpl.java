@@ -203,6 +203,12 @@ public class CommentDaoImpl implements CommentDao {
             }
         }
 
+        // Root comments must also be returned
+        if(!childrenWithoutParentMap.isEmpty()) {
+            for(Collection<Comment> rootComments : childrenWithoutParentMap.values())
+                result.addAll(rootComments);
+        }
+
         return result;
     };
 
@@ -300,7 +306,7 @@ public class CommentDaoImpl implements CommentDao {
     // Then, the pagination is done over the first level of the tree.
     // Also, the comment tree returned will have a maximum height of MAX_CHILDREN_PAGINATION_DEPTH.
     // It is important to consider we couldn't limit the width of the tree, only it's height.
-    private PaginatedCollection<Comment> buildAndExecuteChildrenPaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Long rootId, Object[] args) {
+    private PaginatedCollection<Comment> getPaginatedChildrenQuery(SortCriteria sortCriteria, int pageNumber, int pageSize, Long rootId, boolean isRootPost) {
 
         final String select = BASE_COMMENT_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
 
@@ -308,20 +314,20 @@ public class CommentDaoImpl implements CommentDao {
 
         final String from = BASE_COMMENT_FROM + " " + nonBaseFrom;
 
-        final String onlyRootWhereStatement = customWhereStatement +
+        final String firstLevelCommentsWhere = isRootPost?
+                // parent_id is null (is root) and it's post is rootId
+                "WHERE " + COMMENTS + ".post_id = ? AND coalesce(" + COMMENTS + ".parent_id, 0) = 0" :
 
-                // customWhereStatement may come empty
-                ((customWhereStatement == null || customWhereStatement.length() < 3)? " WHERE " : " AND ") +
-
-                "coalesce(" + COMMENTS + ".parent_id, 0) = ?";
+                // It's parent_id is a comment
+                "WHERE coalesce(" + COMMENTS + ".parent_id, 0) = ?";
 
         // Add rootId to args list
-        final Object[] newArgs = Arrays.copyOf(args, args.length + 1);
-        newArgs[newArgs.length - 1] = (rootId == null)? 0 : rootId;
+        final Object[] args = new Object[]{ rootId };
+
 
         // Execute original query to count total comments in the query
         final int totalCommentCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id) " + from + " " + onlyRootWhereStatement, newArgs, Integer.class);
+                "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id) " + from + " " + firstLevelCommentsWhere, args, Integer.class);
 
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
@@ -330,7 +336,7 @@ public class CommentDaoImpl implements CommentDao {
 
         final String newWhere =
                 "WHERE " + COMMENTS + ".comment_id IN (SELECT " + COMMENTS + ".comment_id FROM " + COMMENTS + " WHERE " + COMMENTS + ".comment_id IN (" +
-                "SELECT " + COMMENTS + ".comment_id " + from + " " + onlyRootWhereStatement +
+                "SELECT " + COMMENTS + ".comment_id " + from + " " + firstLevelCommentsWhere +
                 " ) " + orderBy + " " + pagination + ")";
 
         final String recursiveQuery =
@@ -343,7 +349,7 @@ public class CommentDaoImpl implements CommentDao {
         // Replaces BASE_COMMENT_FROM. It should not have logic!!
         final String recursiveFrom = "FROM (SELECT * FROM comments_rec) " + COMMENTS + " " + nonBaseFrom;
 
-        final Collection<Comment> results = executeQuery(recursiveSelect, recursiveFrom, "", orderBy, newArgs, true);
+        final Collection<Comment> results = executeQuery(recursiveSelect, recursiveFrom, "", orderBy, args, true);
 
         return new PaginatedCollection<>(results, pageNumber, pageSize, totalCommentCount);
     }
@@ -391,39 +397,39 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public Optional<PaginatedCollection<Comment>> findCommentByIdWithChildren(long id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        PaginatedCollection<Comment> paginatedComments = buildAndExecuteChildrenPaginatedQuery(
-                "WHERE " + COMMENTS + ".comment_id = ?", sortCriteria, pageNumber, pageSize, id, new Object[] { id });
-
-        if(paginatedComments.getResults().isEmpty())
-            return Optional.empty();
-
-        return Optional.of(paginatedComments);
-    }
-
-    @Override
-    public Optional<Comment> findCommentByIdWithoutChildren(long id) {
+    public Optional<Comment> findCommentById(long id) {
         return buildAndExecuteQuery(
                 "WHERE " + COMMENTS + ".comment_id = ?", new Object[] { id })
                 .stream().findFirst();
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByPostIdWithChildren(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecuteChildrenPaginatedQuery(
-                "WHERE " + COMMENTS + ".post_id = ?", sortCriteria,
-                pageNumber, pageSize, null, new Object[] { post_id });
+    public PaginatedCollection<Comment> findCommentDescendants(long commentId, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return getPaginatedChildrenQuery(
+                sortCriteria, pageNumber, pageSize, commentId, false);
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByPostIdWithoutChildren(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentChildren(long commentId, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + COMMENTS + ".parent_id = ?",
+                sortCriteria, pageNumber, pageSize, new Object[]{ commentId });
+    }
+
+    @Override
+    public PaginatedCollection<Comment> findPostCommentDescendants(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return getPaginatedChildrenQuery(
+                sortCriteria, pageNumber, pageSize, post_id, true);
+    }
+
+    @Override
+    public PaginatedCollection<Comment> findCommentsByPostId(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + COMMENTS + ".post_id = ?", sortCriteria,
                 pageNumber, pageSize, new Object[] { post_id });
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByUserIdWithoutChildren(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + COMMENTS + ".user_id = ?", sortCriteria, pageNumber, pageSize,
                 new Object[] { user_id });

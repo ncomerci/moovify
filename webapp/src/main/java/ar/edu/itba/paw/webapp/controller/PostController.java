@@ -45,7 +45,7 @@ public class PostController {
 
         mv.addObject("post", postService.findPostById(postId).orElseThrow(PostNotFoundException::new));
         mv.addObject("movies", movieService.findMoviesByPostId(postId, 0, 10));
-        mv.addObject("comments", commentService.findCommentsByPostIdWithChildren(postId, pageNumber, pageSize));
+        mv.addObject("comments", commentService.findPostCommentDescendants(postId, pageNumber, pageSize));
 
         return mv;
     }

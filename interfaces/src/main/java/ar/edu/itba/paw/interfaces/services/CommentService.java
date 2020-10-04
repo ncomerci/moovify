@@ -9,13 +9,15 @@ public interface CommentService {
 
     long register(long postId, Long parentId, String body, long userId);
 
-    Optional<PaginatedCollection<Comment>> findCommentByIdWithChildren(long id, int pageNumber, int pageSize);
+    Optional<Comment> findCommentById(long id);
 
-    Optional<Comment> findCommentByIdWithoutChildren(long id);
+    PaginatedCollection<Comment> findCommentChildren(long commentId, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByPostIdWithChildren(long post_id, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentDescendants(long commentId, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByPostIdWithoutChildren(long post_id, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findPostCommentDescendants(long post_id, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByUserIdWithoutChildren(long user_id, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByPostId(long post_id, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> findCommentsByUserId(long user_id, int pageNumber, int pageSize);
 }

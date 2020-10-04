@@ -47,7 +47,10 @@ public class CommentController {
                              @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("comment/view");
-        mv.addObject("comment", commentService.findCommentByIdWithChildren(id,pageNumber,pageSize).orElseThrow(CommentNotFoundException::new));
+
+        mv.addObject("comment", commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new));
+        mv.addObject("children", commentService.findCommentDescendants(id, pageNumber, pageSize));
+
         return mv;
     }
 }

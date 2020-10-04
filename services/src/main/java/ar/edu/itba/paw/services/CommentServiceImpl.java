@@ -24,27 +24,32 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Optional<PaginatedCollection<Comment>> findCommentByIdWithChildren(long id, int pageNumber, int pageSize){
-        return commentDao.findCommentByIdWithChildren(id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public Optional<Comment> findCommentById(long commentId){
+        return commentDao.findCommentById(commentId);
     }
 
     @Override
-    public Optional<Comment> findCommentByIdWithoutChildren(long id){
-        return commentDao.findCommentByIdWithoutChildren(id);
+    public PaginatedCollection<Comment> findCommentChildren(long commentId, int pageNumber, int pageSize) {
+        return commentDao.findCommentChildren(commentId, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByPostIdWithChildren(long post_id, int pageNumber, int pageSize) {
-        return commentDao.findCommentsByPostIdWithChildren(post_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Comment> findCommentDescendants(long commentId, int pageNumber, int pageSize) {
+        return commentDao.findCommentDescendants(commentId, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByPostIdWithoutChildren(long post_id, int pageNumber, int pageSize) {
-        return commentDao.findCommentsByPostIdWithoutChildren(post_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Comment> findPostCommentDescendants(long post_id, int pageNumber, int pageSize) {
+        return commentDao.findPostCommentDescendants(post_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByUserIdWithoutChildren(long user_id, int pageNumber, int pageSize) {
-        return commentDao.findCommentsByUserIdWithoutChildren(user_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Comment> findCommentsByPostId(long post_id, int pageNumber, int pageSize) {
+        return commentDao.findCommentsByPostId(post_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    }
+
+    @Override
+    public PaginatedCollection<Comment> findCommentsByUserId(long user_id, int pageNumber, int pageSize) {
+        return commentDao.findCommentsByUserId(user_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 }
