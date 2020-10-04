@@ -235,11 +235,11 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public PaginatedCollection<Movie> findMoviesByPostId(long postId, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public Collection<Movie> findMoviesByPostId(long postId) {
 
-        return buildAndExecutePaginatedQuery(" WHERE " + MOVIES + ".movie_id IN (" +
+        return buildAndExecuteQuery(" WHERE " + MOVIES + ".movie_id IN (" +
                         "SELECT " + POST_MOVIE + ".movie_id FROM " + POST_MOVIE + " WHERE " + POST_MOVIE + ".post_id = ?)",
-                sortCriteria, pageNumber, pageSize, new Object[]{ postId });
+                 new Object[]{ postId });
     }
 
     @Override

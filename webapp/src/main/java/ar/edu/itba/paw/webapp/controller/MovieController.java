@@ -51,12 +51,14 @@ public class MovieController {
         return new ModelAndView("redirect:/movie/" + movie.getId());
     }
 
-    @RequestMapping(path = "/movie/{id}", method = RequestMethod.GET)
-    public ModelAndView view(@PathVariable final long id) {
+    @RequestMapping(path = "/movie/{movieId}", method = RequestMethod.GET)
+    public ModelAndView view(@PathVariable final long movieId,
+                             @RequestParam(defaultValue = "5") final int pageSize,
+                             @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("movie/view");
-        mv.addObject("movie", movieService.findById(id).orElseThrow(MovieNotFoundException::new));
-        mv.addObject("posts", postService.findPostsByMovieId(id, 0, 10));
+        mv.addObject("movie", movieService.findById(movieId).orElseThrow(MovieNotFoundException::new));
+        mv.addObject("posts", postService.findPostsByMovieId(movieId, pageNumber, pageSize));
         return mv;
     }
 }

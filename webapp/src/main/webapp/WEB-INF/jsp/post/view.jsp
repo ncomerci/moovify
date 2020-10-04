@@ -17,6 +17,7 @@
     <sec:authorize access="hasRole('ADMIN')">
         <script src="<c:url value="/resources/js/post/delete.js"/>"></script>
     </sec:authorize>
+    <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
 </head>
 <body data-post-body="<c:out value="${post.body}"/>">
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
@@ -82,7 +83,7 @@
     <hr>
     <section id="post-movies">
         <h1 class="uk-text-meta"><spring:message code="post.view.movies"/></h1>
-        <c:forEach items="${movies.results}" var="movie" >
+        <c:forEach items="${movies}" var="movie" >
             <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
                href="<c:url value="/movie/${movie.id}"/>">
                 <c:out value="${movie.title}"/>
