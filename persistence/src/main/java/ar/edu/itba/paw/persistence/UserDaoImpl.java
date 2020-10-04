@@ -33,6 +33,7 @@ public class UserDaoImpl implements UserDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
+            USERS + ".avatar_id u_avatar_id, " +
             USERS + ".enabled u_enabled";
 
     private static final String ROLE_SELECT =
@@ -68,7 +69,7 @@ public class UserDaoImpl implements UserDao {
                 idToUserMap.put(userId,
                         new User(userId, rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
-                                rs.getString("u_name"), rs.getString("u_email"),
+                                rs.getString("u_name"), rs.getString("u_email"), rs.getLong("u_avatar_id"),
                                 new HashSet<>(), rs.getBoolean("u_enabled"), new HashSet<>())
                 );
             }
@@ -121,7 +122,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User register(String username, String password, String name, String email, Collection<String> roleNames, boolean enabled) {
+    public User register(String username, String password, String name, String email, Collection<String> roleNames, Long avatarId, boolean enabled) {
 
         LocalDateTime creationDate = LocalDateTime.now();
 
@@ -137,6 +138,7 @@ public class UserDaoImpl implements UserDao {
         map.put("password", password);
         map.put("name", name);
         map.put("email", email);
+        map.put("avatar_id", avatarId);
         map.put("enabled", enabled);
 
         final long userId = jdbcUserInsert.executeAndReturnKey(map).longValue();
@@ -148,12 +150,17 @@ public class UserDaoImpl implements UserDao {
             jdbcUserRoleInsert.execute(map);
         }
 
-        return new User(userId, creationDate, username, password, name, email, roles, true , Collections.emptySet());
+        return new User(userId, creationDate, username, password, name, email, avatarId, roles, true , Collections.emptySet());
     }
 
     @Override
     public void updatePassword(long userId, String password) {
         jdbcTemplate.update("UPDATE " + USERS + " SET password = ? WHERE user_id = ?", password, userId);
+    }
+
+    @Override
+    public void updateAvatarId(long userId, long avatarId) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET avatar_id = ? WHERE user_id = ?", avatarId, userId);
     }
 
     @Override

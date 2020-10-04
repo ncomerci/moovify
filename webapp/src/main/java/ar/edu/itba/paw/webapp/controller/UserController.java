@@ -5,6 +5,7 @@ import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.exceptions.ImageNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
@@ -25,6 +26,8 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
@@ -56,14 +59,14 @@ public class UserController {
 
     @RequestMapping(path = "/user/create", method = RequestMethod.POST)
     public ModelAndView register(@Valid @ModelAttribute("userCreateForm") final UserCreateForm userCreateForm, final BindingResult bindingResult,
-                                  HttpServletRequest request, final RedirectAttributes redirectAttributes) {
+                                  HttpServletRequest request, final RedirectAttributes redirectAttributes) throws IOException {
 
         if(bindingResult.hasErrors())
             return showUserCreateForm(userCreateForm);
 
         final User user = userService.register(userCreateForm.getUsername(),
                 userCreateForm.getPassword(), userCreateForm.getName(),
-                userCreateForm.getEmail(), "confirmEmail");
+                userCreateForm.getEmail(), userCreateForm.getAvatar().getBytes(), "confirmEmail");
 
         manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
 
@@ -238,6 +241,12 @@ public class UserController {
         mv.addObject("loggedUser", user);
 
         return mv;
+    }
+
+    @RequestMapping(path = "/user/avatar/{avatarId}", method = RequestMethod.GET, produces = "image/*")
+    public @ResponseBody byte[] getAvatar(@PathVariable long avatarId) throws IOException, URISyntaxException {
+
+        return userService.getAvatar(avatarId).orElseThrow(ImageNotFoundException::new);
     }
 
     private void manualLogin(HttpServletRequest request, String username, String password, Collection<Role> roles) {

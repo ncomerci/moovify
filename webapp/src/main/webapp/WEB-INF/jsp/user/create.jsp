@@ -16,7 +16,7 @@
     <%--@elvariable id="userCreateForm" type=""--%>
     <legend class="uk-legend uk-text-uppercase uk-text-center uk-text-bold uk-text-large uk-text-primary"><spring:message code="user.create.signUpTitle"/></legend>
     <p class="uk-text-center uk-text-normal uk-text-italic uk-text-bold"><spring:message code="user.create.signUpDesc"/></p>
-    <form:form modelAttribute="userCreateForm" action="${action}" method="post">
+    <form:form modelAttribute="userCreateForm" action="${action}" method="post" enctype="multipart/form-data">
 
         <div class="uk-margin">
             <c:set var="nameError"><form:errors path="name"/></c:set>
@@ -118,6 +118,10 @@
             </div>
             <form:errors path="repeatPassword" element="p" cssClass="error" cssStyle="color:red;" />
         </div>
+
+        <form:label path="avatar">
+            <form:input path="avatar" type="file" />
+        </form:label>
 
         <div class="uk-text-center uk-margin-medium-top">
             <input class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="submit" value="<spring:message code="user.create.button"/>" />

@@ -11,17 +11,19 @@ public class User {
     private final String password;
     private final String name;
     private final String email;
+    private final long avatarId;
     private final Collection<Role> roles;
     private final Collection<Long> likedComments;
     private final boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, Collection<Role> roles, boolean enabled, Collection<Long> likedComments) {
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, Long avatarId, Collection<Role> roles, boolean enabled, Collection<Long> likedComments) {
         this.id = id;
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
+        this.avatarId = (avatarId == null)? 0 : avatarId;
         this.roles = roles;
         this.enabled = enabled;
         this.likedComments = likedComments;
@@ -64,4 +66,8 @@ public class User {
     }
 
     public boolean isEnabled() { return enabled; }
+
+    public long getAvatarId() {
+        return avatarId;
+    }
 }

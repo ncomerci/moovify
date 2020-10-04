@@ -38,7 +38,8 @@
                     </li>
                     <li>
                         <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left">
-                            <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
+<%--                            <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>--%>
+                            <img src="<c:url value="/user/avatar/${loggedUser.avatarId}" />" class="uk-comment-avatar uk-border-circle" width="80" height="80" alt="User Avatar">
                             <span class="uk-text-bold uk-margin-small-left">${loggedUser.username}</span>
                         </a>
                         <div class="uk-navbar-dropdown">

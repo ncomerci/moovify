@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
+import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.*;
@@ -11,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 
 @Service
@@ -21,6 +24,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private ImageService imageService;
 
     @Autowired
     private UserVerificationTokenDao userVerificationTokenDao;
@@ -35,14 +41,39 @@ public class UserServiceImpl implements UserService {
     private static final String NOT_VALIDATED_ROLE = "NOT_VALIDATED";
     private static final String USER_ROLE = "USER";
 
-    @Override
-    public User register(String username, String password, String name, String email, String confirmationMailTemplate) {
+    private static final long DEFAULT_AVATAR_ID = 0;
+    private static final String DEFAULT_AVATAR_PATH = "/images/avatar.jpg";
+    private static final String AVATAR_SECURITY_TAG = "AVATAR";
 
-        final User user = userDao.register(username, passwordEncoder.encode(password), name, email, Collections.singletonList(NOT_VALIDATED_ROLE), true);
+    @Override
+    public User register(String username, String password, String name, String email, byte[] avatar, String confirmationMailTemplate) {
+
+        final Long avatarId = (avatar.length == 0)? null : imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
+
+        final User user = userDao.register(username, passwordEncoder.encode(password),
+                name, email, Collections.singletonList(NOT_VALIDATED_ROLE), avatarId, true);
 
         createConfirmationEmail(user, confirmationMailTemplate);
 
         return user;
+    }
+
+    public Optional<byte[]> getAvatar(long avatarId) throws IOException, URISyntaxException {
+
+        if(avatarId == DEFAULT_AVATAR_ID)
+            return Optional.of(imageService.getImage(DEFAULT_AVATAR_PATH));
+
+        else
+            return imageService.getImage(avatarId, AVATAR_SECURITY_TAG);
+    }
+
+    public void updateAvatar(User user, byte[] newAvatar) {
+
+        imageService.deleteImage(user.getAvatarId());
+
+        final long newAvatarId = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
+
+        userDao.updateAvatarId(user.getId(), newAvatarId);
     }
 
     @Override

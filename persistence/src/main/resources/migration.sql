@@ -1,6 +1,8 @@
 -- feature/bajaLogica
-alter table users add column enabled boolean not null default true;
+ALTER TABLE USERS ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE POST ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT TRUE;
+ALTER TABLE COMMENTS ADD COLUMN enabled BOOLEAN NOT NULL DEFAULT TRUE;
 
-alter table posts add column enabled boolean not null default true;
-
-alter table comments add column enabled boolean not null default true;
+-- feature/ProfilePic
+ALTER TABLE USERS ADD COLUMN avatar_id INTEGER DEFAULT NULL;
+ALTER TABLE USERS ADD CONSTRAINT fk_user_avatar FOREIGN KEY (avatar_id) REFERENCES IMAGES (image_id);
