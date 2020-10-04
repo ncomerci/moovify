@@ -93,7 +93,7 @@
     </div>
 
     <datalist id="movie-list">
-        <c:forEach items="${movies}" var="movie">
+        <c:forEach items="${movies.results}" var="movie">
         <option value="${movie.title}" data-id="${movie.id}">
             </c:forEach>
     </datalist>
