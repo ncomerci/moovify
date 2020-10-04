@@ -2,21 +2,19 @@ const localStorageIds = [];
 
 window.addEventListener('load', () => {
 
-
     const commentLikeForm =  document.forms['comment-like-form'];
     const postLikeForm = document.forms['post-like-form'];
 
     interpretBody();
 
-
     document.querySelectorAll(".like-comment-button")
         .forEach(button => {
-                button.addEventListener('click', () =>likeComment(button.dataset.id, commentLikeForm, button.dataset.value === "true"), false)
+                button.addEventListener('click', () => likeComment(button.dataset.id, commentLikeForm, button.dataset.value === "true"), false)
         });
 
     document.querySelectorAll(".like-post-button")
         .forEach(button => {
-            button.addEventListener('click', () =>likePost(postLikeForm, button.dataset.value === "true"), false)
+            button.addEventListener('click', () => likePost(postLikeForm, button.dataset.value === "true"), false)
     });
 
     document.body.addEventListener('click', e => {

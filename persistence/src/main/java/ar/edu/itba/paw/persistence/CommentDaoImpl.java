@@ -252,7 +252,7 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public long register(long postId, Long parentId, String body, long userId) {
+    public long register(long postId, Long parentId, String body, long userId, boolean enabled) {
 
         Objects.requireNonNull(body);
 
@@ -264,6 +264,7 @@ public class CommentDaoImpl implements CommentDao {
         map.put("parent_id", parentId);
         map.put("body", body);
         map.put("user_id", userId);
+        map.put("enabled", enabled);
 
         return commentInsert.executeAndReturnKey(map).longValue();
     }

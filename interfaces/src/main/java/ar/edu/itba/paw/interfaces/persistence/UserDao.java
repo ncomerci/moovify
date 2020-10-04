@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
-import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
@@ -9,7 +8,7 @@ import java.util.Optional;
 
 public interface UserDao {
 
-    User register(String username, String password, String name, String email, Collection<String> roleNames);
+    User register(String username, String password, String name, String email, Collection<String> roleNames, boolean enabled);
 
     void replaceUserRole(final long userId, final String newRole, final String oldRole);
 

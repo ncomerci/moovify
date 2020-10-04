@@ -11,7 +11,7 @@ public interface CommentDao {
         NEWEST, OLDEST, HOTTEST
     }
 
-    long register(long postId, Long parentId, String body, long userId);
+    long register(long postId, Long parentId, String body, long userId, boolean enabled);
 
     void likeComment(long comment_id, long user_id);
 

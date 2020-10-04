@@ -9,7 +9,7 @@
     <h1 th:text="#{mail.confirmation.header}"></h1>
 
     <!--/*@thymesVar id="token" type="java.lang.String"*/-->
-    <a th:text="#{mail.confirmation.link}" th:href="@{__${applicationBasePath}__/user/updatePassword/token(token=${token})}"></a>
+    <a th:text="#{mail.confirmation.link}" th:href="@{__${applicationBasePath}__/user/registrationConfirm(token=${token})}"></a>
 
 </body>
 </html>

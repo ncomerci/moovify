@@ -20,7 +20,7 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.register(postId, parentId,
                 body.trim().replaceAll("[ \t]+", " ")
                         .replaceAll("(\r\n)+", "\n")
-                        .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId);
+                        .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId, true);
     }
 
     @Override

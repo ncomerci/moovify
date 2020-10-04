@@ -91,7 +91,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User register(String username, String password, String name, String email, Collection<String> roleNames) {
+    public User register(String username, String password, String name, String email, Collection<String> roleNames, boolean enabled) {
 
         LocalDateTime creationDate = LocalDateTime.now();
 
@@ -107,7 +107,7 @@ public class UserDaoImpl implements UserDao {
         map.put("password", password);
         map.put("name", name);
         map.put("email", email);
-        map.put("enabled", true);
+        map.put("enabled", enabled);
 
         final long userId = jdbcUserInsert.executeAndReturnKey(map).longValue();
 

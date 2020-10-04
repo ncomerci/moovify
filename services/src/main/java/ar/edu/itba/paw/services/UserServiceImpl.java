@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(String username, String password, String name, String email, String confirmationMailTemplate) {
 
-        final User user = userDao.register(username, passwordEncoder.encode(password), name, email, Collections.singletonList(NOT_VALIDATED_ROLE));
+        final User user = userDao.register(username, passwordEncoder.encode(password), name, email, Collections.singletonList(NOT_VALIDATED_ROLE), true);
 
         createConfirmationEmail(user, confirmationMailTemplate);
 

@@ -186,7 +186,7 @@ public class PostDaoImpl implements PostDao {
     }
     
     @Override
-    public long register(String title, String body, int wordCount, long categoryId, long userId, Set<String> tags, Set<Long> movies) {
+    public long register(String title, String body, int wordCount, long categoryId, long userId, Set<String> tags, Set<Long> movies, boolean enabled) {
 
         Objects.requireNonNull(title);
         Objects.requireNonNull(body);
@@ -201,7 +201,7 @@ public class PostDaoImpl implements PostDao {
         map.put("body", body);
         map.put("category_id", categoryId);
         map.put("user_id", userId);
-        map.put("enabled", true);
+        map.put("enabled", enabled);
 
         final long postId = postInsert.executeAndReturnKey(map).longValue();
 
