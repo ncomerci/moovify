@@ -20,7 +20,15 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.register(postId, parentId,
                 body.trim().replaceAll("[ \t]+", " ")
                         .replaceAll("(\r\n)+", "\n")
-                        .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId);
+                        .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId, true);
+    }
+
+    @Override
+    public void likeComment(long comment_id, long user_id, boolean value) {
+        if(value)
+            commentDao.likeComment(comment_id, user_id);
+        else
+            commentDao.removeLike(comment_id, user_id);
     }
 
     @Override

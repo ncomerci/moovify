@@ -2,7 +2,20 @@ const localStorageIds = [];
 
 window.addEventListener('load', () => {
 
+    const commentLikeForm =  document.forms['comment-like-form'];
+    const postLikeForm = document.forms['post-like-form'];
+
     interpretBody();
+
+    document.querySelectorAll(".like-comment-button")
+        .forEach(button => {
+                button.addEventListener('click', () => likeComment(button.dataset.id, commentLikeForm, button.dataset.value === "true"), false)
+        });
+
+    document.querySelectorAll(".like-post-button")
+        .forEach(button => {
+            button.addEventListener('click', () => likePost(postLikeForm, button.dataset.value === "true"), false)
+    });
 
     document.body.addEventListener('click', e => {
         const replyForm = document.forms['reply-form'];
@@ -17,6 +30,7 @@ window.addEventListener('load', () => {
 
             replyForm.classList.add('uk-hidden');
         }
+
     }, true);
 
     document.getElementById('send-bt').addEventListener('click', submitCommentReply);
@@ -38,7 +52,18 @@ window.addEventListener('load', () => {
         () => document.getElementById('pagination-form').submit())
 }, false);
 
+function likeComment(commentId, commentLikeForm, boolean){
+    document.getElementById('comment-id').value = commentId;
+    document.getElementById('like-value').checked = boolean;
+    commentLikeForm.submit();
+}
+function likePost(postLikeForm, boolean){
+    document.getElementById('post-like-value').checked = boolean;
+    postLikeForm.submit();
+}
+
 function showReplies(commentId) {
+
     document.getElementById(commentId + '-replies-show').classList.add('uk-hidden');
     document.getElementById(commentId + '-children').classList.remove('uk-hidden');
 }

@@ -41,6 +41,18 @@ public class CommentController {
         return new ModelAndView("redirect:/post/" + commentCreateForm.getPostId());
     }
 
+    @RequestMapping(path = "/comment/like",  method = RequestMethod.POST)
+    public ModelAndView post(@RequestParam final long post_id, @RequestParam final long comment_id,
+                             @RequestParam(defaultValue = "false") final boolean value, final Principal principal) {
+
+        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        commentService.likeComment(comment_id, user.getId(), value);
+
+        return new ModelAndView("redirect:/post/" + post_id + "#" + comment_id);
+
+    }
+
     @RequestMapping(path = "/comment/{id}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long id,
                              @RequestParam(defaultValue = "5") final int pageSize,

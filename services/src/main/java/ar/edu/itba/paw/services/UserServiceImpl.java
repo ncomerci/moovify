@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(String username, String password, String name, String email, String confirmationMailTemplate) {
 
-        final User user = userDao.register(username, passwordEncoder.encode(password), name, email, Collections.singletonList(NOT_VALIDATED_ROLE));
+        final User user = userDao.register(username, passwordEncoder.encode(password), name, email, Collections.singletonList(NOT_VALIDATED_ROLE), true);
 
         createConfirmationEmail(user, confirmationMailTemplate);
 
@@ -108,6 +108,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean hasUserLiked(String username, long postId) {
+        return userDao.hasUserLiked(username, postId);
+    }
+
+    @Override
     public Optional<User> updatePassword(String password, String token) {
         Optional<PasswordResetToken> optToken = passwordResetTokenDao.getResetPasswordToken(token);
 
@@ -157,4 +162,6 @@ public class UserServiceImpl implements UserService {
 
         user.getRoles().add(new Role(newRole));
     }
+
+
 }

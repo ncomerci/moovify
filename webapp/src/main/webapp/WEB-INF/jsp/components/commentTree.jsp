@@ -9,15 +9,28 @@
 
         <li>
             <div id="${comment.id}">
+                <c:choose>
+                <c:when test="${comment.enabled}">
                 <article class="uk-comment uk-visible-toggle" tabindex="-1">
                     <header class="uk-comment-header uk-position-relative">
                         <div class="uk-grid-medium uk-flex-middle" uk-grid>
                             <div class="uk-width-auto">
                                 <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/resources/images/avatar.jpg"/>" width="80" height="80" alt="">
                             </div>
-                            <div class="uk-width-expand">
+                            <div class="uk-width-expand" >
                                 <h4 class="uk-comment-title uk-margin-remove">
-                                    <a href = "<c:url value="/user/${comment.user.id}" />"><c:out value="${comment.user.name}" /> </a>
+                                    <c:choose>
+                                        <c:when test="${comment.user.enabled}">
+                                            <a href = "<c:url value="/user/${comment.user.id}" />">
+                                                <c:out value="${comment.user.name}" />
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="uk-text-italic">
+                                                <spring:message code="user.notEnabled.name"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </h4>
                                 <p class="uk-comment-meta uk-margin-remove-top">
                                     <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
@@ -26,8 +39,25 @@
                             </div>
                         </div>
                         <sec:authorize access="hasRole('USER')">
-                            <div class="uk-position-top-right uk-position-small uk-hidden-hover">
-                                <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button"><spring:message code="comment.create.reply"/></a>
+                            <div class="uk-position-top-right">
+                                <%--TODO no se como hacer para que scrollee automaticamente a los comentarios que son hijos--%>
+                                <c:if test="${!loggedUser.getLikedComments().contains(comment.getId())}">
+                                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.getId()}" data-value="true">
+                                        <span class="uk-text-right"><c:out value="${comment.likes}"/></span>
+                                        <sec:authorize access="hasRole('USER')">
+                                            <span class="iconify" data-icon="ant-design:heart-outlined" data-inline="false"></span>
+                                        </sec:authorize>
+                                    </a>
+                                </c:if>
+                                <c:if test="${loggedUser.getLikedComments().contains(comment.getId())}">
+                                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.getId()}" data-value="false">
+                                        <span class="uk-text-right"><c:out value="${comment.likes}"/></span>
+                                        <sec:authorize access="hasRole('USER')">
+                                            <span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span>
+                                        </sec:authorize>
+                                    </a>
+                                </c:if>
+                                <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover"><spring:message code="comment.create.reply"/></a>
                             </div>
                         </sec:authorize>
                     </header>
@@ -35,6 +65,25 @@
                         <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
                     </div>
                 </article>
+                </c:when>
+                <c:otherwise>
+                    <article class="uk-comment uk-visible-toggle" tabindex="-1">
+                        <header class="uk-comment-header uk-position-relative uk-margin-remove-bottom">
+                            <div class="uk-grid-medium uk-flex-middle" uk-grid>
+                                <div class="uk-width-expand">
+                                    <p class="uk-comment-meta uk-margin-remove-vertical uk-text-italic">
+                                        <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                                        <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                                    </p>
+                                </div>
+                            </div>
+                        </header>
+                        <div class="uk-comment-body">
+                            <span class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></span>
+                        </div>
+                    </article>
+                </c:otherwise>
+                </c:choose>
                 <hr>
             </div>
             <div class="replies-show" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${comment.descendantCount}">

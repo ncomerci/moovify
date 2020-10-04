@@ -24,6 +24,7 @@ public class PostDaoImpl implements PostDao {
     private static final String POSTS = TableNames.POSTS.getTableName();
     private static final String MOVIES = TableNames.MOVIES.getTableName();
     private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
+    private static final String POSTS_LIKES = TableNames.POSTS_LIKES.getTableName();
     private static final String TAGS = TableNames.TAGS.getTableName();
     private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
     private static final String USERS = TableNames.USERS.getTableName();
@@ -35,7 +36,9 @@ public class PostDaoImpl implements PostDao {
             POSTS + ".creation_date p_creation_date, " +
             POSTS + ".title p_title, " +
             POSTS + ".body p_body, " +
-            POSTS + ".word_count p_word_count";
+            POSTS + ".word_count p_word_count, " +
+            POSTS + ".enabled p_enabled, " +
+            POSTS_LIKES + ".likes p_likes";
 
     private static final String CATEGORY_SELECT =
             POST_CATEGORY + ".category_id pc_category_id, " +
@@ -48,11 +51,16 @@ public class PostDaoImpl implements PostDao {
             USERS + ".username u_username, " +
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
-            USERS + ".email u_email";
+            USERS + ".email u_email, " +
+            USERS + ".enabled u_enabled";
 
     private static final String TAGS_SELECT = TAGS + ".tag p_tag";
 
-    private static final String BASE_POST_FROM = "FROM " + POSTS;
+    private static final String BASE_POST_FROM =
+            "FROM " + POSTS + " INNER JOIN " +
+                    "(SELECT " + POSTS + ".post_id, COUNT( " + POSTS_LIKES + ".user_id ) likes " +
+                    "FROM " + POSTS + " LEFT OUTER JOIN " + POSTS_LIKES + " on " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id" +
+                    " GROUP BY " + POSTS + ".post_id ) " + POSTS_LIKES + " ON " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id";
 
     private static final String CATEGORY_FROM =
             "INNER JOIN " + POST_CATEGORY + " ON " + POSTS + ".category_id = " + POST_CATEGORY + ".category_id";
@@ -88,10 +96,15 @@ public class PostDaoImpl implements PostDao {
                                 new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                         rs.getString("u_username"), rs.getString("u_password"),
                                         rs.getString("u_name"), rs.getString("u_email"),
-                                        null),
+                                        null, rs.getBoolean("u_enabled"), null),
 
                                 // tags
                                 new LinkedHashSet<>()
+
+                                , rs.getBoolean("p_enabled"),
+
+                                //likes
+                                rs.getLong("p_likes")
                         )
                 );
             }
@@ -143,6 +156,7 @@ public class PostDaoImpl implements PostDao {
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, POSTS + ".creation_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, POSTS + ".creation_date");
+        sortCriteriaQuery.put(SortCriteria.HOTTEST, POSTS_LIKES + ".likes desc");
 
         return sortCriteriaQuery;
     }
@@ -152,6 +166,8 @@ public class PostDaoImpl implements PostDao {
     private final SimpleJdbcInsert postInsert;
     private final SimpleJdbcInsert postMoviesInsert;
     private final SimpleJdbcInsert tagsInsert;
+    private final SimpleJdbcInsert postLikesInsert;
+
 
     @Autowired
     public PostDaoImpl(final DataSource ds){
@@ -167,10 +183,13 @@ public class PostDaoImpl implements PostDao {
 
         tagsInsert = new SimpleJdbcInsert(ds)
                 .withTableName(TAGS);
+
+        postLikesInsert = new SimpleJdbcInsert(ds)
+                .withTableName(POSTS_LIKES);
     }
     
     @Override
-    public long register(String title, String body, int wordCount, long categoryId, long userId, Set<String> tags, Set<Long> movies) {
+    public long register(String title, String body, int wordCount, long categoryId, long userId, Set<String> tags, Set<Long> movies, boolean enabled) {
 
         Objects.requireNonNull(title);
         Objects.requireNonNull(body);
@@ -185,6 +204,7 @@ public class PostDaoImpl implements PostDao {
         map.put("body", body);
         map.put("category_id", categoryId);
         map.put("user_id", userId);
+        map.put("enabled", enabled);
 
         final long postId = postInsert.executeAndReturnKey(map).longValue();
 
@@ -207,8 +227,29 @@ public class PostDaoImpl implements PostDao {
         return postId;
     }
 
+    @Override
+    public void likePost(long post_id, long user_id) {
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("post_id", post_id);
+        map.put("user_id", user_id);
+
+        postLikesInsert.execute(map);
+    }
+
+    @Override
+    public void removeLike(long post_id, long user_id) {
+
+        jdbcTemplate.update( "DELETE FROM " + POSTS_LIKES + " WHERE " + POSTS_LIKES + ".post_id = ? " + " AND "+ POSTS_LIKES + ".user_id = ?", post_id, user_id );
+    }
+
     private Collection<Post> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
 
+//        TODO: NICO
+//                final String whereEnabledFilter = customWhereStatement == null || customWhereStatement.length() < 3 ?
+//                "WHERE " + POSTS + ".enabled = true" : "AND " + POSTS + ".enabled = true";
+//
+//        final String query = select + " " + from + " " + customWhereStatement + " " + whereEnabledFilter + " " + customOrderByStatement;
         final String query = select + " " + from + " " + where + " " + orderBy;
 
         if(args != null)
@@ -217,6 +258,8 @@ public class PostDaoImpl implements PostDao {
         else
             return jdbcTemplate.query(query, POST_ROW_MAPPER);
     }
+
+
 
     // For queries where pagination is not necessary (also no order)
     private Collection<Post> buildAndExecuteQuery(String customWhereStatement, Object[] args) {
@@ -250,18 +293,18 @@ public class PostDaoImpl implements PostDao {
 
         return new PaginatedCollection<>(results, pageNumber, pageSize, totalPostCount);
     }
-    
+
     private String buildOrderByStatement(SortCriteria sortCriteria) {
-        
+
         if(!sortCriteriaQueryMap.containsKey(sortCriteria))
             throw new IllegalArgumentException("SortCriteria implementation not found for " + sortCriteria + " in PostDaoImpl.");
-        
+
         return "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria);
     }
 
     private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
 
-        if(pageNumber < 0 || pageSize <= 0)
+        if (pageNumber < 0 || pageSize <= 0)
             throw new IllegalArgumentException("Illegal Posts pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);

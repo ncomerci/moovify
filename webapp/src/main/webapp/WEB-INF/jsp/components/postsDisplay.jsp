@@ -12,7 +12,15 @@
                         <c:out value="${post.title}"/>
                     </a>
                     <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
-                        <spring:message code="postDisplay.meta.description" arguments="${post.category.name},${post.user.name}"/>
+                        <c:choose>
+                            <c:when test="${post.user.enabled}">
+                                <c:set var="name" value="${post.user.name}"/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="name"><spring:message code="user.notEnabled.name"/></c:set>
+                            </c:otherwise>
+                        </c:choose>
+                        <spring:message code="postDisplay.meta.description" arguments="${post.category.name},${name}"/>
                     </p>
                 </div>
                 <div class="uk-width-auto">

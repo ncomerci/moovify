@@ -13,7 +13,11 @@ public interface PostDao {
         NEWEST, OLDEST, HOTTEST
     }
 
-    long register(String title, String body, int wordCount, long category, long user, Set<String> tags, Set<Long> movies);
+    long register(String title, String body, int wordCount, long category, long user, Set<String> tags, Set<Long> movies, boolean enabled);
+
+    void likePost(long post_id, long user_id);
+
+    void removeLike(long post_id, long user_id);
 
     Optional<Post> findPostById(long id);
 

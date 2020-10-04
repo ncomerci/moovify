@@ -8,10 +8,14 @@ import java.util.Optional;
 public interface CommentDao {
 
     enum SortCriteria {
-        NEWEST, OLDEST
+        NEWEST, OLDEST, HOTTEST
     }
 
-    long register(long postId, Long parentId, String body, long userId);
+    long register(long postId, Long parentId, String body, long userId, boolean enabled);
+
+    void likeComment(long comment_id, long user_id);
+
+    void removeLike(long comment_id, long user_id);
 
     Optional<Comment> findCommentById(long id);
 

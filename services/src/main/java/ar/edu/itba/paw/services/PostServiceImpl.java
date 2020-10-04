@@ -24,13 +24,22 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public long register(String title, String body, long category, long user, Set<String> tags, Set<Long> movies){
-        return postDao.register(title, body.trim(), body.split("\\s+").length, category, user, tags, movies);
+        return postDao.register(title, body.trim(), body.split("\\s+").length, category, user, tags, movies, true);
+    }
+
+    @Override
+    public void likePost(long post_id, long user_id, boolean value) {
+        if(value)
+            postDao.likePost(post_id, user_id);
+        else
+            postDao.removeLike(post_id, user_id);
     }
 
     @Override
     public Optional<Post> findPostById(long id) {
         return postDao.findPostById(id);
     }
+
 
     @Override
     public PaginatedCollection<Post> findPostsByMovieId(long movie_id, int pageNumber, int pageSize) {
@@ -50,6 +59,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public PaginatedCollection<Post> getAllPostsOrderByOldest(int pageNumber, int pageSize) {
         return postDao.getAllPosts(PostDao.SortCriteria.OLDEST, pageNumber, pageSize);
+    }
+
+    @Override
+    public Collection<Post> getAllPostsOrderByHottest() {
+        return postDao.getAllPosts(PostDao.SortCriteria.HOTTEST);
     }
 
     @Override

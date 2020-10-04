@@ -23,6 +23,8 @@ public class UserDaoImpl implements UserDao {
     private static final String USERS = TableNames.USERS.getTableName();
     private static final String ROLES = TableNames.ROLES.getTableName();
     private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
+    private static final String POSTS_LIKES = TableNames.POSTS_LIKES.getTableName();
+    private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
 
     private static final String BASE_USER_SELECT = "SELECT " +
             USERS + ".user_id u_user_id, " +
@@ -31,14 +33,18 @@ public class UserDaoImpl implements UserDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
+            USERS + ".enabled u_enabled, " +
 
             ROLES + ".role_id r_role_id, " +
-            ROLES + ".role r_role ";
+            ROLES + ".role r_role, " +
+
+            COMMENTS_LIKES + ".comment_id c_comment_id";
 
 
     private static final String BASE_USER_FROM = "FROM " + USERS +
             " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
-            "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id ";
+            "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
+            "LEFT OUTER JOIN " + COMMENTS_LIKES + " ON " + COMMENTS_LIKES + ".user_id = " + USERS + ".user_id ";
 
 
     private static final ResultSetExtractor<Collection<User>> USER_ROW_MAPPER = (rs) -> {
@@ -54,13 +60,16 @@ public class UserDaoImpl implements UserDao {
                         new User(userId, rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
-                                new ArrayList<>())
+                                new HashSet<>(), rs.getBoolean("u_enabled"), new HashSet<>())
                 );
             }
 
+            // TODO: Revisar que no se dupliquen roles
             idToUserMap.get(userId).getRoles().add(
                     new Role(rs.getLong("r_role_id"), rs.getString("r_role"))
             );
+
+            idToUserMap.get(userId).getLikedComments().add(rs.getLong("c_comment_id"));
         }
 
         return idToUserMap.values();
@@ -98,7 +107,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User register(String username, String password, String name, String email, Collection<String> roleNames) {
+    public User register(String username, String password, String name, String email, Collection<String> roleNames, boolean enabled) {
 
         LocalDateTime creationDate = LocalDateTime.now();
 
@@ -114,6 +123,7 @@ public class UserDaoImpl implements UserDao {
         map.put("password", password);
         map.put("name", name);
         map.put("email", email);
+        map.put("enabled", enabled);
 
         final long userId = jdbcUserInsert.executeAndReturnKey(map).longValue();
 
@@ -124,7 +134,7 @@ public class UserDaoImpl implements UserDao {
             jdbcUserRoleInsert.execute(map);
         }
 
-        return new User(userId, creationDate, username, password, name, email, roles);
+        return new User(userId, creationDate, username, password, name, email, roles, true , Collections.emptySet());
     }
 
     @Override
@@ -162,7 +172,15 @@ public class UserDaoImpl implements UserDao {
                 "SELECT COUNT(*) FROM " + USERS +
                         " INNER JOIN "+ USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id" +
                         " INNER JOIN " + ROLES + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
-                        " WHERE email = ? AND role = ?", new Object[]{ email, role}, Integer.class) > 0;
+                        " WHERE email = ? AND role = ?", new Object[]{ email, role }, Integer.class) > 0;
+    }
+
+    @Override
+    public boolean hasUserLiked(String username, long postId) {
+        return jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM " + USERS +
+                " LEFT OUTER JOIN " + POSTS_LIKES + " ON " + USERS + ".user_id = " + POSTS_LIKES + ".user_id" +
+                " WHERE username = ? AND post_id = ?", new Object[] { username, postId }, Integer.class) > 0;
     }
 
     @Override
@@ -234,6 +252,10 @@ public class UserDaoImpl implements UserDao {
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }
+
+    // TODO: CHECK USERS ENABLED. findById, searchUsers
+//    " WHERE " + USERS + ".user_id = ?" + " AND "+ USERS + ".enabled = true"
+//    WHERE " + USERS + ".username ILIKE '%' || ? || '%'" + " AND "+ USERS + ".enabled = true
 
     @Override
     public Optional<User> findById(long id) {

@@ -12,6 +12,8 @@ public interface PostService {
 
     long register(String title, String body, long category, long user, Set<String> tags, Set<Long> movies);
 
+    void likePost(long post_id, long user_id, boolean value);
+
     Optional<Post> findPostById(long id);
 
     PaginatedCollection<Post> findPostsByMovieId(long movie_id, int pageNumber, int pageSize);
@@ -21,6 +23,8 @@ public interface PostService {
     PaginatedCollection<Post> getAllPostsOrderByNewest(int pageNumber, int pageSize);
 
     PaginatedCollection<Post> getAllPostsOrderByOldest(int pageNumber, int pageSize);
+
+    Collection<Post> getAllPostsOrderByHottest();
 
     Collection<PostCategory> getAllPostCategories();
 }
