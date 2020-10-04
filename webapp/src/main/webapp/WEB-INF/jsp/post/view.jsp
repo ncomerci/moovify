@@ -80,7 +80,7 @@
     <hr>
     <section id="post-movies">
         <h1 class="uk-text-meta"><spring:message code="post.view.movies"/></h1>
-        <c:forEach items="${movies.results}" var="movie" >
+        <c:forEach items="${movies}" var="movie" >
             <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
                href="<c:url value="/movie/${movie.id}"/>">
                 <c:out value="${movie.title}"/>
@@ -102,15 +102,6 @@
     <c:set var="postId" value="${post.id}" scope="request"/>
     <c:set var="parentId" value="${0}" scope="request"/>
     <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
-    <c:if test="${not empty paginatedComments.results}">
-
-        <c:set var="collection" value="${paginatedComments}" scope="request"/>
-        <c:url var="baseURL" value="/post/${postId}" scope="request"/>
-        <c:set var="numberOfInputs" value="${2}" scope="request"/>
-        <form action="${baseURL}" method="get">
-            <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
-        </form>
-    </c:if>
 </main>
 
 </body>
