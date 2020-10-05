@@ -152,35 +152,6 @@ public class PostDaoImpl implements PostDao {
         return idToPostMap.values();
     };
 
-    private enum FilterCriteria {
-        BY_POST_TITLE_MOVIE_TITLE_AND_TAGS(
-                "( " +
-                        POSTS + ".title ILIKE '%' || ? || '%'" +
-                        " OR " + POSTS + ".post_id IN (" +
-                        " SELECT " + TAGS + ".post_id FROM " + TAGS +
-                        " WHERE " +  TAGS + ".tag ILIKE '%' || ? || '%' )" +
-                        " OR " + POSTS + ".post_id IN ( " +
-                        "SELECT " + POST_MOVIE + ".post_id " +
-                        " FROM " + POST_MOVIE +
-                        " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
-                        " WHERE " + MOVIES + ".title ILIKE '%' || ? || '%')" +
-                        " )"
-        ),
-
-        POSTS_OLDER_THAN(
-                POSTS + ".creation_date >= ?"
-        ),
-
-        BY_POST_CATEGORY(
-                POST_CATEGORY + ".name ILIKE ?"
-        );
-
-        final String filterQuery;
-
-        FilterCriteria(String filterQuery) {
-            this.filterQuery = filterQuery;
-        }
-    }
 
     private static final EnumMap<SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQuery();
 
@@ -194,7 +165,6 @@ public class PostDaoImpl implements PostDao {
 
         return sortCriteriaQuery;
     }
-
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert postInsert;
@@ -283,11 +253,6 @@ public class PostDaoImpl implements PostDao {
 
     private Collection<Post> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
 
-//        TODO: NICO NO SE PUEDE PONER ACA
-//                final String whereEnabledFilter = customWhereStatement == null || customWhereStatement.length() < 3 ?
-//                "WHERE " + POSTS + ".enabled = true" : "AND " + POSTS + ".enabled = true";
-//
-//        final String query = select + " " + from + " " + customWhereStatement + " " + whereEnabledFilter + " " + customOrderByStatement;
         final String query = select + " " + from + " " + where + " " + orderBy;
 
         if(args != null)
@@ -300,18 +265,18 @@ public class PostDaoImpl implements PostDao {
     // For queries where pagination is not necessary (also no order)
     private Collection<Post> buildAndExecuteQuery(String customWhereStatement, Object[] args) {
 
-        final String select = BASE_POST_SELECT + ", " + LIKES_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
+        final String select = buildSelectStatement();
 
-        final String from = BASE_POST_FROM + " " + LIKES_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+        final String from = buildFromStatement();
 
         return executeQuery(select, from, customWhereStatement, "", args);
     }
 
     private PaginatedCollection<Post> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
 
-        final String select = BASE_POST_SELECT + ", " + LIKES_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
+        final String select = buildSelectStatement();
 
-        final String from = BASE_POST_FROM + " " + LIKES_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+        final String from = buildFromStatement();
 
         // Execute original query to count total posts in the query
         final int totalPostCount = jdbcTemplate.queryForObject(
@@ -330,6 +295,14 @@ public class PostDaoImpl implements PostDao {
         return new PaginatedCollection<>(results, pageNumber, pageSize, totalPostCount);
     }
 
+    private String buildSelectStatement() {
+        return BASE_POST_SELECT + ", " + LIKES_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
+    }
+
+    private String buildFromStatement() {
+        return BASE_POST_FROM + " " + LIKES_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+    }
+
     private String buildOrderByStatement(SortCriteria sortCriteria) {
 
         if(!sortCriteriaQueryMap.containsKey(sortCriteria))
@@ -344,37 +317,6 @@ public class PostDaoImpl implements PostDao {
             throw new IllegalArgumentException("Illegal Posts pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
-    }
-
-    private PaginatedCollection<Post> searchPostsByIntersectingFilterCriteria(FilterCriteria[] filterCriteria, Object[] args, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        String customWhereStatement = buildWhereStatement(filterCriteria," AND ");
-
-        return buildAndExecutePaginatedQuery(customWhereStatement, sortCriteria, pageNumber, pageSize, args);
-    }
-
-    private String buildWhereStatement(FilterCriteria[] filters, String criteria) {
-        return buildQueryStatement("WHERE", criteria,
-                Arrays.stream(filters).map(f -> f.filterQuery).toArray(String[]::new));
-    }
-
-    // Separator needs to come with white spaces included
-    private String buildQueryStatement(String queryStart, String separator, String[] modifiers) {
-        if(modifiers == null || modifiers.length == 0)
-            return "";
-
-        StringBuilder queryBuilder = new StringBuilder();
-
-        queryBuilder.append(queryStart).append(' ');
-
-        for(String modifier : modifiers){
-
-            queryBuilder.append(modifier);
-            queryBuilder.append(separator);
-        }
-
-        //Delete last separator
-        return queryBuilder.substring(0, queryBuilder.length() - separator.length());
     }
 
     @Override
@@ -403,68 +345,56 @@ public class PostDaoImpl implements PostDao {
     public PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery("", sortCriteria, pageNumber, pageSize, null);
     }
-    
+
+    // Search Query Statements
+    private static final String SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS = "( " +
+                    POSTS + ".title ILIKE '%' || ? || '%'" +
+
+                    " OR " + POSTS + ".post_id IN ( " +
+                        "SELECT " + TAGS + ".post_id FROM " + TAGS +
+                        " WHERE " +  TAGS + ".tag ILIKE '%' || ? || '%' )" +
+
+                    " OR " + POSTS + ".post_id IN ( " +
+                        "SELECT " + POST_MOVIE + ".post_id " +
+                        " FROM " + POST_MOVIE +
+                            " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
+                        " WHERE " + MOVIES + ".title ILIKE '%' || ? || '%')" +
+                    " )";
+
+    private static final String SEARCH_POSTS_OLDER_THAN = POSTS + ".creation_date >= ?";
+
+    private static final String SEARCH_BY_POST_CATEGORY = POST_CATEGORY + ".name ILIKE ?";
+
+
     @Override
     public PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        FilterCriteria[] filterCriteria = new FilterCriteria[]{
-                FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS
-        };
-
-        Object[] args = new Object[]{
-                query, query, query,
-        };
-
-        return searchPostsByIntersectingFilterCriteria(filterCriteria, args, sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
     }
 
     @Override
     public PaginatedCollection<Post> searchPostsByCategory(String query, String category, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        FilterCriteria[] filterCriteria = new FilterCriteria[]{
-                FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
-                FilterCriteria.BY_POST_CATEGORY
-        };
-
-        Object[] args = new Object[]{
-                query, query, query,
-                category
-        };
-
-        return searchPostsByIntersectingFilterCriteria(filterCriteria, args, sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                                    " AND " + SEARCH_BY_POST_CATEGORY,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, category });
     }
 
     @Override
     public PaginatedCollection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        FilterCriteria[] filterCriteria = new FilterCriteria[]{
-                FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
-                FilterCriteria.POSTS_OLDER_THAN
-        };
-
-        Object[] args = new Object[]{
-                query, query, query,
-                Timestamp.valueOf(fromDate)
-        };
-
-        return searchPostsByIntersectingFilterCriteria(filterCriteria, args, sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                                    " AND " + SEARCH_POSTS_OLDER_THAN,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, Timestamp.valueOf(fromDate) });
     }
 
     @Override
     public PaginatedCollection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        FilterCriteria[] filterCriteria = new FilterCriteria[]{
-                FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
-                FilterCriteria.BY_POST_CATEGORY,
-                FilterCriteria.POSTS_OLDER_THAN
-        };
-
-        Object[] args = new Object[]{
-                query, query, query,
-                category,
-                Timestamp.valueOf(fromDate)
-        };
-
-        return searchPostsByIntersectingFilterCriteria(filterCriteria, args, sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                                    " AND " + SEARCH_BY_POST_CATEGORY +
+                                    " AND " + SEARCH_POSTS_OLDER_THAN,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, category, Timestamp.valueOf(fromDate) });
     }
 }
