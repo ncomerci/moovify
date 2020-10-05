@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS USERS
     email           VARCHAR(200) UNIQUE NOT NULL,
     avatar_id       INTEGER,
     description     VARCHAR(400),
-    enabled         BOOLEAN NOT NULL
+    enabled         BOOLEAN NOT NULL,
 
     FOREIGN KEY (avatar_id) REFERENCES IMAGES (image_id)
 );
