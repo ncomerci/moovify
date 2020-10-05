@@ -15,6 +15,7 @@
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body style="min-height: 1000px">
+
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <div class="uk-container uk-margin-medium-top">
@@ -28,7 +29,7 @@
         <form:form modelAttribute="nameEditForm" class="uk-form-horizontal uk-margin-large" action="${actionName}" method="post">
             <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
                 <div class="uk-width-1-4">
-                    <h2 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.currentName" arguments="${loggedUser.name}"/></h2>
+                    <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.currentName" arguments="${loggedUser.name}"/></h3>
                 </div>
                 <div class="uk-width-1-2">
                     <c:set var="nameError"><form:errors path="name"/></c:set>
@@ -56,11 +57,11 @@
                 </div>
             </div>
         </form:form>
-            <%--@elvariable id="usernameEditForm" type=""--%>
-            <form:form modelAttribute="usernameEditForm" class="uk-form-horizontal uk-margin-large" action="${actionUsername}" method="post">
+        <%--@elvariable id="usernameEditForm" type=""--%>
+        <form:form modelAttribute="usernameEditForm" class="uk-form-horizontal uk-margin-large" action="${actionUsername}" method="post">
             <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
                 <div class="uk-width-1-4">
-                    <h2 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.currentUsername" arguments="${loggedUser.username}"/></h2>
+                    <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.currentUsername" arguments="${loggedUser.username}"/></h3>
                 </div>
                 <div class="uk-width-1-2">
                     <c:set var="userError"><form:errors path="username"/></c:set>
@@ -87,12 +88,12 @@
                     </div>
                 </div>
             </div>
-            </form:form>
-            <%--@elvariable id="descriptionEditForm" type=""--%>
-            <form:form modelAttribute="descriptionEditForm" class="uk-form-horizontal uk-margin-large" action="${actionDescription}" method="post">
+        </form:form>
+        <%--@elvariable id="descriptionEditForm" type=""--%>
+        <form:form modelAttribute="descriptionEditForm" class="uk-form-horizontal uk-margin-large" action="${actionDescription}" method="post">
             <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
                 <div class="uk-width-1-4">
-                    <h2 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.newDescription" /></h2>
+                    <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.newDescription" /></h3>
                 </div>
                 <div class="uk-width-1-2">
                     <c:set var="descriptionError"><form:errors path="description"/></c:set>
@@ -119,11 +120,12 @@
                     </div>
                 </div>
             </div>
-            </form:form>
+        </form:form>
 
-            <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
-                <div class="uk-width-1-2">
-                    <h2 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.wantChangePassword"/></h2>
+        <div class="uk-margin-large">
+            <div class="uk-grid-small uk-flex uk-flex-wrap  uk-flex-row uk-flex-center" uk-grid>
+                <div class="uk-width-1-4">
+                    <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.wantChangePassword"/></h3>
                 </div>
                 <div class="uk-width-1-2">
                     <a class="uk-text-center" href="<c:url value="/user/changePassword"/>">
@@ -131,6 +133,7 @@
                     </a>
                 </div>
             </div>
+        </div>
     </div>
 </div>
 

@@ -11,10 +11,7 @@ import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.*;
 
 /*import ar.edu.itba.paw.webapp.form.UserEditForm;*/
-import ar.edu.itba.paw.webapp.form.editProfile.ChangePasswordForm;
-import ar.edu.itba.paw.webapp.form.editProfile.DescriptionEditForm;
-import ar.edu.itba.paw.webapp.form.editProfile.NameEditForm;
-import ar.edu.itba.paw.webapp.form.editProfile.UsernameEditForm;
+import ar.edu.itba.paw.webapp.form.editProfile.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -188,7 +185,7 @@ public class UserController {
     }
 
     @RequestMapping(path = {"/user/profile", "/user/profile/posts"}, method = RequestMethod.GET)
-    public ModelAndView profilePosts(HttpServletRequest request, Principal principal,
+    public ModelAndView profilePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, HttpServletRequest request, Principal principal,
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
@@ -209,8 +206,24 @@ public class UserController {
         return mv;
     }
 
+    @RequestMapping(path = "/user/profile/avatar", method = RequestMethod.POST)
+    public ModelAndView registerProfilePost(@Valid @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, final BindingResult bindingResult,
+                                HttpServletRequest httpServletRequest, Principal principal) throws IOException {
+
+        if(bindingResult.hasErrors())
+            return profilePosts(avatarEditForm,httpServletRequest,principal,5,0);
+
+
+        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        userService.updateAvatar(user, avatarEditForm.getAvatar().getBytes());
+
+        return new ModelAndView("redirect:/user/profile");
+    }
+
+
     @RequestMapping(path = "/user/profile/comments", method = RequestMethod.GET)
-    public ModelAndView profileComments(Principal principal,
+    public ModelAndView profileComments(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, Principal principal,
                                         @RequestParam(defaultValue = "5") final int pageSize,
                                         @RequestParam(defaultValue = "0") final int pageNumber) {
 
