@@ -22,6 +22,7 @@ public class MovieDaoImpl implements MovieDao {
 
     private static final String MOVIES = TableNames.MOVIES.getTableName();
     private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
+    private static final String POSTS = TableNames.POSTS.getTableName();
     private static final String MOVIE_TO_MOVIE_CATEGORY = TableNames.MOVIE_TO_MOVIE_CATEGORY.getTableName();
     private static final String MOVIE_CATEGORIES = TableNames.MOVIE_CATEGORIES.getTableName();
 
@@ -40,6 +41,8 @@ public class MovieDaoImpl implements MovieDao {
             MOVIES + ".runtime m_runtime, " +
             MOVIES + ".vote_average m_vote_average";
 
+    private static final String POST_COUNT_SELECT = "coalesce(POST_COUNT.post_count, 0) m_post_count";
+
     private static final String MOVIE_CATEGORY_SELECT =
             // Movie Table Columns - Alias: mc_column_name
             MOVIE_CATEGORIES + ".category_id mc_category_id, " +
@@ -47,6 +50,15 @@ public class MovieDaoImpl implements MovieDao {
             MOVIE_CATEGORIES + ".name mc_name";
 
     private static final String BASE_MOVIE_FROM = "FROM " + MOVIES;
+
+    private static final String POST_COUNT_FROM =
+            "LEFT OUTER JOIN ( " +
+                    "SELECT " + POST_MOVIE + ".movie_id, COUNT(" + POSTS + ".post_id) post_count " +
+                    "FROM " + POST_MOVIE +
+                        " INNER JOIN " + POSTS + " ON " + POSTS + ".post_id = " + POST_MOVIE + ".post_id " +
+                    "WHERE " + POSTS + ".enabled = true " +
+                    "GROUP BY " + POST_MOVIE + ".movie_id " +
+            ") POST_COUNT ON POST_COUNT.movie_id = " + MOVIES + ".movie_id";
 
     private static final String CATEGORY_FROM =
             " INNER JOIN " + MOVIE_TO_MOVIE_CATEGORY + " ON " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_id = " + MOVIES + ".tmdb_id" +
@@ -78,8 +90,9 @@ public class MovieDaoImpl implements MovieDao {
                                     rs.getFloat("m_runtime"),
                                     rs.getFloat("m_vote_average"),
                                     rs.getObject("m_release_date", LocalDate.class),
+                                    rs.getLong("m_post_count"),
                                     // categories
-                                    new LinkedHashSet<>())
+                                    new HashSet<>())
                     );
                 }
 
@@ -166,7 +179,7 @@ public class MovieDaoImpl implements MovieDao {
         }
 
         return new Movie(id, creationDate, title, originalTitle, tmdbId, imdbId,
-                originalLanguage, overview, popularity, runtime, voteAverage, releaseDate, categoryCollection);
+                originalLanguage, overview, popularity, runtime, voteAverage, releaseDate, 0, categoryCollection);
     }
 
     private Collection<Movie> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
@@ -182,18 +195,18 @@ public class MovieDaoImpl implements MovieDao {
 
     private Collection<Movie> buildAndExecuteQuery(String customWhereStatement, Object[] args){
 
-        final String select = BASE_MOVIE_SELECT + ", " + MOVIE_CATEGORY_SELECT;
+        final String select = buildSelectStatement();
 
-        final String from = BASE_MOVIE_FROM + CATEGORY_FROM;
+        final String from = buildFromStatement();
 
         return executeQuery(select, from, customWhereStatement, "", args);
     }
 
     private PaginatedCollection<Movie> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
 
-        final String select = BASE_MOVIE_SELECT + ", " + MOVIE_CATEGORY_SELECT;
+        final String select = buildSelectStatement();
 
-        final String from = BASE_MOVIE_FROM + CATEGORY_FROM;
+        final String from = buildFromStatement();
 
         // Execute original query to count total posts in the query
         final int totalMovieCount = jdbcTemplate.queryForObject(
@@ -210,6 +223,14 @@ public class MovieDaoImpl implements MovieDao {
         final Collection<Movie> results = executeQuery(select, from, newWhere, orderBy, args);
 
         return new PaginatedCollection<>(results, pageNumber, pageSize, totalMovieCount);
+    }
+
+    private String buildSelectStatement() {
+        return BASE_MOVIE_SELECT + ", " + POST_COUNT_SELECT + ", " + MOVIE_CATEGORY_SELECT;
+    }
+
+    private String buildFromStatement() {
+        return BASE_MOVIE_FROM + " " + POST_COUNT_FROM + " " + CATEGORY_FROM;
     }
 
     private String buildOrderByStatement(SortCriteria sortCriteria) {
