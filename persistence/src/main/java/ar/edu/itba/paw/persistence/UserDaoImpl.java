@@ -122,6 +122,8 @@ public class UserDaoImpl implements UserDao {
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, USERS + ".creation_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, USERS + ".creation_date");
+        sortCriteriaQuery.put(SortCriteria.LIKES, "TOTAL_LIKES.total_likes desc");
+        sortCriteriaQuery.put(SortCriteria.NAME, USERS + ".name");
 
         return sortCriteriaQuery;
     }
@@ -346,14 +348,17 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%'",
-                sortCriteria, pageNumber, pageSize, new Object[]{query});
-    }
-
-    @Override
     public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
                 "", sortCriteria, pageNumber, pageSize, null);
+    }
+
+
+
+    // TODO: Search By Roles y pasar search a name
+    @Override
+    public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".name ILIKE '%' || ? || '%'",
+                sortCriteria, pageNumber, pageSize, new Object[]{query});
     }
 }

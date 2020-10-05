@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface UserDao {
 
     enum SortCriteria {
-        NEWEST, OLDEST
+        NEWEST, OLDEST, LIKES, NAME
     }
 
     User register(String username, String password, String name, String email, String description, Collection<String> roleNames,  Long avatarId, boolean enabled);

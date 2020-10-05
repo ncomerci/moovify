@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface MovieDao {
 
     enum SortCriteria {
-        NEWEST, OLDEST
+        NEWEST, OLDEST, TITLE, POST_COUNT
     }
 
     Optional<Movie> findById(long id);

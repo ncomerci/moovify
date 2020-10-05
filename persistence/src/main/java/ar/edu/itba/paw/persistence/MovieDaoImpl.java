@@ -273,6 +273,7 @@ public class MovieDaoImpl implements MovieDao {
         return buildAndExecuteQuery(" ", null);
     }
 
+    // TODO: Search by Category and Release Date Range
     @Override
     public PaginatedCollection<Movie> searchMovies(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(" WHERE " + MOVIES + ".title ILIKE '%' || ? || '%'",
