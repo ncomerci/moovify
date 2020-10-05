@@ -386,7 +386,7 @@ public class CommentDaoImpl implements CommentDao {
 
     @Override
     public void delete(long id) {
-        jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = false WHERE comment_id = " + id);
+        jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = false WHERE comment_id = ?", id);
     }
 
     private Collection<Comment> executeQuery(String select, String from, String where, String orderBy, Object[] args, boolean withChildren) {
@@ -546,7 +546,7 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public PaginatedCollection<Comment> findCommentsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
-                "WHERE " + COMMENTS + ".user_id = ?", sortCriteria, pageNumber, pageSize,
+                "WHERE " + COMMENTS + ".user_id = ? AND " + COMMENTS + ".enabled = true", sortCriteria, pageNumber, pageSize,
                 new Object[] { user_id });
     }
 }
