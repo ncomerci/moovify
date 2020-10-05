@@ -63,6 +63,7 @@ public class CommentDaoImpl implements CommentDao {
             POSTS + ".u_password pu_password, " +
             POSTS + ".u_name pu_name, " +
             POSTS + ".u_email pu_email, " +
+            POSTS + ".u_description pu_description, " +
             POSTS + ".u_avatar_id pu_avatar_id, " +
             POSTS + ".u_enabled pu_enabled";
 
@@ -74,6 +75,7 @@ public class CommentDaoImpl implements CommentDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
+            USERS + ".description u_description, " +
             USERS + ".avatar_id u_avatar_id, " +
             USERS + ".enabled u_enabled, " +
             USERS + ".role_id u_role_id, " +
@@ -112,6 +114,7 @@ public class CommentDaoImpl implements CommentDao {
                     USERS + ".password u_password, " +
                     USERS + ".name u_name, " +
                     USERS + ".email u_email, " +
+                    USERS + ".description u_description, " +
                     USERS + ".avatar_id u_avatar_id, " +
                     USERS + ".enabled u_enabled" +
 
@@ -129,6 +132,7 @@ public class CommentDaoImpl implements CommentDao {
                         USERS + ".password, " +
                         USERS + ".name, " +
                         USERS + ".email, " +
+                        USERS + ".description, " +
                         USERS + ".avatar_id, " +
                         USERS + ".enabled, " +
                         ROLES + ".role_id, " +

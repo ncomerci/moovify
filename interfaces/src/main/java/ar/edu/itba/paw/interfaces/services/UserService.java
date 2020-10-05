@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface UserService {
 
-    User register(String username, String password, String name, String email, byte[] avatar, String description, String confirmationMailTemplate);
+    User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate);
 
     void editName(long user_id, String name);
 

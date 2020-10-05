@@ -52,6 +52,7 @@ public class PostDaoImpl implements PostDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
+            USERS + ".description u_description, " +
             USERS + ".avatar_id u_avatar_id, " +
             USERS + ".enabled u_enabled, " +
             USERS + ".role_id u_role_id, " +
@@ -79,6 +80,7 @@ public class PostDaoImpl implements PostDao {
                         USERS + ".password, " +
                         USERS + ".name, " +
                         USERS + ".email, " +
+                        USERS + ".description, " +
                         USERS + ".avatar_id, " +
                         USERS + ".enabled, " +
                         ROLES + ".role_id, " +

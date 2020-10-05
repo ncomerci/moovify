@@ -33,6 +33,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
+            USERS + ".description u_description, " +
             USERS + ".avatar_id u_avatar_id, " +
             USERS + ".enabled u_enabled, " +
 
