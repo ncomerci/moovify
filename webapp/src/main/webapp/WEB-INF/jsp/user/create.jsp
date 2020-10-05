@@ -121,6 +121,7 @@
 
         <form:label path="avatar">
             <form:input path="avatar" type="file" />
+            <form:errors path="avatar" element="p" cssClass="error" cssStyle="color:red;" />
         </form:label>
 
         <div class="uk-text-center uk-margin-medium-top">

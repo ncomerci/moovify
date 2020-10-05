@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.form.Annotations.PasswordsEqualConstraint;
-import ar.edu.itba.paw.webapp.form.Annotations.UniqueEmail;
-import ar.edu.itba.paw.webapp.form.Annotations.UniqueUsername;
-import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
+import ar.edu.itba.paw.webapp.form.Annotations.*;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +30,8 @@ public class UserCreateForm {
     @UniqueEmail
     private String email;
 
+    @Avatar
     private MultipartFile avatar;
-
 
     public String getUsername() {
         return username;
