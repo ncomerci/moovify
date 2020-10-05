@@ -63,6 +63,7 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
+                                rs.getString("u_description"),
                                 new ArrayList<>(), rs.getBoolean("u_enabled"), new HashSet<>()
                         )
                 );

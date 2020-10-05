@@ -33,6 +33,7 @@ public class UserDaoImpl implements UserDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
+            USERS + ".description u_description, " +
             USERS + ".enabled u_enabled";
 
     private static final String ROLE_SELECT =
@@ -69,6 +70,7 @@ public class UserDaoImpl implements UserDao {
                         new User(userId, rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
+                                rs.getString("u_description"),
                                 new HashSet<>(), rs.getBoolean("u_enabled"), new HashSet<>())
                 );
             }
@@ -121,7 +123,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User register(String username, String password, String name, String email, Collection<String> roleNames, boolean enabled) {
+    public User register(String username, String password, String name, String email, String description, Collection<String> roleNames, boolean enabled) {
 
         LocalDateTime creationDate = LocalDateTime.now();
 
@@ -137,6 +139,7 @@ public class UserDaoImpl implements UserDao {
         map.put("password", password);
         map.put("name", name);
         map.put("email", email);
+        map.put("description", description);
         map.put("enabled", enabled);
 
         final long userId = jdbcUserInsert.executeAndReturnKey(map).longValue();
@@ -148,8 +151,24 @@ public class UserDaoImpl implements UserDao {
             jdbcUserRoleInsert.execute(map);
         }
 
-        return new User(userId, creationDate, username, password, name, email, roles, true , Collections.emptySet());
+        return new User(userId, creationDate, username, password, name, email, description, roles, true , Collections.emptySet());
     }
+
+    @Override
+    public void editName(long user_id, String name) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET  name = ? WHERE user_id = ?", name, user_id);
+    }
+
+    @Override
+    public void editUsername(long user_id, String username) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET  username = ? WHERE user_id = ?", username, user_id);
+    }
+
+    @Override
+    public void editDescription(long user_id, String description) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET  description = ? WHERE user_id = ?", description, user_id);
+    }
+
 
     @Override
     public void updatePassword(long userId, String password) {

@@ -132,6 +132,7 @@ public class CommentDaoImpl implements CommentDao {
                             new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
                                     rs.getString("pu_username"), rs.getString("pu_password"),
                                     rs.getString("pu_name"), rs.getString("pu_email"),
+                                    rs.getString("u_description"),
                                     null, rs.getBoolean("pu_enabled"), null),
 
                             // tags
@@ -142,6 +143,7 @@ public class CommentDaoImpl implements CommentDao {
                     new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                             rs.getString("u_username"), rs.getString("u_password"),
                             rs.getString("u_name"), rs.getString("u_email"),
+                            rs.getString("u_description"),
                             null, rs.getBoolean("u_enabled"), null),
                     rs.getBoolean("c_enabled"),
                     rs.getLong("c_likes")
@@ -178,6 +180,7 @@ public class CommentDaoImpl implements CommentDao {
                                 new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
                                         rs.getString("pu_username"), rs.getString("pu_password"),
                                         rs.getString("pu_name"), rs.getString("pu_email"),
+                                        rs.getString("u_description"),
                                         null, rs.getBoolean("pu_enabled") , null),
 
                                 // tags
@@ -188,6 +191,7 @@ public class CommentDaoImpl implements CommentDao {
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
+                                rs.getString("u_description"),
                                 null, rs.getBoolean("u_enabled"), null), rs.getBoolean("c_enabled"), rs.getLong("c_likes")
                 );
 

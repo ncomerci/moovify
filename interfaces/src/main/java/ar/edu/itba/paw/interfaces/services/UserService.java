@@ -7,7 +7,15 @@ import java.util.Optional;
 
 public interface UserService {
 
-    User register(String username, String password, String name, String email, String confirmationMailTemplate);
+    User register(String username, String password, String name, String email, String description, String confirmationMailTemplate);
+
+    void editName(long user_id, String name);
+
+    void editUsername(long user_id, String username);
+
+    void editDescription(long user_id, String description);
+
+    void changePassword(long user_id, String password);
 
     Optional<User> confirmRegistration(String token);
 

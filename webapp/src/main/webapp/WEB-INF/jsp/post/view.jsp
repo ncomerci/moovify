@@ -3,7 +3,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
-<%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
+
+
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
@@ -20,24 +21,26 @@
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
     <div id="post-metadata" >
         <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/>
-
-            <c:if test="${!isPostLiked}">
-                <a class="uk-padding-remove uk-align-right like-post-button"  data-value="true">
-                    <span class="uk-text-right"><c:out value="${post.likes}"/></span>
-                    <sec:authorize access="hasRole('USER')">
+            <sec:authorize access="hasRole('USER')">
+                <c:if test="${!isPostLiked}">
+                    <a class="uk-padding-remove uk-align-right like-post-button"  data-value="true">
+                        <span class="uk-text-right"><c:out value="${post.likes}"/></span>
                         <span class="iconify" data-icon="ant-design:heart-outlined" data-inline="false"></span>
-                    </sec:authorize>
-                </a>
-            </c:if>
-            <c:if test="${isPostLiked}">
-                <a class="uk-padding-remove uk-align-right like-post-button" data-value="false">
-                    <span class="uk-text-right"><c:out value="${post.likes}"/></span>
-                    <sec:authorize access="hasRole('USER')">
+                    </a>
+                </c:if>
+                <c:if test="${isPostLiked}">
+                    <a class="uk-padding-remove uk-align-right like-post-button" data-value="false">
+                        <span class="uk-text-right iconify"><c:out value="${post.likes}"/></span>
                         <span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span>
-                    </sec:authorize>
-                </a>
-            </c:if>
+                    </a>
+                </c:if>
+            </sec:authorize>
+            <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
+                <div class="uk-align-right">
+                    <span class="uk-text-right"><c:out value="${post.likes}"/><span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span></span>
 
+                </div>
+            </sec:authorize>
         </h1>
 
         <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>

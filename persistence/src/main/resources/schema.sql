@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS USERS
     password        VARCHAR(200) NOT NULL,
     name            VARCHAR(50)  NOT NULL,
     email           VARCHAR(200) UNIQUE NOT NULL,
+    description     VARCHAR(400),
     enabled         BOOLEAN NOT NULL
 );
 

@@ -13,14 +13,15 @@ import javax.validation.constraints.Size;
 @PasswordsEqualConstraint(message= "Passwords must match")
 public class UserCreateForm {
 
+
     @Size(min = 6, max = 50)
     @UniqueUsername
     @Pattern(regexp = "[a-zA-Z0-9#_]+")
     private String username;
 
+
     @ValidPassword
     private String password;
-
 
     private String repeatPassword;
 
@@ -31,6 +32,9 @@ public class UserCreateForm {
     @NotEmpty
     @UniqueEmail
     private String email;
+
+    @Size(max=400)
+    private String description;
 
     public String getUsername() {
         return username;
@@ -71,4 +75,13 @@ public class UserCreateForm {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }
+

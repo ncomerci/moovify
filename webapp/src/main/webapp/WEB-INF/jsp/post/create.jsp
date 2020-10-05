@@ -115,8 +115,5 @@
         <option value="${movie.title}" data-id="${movie.id}">
             </c:forEach>
     </datalist>
-
 </body>
 </html>
-
-</jsp:root>

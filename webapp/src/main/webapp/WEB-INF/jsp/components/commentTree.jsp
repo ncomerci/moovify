@@ -2,6 +2,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
 
 <jsp:useBean id="comments" scope="request" type="java.util.Collection"/>
 <ul class="uk-comment-list">
@@ -41,16 +42,16 @@
                         <sec:authorize access="hasRole('USER')">
                             <div class="uk-position-top-right">
                                 <%--TODO no se como hacer para que scrollee automaticamente a los comentarios que son hijos--%>
-                                <c:if test="${!loggedUser.getLikedComments().contains(comment.getId())}">
-                                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.getId()}" data-value="true">
+                                <c:if test="${!customTag:hasUserLikedComment(loggedUser,comment.id )}">
+                                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.id}" data-value="true">
                                         <span class="uk-text-right"><c:out value="${comment.likes}"/></span>
                                         <sec:authorize access="hasRole('USER')">
                                             <span class="iconify" data-icon="ant-design:heart-outlined" data-inline="false"></span>
                                         </sec:authorize>
                                     </a>
                                 </c:if>
-                                <c:if test="${loggedUser.getLikedComments().contains(comment.getId())}">
-                                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.getId()}" data-value="false">
+                                <c:if test="${customTag:hasUserLikedComment(loggedUser, comment.id)}">
+                                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.id}" data-value="false">
                                         <span class="uk-text-right"><c:out value="${comment.likes}"/></span>
                                         <sec:authorize access="hasRole('USER')">
                                             <span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span>
