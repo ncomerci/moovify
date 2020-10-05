@@ -15,4 +15,10 @@
         <function-class>ar.edu.itba.paw.models.Comment</function-class>
         <function-signature>int getTotalComments(java.util.Collection)</function-signature>
     </function>
+
+    <function>
+        <name>hasUserLikedComment</name>
+        <function-class>ar.edu.itba.paw.models.User</function-class>
+        <function-signature>boolean hasUserLikedComment(ar.edu.itba.paw.models.User,long)</function-signature>
+    </function>
 </taglib>

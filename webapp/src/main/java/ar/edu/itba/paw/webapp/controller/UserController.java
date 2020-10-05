@@ -8,9 +8,13 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.ImageNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
-import ar.edu.itba.paw.webapp.form.UpdatePasswordForm;
-import ar.edu.itba.paw.webapp.form.UserCreateForm;
+import ar.edu.itba.paw.webapp.form.*;
+
+/*import ar.edu.itba.paw.webapp.form.UserEditForm;*/
+import ar.edu.itba.paw.webapp.form.editProfile.ChangePasswordForm;
+import ar.edu.itba.paw.webapp.form.editProfile.DescriptionEditForm;
+import ar.edu.itba.paw.webapp.form.editProfile.NameEditForm;
+import ar.edu.itba.paw.webapp.form.editProfile.UsernameEditForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -66,11 +70,86 @@ public class UserController {
 
         final User user = userService.register(userCreateForm.getUsername(),
                 userCreateForm.getPassword(), userCreateForm.getName(),
-                userCreateForm.getEmail(), userCreateForm.getAvatar().getBytes(), "confirmEmail");
+                userCreateForm.getEmail(), userCreateForm.getDescription(), userCreateForm.getAvatar().getBytes(), "confirmEmail");
 
         manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
 
         redirectAttributes.addFlashAttribute("user", user);
+
+        return new ModelAndView("redirect:/user/profile");
+    }
+
+    @RequestMapping(path = "/user/profile/edit", method = RequestMethod.GET)
+    public ModelAndView editProfile(@ModelAttribute("nameEditForm") final NameEditForm nameEditForm, @ModelAttribute("usernameEditForm") final UsernameEditForm usernameEditForm, @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm) {
+        return new ModelAndView("user/profile/profileEdit");
+    }
+
+    @RequestMapping(path = "/user/edit/name", method = RequestMethod.POST)
+    public ModelAndView editName(@Valid @ModelAttribute("nameEditForm") final NameEditForm nameEditForm, final BindingResult bindingResult,
+                                 @ModelAttribute("usernameEditForm") final UsernameEditForm usernameEditForm,
+                                 @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm,
+                                 Principal principal) {
+
+        if(bindingResult.hasErrors()){
+            return editProfile(nameEditForm, usernameEditForm, descriptionEditForm ) ;
+        }
+
+        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        userService.editName(user.getId(), nameEditForm.getName());
+
+        return new ModelAndView("redirect:/user/profile/edit");
+    }
+
+    @RequestMapping(path = "/user/edit/username", method = RequestMethod.POST)
+    public ModelAndView usernameEdit(@Valid @ModelAttribute("usernameEditForm") final UsernameEditForm usernameEditForm, final BindingResult bindingResult,
+                                     @ModelAttribute("nameEditForm") final NameEditForm nameEditForm,
+                                     @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm,
+                                     HttpServletRequest request, Principal principal) {
+
+        if(bindingResult.hasErrors())
+            return editProfile(nameEditForm, usernameEditForm , descriptionEditForm);
+
+        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        userService.editUsername(user.getId(), usernameEditForm.getUsername());
+
+        manualLogin(request, usernameEditForm.getUsername(), user.getPassword(), user.getRoles());
+
+        return new ModelAndView("redirect:/user/profile/edit");
+    }
+
+    @RequestMapping(path = "/user/edit/description", method = RequestMethod.POST)
+    public ModelAndView executeEdit(@Valid @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm, final BindingResult bindingResult,
+                                    @ModelAttribute("nameEditForm") final NameEditForm nameEditForm,
+                                    @ModelAttribute("usernameEditForm") final UsernameEditForm usernameEditForm,
+                                    Principal principal) {
+
+        if(bindingResult.hasErrors())
+            return editProfile(nameEditForm, usernameEditForm , descriptionEditForm);
+
+        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        userService.editDescription(user.getId(), descriptionEditForm.getDescription());
+
+        return new ModelAndView("redirect:/user/profile/edit");
+    }
+
+    @RequestMapping(path = "/user/changePassword", method = RequestMethod.GET)
+    public ModelAndView changePassword(@ModelAttribute("changePasswordForm") final ChangePasswordForm changePasswordForm) {
+
+        return new ModelAndView("user/profile/changePassword");
+    }
+
+    @RequestMapping(path = "/user/changePassword", method = RequestMethod.POST)
+    public ModelAndView executeChangePassword(@Valid @ModelAttribute("changePasswordForm") final ChangePasswordForm changePasswordForm, final BindingResult bindingResult, Principal principal) {
+
+        if(bindingResult.hasErrors())
+            return changePassword(changePasswordForm);
+
+        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        userService.changePassword(user.getId(), changePasswordForm.getPassword());
 
         return new ModelAndView("redirect:/user/profile");
     }

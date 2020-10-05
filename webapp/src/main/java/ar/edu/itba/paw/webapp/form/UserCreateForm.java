@@ -30,6 +30,9 @@ public class UserCreateForm {
     @UniqueEmail
     private String email;
 
+    @Size(max=400)
+    private String description;
+
     @Avatar
     private MultipartFile avatar;
 
@@ -71,6 +74,14 @@ public class UserCreateForm {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public MultipartFile getAvatar() {

@@ -2,6 +2,8 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
+
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 
@@ -36,10 +38,19 @@
                 <sec:authorize access="hasRole('ADMIN')" >
                     <li class="userTitle"><spring:message code="user.profile.Administrator"/></li>
                 </sec:authorize>
-                <%--                <li class="userTitle"><spring:message code="user.profile.Description"/></li>--%>
+                <c:if test="${fn:length(loggedUser.description) == 0}">
+                    <li class="userTitle"><spring:message code="user.profile.notDescription"/> </li>
+                </c:if>
+                <c:if test="${fn:length(loggedUser.description) != 0}">
+                    <li class="userTitle"><spring:message code="user.profile.Description" arguments="${loggedUser.description}"/></li>
+                </c:if>
             </ul>
-            <%--             <p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>--%>
-            <%--            <p class="uk-text-center"><button id="edit-button" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom" type="button"><spring:message code="user.profile.EditProfile"/></button></p>--%>
+            <sec:authorize access="hasRole('USER')">
+            <p class="uk-margin-large-left">
+                <a href="<c:url value="/user/profile/edit"/>"> <button id="submit-form-button" class="uk-button uk-button-primary uk-border-rounded" type="button">
+                    <spring:message code="user.profile.EditProfile"/></button></a>
+            </p>
+            </sec:authorize>
         </div>
     </div>
 </div>

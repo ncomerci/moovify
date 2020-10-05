@@ -128,6 +128,11 @@
             <input class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="submit" value="<spring:message code="user.create.button"/>" />
         </div>
         <div class="uk-text-center uk-text-bold uk-text-muted uk-margin"><spring:message code="user.create.alreadyAccount"/> <a href="<c:url value="/login"/>"><spring:message code="user.login.loginTitle"/></a></div>
+        <div>
+            <div class="uk-inline">
+                <form:hidden path="description"/>
+            </div>
+        </div>
     </form:form>
 </div>
 </body>

@@ -34,6 +34,7 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
+            USERS + ".description u_description, " +
             USERS + ".avatar_id u_avatar_id, " +
             USERS + ".enabled u_enabled, " +
 
@@ -63,7 +64,9 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
                         rs.getObject("t_expiry", LocalDateTime.class),
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
-                                rs.getString("u_name"), rs.getString("u_email"), rs.getLong("u_avatar_id"),
+                                rs.getString("u_name"), rs.getString("u_email"),
+                                rs.getString("u_description"),
+                                rs.getLong("u_avatar_id"),
                                 new ArrayList<>(), rs.getBoolean("u_enabled"), new HashSet<>()
                         )
                 );

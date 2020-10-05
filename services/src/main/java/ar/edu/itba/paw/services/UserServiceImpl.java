@@ -46,16 +46,37 @@ public class UserServiceImpl implements UserService {
     private static final String AVATAR_SECURITY_TAG = "AVATAR";
 
     @Override
-    public User register(String username, String password, String name, String email, byte[] avatar, String confirmationMailTemplate) {
+    public User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) {
 
         final Long avatarId = (avatar.length == 0)? null : imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
 
         final User user = userDao.register(username, passwordEncoder.encode(password),
-                name, email, Collections.singletonList(NOT_VALIDATED_ROLE), avatarId, true);
+                name, email, description, Collections.singletonList(NOT_VALIDATED_ROLE), avatarId, true);
 
         createConfirmationEmail(user, confirmationMailTemplate);
 
         return user;
+    }
+
+    @Override
+    public void editName(long user_id, String name) {
+        userDao.editName(user_id, name);
+    }
+
+    @Override
+    public void editUsername(long user_id, String username) {
+        userDao.editUsername(user_id, username);
+    }
+
+    @Override
+    public void editDescription(long user_id, String description) {
+        userDao.editDescription(user_id, description);
+    }
+
+
+    @Override
+    public void changePassword(long user_id, String password) {
+        userDao.updatePassword(user_id, passwordEncoder.encode(password));
     }
 
     public Optional<byte[]> getAvatar(long avatarId) throws IOException, URISyntaxException {

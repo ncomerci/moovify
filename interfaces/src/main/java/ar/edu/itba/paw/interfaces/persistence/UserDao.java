@@ -13,7 +13,13 @@ public interface UserDao {
         NEWEST, OLDEST
     }
 
-    User register(String username, String password, String name, String email, Collection<String> roleNames, Long avatarId, boolean enabled);
+    User register(String username, String password, String name, String email, String description, Collection<String> roleNames,  Long avatarId, boolean enabled);
+
+    void editName(long user_id, String name);
+
+    void editUsername(long user_id, String username);
+
+    void editDescription(long user_id, String description);
 
     void replaceUserRole(final long userId, final String newRole, final String oldRole);
 
