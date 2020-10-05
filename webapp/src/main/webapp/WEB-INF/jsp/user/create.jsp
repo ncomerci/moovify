@@ -64,14 +64,14 @@
                 <form:label path="username">
                     <spring:message code="user.create.Username" var="username"/>
                     <c:choose>
-                    <c:when test="${not empty userError}">
-                        <span class="uk-form-icon icon-error" uk-icon="icon: user"></span>
-                        <form:input class="uk-input uk-form-danger" path="username" placeholder="${username}" />
-                    </c:when>
-                    <c:otherwise>
-                    <span class="uk-form-icon" uk-icon="icon: user"></span>
-                    <form:input class="uk-input" path="username" placeholder="${username}" />
-                    </c:otherwise>
+                        <c:when test="${not empty userError}">
+                            <span class="uk-form-icon icon-error" uk-icon="icon: user"></span>
+                            <form:input class="uk-input uk-form-danger" path="username" placeholder="${username}" />
+                        </c:when>
+                        <c:otherwise>
+                            <span class="uk-form-icon" uk-icon="icon: user"></span>
+                            <form:input class="uk-input" path="username" placeholder="${username}" />
+                        </c:otherwise>
                     </c:choose>
                 </form:label>
             </div>
@@ -84,14 +84,14 @@
                 <form:label path="password">
                     <spring:message code="user.create.Password" var="password"/>
                     <c:choose>
-                    <c:when test="${not empty passError}">
-                        <span class="uk-form-icon icon-error" uk-icon="icon: lock"></span>
-                        <form:password class="uk-input uk-form-danger"  path="password"  placeholder="${password}" />
-                    </c:when>
-                    <c:otherwise>
-                    <span class="uk-form-icon" uk-icon="icon: lock"></span>
-                    <form:password class="uk-input"  path="password"  placeholder="${password}" />
-                    </c:otherwise>
+                        <c:when test="${not empty passError}">
+                            <span class="uk-form-icon icon-error" uk-icon="icon: lock"></span>
+                            <form:password class="uk-input uk-form-danger"  path="password"  placeholder="${password}" />
+                        </c:when>
+                        <c:otherwise>
+                            <span class="uk-form-icon" uk-icon="icon: lock"></span>
+                            <form:password class="uk-input"  path="password"  placeholder="${password}" />
+                        </c:otherwise>
                     </c:choose>
                 </form:label>
             </div>
@@ -105,24 +105,37 @@
                 <form:label path="repeatPassword">
                     <spring:message code="user.create.repeatPassword" var="repeatPassword"/>
                     <c:choose>
-                    <c:when test="${not empty repPassError}">
-                        <span class="uk-form-icon icon-error" uk-icon="icon: lock"></span>
-                        <form:password class="uk-input uk-form-danger"  path="repeatPassword" placeholder="${repeatPassword}" />
-                    </c:when>
-                    <c:otherwise>
-                    <span class="uk-form-icon" uk-icon="icon: lock"></span>
-                    <form:password class="uk-input"  path="repeatPassword" placeholder="${repeatPassword}" />
-                    </c:otherwise>
+                        <c:when test="${not empty repPassError}">
+                            <span class="uk-form-icon icon-error" uk-icon="icon: lock"></span>
+                            <form:password class="uk-input uk-form-danger"  path="repeatPassword" placeholder="${repeatPassword}" />
+                        </c:when>
+                        <c:otherwise>
+                            <span class="uk-form-icon" uk-icon="icon: lock"></span>
+                            <form:password class="uk-input"  path="repeatPassword" placeholder="${repeatPassword}" />
+                        </c:otherwise>
                     </c:choose>
                 </form:label>
             </div>
             <form:errors path="repeatPassword" element="p" cssClass="error" cssStyle="color:red;" />
         </div>
 
-        <form:label path="avatar">
-            <form:input path="avatar" type="file" />
-            <form:errors path="avatar" element="p" cssClass="error" cssStyle="color:red;" />
-        </form:label>
+        <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
+            <div class="uk-width-1-2">
+                <p class="uk-margin-bottom uk-text-left"><spring:message code="user.create.selectAvatar"/></p>
+            </div>
+            <div class="uk-width-1-2 uk-text-right">
+                <c:set var="addAvatarError"><form:errors path="avatar"/></c:set>
+                <div class="uk-inline">
+                    <form:label path="avatar">
+                        <div uk-form-custom>
+                            <form:input path="avatar" type="file" />
+                            <button class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="button" tabindex="-1"><spring:message code="user.create.selectFile"/></button>
+                        </div>
+                    </form:label>
+                </div>
+                <form:errors path="avatar" element="p" cssClass="error" cssStyle="color:red;" />
+            </div>
+        </div>
 
         <div class="uk-text-center uk-margin-medium-top">
             <input class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="submit" value="<spring:message code="user.create.button"/>" />
