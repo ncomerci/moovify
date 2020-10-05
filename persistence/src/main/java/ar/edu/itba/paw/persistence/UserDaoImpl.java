@@ -353,12 +353,24 @@ public class UserDaoImpl implements UserDao {
                 "", sortCriteria, pageNumber, pageSize, null);
     }
 
+    // Search Query Statements
+    private static final String SEARCH_BY_NAME = USERS + ".name ILIKE '%' || ? || '%'";
 
+    private static final String SEARCH_BY_ROLE = USERS + ".user_id IN ( " +
+            "SELECT " + USER_ROLE + ".user_id " +
+            "FROM " + ROLES + " " +
+                "INNER JOIN " + USER_ROLE + " ON " + ROLES + ".user_id = " + USER_ROLE + ".user_id " +
+            "WHERE " + ROLES + ".role = ?)";
 
-    // TODO: Search By Roles y pasar search a name
     @Override
     public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".name ILIKE '%' || ? || '%'",
-                sortCriteria, pageNumber, pageSize, new Object[]{query});
+        return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_NAME,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query });
+    }
+
+    @Override
+    public PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_NAME + " AND " + SEARCH_BY_ROLE,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, role });
     }
 }
