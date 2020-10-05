@@ -103,6 +103,8 @@ public class UserDaoImpl implements UserDao {
         return sortCriteriaQuery;
     }
 
+    private static final String ENABLED_FILTER = USERS + ".enabled = true";
+
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcUserInsert;
     private final SimpleJdbcInsert jdbcUserRoleInsert;
@@ -298,31 +300,31 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findById(long id) {
-        return buildAndExecuteQuery("WHERE " + USERS + ".user_id = ?",
+        return buildAndExecuteQuery("WHERE " + USERS + ".user_id = ? AND " + ENABLED_FILTER,
                 new Object[]{ id }).stream().findFirst();
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return buildAndExecuteQuery("WHERE " + USERS + ".username = ?",
+        return buildAndExecuteQuery("WHERE " + USERS + ".username = ? AND " + ENABLED_FILTER,
                 new Object[]{ username }).stream().findFirst();
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return buildAndExecuteQuery("WHERE " + USERS + ".email = ?",
+        return buildAndExecuteQuery("WHERE " + USERS + ".email = ? AND " + ENABLED_FILTER,
                 new Object[]{ email }).stream().findFirst();
     }
 
     @Override
     public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%'",
+        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%' AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{query});
     }
 
     @Override
     public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
-                "", sortCriteria, pageNumber, pageSize, null);
+                "WHERE " + ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
 }
