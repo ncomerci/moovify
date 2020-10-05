@@ -93,5 +93,5 @@
         </div>
     </div>
 
-    <form id="promote-user-form" method="post" action="/user/promote/${user.id}"></form>
+    <form id="promote-user-form" method="post" action="<c:url value="/user/promote/${user.id}"/>"></form>
 </sec:authorize>
