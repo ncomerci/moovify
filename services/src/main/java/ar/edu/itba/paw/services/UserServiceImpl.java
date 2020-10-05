@@ -38,10 +38,7 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     // All users are created with NOT_VALIDATED_ROLE by default
-    private static final String NOT_VALIDATED_ROLE = "NOT_VALIDATED";
-    private static final String USER_ROLE = "USER";
 
-    private static final long DEFAULT_AVATAR_ID = 0;
     private static final String DEFAULT_AVATAR_PATH = "/images/avatar.jpg";
     private static final String AVATAR_SECURITY_TAG = "AVATAR";
 
@@ -51,7 +48,7 @@ public class UserServiceImpl implements UserService {
         final Long avatarId = (avatar.length == 0)? null : imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
 
         final User user = userDao.register(username, passwordEncoder.encode(password),
-                name, email, description, Collections.singletonList(NOT_VALIDATED_ROLE), avatarId, true);
+                name, email, description, Collections.singletonList(Role.NOT_VALIDATED_ROLE), avatarId, true);
 
         createConfirmationEmail(user, confirmationMailTemplate);
 
@@ -81,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
     public Optional<byte[]> getAvatar(long avatarId) throws IOException, URISyntaxException {
 
-        if(avatarId == DEFAULT_AVATAR_ID)
+        if(avatarId == User.DEFAULT_AVATAR_ID)
             return Optional.of(imageService.getImage(DEFAULT_AVATAR_PATH));
 
         else
@@ -144,7 +141,7 @@ public class UserServiceImpl implements UserService {
 
         final User user = optToken.get().getUser();
 
-        replaceUserRole(user, USER_ROLE, NOT_VALIDATED_ROLE);
+        replaceUserRole(user, Role.USER_ROLE, Role.NOT_VALIDATED_ROLE);
 
         // Delete Token. It is not needed anymore
         userVerificationTokenDao.deleteVerificationToken(user.getId());
@@ -183,7 +180,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean emailExistsAndIsValidated(String email) {
-        return userDao.userHasRole(email, USER_ROLE);
+        return userDao.userHasRole(email, Role.USER_ROLE);
     }
 
     @Override

@@ -5,6 +5,8 @@ import java.util.Collection;
 
 public class User {
 
+    public static final long DEFAULT_AVATAR_ID = 0;
+
     private final long id;
     private final LocalDateTime creationDate;
     private final String username;
@@ -29,7 +31,7 @@ public class User {
         this.name = name;
         this.email = email;
         this.description = description;
-        this.avatarId = (avatarId == null)? 0 : avatarId;
+        this.avatarId = (avatarId == null)? DEFAULT_AVATAR_ID : avatarId;
         this.roles = roles;
         this.enabled = enabled;
         this.likedComments = likedComments;
