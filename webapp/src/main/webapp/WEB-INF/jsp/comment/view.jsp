@@ -67,7 +67,7 @@
                     <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
                 </c:when>
                 <c:otherwise>
-                    <span class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></span>
+                    <span class="uk-text-italic"><spring:message code="comment.notEnabled.fullMessage"/></span>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -76,6 +76,7 @@
     <c:set var="comments" value="${children}" scope="request"/>
     <c:set var="postId" value="${comment.post.id}" scope="request"/>
     <c:set var="parentId" value="${comment.id}" scope="request"/>
+    <c:set var="enableReplies" value="${comment.enabled}" scope="request"/>
     <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
 </main>
 </body>

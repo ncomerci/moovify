@@ -5,7 +5,7 @@
 <%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
 
 <jsp:useBean id="comments" scope="request" type="java.util.Collection"/>
-<ul class="uk-comment-list">
+<ul class="uk-comment-list" id="comment-section">
     <c:forEach items="${comments}" var="comment" >
 
         <li>
@@ -48,28 +48,39 @@
                                 </p>
                             </div>
                         </div>
-                        <sec:authorize access="hasRole('USER')">
+
                             <div class="uk-position-top-right">
-                                <%--TODO no se como hacer para que scrollee automaticamente a los comentarios que son hijos--%>
-                                <c:if test="${!customTag:hasUserLikedComment(loggedUser,comment.id )}">
-                                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.id}" data-value="true">
-                                        <span class="uk-text-right"><c:out value="${comment.likes}"/></span>
-                                        <sec:authorize access="hasRole('USER')">
-                                            <span class="iconify" data-icon="ant-design:heart-outlined" data-inline="false"></span>
-                                        </sec:authorize>
-                                    </a>
-                                </c:if>
-                                <c:if test="${customTag:hasUserLikedComment(loggedUser, comment.id)}">
-                                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.id}" data-value="false">
-                                        <span class="uk-text-right"><c:out value="${comment.likes}"/></span>
-                                        <sec:authorize access="hasRole('USER')">
-                                            <span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span>
-                                        </sec:authorize>
-                                    </a>
-                                </c:if>
-                                <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover"><spring:message code="comment.create.reply"/></a>
+                                <div class="uk-flex uk-flex-column">
+                                    <sec:authorize access="hasRole('USER')">
+                                        <div>
+                                        <%--TODO no se como hacer para que scrollee automaticamente a los comentarios que son hijos--%>
+                                         <c:if test="${!customTag:hasUserLikedComment(loggedUser,comment.id )}">
+                                             <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.id}" data-value="true">
+                                                 <span class="uk-text-right"><c:out value="${comment.likes}"/></span>
+                                                 <sec:authorize access="hasRole('USER')">
+                                                     <span class="iconify" data-icon="ant-design:heart-outlined" data-inline="false"></span>
+                                                 </sec:authorize>
+                                             </a>
+                                         </c:if>
+                                         <c:if test="${customTag:hasUserLikedComment(loggedUser, comment.id)}">
+                                             <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.id}" data-value="false">
+                                                 <span class="uk-text-right"><c:out value="${comment.likes}"/></span>
+                                                 <sec:authorize access="hasRole('USER')">
+                                                     <span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span>
+                                                 </sec:authorize>
+                                             </a>
+                                         </c:if>
+                                         <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover"><spring:message code="comment.create.reply"/></a>
+                                         </div>
+                                    </sec:authorize>
+                                    <div>
+                                        <a class="uk-link-muted reply-button uk-position-small uk-hidden-hover" href="<c:url value="/comment/${comment.id}"/>">
+                                            <spring:message code="comment.viewComment"/>
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                        </sec:authorize>
+
                     </header>
                     <div class="uk-comment-body">
                         <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
@@ -85,6 +96,13 @@
                                         <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                                         <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
                                     </p>
+                                </div>
+                            </div>
+                            <div class="uk-position-top-right">
+                                <div class="uk-flex uk-flex-column">
+                                    <div>
+                                        <a class="uk-link-muted reply-button uk-position-small uk-hidden-hover" href="<c:url value="/comment/${comment.id}"/>"><spring:message code="comment.viewComment"/></a>
+                                    </div>
                                 </div>
                             </div>
                         </header>
