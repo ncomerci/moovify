@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 
@@ -27,7 +28,8 @@ public class CommentController {
 
     @RequestMapping(path = "/comment/create",  method = RequestMethod.POST)
     public ModelAndView post(@Valid @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm,
-                             final BindingResult bindingResult, Principal principal, RedirectAttributes redirectAttributes) {
+                             final BindingResult bindingResult, Principal principal, RedirectAttributes redirectAttributes,
+                             final HttpServletRequest request) {
 
         redirectAttributes.addFlashAttribute(commentCreateForm);
 
@@ -38,7 +40,8 @@ public class CommentController {
                     commentCreateForm.getCommentBody(), user.getId());
         }
 
-        return new ModelAndView("redirect:/post/" + commentCreateForm.getPostId());
+//        Goes back to the specific view that generated the request
+        return new ModelAndView("redirect:"+ request.getHeader("Referer"));
     }
 
     @RequestMapping(path = "/comment/like",  method = RequestMethod.POST)
@@ -56,7 +59,8 @@ public class CommentController {
     @RequestMapping(path = "/comment/{id}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long id,
                              @RequestParam(defaultValue = "5") final int pageSize,
-                             @RequestParam(defaultValue = "0") final int pageNumber) {
+                             @RequestParam(defaultValue = "0") final int pageNumber,
+                             @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm) {
 
         final ModelAndView mv = new ModelAndView("comment/view");
 

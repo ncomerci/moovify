@@ -5,8 +5,6 @@ window.addEventListener('load', () => {
     const commentLikeForm = document.forms['comment-like-form'];
     const postLikeForm = document.forms['post-like-form'];
 
-    interpretBody();
-
     document.querySelectorAll(".like-comment-button")
         .forEach(button => {
                 button.addEventListener('click', () => likeComment(button.dataset.id, commentLikeForm, button.dataset.value === "true"), false)
@@ -109,19 +107,4 @@ function submitDeleteForm(action) {
     const deleteForm = document.forms['delete-form'];
     deleteForm.action = action;
     deleteForm.submit();
-}
-
-function interpretBody() {
-    marked.setOptions({
-        gfm: true,
-        breaks: true,
-    //  silent: true,
-    });
-
-    //let unparsedBodyElem = document.getElementById("unparsedBody");
-    let parsedBodyElem = document.getElementById("parsedBody");
-    let body = document.querySelector("body").dataset.postBody;
-
-    parsedBodyElem.innerHTML = marked(body);
-    //unparsedBodyElem.style.display = 'none';
 }

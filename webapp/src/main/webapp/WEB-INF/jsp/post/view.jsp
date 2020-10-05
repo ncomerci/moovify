@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="<c:url value="/resources/css/postView.css" />" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js"></script>
     <script src="<c:url value="/resources/js/components/createAndViewComments.js"/>"></script>
+    <script src="<c:url value="/resources/js/post/view.js"/>"></script>
     <sec:authorize access="hasRole('ADMIN')">
         <script src="<c:url value="/resources/js/post/delete.js"/>"></script>
     </sec:authorize>
@@ -72,7 +73,6 @@
             </c:choose>
         </span>
     </div>
-
     <hr>
     <article id="post-body">
         <noscript id="unparsedBody">

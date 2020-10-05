@@ -6,10 +6,10 @@ import ar.edu.itba.paw.webapp.form.SearchPostsForm;
 import ar.edu.itba.paw.webapp.form.SearchUsersForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
@@ -23,53 +23,40 @@ public class SearchController {
 
     @RequestMapping(path = "/search/posts/", method = RequestMethod.GET)
     public ModelAndView searchPosts(@Valid @ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm,
-                                    final BindingResult bindingResult) {
-
-        if(bindingResult.hasErrors())
-            throw new IllegalArgumentException("SearchController: searchPost: Search params are invalid:" +
-                    bindingResult.getAllErrors().stream().reduce("",
-                            (acc, error) -> acc + " " + error.getObjectName() + " " + error.getDefaultMessage(),
-                            String::concat));
+                                    @RequestParam(defaultValue = "5") final int pageSize,
+                                    @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("search/posts");
 
         mv.addObject("query", searchPostsForm.getQuery());
         mv.addObject("posts",
                 searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(),
-                        searchPostsForm.getSortCriteria(), searchPostsForm.getPageNumber(), searchPostsForm.getPageSize()));
+                        searchPostsForm.getSortCriteria(), pageNumber, pageSize));
         return mv;
     }
 
     @RequestMapping(path = "/search/movies/", method = RequestMethod.GET)
-    public ModelAndView searchMovies(@Valid @ModelAttribute("searchMoviesForm") final SearchMoviesForm searchMoviesForm, final BindingResult bindingResult) {
-
-        if(bindingResult.hasErrors())
-            throw new IllegalArgumentException("SearchController: searchMovie: Search params are invalid:" +
-                    bindingResult.getAllErrors().stream().reduce("",
-                            (acc, error) -> acc + " " + error.getObjectName() + " " + error.getDefaultMessage(), String::concat));
-
+    public ModelAndView searchMovies(@Valid @ModelAttribute("searchMoviesForm") final SearchMoviesForm searchMoviesForm,
+                                     @RequestParam(defaultValue = "5") final int pageSize,
+                                     @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("search/movies");
         mv.addObject("query", searchMoviesForm.getQuery());
         mv.addObject("movies",
-                searchService.searchMovies(searchMoviesForm.getQuery(), searchMoviesForm.getPageNumber(), searchMoviesForm.getPageSize()));
+                searchService.searchMovies(searchMoviesForm.getQuery(), pageNumber, pageSize));
         return mv;
     }
 
     @RequestMapping(path = "/search/users/", method = RequestMethod.GET)
-    public ModelAndView searchUsers(@Valid @ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm, final BindingResult bindingResult) {
-
-        if(bindingResult.hasErrors())
-            throw new IllegalArgumentException("SearchController: searchUser: Search params are invalid:" +
-                    bindingResult.getAllErrors().stream().reduce("",
-                            (acc, error) -> acc + " " + error.getObjectName() + " " + error.getDefaultMessage(), String::concat));
-
+    public ModelAndView searchUsers(@Valid @ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm,
+                                    @RequestParam(defaultValue = "5") final int pageSize,
+                                    @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("search/users");
 
         mv.addObject("query", searchUsersForm.getQuery());
         mv.addObject("users",
-                searchService.searchUsers(searchUsersForm.getQuery(), searchUsersForm.getPageNumber(), searchUsersForm.getPageSize()));
+                searchService.searchUsers(searchUsersForm.getQuery(), pageNumber, pageSize));
 
         return mv;
     }
