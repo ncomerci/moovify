@@ -29,6 +29,10 @@ public class SearchController {
         final ModelAndView mv = new ModelAndView("search/posts");
 
         mv.addObject("query", searchPostsForm.getQuery());
+        mv.addObject("categories", searchService.getPostCategories());
+        mv.addObject("periodOptions", searchService.getPostPeriodOptions());
+        mv.addObject("sortCriteria", searchService.getAllPostSortCriteria());
+
         mv.addObject("posts",
                 searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(),
                         searchPostsForm.getSortCriteria(), pageNumber, pageSize));
@@ -55,11 +59,13 @@ public class SearchController {
         final ModelAndView mv = new ModelAndView("search/users");
 
         mv.addObject("query", searchUsersForm.getQuery());
+        mv.addObject("roleOptions", searchService.getUserRoleOptions());
+        mv.addObject("sortCriteria", searchService.getAllUserSortCriteria());
+
         mv.addObject("users",
-                searchService.searchUsers(searchUsersForm.getQuery(), pageNumber, pageSize));
+                searchService.searchUsers(searchUsersForm.getQuery(),"", "", pageNumber, pageSize));
 
         return mv;
     }
-
 }
 
