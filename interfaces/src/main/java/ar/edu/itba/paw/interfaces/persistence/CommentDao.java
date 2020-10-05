@@ -17,6 +17,8 @@ public interface CommentDao {
 
     void removeLike(long comment_id, long user_id);
 
+    void delete(long id);
+
     Optional<Comment> findCommentById(long id);
 
     PaginatedCollection<Comment> findCommentChildren(long commentId, SortCriteria sortCriteria, int pageNumber, int pageSize);

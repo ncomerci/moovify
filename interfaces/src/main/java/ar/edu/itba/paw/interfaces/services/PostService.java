@@ -12,6 +12,8 @@ public interface PostService {
 
     long register(String title, String body, long category, long user, Set<String> tags, Set<Long> movies);
 
+    void delete(long id);
+
     void likePost(long post_id, long user_id, boolean value);
 
     Optional<Post> findPostById(long id);

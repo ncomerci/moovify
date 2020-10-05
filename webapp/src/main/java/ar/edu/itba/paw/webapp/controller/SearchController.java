@@ -22,12 +22,14 @@ public class SearchController {
     private SearchService searchService;
 
     @RequestMapping(path = "/search/posts/", method = RequestMethod.GET)
-    public ModelAndView searchPosts(@Valid @ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm, final BindingResult bindingResult) {
+    public ModelAndView searchPosts(@Valid @ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm,
+                                    final BindingResult bindingResult) {
 
         if(bindingResult.hasErrors())
             throw new IllegalArgumentException("SearchController: searchPost: Search params are invalid:" +
                     bindingResult.getAllErrors().stream().reduce("",
-                            (acc, error) -> acc + " " + error.getObjectName() + " " + error.getDefaultMessage(), String::concat));
+                            (acc, error) -> acc + " " + error.getObjectName() + " " + error.getDefaultMessage(),
+                            String::concat));
 
         final ModelAndView mv = new ModelAndView("search/posts");
 
@@ -55,13 +57,19 @@ public class SearchController {
     }
 
     @RequestMapping(path = "/search/users/", method = RequestMethod.GET)
-    public ModelAndView searchUsers(@ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm) {
+    public ModelAndView searchUsers(@Valid @ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm, final BindingResult bindingResult) {
+
+        if(bindingResult.hasErrors())
+            throw new IllegalArgumentException("SearchController: searchUser: Search params are invalid:" +
+                    bindingResult.getAllErrors().stream().reduce("",
+                            (acc, error) -> acc + " " + error.getObjectName() + " " + error.getDefaultMessage(), String::concat));
+
 
         final ModelAndView mv = new ModelAndView("search/users");
 
         mv.addObject("query", searchUsersForm.getQuery());
         mv.addObject("users",
-                searchService.searchUsers(searchUsersForm.getQuery(), 0, 2));
+                searchService.searchUsers(searchUsersForm.getQuery(), searchUsersForm.getPageNumber(), searchUsersForm.getPageSize()));
 
         return mv;
     }

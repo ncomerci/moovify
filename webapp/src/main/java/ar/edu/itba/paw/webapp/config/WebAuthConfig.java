@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -68,6 +69,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Post Controller
                         // "/post/{postId}"
                     .antMatchers("/post/create").hasRole("USER")
+                    .antMatchers("/post/delete/{postId:[\\d]+}").hasRole("ADMIN")
 
                     // Movie Controller
                         // "/movies/{movieId}
@@ -75,7 +77,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                     // Comment Controller
                     .antMatchers("/comment/create").hasRole("USER")
+                    .antMatchers(HttpMethod.POST, "/comment/like").hasRole("USER")
                     .antMatchers("/comment/{commentId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers("/comment/delete/{commentId:[\\d]+}").hasRole("ADMIN")
 
                     // Search Controller
                         // "/search/posts"

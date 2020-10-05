@@ -13,7 +13,7 @@ public interface UserDao {
         NEWEST, OLDEST
     }
 
-    User register(String username, String password, String name, String email, String description, Collection<String> roleNames, boolean enabled);
+    User register(String username, String password, String name, String email, String description, Collection<String> roleNames,  Long avatarId, boolean enabled);
 
     void editName(long user_id, String name);
 
@@ -32,6 +32,8 @@ public interface UserDao {
     Collection<Role> addRoles(long userId, Collection<String> roleNames);
 
     void updatePassword(long userId, String password);
+
+    void updateAvatarId(long userId, long avatarId);
 
     Optional<User> findById(long id);
 

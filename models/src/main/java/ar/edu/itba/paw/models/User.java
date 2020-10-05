@@ -12,6 +12,7 @@ public class User {
     private final String name;
     private final String email;
     private final String description;
+    private final long avatarId;
     private final Collection<Role> roles;
     private final Collection<Long> likedComments;
     private final boolean enabled;
@@ -20,7 +21,7 @@ public class User {
         return user.getLikedComments().contains(comment_id);
     }
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Collection<Role> roles, boolean enabled, Collection<Long> likedComments) {
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Long avatarId, Collection<Role> roles, boolean enabled, Collection<Long> likedComments) {
         this.id = id;
         this.creationDate = creationDate;
         this.username = username;
@@ -28,6 +29,7 @@ public class User {
         this.name = name;
         this.email = email;
         this.description = description;
+        this.avatarId = (avatarId == null)? 0 : avatarId;
         this.roles = roles;
         this.enabled = enabled;
         this.likedComments = likedComments;
@@ -44,8 +46,6 @@ public class User {
     public String getUsername() {
         return username;
     }
-
-
 
     public String getPassword() {
         return password;
@@ -77,5 +77,7 @@ public class User {
 
     public boolean isEnabled() { return enabled; }
 
-
+    public long getAvatarId() {
+        return avatarId;
+    }
 }

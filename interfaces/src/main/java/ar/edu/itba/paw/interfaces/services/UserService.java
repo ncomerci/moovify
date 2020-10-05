@@ -3,11 +3,13 @@ package ar.edu.itba.paw.interfaces.services;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.User;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Optional;
 
 public interface UserService {
 
-    User register(String username, String password, String name, String email, String description, String confirmationMailTemplate);
+    User register(String username, String password, String name, String email, byte[] avatar, String description, String confirmationMailTemplate);
 
     void editName(long user_id, String name);
 
@@ -28,6 +30,10 @@ public interface UserService {
     boolean hasUserLiked(String username, long postId);
 
     Optional<User> updatePassword(String password, String token);
+
+    Optional<byte[]> getAvatar(long avatarId) throws IOException, URISyntaxException;
+
+    void updateAvatar(User user, byte[] newAvatar);
 
     boolean emailExistsAndIsValidated(String email);
 

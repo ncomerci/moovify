@@ -17,7 +17,7 @@ public interface MovieDao {
 
     Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage, String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<Long> genres);
 
-    PaginatedCollection<Movie> findMoviesByPostId(long postId, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    Collection<Movie> findMoviesByPostId(long postId);
 
     PaginatedCollection<Movie> getAllMovies(SortCriteria sortCriteria, int pageNumber, int pageSize);
 

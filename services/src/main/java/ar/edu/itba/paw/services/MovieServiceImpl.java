@@ -42,8 +42,8 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public PaginatedCollection<Movie> findMoviesByPostId(long postId, int pageNumber, int pageSize) {
-        return movieDao.findMoviesByPostId(postId, MovieDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public Collection<Movie> findMoviesByPostId(long postId) {
+        return movieDao.findMoviesByPostId(postId);
     }
 
     @Override

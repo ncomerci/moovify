@@ -1,3 +1,10 @@
+CREATE TABLE IF NOT EXISTS IMAGES
+(
+    image_id        SERIAL          PRIMARY KEY,
+    image           BYTEA           NOT NULL,
+    security_tag    VARCHAR(100)    NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS USERS
 (
     user_id         SERIAL       PRIMARY KEY,
@@ -6,8 +13,11 @@ CREATE TABLE IF NOT EXISTS USERS
     password        VARCHAR(200) NOT NULL,
     name            VARCHAR(50)  NOT NULL,
     email           VARCHAR(200) UNIQUE NOT NULL,
+    avatar_id       INTEGER,
     description     VARCHAR(400),
     enabled         BOOLEAN NOT NULL
+
+    FOREIGN KEY (avatar_id) REFERENCES IMAGES (image_id)
 );
 
 CREATE TABLE IF NOT EXISTS USER_VERIFICATION_TOKEN

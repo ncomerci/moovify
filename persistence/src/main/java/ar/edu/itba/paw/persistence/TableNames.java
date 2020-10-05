@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 public enum TableNames {
 
+    IMAGES("images"),
     USERS("users"),
     ROLES("roles"),
     USER_ROLE("user_role"),
