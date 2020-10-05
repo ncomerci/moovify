@@ -172,7 +172,6 @@ public class UserDaoImpl implements UserDao {
         jdbcTemplate.update("UPDATE " + USERS + " SET  description = ? WHERE user_id = ?", description, user_id);
     }
 
-
     @Override
     public void updatePassword(long userId, String password) {
         jdbcTemplate.update("UPDATE " + USERS + " SET password = ? WHERE user_id = ?", password, userId);

@@ -65,6 +65,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                             "/user/resetPassword",
                             "/user/updatePassword/token",
                             "/user/updatePassword").anonymous()
+                    .antMatchers("/user/promote/{id:[\\d]+}").hasRole("ADMIN")
 
                     // Post Controller
                         // "/post/{postId}"

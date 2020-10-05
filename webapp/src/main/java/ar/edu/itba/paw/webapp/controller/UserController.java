@@ -33,9 +33,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -353,5 +351,12 @@ public class UserController {
 
     private Collection<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
         return roles.stream().map((role) -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).collect(Collectors.toList());
+    }
+
+    @RequestMapping(path = "/user/promote/{id}", method = RequestMethod.POST)
+    public ModelAndView promoteUser(@PathVariable long id) {
+
+        userService.addRoles(id, Collections.singletonList("ADMIN"));
+        return new ModelAndView("redirect:/user/" + id);
     }
 }

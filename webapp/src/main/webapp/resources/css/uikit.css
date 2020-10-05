@@ -12571,6 +12571,17 @@ iframe.uk-cover {
   height: 18px;
 }
 
+.admin-button {
+  border: 1px solid #F3F3F3;
+  color: #F3F3F3;
+}
+
+.admin-button:hover,
+.admin-button:focus {
+  border: 1px solid #D1D1D1;
+  color: #D1D1D1;
+}
+
 .nav-user {
   color: #f2a365;
 }

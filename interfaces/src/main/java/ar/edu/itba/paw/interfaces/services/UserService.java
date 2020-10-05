@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.User;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.Optional;
 
 public interface UserService {
@@ -18,6 +19,8 @@ public interface UserService {
     void editDescription(long user_id, String description);
 
     void changePassword(long user_id, String password);
+
+    void addRoles(long userId, Collection<String> roleNames);
 
     Optional<User> confirmRegistration(String token);
 
