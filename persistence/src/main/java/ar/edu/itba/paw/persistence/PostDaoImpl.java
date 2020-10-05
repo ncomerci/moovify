@@ -258,6 +258,11 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
+    public void delete(long id) {
+        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = false WHERE post_id = " + id);
+    }
+
+    @Override
     public void likePost(long post_id, long user_id) {
 
         HashMap<String, Object> map = new HashMap<>();

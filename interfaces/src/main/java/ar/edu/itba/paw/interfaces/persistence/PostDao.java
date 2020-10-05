@@ -15,6 +15,8 @@ public interface PostDao {
 
     long register(String title, String body, int wordCount, long category, long user, Set<String> tags, Set<Long> movies, boolean enabled);
 
+    void delete(long id);
+
     void likePost(long post_id, long user_id);
 
     void removeLike(long post_id, long user_id);

@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -75,7 +76,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                     // Comment Controller
                     .antMatchers("/comment/create").hasRole("USER")
-                    .antMatchers("/comment/{commentId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST, "/comment/like").hasRole("USER")
+                    .antMatchers("/comment/{commentId:[\\d]+}").hasRole("ADMIN") // tener en cuenta que acá también se está considerando que solo los admin puedan borrar comments
 
                     // Search Controller
                         // "/search/posts"

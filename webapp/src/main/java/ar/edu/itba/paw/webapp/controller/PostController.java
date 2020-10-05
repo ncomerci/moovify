@@ -49,13 +49,21 @@ public class PostController {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         mv.addObject("post", postService.findPostById(postId).orElseThrow(PostNotFoundException::new));
-        mv.addObject("movies", movieService.findMoviesByPostId(postId, 0, 10));
+        mv.addObject("movies", movieService.findMoviesByPostId(postId));
         mv.addObject("comments", commentService.findPostCommentDescendants(postId, pageNumber, pageSize));
 
         if(!isAnonymous(auth))
             mv.addObject("isPostLiked", userService.hasUserLiked(auth.getName(), postId));
 
         return mv;
+    }
+
+    @RequestMapping(path = "/post/{postId}", method = RequestMethod.POST)
+    public ModelAndView delete(@PathVariable final long postId) {
+
+        postService.delete(postId);
+
+        return new ModelAndView("redirect:/");
     }
 
     @RequestMapping(path = "/post/like", method = RequestMethod.POST )
@@ -75,7 +83,7 @@ public class PostController {
 
         final ModelAndView mv = new ModelAndView("post/create");
 
-        mv.addObject("movies", movieService.getAllMovies(0, 10));
+        mv.addObject("movies", movieService.getAllMoviesNotPaginated());
         mv.addObject("categories", postService.getAllPostCategories());
 
         return mv;

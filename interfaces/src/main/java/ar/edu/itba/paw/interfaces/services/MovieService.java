@@ -19,7 +19,7 @@ public interface MovieService {
 
     Collection<Movie> getAllMoviesNotPaginated();
 
-    PaginatedCollection<Movie> findMoviesByPostId(long postId, int pageNumber, int pageSize);
+    Collection<Movie> findMoviesByPostId(long postId);
 
     Collection<MovieCategory> getAvailableCategories();
 }

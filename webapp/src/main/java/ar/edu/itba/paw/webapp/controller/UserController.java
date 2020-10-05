@@ -76,7 +76,10 @@ public class UserController {
     }
 
     @RequestMapping(path = {"/user/{userId}", "/user/{userId}/posts"} , method = RequestMethod.GET)
-    public ModelAndView viewPosts(HttpServletRequest request, @PathVariable final long userId) {
+    public ModelAndView viewPosts(HttpServletRequest request,
+                                  @PathVariable final long userId,
+                                  @RequestParam(defaultValue = "5") final int pageSize,
+                                  @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("user/view/viewPosts");
 
@@ -86,12 +89,14 @@ public class UserController {
             mv.addObject("user", userService.findById(userId)
                 .orElseThrow(UserNotFoundException::new));
 
-        mv.addObject("posts", postService.findPostsByUserId(userId, 0, 10));
+        mv.addObject("posts", postService.findPostsByUserId(userId, pageNumber, pageSize));
         return mv;
     }
 
     @RequestMapping(path = "/user/{userId}/comments", method = RequestMethod.GET)
-    public ModelAndView viewComments(HttpServletRequest request, @PathVariable final long userId) {
+    public ModelAndView viewComments(HttpServletRequest request, @PathVariable final long userId,
+                                     @RequestParam(defaultValue = "5") final int pageSize,
+                                     @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("user/view/viewComments");
 
@@ -101,12 +106,14 @@ public class UserController {
             mv.addObject("user", userService.findById(userId)
                     .orElseThrow(UserNotFoundException::new));
 
-        mv.addObject("comments", commentService.findCommentsByUserId(userId, 0, 10));
+        mv.addObject("comments", commentService.findCommentsByUserId(userId, pageNumber, pageSize));
         return mv;
     }
 
     @RequestMapping(path = {"/user/profile", "/user/profile/posts"}, method = RequestMethod.GET)
-    public ModelAndView profilePosts(HttpServletRequest request, Principal principal) {
+    public ModelAndView profilePosts(HttpServletRequest request, Principal principal,
+                                     @RequestParam(defaultValue = "5") final int pageSize,
+                                     @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("user/profile/profilePosts");
 
@@ -120,20 +127,22 @@ public class UserController {
             user = (User) inputFlashMap.get("user");
 
         mv.addObject("loggedUser", user);
-        mv.addObject("posts", postService.findPostsByUserId(user.getId(), 0, 10));
+        mv.addObject("posts", postService.findPostsByUserId(user.getId(), pageNumber, pageSize));
 
         return mv;
     }
 
     @RequestMapping(path = "/user/profile/comments", method = RequestMethod.GET)
-    public ModelAndView profileComments(Principal principal) {
+    public ModelAndView profileComments(Principal principal,
+                                        @RequestParam(defaultValue = "5") final int pageSize,
+                                        @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("user/profile/profileComments");
 
         final User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
-        mv.addObject("comments", commentService.findCommentsByUserId(user.getId(), 0, 10));
+        mv.addObject("comments", commentService.findCommentsByUserId(user.getId(), pageNumber, pageSize));
 
         return mv;
     }
@@ -225,8 +234,8 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/updatePassword", method = RequestMethod.POST)
-    public ModelAndView updatePassword(@Valid @ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm, final BindingResult bindingResult,
-                                        HttpServletRequest request) {
+    public ModelAndView updatePassword(@Valid @ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm,
+                                       final BindingResult bindingResult, HttpServletRequest request) {
 
         if(bindingResult.hasErrors())
             return showUpdatePassword(updatePasswordForm, request);

@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class HomeController {
 
+    private static final int HOME_PAGE_POST_COUNT = 10;
     @Autowired
     private PostService postService;
 
@@ -18,8 +19,8 @@ public class HomeController {
 
         final ModelAndView mv = new ModelAndView("index");
 
-        mv.addObject("newestPosts", postService.getAllPostsOrderByNewest(0, 10));
-        mv.addObject("hottestPosts", postService.getAllPostsOrderByHottest(0, 10));
+        mv.addObject("newestPosts", postService.getAllPostsOrderByNewest(0, HOME_PAGE_POST_COUNT));
+        mv.addObject("hottestPosts", postService.getAllPostsOrderByHottest(0, HOME_PAGE_POST_COUNT));
 
         return mv;
     }

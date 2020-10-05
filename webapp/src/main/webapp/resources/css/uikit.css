@@ -4336,8 +4336,12 @@ select.uk-form-width-xsmall {
   content: '.';
 }
 :root {
+}
+
+:root {
   --uk-leader-fill-content: .;
 }
+
 /* ========================================================================
    Component: Notification
  ========================================================================== */
@@ -12615,5 +12619,15 @@ iframe.uk-cover {
 
 .signup-login-button {
   width: 100% !important;
+}
+
+.delete-comment-button {
+  color: #cf1b1b !important;
+  font-size: 16px;
+}
+
+.delete-comment-button:hover,
+.delete-comment-button:focus {
+  color: #900d0d !important;
 }
 

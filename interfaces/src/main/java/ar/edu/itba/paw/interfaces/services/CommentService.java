@@ -12,6 +12,8 @@ public interface CommentService {
 
     void likeComment(long comment_id, long user_id, boolean value);
 
+    void delete(long id);
+
     Optional<Comment> findCommentById(long id);
 
     PaginatedCollection<Comment> findCommentChildren(long commentId, int pageNumber, int pageSize);
