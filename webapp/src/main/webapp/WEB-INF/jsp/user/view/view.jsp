@@ -15,7 +15,7 @@
     </div>
     <div class="uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle" uk-grid>
         <div class="uk-width-1-3@m uk-flex-first uk-text-center">
-            <img class="uk-border-circle uk-margin-left" alt="" height="250" width="250" data-src="<c:url value="/resources/images/avatar.jpg"/>" uk-img>
+            <img class="uk-border-circle uk-margin-left" alt="" height="250" width="250" data-src="<c:url value="/user/avatar/${user.avatarId}"/>" uk-img>
         </div>
         <div class="uk-width-2-3@m">
             <h3 class="uk-card-title uk-margin-remove-bottom userTitle"><c:out value="${user.username}" /></h3>

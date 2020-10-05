@@ -87,11 +87,13 @@ public class UserServiceImpl implements UserService {
 
     public void updateAvatar(User user, byte[] newAvatar) {
 
-        imageService.deleteImage(user.getAvatarId());
+
 
         final long newAvatarId = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
 
         userDao.updateAvatarId(user.getId(), newAvatarId);
+
+        imageService.deleteImage(user.getAvatarId());
     }
 
     @Override

@@ -21,10 +21,10 @@
         <form:form modelAttribute="changePasswordForm" class="uk-form-horizontal uk-margin-large" action="${action}" method="post">
 
         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
-            <div class="uk-width-1-2">
-                <h2 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.changePassword" /></h2>
+            <div class="uk-width-1-3">
+                <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.changePassword" /></h3>
             </div>
-            <div class="uk-width-1-2">
+            <div class="uk-width-2-3">
                 <c:set var="passError"><form:errors path="password"/></c:set>
                 <div class="uk-inline">
                     <form:label path="password">
@@ -47,10 +47,10 @@
         </div>
 
         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
-            <div class="uk-width-1-2">
-                <h2 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.repeatPassword" /></h2>
+            <div class="uk-width-1-3">
+                <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.repeatPassword" /></h3>
             </div>
-            <div class="uk-width-1-2">
+            <div class="uk-width-2-3">
                 <c:set var="repPassError"><form:errors path="repeatPassword"/></c:set>
                 <div class="uk-inline">
                     <form:label path="repeatPassword">

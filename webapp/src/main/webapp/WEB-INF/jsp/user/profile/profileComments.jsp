@@ -7,7 +7,9 @@
 <head>
     <title><spring:message code="user.profile.Profile" arguments="${loggedUser.username}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
+    <script src="<c:url value="/resources/js/user/profile.js" />"></script>
 </head>
 <body style="min-height: 1000px">
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
