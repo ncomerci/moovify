@@ -29,8 +29,11 @@
                 <div class="uk-width-1-1">
                     <div class="uk-flex">
                         <div class="uk-width-expand uk-margin-small-top">
-                            <a href="<c:url value="/user/${user.id}"/>">
+                            <a href="<c:url value="/user/${user.id}"/>" <c:out value="${user.admin ? 'class=uk-text-primary uk-text-middle': ''}"/>>
                                 <c:out value="${user.username}"/>
+                                <c:if test="${user.admin}">
+                                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                </c:if>
                             </a>
                         </div>
                     </div>

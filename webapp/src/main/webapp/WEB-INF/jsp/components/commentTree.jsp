@@ -22,12 +22,15 @@
                                 <h4 class="uk-comment-title uk-margin-remove">
                                     <c:choose>
                                         <c:when test="${comment.user.enabled}">
-                                            <a class="comment-user-name" href = "<c:url value="/user/${comment.user.id}" />">
-                                                <c:out value="${comment.user.name}" />
+                                            <a class="comment-user-name <c:out value="${comment.user.admin ? 'uk-text-primary':''}"/>" href = "<c:url value="/user/${comment.user.id}" />">
+                                                <c:out value="${comment.user.name}"/>
+                                                <c:if test="${comment.user.admin}">
+                                                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                                </c:if>
                                             </a>
                                         </c:when>
                                         <c:otherwise>
-                                            <span class="comment-user-name" class="uk-text-italic">
+                                            <span class="comment-user-name uk-text-italic">
                                                 <spring:message code="user.notEnabled.name"/>
                                             </span>
                                         </c:otherwise>

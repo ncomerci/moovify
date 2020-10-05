@@ -32,8 +32,11 @@
                         <h4 class="uk-comment-title uk-margin-remove">
                             <c:choose>
                                 <c:when test="${comment.user.enabled}">
-                                    <a href="<c:url value="/user/${comment.user.id}"/>">
+                                    <a href="<c:url value="/user/${comment.user.id}"/>" <c:out value="${comment.user.admin ? 'class=uk-text-primary':''}"/>>
                                         <c:out value="${comment.user.name}" />
+                                        <c:if test="${comment.user.admin}">
+                                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                        </c:if>
                                     </a>
                                 </c:when>
                                 <c:otherwise>

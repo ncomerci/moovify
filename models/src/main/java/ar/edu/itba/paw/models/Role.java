@@ -4,6 +4,7 @@ public class Role {
 
     public static final String NOT_VALIDATED_ROLE = "NOT_VALIDATED";
     public static final String USER_ROLE = "USER";
+    public static final String ADMIN_ROLE = "ADMIN";
 
     private final long id;
     private final String role;
