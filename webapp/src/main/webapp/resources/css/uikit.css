@@ -12566,6 +12566,11 @@ iframe.uk-cover {
   height: 32px;
 }
 
+.admin-badge {
+  width: 18px;
+  height: 18px;
+}
+
 .nav-user {
   color: #f2a365;
 }

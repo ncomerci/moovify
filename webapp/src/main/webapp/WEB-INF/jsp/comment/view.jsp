@@ -32,8 +32,11 @@
                         <h4 class="uk-comment-title uk-margin-remove">
                             <c:choose>
                                 <c:when test="${comment.user.enabled}">
-                                    <a href="<c:url value="/user/${comment.user.id}"/>">
+                                    <a href="<c:url value="/user/${comment.user.id}"/>" <c:out value="${comment.user.admin ? 'class=uk-text-primary':''}"/>>
                                         <c:out value="${comment.user.name}" />
+                                        <c:if test="${comment.user.admin}">
+                                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                        </c:if>
                                     </a>
                                 </c:when>
                                 <c:otherwise>
@@ -67,7 +70,7 @@
                     <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
                 </c:when>
                 <c:otherwise>
-                    <span class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></span>
+                    <span class="uk-text-italic"><spring:message code="comment.notEnabled.fullMessage"/></span>
                 </c:otherwise>
             </c:choose>
         </div>
@@ -76,6 +79,7 @@
     <c:set var="comments" value="${children}" scope="request"/>
     <c:set var="postId" value="${comment.post.id}" scope="request"/>
     <c:set var="parentId" value="${comment.id}" scope="request"/>
+    <c:set var="enableReplies" value="${comment.enabled}" scope="request"/>
     <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
 </main>
 </body>

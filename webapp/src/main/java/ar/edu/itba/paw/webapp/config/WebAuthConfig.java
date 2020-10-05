@@ -78,9 +78,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Comment Controller
                     .antMatchers("/comment/create").hasRole("USER")
                     .antMatchers(HttpMethod.POST, "/comment/like").hasRole("USER")
-                    .antMatchers("/comment/{commentId:[\\d]+}").hasRole("ADMIN")
                     .antMatchers("/comment/delete/{commentId:[\\d]+}").hasRole("ADMIN")
-
+                        // "/comment/{commentId:[\\d]+}"
                     // Search Controller
                         // "/search/posts"
                         // "/search/movies"

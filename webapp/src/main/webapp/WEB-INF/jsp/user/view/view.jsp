@@ -18,7 +18,12 @@
             <img class="uk-border-circle uk-margin-left" alt="" height="250" width="250" data-src="<c:url value="/user/avatar/${user.avatarId}"/>" uk-img>
         </div>
         <div class="uk-width-2-3@m">
-            <h3 class="uk-card-title uk-margin-remove-bottom userTitle"><c:out value="${user.username}" /></h3>
+            <h3 class="uk-card-title uk-margin-remove-bottom userTitle">
+                <c:out value="${user.username} "/>
+                <c:if test="${user.admin}">
+                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                </c:if>
+            </h3>
             <p class="uk-text-meta uk-margin-remove-top "><spring:message code="user.profile.inMoovifySince"/><fmt:parseDate value="${user.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                 <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" /></p>
             <ul class="uk-list uk-list-bullet">

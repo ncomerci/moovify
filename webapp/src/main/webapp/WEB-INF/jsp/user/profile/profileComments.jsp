@@ -5,7 +5,12 @@
 
 <html>
 <head>
-    <title><spring:message code="user.profile.Profile" arguments="${loggedUser.username}"/></title>
+    <title>
+        <spring:message code="user.profile.Profile" arguments="${loggedUser.username}"/>
+        <c:if test="${loggedUser.admin}">
+            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+        </c:if>
+    </title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
