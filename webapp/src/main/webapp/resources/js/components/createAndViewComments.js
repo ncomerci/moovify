@@ -102,7 +102,7 @@ function deleteComment(commentId) {
 
    document.getElementById('modal-body').textContent = `${name}: ${body}`;
    document.getElementById('modal-confirm')
-       .addEventListener('click', () => submitDeleteForm(`/comment/${commentId}`), false);
+       .addEventListener('click', () => submitDeleteForm(`/comment/delete/${commentId}`), false);
 }
 
 function submitDeleteForm(action) {

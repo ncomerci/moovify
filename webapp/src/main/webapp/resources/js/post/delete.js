@@ -11,7 +11,7 @@ function deletePost(postId, modalTitle) {
     document.getElementById('delete-modal').getElementsByClassName('uk-modal-title')[0].textContent = modalTitle;
     document.getElementById('')
     document.getElementById('modal-confirm')
-        .addEventListener('click', () => submitDeleteForm(`/post/${postId}`), false);
+        .addEventListener('click', () => submitDeleteForm(`/post/delete/${postId}`), false);
 }
 
 function submitDeleteForm(action) {

@@ -69,6 +69,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Post Controller
                         // "/post/{postId}"
                     .antMatchers("/post/create").hasRole("USER")
+                    .antMatchers("/post/delete/{postId:[\\d]+}").hasRole("ADMIN")
 
                     // Movie Controller
                         // "/movies/{movieId}
@@ -77,7 +78,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Comment Controller
                     .antMatchers("/comment/create").hasRole("USER")
                     .antMatchers(HttpMethod.POST, "/comment/like").hasRole("USER")
-                    .antMatchers("/comment/{commentId:[\\d]+}").hasRole("ADMIN") // tener en cuenta que acá también se está considerando que solo los admin puedan borrar comments
+                    .antMatchers("/comment/{commentId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers("/comment/delete/{commentId:[\\d]+}").hasRole("ADMIN")
 
                     // Search Controller
                         // "/search/posts"

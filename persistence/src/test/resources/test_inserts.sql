@@ -56,6 +56,7 @@ INSERT INTO public.users (user_id, creation_date, username, password, name, emai
 
 INSERT INTO public.user_role (user_id, role_id) VALUES (1, 1);
 INSERT INTO public.user_role (user_id, role_id) VALUES (2, 1);
+INSERT INTO public.user_role (user_id, role_id) VALUES (3, 1);
 INSERT INTO public.user_role (user_id, role_id) VALUES (3, 2);
 INSERT INTO public.user_role (user_id, role_id) VALUES (4, 3);
 
