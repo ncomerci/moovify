@@ -58,7 +58,7 @@ public class PostController {
         return mv;
     }
 
-    @RequestMapping(path = "/post/{postId}", method = RequestMethod.POST)
+    @RequestMapping(path = "/post/delete/{postId}", method = RequestMethod.POST)
     public ModelAndView delete(@PathVariable final long postId) {
 
         postService.delete(postId);
