@@ -82,4 +82,8 @@ public class User {
     public long getAvatarId() {
         return avatarId;
     }
+
+    public boolean isAdmin() {
+        return roles.stream().anyMatch(role -> role.getRole().equals(Role.ADMIN_ROLE));
+    }
 }

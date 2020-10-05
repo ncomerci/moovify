@@ -29,13 +29,13 @@
         <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/>
             <sec:authorize access="hasRole('USER')">
                 <c:if test="${!isPostLiked}">
-                    <a class="uk-padding-remove uk-align-right like-post-button"  data-value="true">
+                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-post-button"  data-value="true">
                         <span class="uk-text-right"><c:out value="${post.likes}"/></span>
                         <span class="iconify" data-icon="ant-design:heart-outlined" data-inline="false"></span>
                     </a>
                 </c:if>
                 <c:if test="${isPostLiked}">
-                    <a class="uk-padding-remove uk-align-right like-post-button" data-value="false">
+                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-post-button" data-value="false">
                         <span class="uk-text-right iconify"><c:out value="${post.likes}"/></span>
                         <span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span>
                     </a>
@@ -66,6 +66,9 @@
                 <c:when test="${post.user.enabled}">
                     <a href="<c:url value="/user/${post.user.id}"/>">
                         <c:out value="${post.user.name}"/>
+                        <c:if test="${post.user.admin}">
+                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                        </c:if>
                     </a>
                 </c:when>
                 <c:otherwise>
