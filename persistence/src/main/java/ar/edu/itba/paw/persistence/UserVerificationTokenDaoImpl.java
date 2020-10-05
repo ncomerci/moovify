@@ -24,6 +24,9 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
     private static final String ROLES = TableNames.ROLES.getTableName();
     private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
     private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
+    private static final String COMMENTS = TableNames.COMMENTS.getTableName();
+    private static final String POSTS = TableNames.POSTS.getTableName();
+    private static final String POSTS_LIKES = TableNames.POSTS_LIKES.getTableName();
 
 
     private static final String GET_TOKEN_QUERY = "SELECT " +
@@ -40,6 +43,8 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
             ROLES + ".role_id r_role_id, " +
             ROLES + ".role r_role, " +
 
+            "TOTAL_LIKES.total_likes u_total_likes, " +
+
             USER_VERIFICATION_TOKEN + ".token_id t_token_id, " +
             USER_VERIFICATION_TOKEN + ".token t_token, " +
             USER_VERIFICATION_TOKEN + ".expiry t_expiry, " +
@@ -47,10 +52,33 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
             COMMENTS_LIKES + ".comment_id c_comment_id " +
 
             "FROM " + USER_VERIFICATION_TOKEN +
+
+            " INNER JOIN ( " +
+                "SELECT " + USERS + ".user_id, coalesce(post_likes.total_likes, 0) + coalesce(comment_likes.total_likes, 0) total_likes " +
+                "FROM " + USERS +
+                    " LEFT OUTER JOIN ( " +
+                        "SELECT " + POSTS + ".user_id, COUNT(*) total_likes " +
+                        "FROM " + POSTS +
+                            " INNER JOIN " + POSTS_LIKES + " ON " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id " +
+                        "GROUP BY " + POSTS + ".user_id " +
+                    ") post_likes ON " + USERS + ".user_id = post_likes.user_id " +
+
+                    "LEFT OUTER JOIN ( " +
+                        "SELECT " + COMMENTS + ".user_id, count(*) total_likes " +
+                        "FROM " + COMMENTS +
+                            " INNER JOIN " + COMMENTS_LIKES + " ON " + COMMENTS + ".comment_id = " + COMMENTS_LIKES + ".comment_id " +
+                        "GROUP BY " + COMMENTS + ".user_id " +
+                    ") comment_likes ON " + USERS + ".user_id = comment_likes.user_id " +
+            ") TOTAL_LIKES ON TOTAL_LIKES.user_id = " + USERS + ".user_id " +
+
             " INNER JOIN " + USERS + " ON " + USER_VERIFICATION_TOKEN + ".user_id = " + USERS + ".user_id " +
+
             "INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
+
             "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
+
             "LEFT OUTER JOIN " + COMMENTS_LIKES + " ON " + COMMENTS_LIKES + ".user_id = " + USERS + ".user_id " +
+
             "WHERE " + USER_VERIFICATION_TOKEN + ".token = ?";
 
 
@@ -65,7 +93,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
                                 rs.getString("u_description"),
-                                rs.getLong("u_avatar_id"),
+                                rs.getLong("u_avatar_id"), rs.getLong("u_total_likes"),
                                 new HashSet<>(), rs.getBoolean("u_enabled"),  new HashSet<>()
                         )
                 );

@@ -122,7 +122,7 @@ public class PostDaoImpl implements PostDao {
                                 new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                         rs.getString("u_username"), rs.getString("u_password"),
                                         rs.getString("u_name"), rs.getString("u_email"),  rs.getString("u_description"),
-                                        rs.getLong("u_avatar_id"),
+                                        rs.getLong("u_avatar_id"), 0,
                                         new HashSet<>(), rs.getBoolean("u_enabled"), null),
 
                                 // tags
