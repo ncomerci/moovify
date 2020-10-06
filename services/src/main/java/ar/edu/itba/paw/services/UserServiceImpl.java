@@ -83,8 +83,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addRoles(long userId, Collection<String> roleNames) {
-        userDao.addRoles(userId, roleNames);
+    public void promoteUserToAdmin(User user) {
+        userDao.addRoles(user.getId(), Collections.singletonList(Role.ADMIN_ROLE));
+
+        user.getRoles().add(new Role(Role.ADMIN_ROLE));
     }
 
     @Override

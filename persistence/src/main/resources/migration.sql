@@ -11,7 +11,6 @@ ALTER TABLE USERS ADD CONSTRAINT fk_user_avatar FOREIGN KEY (avatar_id) REFERENC
 ALTER TABLE USERS ADD COLUMN description VARCHAR(400) DEFAULT NULL;
 
 -- feature/searchEngine
-
 update movie_categories set name = 'action' where tmdb_category_id = 28;
 update movie_categories set name = 'adventure' where tmdb_category_id = 12;
 update movie_categories set name = 'animation' where tmdb_category_id = 16;

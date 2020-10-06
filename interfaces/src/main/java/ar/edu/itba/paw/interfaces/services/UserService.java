@@ -17,7 +17,7 @@ public interface UserService {
 
     void changePassword(long user_id, String password);
 
-    void addRoles(long userId, Collection<String> roleNames);
+    void promoteUserToAdmin(User user);
 
     Optional<User> confirmRegistration(String token);
 

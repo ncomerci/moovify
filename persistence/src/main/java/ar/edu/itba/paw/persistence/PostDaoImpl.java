@@ -378,7 +378,8 @@ public class PostDaoImpl implements PostDao {
     @Override
     public PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
-                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS + " AND " + ENABLED_FILTER,
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                                    " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
     }
 

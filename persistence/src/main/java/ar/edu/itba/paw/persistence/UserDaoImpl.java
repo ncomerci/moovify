@@ -128,8 +128,6 @@ public class UserDaoImpl implements UserDao {
         return sortCriteriaQuery;
     }
 
-    private static final String ENABLED_FILTER = USERS + ".enabled = true";
-
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcUserInsert;
     private final SimpleJdbcInsert jdbcUserRoleInsert;
@@ -207,6 +205,7 @@ public class UserDaoImpl implements UserDao {
         jdbcTemplate.update("UPDATE " + USERS + " SET avatar_id = ? WHERE user_id = ?", avatarId, userId);
     }
 
+    // TODO: can be done in a single query. Important!
     @Override
     public Collection<Role> addRoles(long userId, Collection<String> roleNames) {
         Collection<Role> roles = roleDao.findRolesByName(roleNames);
@@ -333,9 +332,7 @@ public class UserDaoImpl implements UserDao {
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }
 
-    // TODO: CHECK USERS ENABLED. findById, searchUsers
-//    " WHERE " + USERS + ".user_id = ?" + " AND "+ USERS + ".enabled = true"
-//    WHERE " + USERS + ".username ILIKE '%' || ? || '%'" + " AND "+ USERS + ".enabled = true
+    private static final String ENABLED_FILTER = USERS + ".enabled = true";
 
     @Override
     public Optional<User> findById(long id) {
@@ -358,7 +355,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
-                "", sortCriteria, pageNumber, pageSize, null);
+                "WHERE " + ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
 
     // Search Query Statements
@@ -372,13 +369,17 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_NAME + " AND " + ENABLED_FILTER,
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_NAME +
+                                    " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query });
     }
 
     @Override
     public PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_NAME + " AND " + SEARCH_BY_ROLE + " AND " + ENABLED_FILTER,
+        return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_NAME +
+                                                                " AND " + SEARCH_BY_ROLE +
+                                                                " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, role });
     }
 }

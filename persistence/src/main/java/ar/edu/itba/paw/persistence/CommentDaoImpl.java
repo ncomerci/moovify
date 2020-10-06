@@ -291,7 +291,6 @@ public class CommentDaoImpl implements CommentDao {
                 idToRoleMap.put(role_id, new Role(role_id, rs.getString("u_role")));
 
             idToCommentMap.get(comment_id).getUser().getRoles().add(idToRoleMap.get(role_id));
-
         }
 
         // Root comments must also be returned
@@ -400,12 +399,14 @@ public class CommentDaoImpl implements CommentDao {
         if(args != null){
             if(withChildren)
                 return jdbcTemplate.query(query, args, COMMENT_ROW_MAPPER_WITH_CHILDREN);
+
             else
                 return jdbcTemplate.query(query, args, COMMENT_ROW_MAPPER);
         }
         else {
             if(withChildren)
                 return jdbcTemplate.query(query, COMMENT_ROW_MAPPER_WITH_CHILDREN);
+
             else
                 return jdbcTemplate.query(query, COMMENT_ROW_MAPPER);
         }
@@ -452,11 +453,6 @@ public class CommentDaoImpl implements CommentDao {
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
         final String orderBy = buildOrderByStatement(sortCriteria);
-
-//        final String newWhere =
-//                "WHERE " + COMMENTS + ".comment_id IN (SELECT " + COMMENTS + ".comment_id FROM " + COMMENTS + " WHERE " + COMMENTS + ".comment_id IN (" +
-//                "SELECT " + COMMENTS + ".comment_id " + from + " " + firstLevelCommentsWhere +
-//                " ) " + orderBy + " " + pagination + ")";
 
         final String newWhere = "WHERE " + COMMENTS + ".comment_id IN ( " +
                 "SELECT AUX.comment_id " +

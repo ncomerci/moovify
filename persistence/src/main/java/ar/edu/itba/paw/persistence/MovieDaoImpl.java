@@ -274,12 +274,12 @@ public class MovieDaoImpl implements MovieDao {
 
     @Override
     public PaginatedCollection<Movie> getAllMovies(SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery(" ", sortCriteria, pageNumber, pageSize, null);
+        return buildAndExecutePaginatedQuery("", sortCriteria, pageNumber, pageSize, null);
     }
 
     @Override
     public Collection<Movie> getAllMoviesNotPaginated() {
-        return buildAndExecuteQuery(" ", null);
+        return buildAndExecuteQuery("", null);
     }
 
     private static final String SEARCH_BY_MOVIE_TITLE = MOVIES + ".title ILIKE '%' || ? || '%'";
@@ -294,11 +294,10 @@ public class MovieDaoImpl implements MovieDao {
 
     private static final String SEARCH_BY_RELEASE_DATE = MOVIES + ".release_date BETWEEN ? AND ?";
 
-    // TODO: Search by Category and Release Date Range
     @Override
     public PaginatedCollection<Movie> searchMovies(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
-        String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE;
+        final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE;
 
         return buildAndExecutePaginatedQuery(whereStatement,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query });
@@ -308,7 +307,7 @@ public class MovieDaoImpl implements MovieDao {
     public PaginatedCollection<Movie> searchMoviesByCategory (String query, String category, SortCriteria sortCriteria,
                                                               int pageNumber, int pageSize) {
 
-        String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY;
+        final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY;
 
         return buildAndExecutePaginatedQuery(whereStatement,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, category });
@@ -318,7 +317,7 @@ public class MovieDaoImpl implements MovieDao {
     public PaginatedCollection<Movie> searchMoviesByReleaseDate (String query, LocalDate since, LocalDate upTo,
                                                                  SortCriteria sortCriteria, int pageNumber ,int pageSize) {
 
-        String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_RELEASE_DATE;
+        final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_RELEASE_DATE;
 
         return buildAndExecutePaginatedQuery(whereStatement,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, since, upTo });
@@ -328,7 +327,7 @@ public class MovieDaoImpl implements MovieDao {
     public PaginatedCollection<Movie> searchMoviesByCategoryAndReleaseDate (String query, String category, LocalDate since,
                                                                             LocalDate upTo, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
-        String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY + " AND " + SEARCH_BY_RELEASE_DATE;
+        final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY + " AND " + SEARCH_BY_RELEASE_DATE;
 
         return buildAndExecutePaginatedQuery(whereStatement,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, category ,since, upTo });
