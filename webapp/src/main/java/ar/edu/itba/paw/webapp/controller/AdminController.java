@@ -25,10 +25,28 @@ public class AdminController {
     @Autowired
     private PostService postService;
 
-    @RequestMapping(path = "/adminPanel", method = RequestMethod.GET)
-    public ModelAndView adminPanel() {
+    @RequestMapping(path = "/admin/deleted/posts", method = RequestMethod.GET)
+    public ModelAndView deletedPosts(@RequestParam(defaultValue = "") String query) {
 
-        return new ModelAndView("adminPanel/view");
+        ModelAndView mv = new ModelAndView("adminPanel/deleted/posts");
+        mv.addObject("query", query);
+        return mv;
+    }
+
+    @RequestMapping(path = "/admin/deleted/comments", method = RequestMethod.GET)
+    public ModelAndView deletedComments(@RequestParam(defaultValue = "")String query) {
+
+        ModelAndView mv = new ModelAndView("adminPanel/deleted/comments");
+        mv.addObject("query", query);
+        return mv;
+    }
+
+    @RequestMapping(path = "/admin/deleted/users", method = RequestMethod.GET)
+    public ModelAndView deletedUsers(@RequestParam(defaultValue = "") String query) {
+
+        ModelAndView mv = new ModelAndView("adminPanel/deleted/users");
+        mv.addObject("query", query);
+        return mv;
     }
 
     //    ================ COMMENTS PRIVILEGES ================
