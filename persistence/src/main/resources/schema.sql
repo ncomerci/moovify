@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS COMMENTS_LIKES
 (
     comment_id     INTEGER     NOT NULL,
     user_id        INTEGER     NOT NULL,
-    value       INTEGER     NOT NULL,
+    value          INTEGER     NOT NULL,
     PRIMARY KEY (comment_id, user_id),
     FOREIGN KEY (comment_id) REFERENCES COMMENTS (comment_id),
     FOREIGN KEY (user_id) REFERENCES USERS (user_id)

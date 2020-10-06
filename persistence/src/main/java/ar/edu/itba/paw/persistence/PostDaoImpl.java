@@ -123,7 +123,7 @@ public class PostDaoImpl implements PostDao {
                                         rs.getString("u_username"), rs.getString("u_password"),
                                         rs.getString("u_name"), rs.getString("u_email"),  rs.getString("u_description"),
                                         rs.getLong("u_avatar_id"),
-                                        new HashSet<>(), rs.getBoolean("u_enabled"), null),
+                                        new HashSet<>(), rs.getBoolean("u_enabled")),
 
                                 // tags
                                 new HashSet<>()
@@ -270,17 +270,14 @@ public class PostDaoImpl implements PostDao {
     @Override
     public void likePost(long post_id, long user_id, int value) {
 
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("post_id", post_id);
-        map.put("user_id", user_id);
-        map.put("value", value);
-
-        postLikesInsert.execute(map);
+        jdbcTemplate.update(
+                "INSERT INTO " + POSTS_LIKES + " (post_id, user_id, value) VALUES (?, ?, ?) " +
+                        "ON CONFLICT (post_id, user_id) DO UPDATE SET value = ? ", post_id, user_id, value, value);
+        
     }
 
     @Override
     public void removeLike(long post_id, long user_id) {
-
         jdbcTemplate.update( "DELETE FROM " + POSTS_LIKES + " WHERE " + POSTS_LIKES + ".post_id = ? " + " AND "+ POSTS_LIKES + ".user_id = ?", post_id, user_id );
     }
 

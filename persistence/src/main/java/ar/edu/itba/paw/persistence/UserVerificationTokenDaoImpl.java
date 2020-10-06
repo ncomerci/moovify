@@ -66,7 +66,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
                                 rs.getString("u_name"), rs.getString("u_email"),
                                 rs.getString("u_description"),
                                 rs.getLong("u_avatar_id"),
-                                new HashSet<>(), rs.getBoolean("u_enabled"),  new HashSet<>()
+                                new HashSet<>(), rs.getBoolean("u_enabled")
                         )
                 );
 
@@ -74,7 +74,6 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
                 new Role(rs.getLong("r_role_id"), rs.getString("r_role"))
         );
 
-        token.getUser().getLikedComments().add(rs.getLong("c_comment_id"));
 
         // All repeated rows may only change because of the user role
         while(rs.next()) {
@@ -83,7 +82,6 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
                     new Role(rs.getLong("r_role_id"), rs.getString("r_role"))
             );
 
-            token.getUser().getLikedComments().add(rs.getLong("c_comment_id"));
         }
 
         return token;

@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +25,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void likeComment(long comment_id, long user_id, boolean value) {
-        if(value)
-            commentDao.likeComment(comment_id, user_id);
-        else
-            commentDao.removeLike(comment_id, user_id);
+    public void likeComment(Comment comment, User user, int value) {
+        if(value == 0)
+            commentDao.removeLike(comment.getId(), user.getId());
+        else if(value == -1 || value == 1)
+            commentDao.likeComment(comment.getId(), user.getId(), value);
     }
 
     @Override

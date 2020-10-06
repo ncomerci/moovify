@@ -35,12 +35,12 @@
                     <div class="uk-width-1-3 uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
                         <sec:authorize access="hasRole('USER')">
                             <c:if test="${likeCurrentValue != 1}">
-                                <a class="like-post-button" data-flag="true" data-value="${ 1 }">
+                                <a class="like-post-button" data-value="${ 1 }">
                                     <span class="iconify" data-icon="cil:chevron-top" data-inline="false"></span>
                                 </a>
                             </c:if>
                             <c:if test="${likeCurrentValue == 1}">
-                                <a class="like-post-button" data-flag="false" data-value="${ 0 }">
+                                <a class="like-post-button" data-value="${ 0 }">
                                     <span class="iconify" data-icon="el:chevron-up" data-inline="false"></span>
                                 </a>
                             </c:if>
@@ -54,12 +54,12 @@
                     <div class="uk-width-1-3 uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
                         <sec:authorize access="hasRole('USER')">
                             <c:if test="${likeCurrentValue != -1}">
-                                <a class=" like-post-button"  data-flag="true" data-value="${ -1 }">
+                                <a class=" like-post-button"  data-value="${ -1 }">
                                     <span class="iconify" data-icon="cil:chevron-bottom" data-inline="true"></span>
                                 </a>
                             </c:if>
                             <c:if test="${likeCurrentValue == -1}">
-                                <a class="like-post-button" data-flag="false" data-value="${ 0 }">
+                                <a class="like-post-button"  data-value="${ 0 }">
                                     <span class="iconify" data-icon="el:chevron-down" data-inline="true"></span>
                                 </a>
                             </c:if>
@@ -152,9 +152,6 @@
 <form class="uk-margin-remove" action="<c:url value="/post/like"/>" method="post" id="post-like-form">
     <label>
         <input hidden name="postId" type="number" value="${postId}"/>
-    </label>
-    <label>
-        <input hidden name="flag" id="post-like-flag" type="checkbox"/>
     </label>
     <label>
         <input hidden name="value" id="post-like-value" type="number"/>

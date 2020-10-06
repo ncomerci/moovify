@@ -6,12 +6,11 @@ window.addEventListener('load', () => {
 
     document.querySelectorAll(".like-post-button")
         .forEach(button => {
-            button.addEventListener('click', () => likePost(postLikeForm, button.dataset.flag === "true", button.dataset.value), false)
+            button.addEventListener('click', () => likePost(postLikeForm, button.dataset.value), false)
         });
 
   }, false);
-function likePost(postLikeForm, boolean, value){
-    document.getElementById('post-like-flag').checked = boolean;
+function likePost(postLikeForm, value){
     document.getElementById('post-like-value').value = value;
     postLikeForm.submit();
 }

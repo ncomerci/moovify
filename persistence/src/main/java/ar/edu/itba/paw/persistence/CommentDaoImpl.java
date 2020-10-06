@@ -29,7 +29,6 @@ public class CommentDaoImpl implements CommentDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert commentInsert;
-    private final SimpleJdbcInsert commentLikesInsert;
 
     private static final String BASE_COMMENT_SELECT = "SELECT " +
             COMMENTS + ".comment_id c_comment_id, " +
@@ -41,6 +40,12 @@ public class CommentDaoImpl implements CommentDao {
 
 
     private static final String LIKES_SELECT = COMMENTS_LIKES + ".likes c_likes";
+
+    private static final String VOTED_BY_SELECT = "voted_by.user_id cl_user_id, " +
+                "voted_by.value cl_value";
+
+    private static final String USERS_SELECT =
+            COMMENTS_LIKES + ".user_id c_user_id";
 
     // Posts come without Tags
     private static final String POST_SELECT =
@@ -83,13 +88,21 @@ public class CommentDaoImpl implements CommentDao {
 
     private static final String BASE_COMMENT_FROM = "FROM " + COMMENTS;
 
-    private static final String LIKES_FROM =  " LEFT OUTER JOIN ( " +
+    private static final String LIKES_FROM =  " INNER JOIN ( " +
+            "SELECT " +
+            COMMENTS + ".comment_id, " +
+            "COALESCE(SUM( " + COMMENTS_LIKES + ".value ), 0) likes " +
+            "FROM " + COMMENTS + " LEFT OUTER JOIN " +  COMMENTS_LIKES + " ON " + COMMENTS + ".comment_id = " + COMMENTS_LIKES + ".comment_id" +
+            " GROUP BY " + COMMENTS + ".comment_id" +
+            ") " + COMMENTS_LIKES  + " ON " + COMMENTS + ".comment_id = " + COMMENTS_LIKES + ".comment_id";
+
+    private static final String VOTED_BY_FROM =  " LEFT OUTER JOIN ( " +
             "SELECT " +
             COMMENTS_LIKES + ".comment_id, " +
-            "COUNT( " + COMMENTS_LIKES + ".user_id ) likes " +
+            COMMENTS_LIKES + ".user_id, " +
+            COMMENTS_LIKES + ".value " +
             "FROM " + COMMENTS_LIKES +
-            " GROUP BY " + COMMENTS_LIKES + ".comment_id" +
-            ") " + COMMENTS_LIKES  + " ON " + COMMENTS + ".comment_id =" + COMMENTS_LIKES + ".comment_id";
+            ") voted_by"  + " ON " + COMMENTS + ".comment_id = voted_by.comment_id";
 
     private static final String POST_FROM =
             "INNER JOIN ( " +
@@ -143,8 +156,6 @@ public class CommentDaoImpl implements CommentDao {
 
             ") " + USERS + " ON " + USERS + ".user_id = " + COMMENTS + ".user_id";
 
-
-
     private static final ResultSetExtractor<Collection<Comment>> COMMENT_ROW_MAPPER = (rs) -> {
 
         final Map<Long, Comment> idToCommentMap = new LinkedHashMap<>();
@@ -152,6 +163,7 @@ public class CommentDaoImpl implements CommentDao {
 
         long comment_id;
         long role_id;
+        long user_id;
 
         while(rs.next()) {
 
@@ -175,7 +187,7 @@ public class CommentDaoImpl implements CommentDao {
                                 new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
                                         rs.getString("pu_username"), rs.getString("pu_password"),
                                         rs.getString("pu_name"), rs.getString("pu_email"),  rs.getString("u_description"), rs.getLong("pu_avatar_id"),
-                                        null, rs.getBoolean("pu_enabled"), null),
+                                        null, rs.getBoolean("pu_enabled")),
 
                                 // tags
                                 null, rs.getBoolean("p_enabled"), 0),
@@ -185,9 +197,9 @@ public class CommentDaoImpl implements CommentDao {
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),  rs.getString("u_description"), rs.getLong("u_avatar_id"),
-                                new HashSet<>(), rs.getBoolean("u_enabled"), null),
+                                new HashSet<>(), rs.getBoolean("u_enabled")),
 
-                        rs.getBoolean("c_enabled"), rs.getLong("c_likes")
+                        rs.getBoolean("c_enabled"), rs.getLong("c_likes"), new HashMap<>()
                 ));
             }
 
@@ -197,6 +209,11 @@ public class CommentDaoImpl implements CommentDao {
                 idToRoleMap.put(role_id, new Role(role_id, rs.getString("u_role")));
 
             idToCommentMap.get(comment_id).getUser().getRoles().add(idToRoleMap.get(role_id));
+
+            user_id = rs.getLong("cl_user_id");
+
+            if(user_id > 0 && !idToCommentMap.get(comment_id).getVotedBy().containsKey(user_id))
+                idToCommentMap.get(comment_id).getVotedBy().put(user_id, rs.getLong("cl_value") > 0);
 
         }
 
@@ -212,7 +229,9 @@ public class CommentDaoImpl implements CommentDao {
 
         long comment_id;
         long role_id;
+        long user_id;
         Comment currentComment;
+
 
         while(rs.next()){
 
@@ -236,7 +255,7 @@ public class CommentDaoImpl implements CommentDao {
                                 new User(rs.getLong("pu_user_id"), rs.getObject("pu_creation_date", LocalDateTime.class),
                                         rs.getString("pu_username"), rs.getString("pu_password"),
                                         rs.getString("pu_name"), rs.getString("pu_email"), rs.getString("pu_description"), rs.getLong("pu_avatar_id"),
-                                        null, rs.getBoolean("pu_enabled") , null),
+                                        null, rs.getBoolean("pu_enabled") ),
 
                                 // tags
                                 null, rs.getBoolean("p_enabled"), 0),
@@ -246,7 +265,7 @@ public class CommentDaoImpl implements CommentDao {
                         new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),  rs.getString("u_description"), rs.getLong("u_avatar_id"),
-                                new HashSet<>(), rs.getBoolean("u_enabled"), null), rs.getBoolean("c_enabled"), rs.getLong("c_likes")
+                                new HashSet<>(), rs.getBoolean("u_enabled")), rs.getBoolean("c_enabled"), rs.getLong("c_likes"), new HashMap<>()
                 );
 
                 idToCommentMap.put(comment_id, currentComment);
@@ -287,6 +306,11 @@ public class CommentDaoImpl implements CommentDao {
                 idToRoleMap.put(role_id, new Role(role_id, rs.getString("u_role")));
 
             idToCommentMap.get(comment_id).getUser().getRoles().add(idToRoleMap.get(role_id));
+
+            user_id = rs.getLong("cl_user_id");
+
+            if(user_id > 0 && !idToCommentMap.get(comment_id).getVotedBy().containsKey(user_id))
+                idToCommentMap.get(comment_id).getVotedBy().put(user_id, rs.getLong("cl_value") > 0);
 
         }
 
@@ -346,8 +370,6 @@ public class CommentDaoImpl implements CommentDao {
                 .withTableName(COMMENTS)
                 .usingGeneratedKeyColumns("comment_id");
 
-        commentLikesInsert = new SimpleJdbcInsert(ds)
-                .withTableName(COMMENTS_LIKES);
     }
 
     @Override
@@ -369,20 +391,18 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public void likeComment(long comment_id, long user_id) {
+    public void likeComment(long comment_id, long user_id, int value) {
 
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("comment_id", comment_id);
-        map.put("user_id", user_id);
-
-        commentLikesInsert.execute(map);
+        jdbcTemplate.update(
+                "INSERT INTO " + COMMENTS_LIKES + " (comment_id, user_id, value) VALUES ( ?, ?, ?) " +
+                        "ON CONFLICT (comment_id, user_id) DO UPDATE SET value = ? ", comment_id, user_id, value, value );
     }
 
     @Override
     public void removeLike(long comment_id, long user_id) {
-        jdbcTemplate.update(
-                "DELETE FROM " + COMMENTS_LIKES + " WHERE " + COMMENTS_LIKES + ".comment_id = ? " + " AND "+ COMMENTS_LIKES + ".user_id = ?", comment_id, user_id );
+        jdbcTemplate.update( "DELETE FROM " + COMMENTS_LIKES + " WHERE " + COMMENTS_LIKES + ".comment_id = ? " + " AND "+ COMMENTS_LIKES + ".user_id = ?", comment_id, user_id );
     }
+
 
     @Override
     public void delete(long id) {
@@ -410,9 +430,9 @@ public class CommentDaoImpl implements CommentDao {
     // You cannot ask comments with children without paginating
     private Collection<Comment> buildAndExecuteQuery(String customWhereStatement, Object[] args) {
 
-        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
+        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + VOTED_BY_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
 
-        final String from = BASE_COMMENT_FROM + " " + LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
+        final String from = BASE_COMMENT_FROM + " " + LIKES_FROM + " " + VOTED_BY_FROM + " " + POST_FROM + " " + USER_FROM;
 
         return executeQuery(select, from, customWhereStatement, "", args, false);
     }
@@ -423,9 +443,9 @@ public class CommentDaoImpl implements CommentDao {
     // It is important to consider we couldn't limit the width of the tree, only it's height.
     private PaginatedCollection<Comment> getPaginatedChildrenQuery(SortCriteria sortCriteria, int pageNumber, int pageSize, Long rootId, boolean isRootPost) {
 
-        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
+        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + VOTED_BY_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
 
-        final String nonBaseFrom = LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
+        final String nonBaseFrom = LIKES_FROM + " " + VOTED_BY_FROM +  " " + POST_FROM + " " + USER_FROM;
 
         final String from = BASE_COMMENT_FROM + " " + nonBaseFrom;
 
@@ -471,9 +491,9 @@ public class CommentDaoImpl implements CommentDao {
 
     private PaginatedCollection<Comment> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
 
-        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
+        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + VOTED_BY_SELECT +  ", " + POST_SELECT + ", " + USER_SELECT;
 
-        final String from = BASE_COMMENT_FROM + " " + LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
+        final String from = BASE_COMMENT_FROM + " " + LIKES_FROM + " " + VOTED_BY_FROM + " " + POST_FROM + " " + USER_FROM;
 
         // Execute original query to count total comments in the query
         final int totalCommentCount = jdbcTemplate.queryForObject(

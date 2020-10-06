@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
@@ -53,7 +54,7 @@ public class PostController {
         if(!isAnonymous(auth)) {
             user = userService.findByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
             mv.addObject("likeCurrentValue", userService.hasUserLiked(user.getId(), postId));
-        };
+        }
 
         mv.addObject("post", postService.findPostById(postId).orElseThrow(PostNotFoundException::new));
         mv.addObject("movies", movieService.findMoviesByPostId(postId));
@@ -72,13 +73,13 @@ public class PostController {
 
     @RequestMapping(path = "/post/like", method = RequestMethod.POST )
     public ModelAndView likePost(@RequestParam final long postId,
-                                           @RequestParam(defaultValue = "false") final boolean flag,
-                                           @RequestParam(defaultValue = "0") final int value,
-                                           final Principal principal) {
+                                 @RequestParam(defaultValue = "0") final int value,
+                                 final Principal principal) {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
-        postService.likePost(postId, user.getId(), flag, value);
+        postService.likePost(post, user, value);
 
         return new ModelAndView("redirect:/post/" + postId);
     }

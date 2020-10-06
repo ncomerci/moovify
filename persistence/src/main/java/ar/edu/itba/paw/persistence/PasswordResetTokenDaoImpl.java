@@ -67,14 +67,13 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
                                 rs.getString("u_name"), rs.getString("u_email"),
                                 rs.getString("u_description"),
                                 rs.getLong("u_avatar_id"),
-                                new ArrayList<>(), rs.getBoolean("u_enabled"), new HashSet<>()
+                                new ArrayList<>(), rs.getBoolean("u_enabled")
                         )
                 );
 
         token.getUser().getRoles().add(
                 new Role(rs.getLong("r_role_id"), rs.getString("r_role"))
         );
-        token.getUser().getLikedComments().add(rs.getLong("c_comment_id"));
 
 
         // All repeated rows may only change because of the user role
