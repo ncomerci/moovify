@@ -28,5 +28,7 @@ public interface PostService {
 
     PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize);
 
+    PaginatedCollection<Post> getDeletedPosts(int pageNumber, int pageSize);
+
     Collection<PostCategory> getAllPostCategories();
 }

@@ -63,4 +63,9 @@ public class CommentServiceImpl implements CommentService {
     public PaginatedCollection<Comment> findCommentsByUserId(long user_id, int pageNumber, int pageSize) {
         return commentDao.findCommentsByUserId(user_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
+
+    @Override
+    public PaginatedCollection<Comment> getDeletedComments(int pageNumber, int pageSize) {
+        return commentDao.getDeletedComments(CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    }
 }

@@ -30,4 +30,6 @@ public interface CommentDao {
     PaginatedCollection<Comment> findCommentsByPostId(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> findCommentsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize);
 }

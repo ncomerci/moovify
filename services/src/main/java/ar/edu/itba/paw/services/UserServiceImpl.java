@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
@@ -214,6 +215,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize) {
         return userDao.getAllUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    }
+
+    @Override
+    public PaginatedCollection<User> getDeletedUsers(int pageNumber, int pageSize) {
+        return userDao.getDeletedUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     private void replaceUserRole(User user, String newRole, String oldRole) {

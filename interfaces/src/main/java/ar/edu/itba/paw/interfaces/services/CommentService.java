@@ -25,4 +25,6 @@ public interface CommentService {
     PaginatedCollection<Comment> findCommentsByPostId(long post_id, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> findCommentsByUserId(long user_id, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> getDeletedComments(int pageNumber, int pageSize);
 }

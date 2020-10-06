@@ -49,4 +49,6 @@ public interface UserService {
     Optional<User> findByEmail(String email);
 
     PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize);
+
+    PaginatedCollection<User> getDeletedUsers(int pageNumber, int pageSize);
 }

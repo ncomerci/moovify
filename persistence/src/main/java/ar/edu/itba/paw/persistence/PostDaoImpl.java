@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,7 +176,9 @@ public class PostDaoImpl implements PostDao {
                 POST_CATEGORY + ".name ILIKE ?"
         ),
 
-        ENABLED(POSTS + ".enabled = true");
+        ENABLED(POSTS + ".enabled = true"),
+
+        NOT_ENABLED(POSTS + ".enabled = false");
 
         public final String filterQuery;
 
@@ -405,7 +408,12 @@ public class PostDaoImpl implements PostDao {
     public PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery("WHERE " + FilterCriteria.ENABLED.filterQuery, sortCriteria, pageNumber, pageSize, null);
     }
-    
+
+    @Override
+    public PaginatedCollection<Post> getDeletedPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + FilterCriteria.NOT_ENABLED.filterQuery, sortCriteria, pageNumber, pageSize, null);
+    }
+
     @Override
     public PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 

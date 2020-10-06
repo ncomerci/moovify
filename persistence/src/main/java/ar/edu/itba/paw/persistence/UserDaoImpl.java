@@ -104,6 +104,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     private static final String ENABLED_FILTER = USERS + ".enabled = true";
+    private static final String NOT_ENABLED_FILTER = USERS + ".enabled = false";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcUserInsert;
@@ -330,5 +331,11 @@ public class UserDaoImpl implements UserDao {
     public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
+    }
+
+    @Override
+    public PaginatedCollection<User> getDeletedUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + NOT_ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
 }

@@ -549,4 +549,10 @@ public class CommentDaoImpl implements CommentDao {
                 "WHERE " + COMMENTS + ".user_id = ? AND " + COMMENTS + ".enabled = true", sortCriteria, pageNumber, pageSize,
                 new Object[] { user_id });
     }
+
+    @Override
+    public PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + COMMENTS + ".enabled = false", sortCriteria, pageNumber, pageSize, null);
+    }
 }
