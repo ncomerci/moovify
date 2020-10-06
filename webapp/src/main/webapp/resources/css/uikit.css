@@ -2018,8 +2018,8 @@ select.uk-form-width-xsmall {
 .uk-button-default:active,
 .uk-button-default.uk-active {
   background-color: transparent;
-  color: #333;
-  border-color: #999999;
+  color: #fa8a32;
+  border-color: #fa8a32;
 }
 /*
  * Primary
@@ -12606,6 +12606,7 @@ iframe.uk-cover {
 }
 
 .user-profile-button {
+  width: 100% !important;
   border: 1px solid #30475e;
   color: #30475e;
 }
@@ -12617,8 +12618,7 @@ iframe.uk-cover {
 }
 
 .logout-button {
-  padding-left: 42px !important;
-  padding-right: 42px !important;
+  width: 100% !important;
   border: 1px solid #cf1b1b;
   color: #cf1b1b;
 }
@@ -12633,7 +12633,7 @@ iframe.uk-cover {
   color: #f0506e;
 }
 
-.signup-login-button {
+.extended-button {
   width: 100% !important;
 }
 
