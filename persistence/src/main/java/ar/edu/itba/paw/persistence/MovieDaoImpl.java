@@ -67,7 +67,7 @@ public class MovieDaoImpl implements MovieDao {
 
     private static final ResultSetExtractor<Collection<Movie>> MOVIE_ROW_MAPPER = (rs) -> {
 
-            // Important use of LinkedHashMap to maintain Post insertion order
+            // Important use of LinkedHashMap to maintain Movie insertion order
             final Map<Long, Movie> idToMovieMap = new LinkedHashMap<>();
             final Map<Long, MovieCategory> idToMovieCategoryMap = new HashMap<>();
 
@@ -292,7 +292,7 @@ public class MovieDaoImpl implements MovieDao {
                 " FROM " + MOVIE_CATEGORIES +
                 " WHERE name ILIKE ?))";
 
-    private static final String SEARCH_BY_RELEASE_DATE = MOVIES + ".release_date between ? AND ?";
+    private static final String SEARCH_BY_RELEASE_DATE = MOVIES + ".release_date BETWEEN ? AND ?";
 
     // TODO: Search by Category and Release Date Range
     @Override

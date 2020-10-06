@@ -50,7 +50,7 @@ window.addEventListener('load', () => {
 
     if(paginationPageSizeElem)
         paginationPageSizeElem.addEventListener('change',
-            () => document.getElementById('pagination-form').submit())
+            () => paginationPageSizeElem.form.submit())
 
     document.querySelectorAll(".delete-comment-button")
         .forEach(button => button.addEventListener('click', () => deleteComment(button.dataset.id), false));
