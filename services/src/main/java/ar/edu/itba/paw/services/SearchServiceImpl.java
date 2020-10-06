@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.interfaces.persistence.MovieDao;
-import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
-import ar.edu.itba.paw.interfaces.persistence.PostDao;
-import ar.edu.itba.paw.interfaces.persistence.UserDao;
+import ar.edu.itba.paw.interfaces.persistence.*;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.exceptions.NonReachableStateException;
@@ -11,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 @DependsOn("dataSourceInitializer")
@@ -42,6 +41,9 @@ public class SearchServiceImpl implements SearchService {
     private final List<String> postCategoriesOptions;
     private final static Map<String, PostDao.SortCriteria> postSortCriteriaMap = getPostSortCriteriaMap();
     private final static Map<String, LocalDateTime> postPeriodOptionsMap = getPostPeriodOptionsMap();
+
+    private final List<String> movieCategoriesOptions;
+
 
     private final static Map<String, UserDao.SortCriteria> userSortCriteriaMap = getUserSortCriteriaMap();
     private final static Map<String, String> userRoleOptionsMap = getUserRoleOptionsMap();
@@ -89,8 +91,9 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Autowired
-    public SearchServiceImpl(PostCategoryDao postCategoryDao) {
+    public SearchServiceImpl(PostCategoryDao postCategoryDao, MovieCategoryDao movieCategoryDao) {
         postCategoriesOptions = postCategoryDao.getAllPostCategories().stream().map(PostCategory::getName).collect(Collectors.toList());
+        movieCategoriesOptions = movieCategoryDao.getAllCategories().stream().map(MovieCategory::getName).collect(Collectors.toList());
     }
 
     @Override
@@ -160,9 +163,13 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public PaginatedCollection<Movie> searchMovies(String query, int pageNumber, int pageSize){
+    public PaginatedCollection<Movie> searchMovies(String query, String sinceYear, String upToYear, int pageNumber, int pageSize){
 
         Objects.requireNonNull(query);
+
+        LocalDate since = LocalDate.ofYearDay(Integer.parseInt(sinceYear), 1);
+
+        LocalDate upTo = LocalDate.ofYearDay(Integer.parseInt(upToYear), 366);
 
         return movieDao.searchMovies(query, MovieDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }

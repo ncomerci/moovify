@@ -115,8 +115,10 @@ public class MovieDaoImpl implements MovieDao {
 
         EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
 
-        sortCriteriaQuery.put(SortCriteria.NEWEST, MOVIES + ".creation_date desc");
-        sortCriteriaQuery.put(SortCriteria.OLDEST, MOVIES + ".creation_date");
+        sortCriteriaQuery.put(SortCriteria.NEWEST, MOVIES + ".release_date desc");
+        sortCriteriaQuery.put(SortCriteria.OLDEST, MOVIES + ".release_date");
+        sortCriteriaQuery.put(SortCriteria.POST_COUNT, "coalesce(POST_COUNT.post_count, 0)");
+        sortCriteriaQuery.put(SortCriteria.TITLE, MOVIES + ".title");
 
         return sortCriteriaQuery;
     }
@@ -273,10 +275,55 @@ public class MovieDaoImpl implements MovieDao {
         return buildAndExecuteQuery(" ", null);
     }
 
+    private static final String SEARCH_BY_MOVIE_TITLE = MOVIES + ".title ILIKE '%' || ? || '%'";
+
+    private static final String SEARCH_BY_CATEGORY = MOVIES + ".tmdb_id IN (" +
+            " SELECT " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_id" +
+            " FROM " + MOVIE_TO_MOVIE_CATEGORY +
+            " WHERE tmdb_category_id IN ( " +
+                " SELECT tmdb_category_id " +
+                " FROM " + MOVIE_CATEGORIES +
+                " WHERE name ILIKE ?))";
+
+    private static final String SEARCH_BY_RELEASE_DATE = MOVIES + ".release_date between ? AND ?";
+
     // TODO: Search by Category and Release Date Range
     @Override
     public PaginatedCollection<Movie> searchMovies(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery(" WHERE " + MOVIES + ".title ILIKE '%' || ? || '%'",
+
+        String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE;
+
+        return buildAndExecutePaginatedQuery(whereStatement,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query });
+    }
+
+    @Override
+    public PaginatedCollection<Movie> searchMoviesByCategory (String query, String category, SortCriteria sortCriteria,
+                                                              int pageNumber, int pageSize) {
+
+        String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY;
+
+        return buildAndExecutePaginatedQuery(whereStatement,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, category });
+    }
+
+    @Override
+    public PaginatedCollection<Movie> searchMoviesByReleaseDate (String query, LocalDate since, LocalDate upTo,
+                                                                 SortCriteria sortCriteria, int pageNumber ,int pageSize) {
+
+        String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_RELEASE_DATE;
+
+        return buildAndExecutePaginatedQuery(whereStatement,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, since, upTo });
+    }
+
+    @Override
+    public PaginatedCollection<Movie> searchMoviesByCategoryAndReleaseDate (String query, String category, LocalDate since,
+                                                                            LocalDate upTo, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY + " AND " + SEARCH_BY_RELEASE_DATE;
+
+        return buildAndExecutePaginatedQuery(whereStatement,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, category ,since, upTo });
     }
 }
