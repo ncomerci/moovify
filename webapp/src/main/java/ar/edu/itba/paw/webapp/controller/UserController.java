@@ -8,9 +8,9 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.ImageNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.webapp.form.*;
-
-/*import ar.edu.itba.paw.webapp.form.UserEditForm;*/
+import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
+import ar.edu.itba.paw.webapp.form.UpdatePasswordForm;
+import ar.edu.itba.paw.webapp.form.UserCreateForm;
 import ar.edu.itba.paw.webapp.form.editProfile.ChangePasswordForm;
 import ar.edu.itba.paw.webapp.form.editProfile.DescriptionEditForm;
 import ar.edu.itba.paw.webapp.form.editProfile.NameEditForm;
@@ -31,7 +31,6 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Map;
@@ -332,7 +331,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/avatar/{avatarId}", method = RequestMethod.GET, produces = "image/*")
-    public @ResponseBody byte[] getAvatar(@PathVariable long avatarId) throws IOException, URISyntaxException {
+    public @ResponseBody byte[] getAvatar(@PathVariable long avatarId) {
 
         return userService.getAvatar(avatarId).orElseThrow(ImageNotFoundException::new);
     }

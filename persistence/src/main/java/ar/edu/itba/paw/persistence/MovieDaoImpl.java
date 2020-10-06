@@ -218,10 +218,6 @@ public class MovieDaoImpl implements MovieDao {
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
-//        final String newWhere = "WHERE " + MOVIES + ".movie_id IN (SELECT " + MOVIES + ".movie_id FROM " + MOVIES + " WHERE " + MOVIES + ".movie_id IN (" +
-//                "SELECT " + MOVIES + ".movie_id " + from + " " + customWhereStatement +
-//                " ) " + orderBy + " " + pagination + ")";
-
         final String newWhere = "WHERE " + MOVIES + ".movie_id IN ( " +
                 "SELECT AUX.movie_id " +
                 "FROM (" +
