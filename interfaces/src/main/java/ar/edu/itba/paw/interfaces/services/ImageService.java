@@ -1,7 +1,5 @@
 package ar.edu.itba.paw.interfaces.services;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Optional;
 
 public interface ImageService {
@@ -10,7 +8,7 @@ public interface ImageService {
 
     Optional<byte[]> getImage(long imageId, String securityTag);
 
-    byte[] getImage(String imagePath) throws IOException, URISyntaxException;
+    byte[] getImage(String imagePath);
 
     void deleteImage(long imageId);
 }

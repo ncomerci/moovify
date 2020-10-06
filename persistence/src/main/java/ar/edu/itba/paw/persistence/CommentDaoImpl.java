@@ -499,11 +499,6 @@ public class CommentDaoImpl implements CommentDao {
 
         final String orderBy = buildOrderByStatement(sortCriteria);
 
-//        final String newWhere =
-//                "WHERE " + COMMENTS + ".comment_id IN (SELECT " + COMMENTS + ".comment_id FROM " + COMMENTS + " WHERE " + COMMENTS + ".comment_id IN (" +
-//                        "SELECT " + COMMENTS + ".comment_id " + from + " " + customWhereStatement +
-//                        " ) " + orderBy + " " + pagination + ")";
-
         final String newWhere = "WHERE " + COMMENTS + ".comment_id IN ( " +
                 "SELECT AUX.comment_id " +
                 "FROM (" +

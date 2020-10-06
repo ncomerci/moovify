@@ -6,6 +6,7 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,6 +16,7 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentDao commentDao;
 
+    @Transactional
     @Override
     public long register(long postId, Long parentId, String body, long userId) {
         return commentDao.register(postId, parentId,
@@ -23,6 +25,7 @@ public class CommentServiceImpl implements CommentService {
                         .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId, true);
     }
 
+    @Transactional
     @Override
     public void likeComment(long comment_id, long user_id, boolean value) {
         if(value)
@@ -31,8 +34,11 @@ public class CommentServiceImpl implements CommentService {
             commentDao.removeLike(comment_id, user_id);
     }
 
+
     @Override
-    public void delete(long id) { commentDao.delete(id); }
+    public void delete(long id) {
+        commentDao.delete(id);
+    }
 
     @Override
     public Optional<Comment> findCommentById(long commentId){
