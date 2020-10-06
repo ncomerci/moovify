@@ -48,12 +48,16 @@ public class PostController {
 
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+        User user;
+
+        if(!isAnonymous(auth)) {
+            user = userService.findByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
+            mv.addObject("likeCurrentValue", userService.hasUserLiked(user.getId(), postId));
+        };
+
         mv.addObject("post", postService.findPostById(postId).orElseThrow(PostNotFoundException::new));
         mv.addObject("movies", movieService.findMoviesByPostId(postId));
         mv.addObject("comments", commentService.findPostCommentDescendants(postId, pageNumber, pageSize));
-
-        if(!isAnonymous(auth))
-            mv.addObject("isPostLiked", userService.hasUserLiked(auth.getName(), postId));
 
         return mv;
     }
@@ -67,13 +71,14 @@ public class PostController {
     }
 
     @RequestMapping(path = "/post/like", method = RequestMethod.POST )
-    public ModelAndView showPostCreateForm(@RequestParam final long postId,
-                                           @RequestParam(defaultValue = "false") final boolean value,
+    public ModelAndView likePost(@RequestParam final long postId,
+                                           @RequestParam(defaultValue = "false") final boolean flag,
+                                           @RequestParam(defaultValue = "0") final int value,
                                            final Principal principal) {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        postService.likePost(postId, user.getId(), value);
+        postService.likePost(postId, user.getId(), flag, value);
 
         return new ModelAndView("redirect:/post/" + postId);
     }

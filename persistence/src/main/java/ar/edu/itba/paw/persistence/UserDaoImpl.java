@@ -217,11 +217,10 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean hasUserLiked(String username, long postId) {
+    public int hasUserLiked(long user_id, long post_id) {
         return jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM " + USERS +
-                " LEFT OUTER JOIN " + POSTS_LIKES + " ON " + USERS + ".user_id = " + POSTS_LIKES + ".user_id" +
-                " WHERE username = ? AND post_id = ?", new Object[] { username, postId }, Integer.class) > 0;
+                "SELECT COALESCE( SUM(" + POSTS_LIKES + ".value ),0)  FROM " + POSTS_LIKES +
+                " WHERE user_id = ? AND post_id = ?", new Object[] { user_id, post_id }, Integer.class);
     }
 
     @Override

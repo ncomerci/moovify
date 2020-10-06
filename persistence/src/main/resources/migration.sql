@@ -9,3 +9,8 @@ ALTER TABLE USERS ADD CONSTRAINT fk_user_avatar FOREIGN KEY (avatar_id) REFERENC
 
 --feature/description
 ALTER TABLE USERS ADD COLUMN description VARCHAR(400) DEFAULT NULL;
+
+--feature/likes-dislikes
+
+ALTER TABLE posts_likes ADD COLUMN value INT NOT NULL default 0;
+ALTER TABLE comments_likes ADD COLUMN value INT NOT NULL default 0;

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
+import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
@@ -20,6 +21,9 @@ public class PostServiceImpl implements PostService {
     private PostDao postDao;
 
     @Autowired
+    private UserDao userDao;
+
+    @Autowired
     private PostCategoryDao categoryDao;
 
     @Override
@@ -33,11 +37,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void likePost(long post_id, long user_id, boolean value) {
-        if(value)
-            postDao.likePost(post_id, user_id);
-        else
+    public void likePost(long post_id, long user_id, boolean flag, int value) {
+        if( userDao.hasUserLiked(user_id, post_id) != value)
             postDao.removeLike(post_id, user_id);
+        if( value != 0)
+            postDao.likePost(post_id,user_id,value);
     }
 
     @Override

@@ -27,7 +27,7 @@ public interface UserDao {
 
     boolean userHasRole(String email, String role);
 
-    boolean hasUserLiked(String username, long postId);
+    int hasUserLiked(long user_id, long post_id);
 
     Collection<Role> addRoles(long userId, Collection<String> roleNames);
 

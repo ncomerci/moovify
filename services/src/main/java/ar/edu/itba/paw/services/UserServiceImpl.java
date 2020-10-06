@@ -159,8 +159,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean hasUserLiked(String username, long postId) {
-        return userDao.hasUserLiked(username, postId);
+    public int hasUserLiked(long user_id, long post_id) {
+        return userDao.hasUserLiked(user_id, post_id);
     }
 
     @Override

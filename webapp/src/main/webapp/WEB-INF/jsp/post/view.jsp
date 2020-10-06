@@ -26,40 +26,59 @@
 
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
     <div id="post-metadata" >
-        <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/>
-            <sec:authorize access="hasRole('USER')">
-                <c:if test="${!isPostLiked}">
-                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-post-button"  data-value="true">
-                        <span class="uk-text-right"><c:out value="${post.likes}"/></span>
-                        <span class="iconify" data-icon="ant-design:heart-outlined" data-inline="false"></span>
-                    </a>
-                </c:if>
-                <c:if test="${isPostLiked}">
-                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-post-button" data-value="false">
-                        <span class="uk-text-right iconify"><c:out value="${post.likes}"/></span>
-                        <span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span>
-                    </a>
-                </c:if>
-            </sec:authorize>
-            <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
-                <div class="uk-align-right">
-                    <span class="uk-text-right"><c:out value="${post.likes}"/><span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span></span>
-
+        <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
+            <div class="uk-width-4-5">
+                <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
+            </div>
+            <div class="uk-width-1-5 uk-margin-small-top">
+                <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
+                    <div class="uk-width-1-3 uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
+                        <sec:authorize access="hasRole('USER')">
+                            <c:if test="${likeCurrentValue != 1}">
+                                <a class="like-post-button" data-flag="true" data-value="${ 1 }">
+                                    <span class="iconify" data-icon="cil:chevron-top" data-inline="false"></span>
+                                </a>
+                            </c:if>
+                            <c:if test="${likeCurrentValue == 1}">
+                                <a class="like-post-button" data-flag="false" data-value="${ 0 }">
+                                    <span class="iconify" data-icon="el:chevron-up" data-inline="false"></span>
+                                </a>
+                            </c:if>
+                        </sec:authorize>
+                    </div>
+                    <div class="uk-width-1-5 uk-text-center uk-padding-remove uk-margin-remove">
+                        <a class="like-post-button uk-text-center">
+                            <c:out value="${post.likes}"/>
+                        </a>
+                    </div>
+                    <div class="uk-width-1-3 uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
+                        <sec:authorize access="hasRole('USER')">
+                            <c:if test="${likeCurrentValue != -1}">
+                                <a class=" like-post-button"  data-flag="true" data-value="${ -1 }">
+                                    <span class="iconify" data-icon="cil:chevron-bottom" data-inline="true"></span>
+                                </a>
+                            </c:if>
+                            <c:if test="${likeCurrentValue == -1}">
+                                <a class="like-post-button" data-flag="false" data-value="${ 0 }">
+                                    <span class="iconify" data-icon="el:chevron-down" data-inline="true"></span>
+                                </a>
+                            </c:if>
+                        </sec:authorize>
+                    </div>
                 </div>
-            </sec:authorize>
-        </h1>
-
-        <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
+            </div>
+        </div>
+            <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
 <%--                TODO: Create a custom taglib  --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
                 <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                 <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
         </span>
-        <span id="post-reading-time" class="uk-article-meta uk-align-right uk-margin-remove-bottom">
+            <span id="post-reading-time" class="uk-article-meta uk-align-right uk-margin-remove-bottom">
                 <span data-uk-icon="icon: future" class="uk-margin-small-right"></span>
                 <spring:message code="post.view.minReading" arguments="${post.readingTimeMinutes}"/>
             </span>
-        <span id="post-author" class="uk-article-meta uk-align-right uk-margin-remove-bottom">
+            <span id="post-author" class="uk-article-meta uk-align-right uk-margin-remove-bottom">
             <spring:message code="post.view.writtenBy"/>
 
             <c:choose>
@@ -78,36 +97,36 @@
                 </c:otherwise>
             </c:choose>
         </span>
-    </div>
-    <hr>
-    <article id="post-body">
-        <noscript id="unparsedBody">
-            <c:out value="${post.body}"/>
-        </noscript>
-        <div id="parsedBody"></div>
-    </article>
-    <hr>
-    <section id="post-movies">
-        <h1 class="uk-text-meta"><spring:message code="post.view.movies"/></h1>
-        <c:forEach items="${movies}" var="movie" >
-            <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
-               href="<c:url value="/movie/${movie.id}"/>">
-                <c:out value="${movie.title}"/>
-            </a>
-        </c:forEach>
-    </section>
-    <section id="post-tags">
-        <h1 class="uk-text-meta"><spring:message code="post.view.tags"/></h1>
-        <c:forEach items="${post.tags}" var="tag" >
-            <c:url var="tagLink" value="/search/posts/?query=${tag}"/>
-            <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
-               href="${tagLink}">
-                <c:out value="${tag}"/>
-            </a>
-        </c:forEach>
-    </section>
-    <hr>
-    <sec:authorize access="hasRole('ADMIN')">
+        </div>
+        <hr>
+        <article id="post-body">
+            <noscript id="unparsedBody">
+                <c:out value="${post.body}"/>
+            </noscript>
+            <div id="parsedBody"></div>
+        </article>
+        <hr>
+        <section id="post-movies">
+            <h1 class="uk-text-meta"><spring:message code="post.view.movies"/></h1>
+            <c:forEach items="${movies}" var="movie" >
+                <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
+                   href="<c:url value="/movie/${movie.id}"/>">
+                    <c:out value="${movie.title}"/>
+                </a>
+            </c:forEach>
+        </section>
+        <section id="post-tags">
+            <h1 class="uk-text-meta"><spring:message code="post.view.tags"/></h1>
+            <c:forEach items="${post.tags}" var="tag" >
+                <c:url var="tagLink" value="/search/posts/?query=${tag}"/>
+                <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
+                   href="${tagLink}">
+                    <c:out value="${tag}"/>
+                </a>
+            </c:forEach>
+        </section>
+        <hr>
+        <sec:authorize access="hasRole('ADMIN')">
         <div class="uk-flex uk-flex-right">
             <button id="post-delete-btn"
                     class="uk-button uk-button-default logout-button uk-border-rounded"
@@ -119,12 +138,12 @@
                 <spring:message code="post.delete.button"/>
             </button>
         </div>
-    </sec:authorize>
-    <c:set var="comments" value="${comments}" scope="request"/>
-    <c:set var="postId" value="${post.id}" scope="request"/>
-    <c:set var="parentId" value="${0}" scope="request"/>
-    <c:set var="enableReplies" value="${true}" scope="request"/>
-    <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
+        </sec:authorize>
+        <c:set var="comments" value="${comments}" scope="request"/>
+        <c:set var="postId" value="${post.id}" scope="request"/>
+        <c:set var="parentId" value="${0}" scope="request"/>
+        <c:set var="enableReplies" value="${true}" scope="request"/>
+        <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
 </main>
 </body>
 </html>
@@ -135,7 +154,10 @@
         <input hidden name="postId" type="number" value="${postId}"/>
     </label>
     <label>
-        <input hidden name="value" id="post-like-value" type="checkbox"/>
+        <input hidden name="flag" id="post-like-flag" type="checkbox"/>
+    </label>
+    <label>
+        <input hidden name="value" id="post-like-value" type="number"/>
     </label>
 </form>
 

@@ -64,7 +64,7 @@ public class PostDaoImpl implements PostDao {
 
     private static final String LIKES_FROM =
             "INNER JOIN " +
-                    "(SELECT " + POSTS + ".post_id, COUNT( " + POSTS_LIKES + ".user_id ) likes " +
+                    "(SELECT " + POSTS + ".post_id, SUM( " + POSTS_LIKES + ".value ) likes " +
                     "FROM " + POSTS + " LEFT OUTER JOIN " + POSTS_LIKES + " on " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id" +
                     " GROUP BY " + POSTS + ".post_id ) " + POSTS_LIKES + " ON " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id";
 
@@ -268,11 +268,12 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public void likePost(long post_id, long user_id) {
+    public void likePost(long post_id, long user_id, int value) {
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("post_id", post_id);
         map.put("user_id", user_id);
+        map.put("value", value);
 
         postLikesInsert.execute(map);
     }

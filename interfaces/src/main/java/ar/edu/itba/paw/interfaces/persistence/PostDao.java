@@ -17,7 +17,7 @@ public interface PostDao {
 
     void delete(long id);
 
-    void likePost(long post_id, long user_id);
+    void likePost(long post_id, long user_id, int value);
 
     void removeLike(long post_id, long user_id);
 
