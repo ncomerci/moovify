@@ -17,14 +17,10 @@ public class User {
     private final long avatarId;
     private final long totalLikes;
     private final Collection<Role> roles;
-    private final Collection<Long> likedComments;
     private final boolean enabled;
 
-    public static boolean hasUserLikedComment(User user, long comment_id){
-        return user.getLikedComments().contains(comment_id);
-    }
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Long avatarId, long totalLikes, Collection<Role> roles, boolean enabled, Collection<Long> likedComments) {
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Long avatarId, long totalLikes, Collection<Role> roles, boolean enabled) {
         this.id = id;
         this.creationDate = creationDate;
         this.username = username;
@@ -36,7 +32,6 @@ public class User {
         this.totalLikes = totalLikes;
         this.roles = roles;
         this.enabled = enabled;
-        this.likedComments = likedComments;
     }
 
     public long getId() {
@@ -69,10 +64,6 @@ public class User {
 
     public Collection<Role> getRoles() {
         return roles;
-    }
-
-    public Collection<Long> getLikedComments() {
-        return likedComments;
     }
 
     public boolean hasRole(String role) {

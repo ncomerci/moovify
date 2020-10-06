@@ -10,6 +10,10 @@ ALTER TABLE USERS ADD CONSTRAINT fk_user_avatar FOREIGN KEY (avatar_id) REFERENC
 --feature/description
 ALTER TABLE USERS ADD COLUMN description VARCHAR(400) DEFAULT NULL;
 
+--feature/likes-dislikes
+ALTER TABLE posts_likes ADD COLUMN value INT NOT NULL default 0;
+ALTER TABLE comments_likes ADD COLUMN value INT NOT NULL default 0;
+
 -- feature/searchEngine
 update movie_categories set name = 'action' where tmdb_category_id = 28;
 update movie_categories set name = 'adventure' where tmdb_category_id = 12;

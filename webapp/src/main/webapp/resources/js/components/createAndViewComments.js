@@ -3,17 +3,13 @@ const localStorageIds = [];
 window.addEventListener('load', () => {
 
     const commentLikeForm = document.forms['comment-like-form'];
-    const postLikeForm = document.forms['post-like-form'];
+
 
     document.querySelectorAll(".like-comment-button")
         .forEach(button => {
-                button.addEventListener('click', () => likeComment(button.dataset.id, commentLikeForm, button.dataset.value === "true"), false)
+                button.addEventListener('click', () => likeComment(commentLikeForm, button.dataset.id, button.dataset.value), false)
         });
 
-    document.querySelectorAll(".like-post-button")
-        .forEach(button => {
-            button.addEventListener('click', () => likePost(postLikeForm, button.dataset.value === "true"), false)
-    });
 
     document.body.addEventListener('click', e => {
         const replyForm = document.forms['reply-form'];
@@ -56,15 +52,14 @@ window.addEventListener('load', () => {
         .forEach(button => button.addEventListener('click', () => deleteComment(button.dataset.id), false));
 }, false);
 
-function likeComment(commentId, commentLikeForm, boolean){
-    document.getElementById('comment-id').value = commentId;
-    document.getElementById('like-value').checked = boolean;
+function likeComment(commentLikeForm, commentId, value){
+    console.log(value);
+    console.log(value === 1);
+    document.getElementById('comment-like-id').value = commentId;
+    document.getElementById('comment-like-value').value = value;
     commentLikeForm.submit();
 }
-function likePost(postLikeForm, boolean){
-    document.getElementById('post-like-value').checked = boolean;
-    postLikeForm.submit();
-}
+
 
 function showReplies(commentId) {
 

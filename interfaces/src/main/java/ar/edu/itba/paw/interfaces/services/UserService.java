@@ -27,7 +27,7 @@ public interface UserService {
 
     boolean validatePasswordResetToken(String token);
 
-    boolean hasUserLiked(String username, long postId);
+    int hasUserLiked(long user_id, long post_id);
 
     Optional<User> updatePassword(String password, String token);
 

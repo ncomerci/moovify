@@ -77,13 +77,13 @@
     <%-- Comment like form --%>
     <form method="post" action="<c:url value="/comment/like"/>" id="comment-like-form">
         <label>
-            <input hidden type="number" name="post_id" value="${postId}"/>
+            <input hidden name="post_id" type="number"  value="${postId}"/>
         </label>
         <label>
-            <input hidden type="number" id="comment-id" name="comment_id"/>
+            <input hidden name="comment_id" id="comment-like-id" type="number"  />
         </label>
         <label>
-            <input hidden type="checkbox" id="like-value" name="value"/>
+            <input hidden name="value" id="comment-like-value" type="number"/>
         </label>
     </form>
 
