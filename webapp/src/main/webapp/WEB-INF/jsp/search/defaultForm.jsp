@@ -16,34 +16,22 @@
 <div class="uk-margin-medium-top">
     <ul class="uk-child-width-expand uk-tab">
         <li class="${currentSearch == 0 ? 'uk-active' : ''}">
-            <c:choose>
-                <c:when test="${currentSearch == 0}">
-                    <a href="#"><spring:message code="search.posts"/></a>
-                </c:when>
-                <c:otherwise>
-                    <a href="<c:url value="${'/search/posts/?query='}${query}"/>"><spring:message code="search.posts"/></a>
-                </c:otherwise>
-            </c:choose>
+            <c:url value="/search/posts/" var="postsURL">
+                <c:param name="query" value="${query}"/>
+            </c:url>
+            <a href="${currentSearch == 0 ? '' : postsURL}"><spring:message code="search.posts"/></a>
         </li>
         <li class="${currentSearch == 1 ? 'uk-active' : ''}">
-            <c:choose>
-                <c:when test="${currentSearch == 1}">
-                    <a href="#"><spring:message code="search.movies"/></a>
-                </c:when>
-                <c:otherwise>
-                    <a href="<c:url value="${'/search/movies/?query='}${query}"/>"><spring:message code="search.movies"/></a>
-                </c:otherwise>
-            </c:choose>
+            <c:url value="/search/movies/" var="moviesURL">
+                <c:param name="query" value="${query}"/>
+            </c:url>
+            <a href="${currentSearch == 1 ? '' : moviesURL}"><spring:message code="search.movies"/></a>
         </li>
         <li class="${currentSearch == 2 ? 'uk-active' : ''}">
-            <c:choose>
-                <c:when test="${currentSearch == 2}">
-                    <a href="#"><spring:message code="search.users"/></a>
-                </c:when>
-                <c:otherwise>
-                    <a href="<c:url value="${'/search/users/?query='}${query}"/>"><spring:message code="search.users"/></a>
-                </c:otherwise>
-            </c:choose>
+            <c:url value="/search/users/" var="usersURL">
+                <c:param name="query" value="${query}"/>
+            </c:url>
+            <a href="${currentSearch == 2 ? '' : usersURL}"><spring:message code="search.users"/></a>
         </li>
     </ul>
 </div>
