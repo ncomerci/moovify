@@ -8,6 +8,10 @@
 
 <jsp:useBean id="currentState" scope="request" type="java.lang.String"/>
 
+<sec:authorize access="hasRole('ADMIN')">
+    <script src="<c:url value="/resources/js/user/view.js"/>"></script>
+</sec:authorize>
+
 <div class="uk-inline ">
     <div class="uk-cover-container">
         <canvas height="350"></canvas>
@@ -29,9 +33,9 @@
             <ul class="uk-list uk-list-bullet">
                 <li class="userTitle"><spring:message code="user.profile.Name" arguments="${user.name}"/></li>
                 <li class="userTitle"><spring:message code="user.profile.Email" arguments="${user.email}"/></li>
-                <sec:authorize access="hasRole('ADMIN')" >
+                <c:if test="${user.admin}">
                     <li class="userTitle"><spring:message code="user.profile.Administrator"/></li>
-                </sec:authorize>
+                </c:if>
                 <c:if test="${fn:length(user.description) == 0}">
                     <li class="userTitle"><spring:message code="user.view.notDescription"/> </li>
                 </c:if>
@@ -39,6 +43,13 @@
                     <li class="userTitle"><spring:message code="user.profile.Description" arguments="${user.description}"/></li>
                 </c:if>
             </ul>
+            <c:if test="${!user.admin && loggedUser.admin}">
+                <div>
+                <button class="uk-button uk-button-default uk-border-rounded admin-button" type="button" uk-toggle="target: #modal-admin-promote">
+                    <spring:message code="user.profile.adminBtn"/>
+                </button>
+                </div>
+            </c:if>
             <%--<p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>--%>
         </div>
 
@@ -71,5 +82,16 @@
     </div>
 </div>
 
+<sec:authorize access="hasRole('ADMIN')">
+    <div id="modal-admin-promote" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h2 class="uk-modal-title"><spring:message code="user.profile.modalTitle" arguments="${user.username}"/></h2>
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="user.profile.modalCancel"/></button>
+                <button id="modal-admin-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="user.profile.adminBtn"/></button>
+            </p>
+        </div>
+    </div>
 
-
+    <form id="promote-user-form" method="post" action="<c:url value="/user/promote/${user.id}"/>"></form>
+</sec:authorize>
