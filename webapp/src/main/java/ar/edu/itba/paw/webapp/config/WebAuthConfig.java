@@ -65,7 +65,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                             "/user/resetPassword",
                             "/user/updatePassword/token",
                             "/user/updatePassword").anonymous()
-                    .antMatchers("/user/promote/{id:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/user/promote/{id:[\\d]+}").hasRole("ADMIN")
 
                     // Post Controller
                         // "/post/{postId}"
@@ -106,7 +106,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .logoutSuccessUrl("/")
 
                 .and().exceptionHandling()
-                    .accessDeniedPage("/")
+                    .accessDeniedPage("/403")
 
                 .and().csrf().disable();
     }
