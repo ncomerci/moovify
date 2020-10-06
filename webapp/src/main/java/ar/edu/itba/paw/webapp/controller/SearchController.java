@@ -34,8 +34,8 @@ public class SearchController {
         mv.addObject("sortCriteria", searchService.getAllPostSortCriteria());
 
         mv.addObject("posts",
-                searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(),
-                        searchPostsForm.getSortCriteria(), pageNumber, pageSize));
+                searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(),
+                        searchPostsForm.getPostAge(), searchPostsForm.getSortCriteria(), pageNumber, pageSize));
         return mv;
     }
 
@@ -46,8 +46,14 @@ public class SearchController {
 
         final ModelAndView mv = new ModelAndView("search/movies");
         mv.addObject("query", searchMoviesForm.getQuery());
+        mv.addObject("categories", searchService.getMoviesCategories());
+        mv.addObject("decades", searchService.getMoviesDecades());
+        mv.addObject("sortCriteria", searchService.getAllMoviesSortCriteria());
+
         mv.addObject("movies",
-                searchService.searchMovies(searchMoviesForm.getQuery(), pageNumber, pageSize));
+                searchService.searchMovies(searchMoviesForm.getQuery(), searchMoviesForm.getMovieCategory(),
+                        searchMoviesForm.getDecade(), searchMoviesForm.getSortCriteria(),
+                        pageNumber, pageSize));
         return mv;
     }
 

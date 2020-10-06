@@ -11,17 +11,23 @@ public interface SearchService {
 
     PaginatedCollection<Post> searchPosts(String query, String category, String period, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Movie> searchMovies(String query, int pageNumber, int pageSize);
+    PaginatedCollection<Movie> searchMovies(String query, String category, String decade, String sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<User> searchUsers(String query, String role, String sortCriteria, int pageNumber, int pageSize);
 
     Collection<String> getAllPostSortCriteria();
+
+    Collection<String> getAllMoviesSortCriteria();
 
     Collection<String> getAllUserSortCriteria();
 
     Collection<String> getPostPeriodOptions();
 
     Collection<String> getPostCategories();
+
+    Collection<String> getMoviesCategories();
+
+    Collection<String> getMoviesDecades();
 
     Collection<String> getUserRoleOptions();
 }

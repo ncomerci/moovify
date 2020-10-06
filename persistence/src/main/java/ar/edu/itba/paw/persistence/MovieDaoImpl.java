@@ -68,7 +68,7 @@ public class MovieDaoImpl implements MovieDao {
     private static final ResultSetExtractor<Collection<Movie>> MOVIE_ROW_MAPPER = (rs) -> {
 
             // Important use of LinkedHashMap to maintain Post insertion order
-            final Map<Long, Movie> idToMovieMap = new HashMap<>();
+            final Map<Long, Movie> idToMovieMap = new LinkedHashMap<>();
             final Map<Long, MovieCategory> idToMovieCategoryMap = new HashMap<>();
 
             while(rs.next()) {
@@ -117,7 +117,7 @@ public class MovieDaoImpl implements MovieDao {
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, MOVIES + ".release_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, MOVIES + ".release_date");
-        sortCriteriaQuery.put(SortCriteria.POST_COUNT, "coalesce(POST_COUNT.post_count, 0)");
+        sortCriteriaQuery.put(SortCriteria.POST_COUNT, "coalesce(POST_COUNT.post_count, 0) desc");
         sortCriteriaQuery.put(SortCriteria.TITLE, MOVIES + ".title");
 
         return sortCriteriaQuery;

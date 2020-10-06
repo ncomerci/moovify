@@ -31,11 +31,16 @@ public class SearchServiceImpl implements SearchService {
         BY_CATEGORY, OLDER_THAN
     }
 
+    private enum MovieSearchOptions {
+        BY_CATEGORY, BY_RELEASE_DATE
+    }
+
     private enum UserSearchOptions {
         BY_ROLE
     }
 
     private static final PostDao.SortCriteria DEFAULT_POST_SORT_CRITERIA = PostDao.SortCriteria.NEWEST;
+    private static final MovieDao.SortCriteria DEFAULT_MOVIE_SORT_CRITERIA = MovieDao.SortCriteria.TITLE;
     private static final UserDao.SortCriteria DEFAULT_USER_SORT_CRITERIA = UserDao.SortCriteria.NAME;
 
     private final List<String> postCategoriesOptions;
@@ -43,7 +48,8 @@ public class SearchServiceImpl implements SearchService {
     private final static Map<String, LocalDateTime> postPeriodOptionsMap = getPostPeriodOptionsMap();
 
     private final List<String> movieCategoriesOptions;
-
+    private final static Map<String, MovieDao.SortCriteria> movieSortCriteriaMap = getMovieSortCriteriaMap();
+    private final static Map<String, LocalDate> movieDecadeMap = getMovieDecadeMap();
 
     private final static Map<String, UserDao.SortCriteria> userSortCriteriaMap = getUserSortCriteriaMap();
     private final static Map<String, String> userRoleOptionsMap = getUserRoleOptionsMap();
@@ -67,6 +73,34 @@ public class SearchServiceImpl implements SearchService {
         periodOptions.put("pastDay", LocalDateTime.now().minusDays(1));
 
         return periodOptions;
+    }
+
+    private static Map<String, MovieDao.SortCriteria> getMovieSortCriteriaMap() {
+        Map<String, MovieDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
+
+        sortCriteriaMap.put("title", MovieDao.SortCriteria.TITLE);
+        sortCriteriaMap.put("newest", MovieDao.SortCriteria.NEWEST);
+        sortCriteriaMap.put("oldest", MovieDao.SortCriteria.OLDEST);
+        sortCriteriaMap.put("mostPosts", MovieDao.SortCriteria.POST_COUNT);
+
+        return sortCriteriaMap;
+    }
+
+    private static Map<String, LocalDate> getMovieDecadeMap() {
+        Map<String, LocalDate> decadeMap = new LinkedHashMap<>();
+
+        decadeMap.put("1920s", LocalDate.ofYearDay(1920, 1));
+        decadeMap.put("1930s", LocalDate.ofYearDay(1930, 1));
+        decadeMap.put("1940s", LocalDate.ofYearDay(1940, 1));
+        decadeMap.put("1950s", LocalDate.ofYearDay(1950, 1));
+        decadeMap.put("1960s", LocalDate.ofYearDay(1960, 1));
+        decadeMap.put("1970s", LocalDate.ofYearDay(1970, 1));
+        decadeMap.put("1980s", LocalDate.ofYearDay(1980, 1));
+        decadeMap.put("1990s", LocalDate.ofYearDay(1990, 1));
+        decadeMap.put("2000s", LocalDate.ofYearDay(2000, 1));
+        decadeMap.put("2010s", LocalDate.ofYearDay(2010, 1));
+
+        return decadeMap;
     }
 
     private static Map<String, UserDao.SortCriteria> getUserSortCriteriaMap() {
@@ -102,6 +136,11 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
+    public Collection<String> getAllMoviesSortCriteria() {
+        return movieSortCriteriaMap.keySet();
+    }
+
+    @Override
     public Collection<String> getAllUserSortCriteria() {
         return userSortCriteriaMap.keySet();
     }
@@ -114,6 +153,16 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public Collection<String> getPostCategories() {
         return postCategoriesOptions;
+    }
+
+    @Override
+    public Collection<String> getMoviesCategories() {
+        return movieCategoriesOptions;
+    }
+
+    @Override
+    public Collection<String> getMoviesDecades() {
+        return movieDecadeMap.keySet();
     }
 
     @Override
@@ -163,15 +212,46 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public PaginatedCollection<Movie> searchMovies(String query, String sinceYear, String upToYear, int pageNumber, int pageSize){
+    public PaginatedCollection<Movie> searchMovies(String query, String category, String decade, String sortCriteria, int pageNumber, int pageSize){
 
         Objects.requireNonNull(query);
 
-        LocalDate since = LocalDate.ofYearDay(Integer.parseInt(sinceYear), 1);
+        final EnumSet<MovieSearchOptions> options = EnumSet.noneOf(MovieSearchOptions.class);
+        final MovieDao.SortCriteria sc;
+        LocalDate since = LocalDate.ofYearDay(1900,1);
+        LocalDate upTo = LocalDate.ofYearDay(2100, 1);
 
-        LocalDate upTo = LocalDate.ofYearDay(Integer.parseInt(upToYear), 366);
+        if(category != null && movieCategoriesOptions.contains(category))
+            options.add(MovieSearchOptions.BY_CATEGORY);
 
-        return movieDao.searchMovies(query, MovieDao.SortCriteria.NEWEST, pageNumber, pageSize);
+        if(decade != null && movieDecadeMap.containsKey(decade)){
+            options.add(MovieSearchOptions.BY_RELEASE_DATE);
+            since = movieDecadeMap.get(decade);
+            upTo = since.plusYears(10);
+        }
+
+        if (sortCriteria != null && movieSortCriteriaMap.containsKey(sortCriteria))
+            sc = movieSortCriteriaMap.get(sortCriteria);
+        else
+            sc = DEFAULT_MOVIE_SORT_CRITERIA;
+
+
+        if(options.isEmpty())
+            return movieDao.searchMovies(query, sc, pageNumber, pageSize);
+
+        else if (options.size() == 1) {
+
+            if (options.contains(MovieSearchOptions.BY_CATEGORY))
+                return movieDao.searchMoviesByCategory(query, category, sc, pageNumber, pageSize);
+
+            else if (options.contains(MovieSearchOptions.BY_RELEASE_DATE))
+                return movieDao.searchMoviesByReleaseDate(query, since, upTo, sc, pageNumber, pageSize);
+        }
+
+        else if (options.size() == 2 && options.contains(MovieSearchOptions.BY_CATEGORY) && options.contains(MovieSearchOptions.BY_RELEASE_DATE))
+            return movieDao.searchMoviesByCategoryAndReleaseDate(query, category, since, upTo, sc, pageNumber, pageSize);
+
+        throw new NonReachableStateException();
     }
 
     @Override

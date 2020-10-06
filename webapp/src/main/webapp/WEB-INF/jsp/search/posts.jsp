@@ -19,9 +19,8 @@
         <section id="search-controllers">
             <c:set var="query" scope="request"><c:out value="${query}"/></c:set>
             <c:set var="currentSearch" value="0" scope="request" />
-            <div>
-                <jsp:include page="defaultForm.jsp"/>
-            </div>
+            <jsp:include page="defaultForm.jsp"/>
+
             <div class="uk-form-horizontal uk-grid-small" uk-grid>
                 <div class="uk-width-1-3">
                     <div class="uk-margin">
@@ -63,6 +62,7 @@
                 </div>
             </div>
         </section>
+
         <section id="search-results" class="uk-margin-top">
             <c:if test="${empty posts.results}">
                 <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.posts.postsNotFound"/> </h1>
