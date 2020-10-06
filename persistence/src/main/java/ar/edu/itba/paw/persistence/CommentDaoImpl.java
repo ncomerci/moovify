@@ -265,7 +265,9 @@ public class CommentDaoImpl implements CommentDao {
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
                                 rs.getString("u_description"), rs.getLong("u_avatar_id"), 0,
-                                new HashSet<>(), rs.getBoolean("u_enabled")), rs.getBoolean("c_enabled"), rs.getLong("c_likes")
+                                new HashSet<>(), rs.getBoolean("u_enabled")),
+
+                        rs.getBoolean("c_enabled"), rs.getLong("c_likes"), new HashMap<>()
                 );
 
                 idToCommentMap.put(comment_id, currentComment);
