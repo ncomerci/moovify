@@ -183,6 +183,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public void delete(long userId) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET enabled = false WHERE user_id = ?", userId);
+    }
+
+    @Override
     public Collection<Role> addRoles(long userId, Collection<String> roleNames) {
         Collection<Role> roles = roleDao.findRolesByName(roleNames);
 

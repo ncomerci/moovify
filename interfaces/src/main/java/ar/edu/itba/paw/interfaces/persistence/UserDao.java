@@ -21,6 +21,8 @@ public interface UserDao {
 
     void editDescription(long user_id, String description);
 
+    void delete(long user_id);
+
     void replaceUserRole(final long userId, final String newRole, final String oldRole);
 
     boolean userHasRole(long userId, String role);

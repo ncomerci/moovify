@@ -86,6 +86,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void delete(long userId) {
+        userDao.delete(userId);
+    }
+
+    @Override
     public void addRoles(long userId, Collection<String> roleNames) {
         userDao.addRoles(userId, roleNames);
     }

@@ -37,6 +37,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                     <sec:authorize access="hasRole('ADMIN')">
+                                        <c:if test="${!comment.user.admin || comment.user.id == loggedUser.id}">
                                         <a href="#delete-modal"
                                            data-id="<c:out value="${comment.id}"/>"
                                            class="uk-link-muted delete-comment-button uk-position-small uk-hidden-hover"
@@ -44,6 +45,7 @@
                                         >
                                             <spring:message code="comment.delete.button"/>
                                         </a>
+                                        </c:if>
                                     </sec:authorize>
                                 </h4>
                                 </c:if>
@@ -83,7 +85,7 @@
                                     </div>
                                 </sec:authorize>
                                 <div>
-                                    <a class="uk-link-muted reply-button uk-position-small uk-hidden-hover" href="<c:url value="/comment/${comment.id}"/>">
+                                    <a class="uk-link-muted uk-position-small uk-hidden-hover" href="<c:url value="/comment/${comment.id}"/>">
                                         <spring:message code="comment.viewComment"/>
                                     </a>
                                 </div>
@@ -97,14 +99,17 @@
                                 <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
                             </c:when>
                             <c:otherwise>
-                                <span class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></span>
+                                <div class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></div>
+                                <sec:authorize access="hasRole('ADMIN')">
+                                <div class="uk-text-italic"><c:out value="[${comment.user.username}: ${comment.body}]"/></div>
+                                </sec:authorize>
                             </c:otherwise>
                         </c:choose>
                     </div>
                 </article>
                 <hr>
             </div>
-            <div class="replies-show" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${comment.descendantCount}">
+            <div class="replies-show uk-margin-bottom" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${comment.descendantCount}">
                 <a class="uk-link-muted"><spring:message code="comment.replies.show" arguments="${comment.descendantCount}"/></a>
             </div>
             <ul id="${comment.id}-children" class="li uk-hidden">

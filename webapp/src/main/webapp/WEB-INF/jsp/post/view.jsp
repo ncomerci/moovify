@@ -108,6 +108,7 @@
     </section>
     <hr>
     <sec:authorize access="hasRole('ADMIN')">
+        <c:if test="${!post.user.admin || post.user.id == loggedUser.id}">
         <div class="uk-flex uk-flex-right">
             <button id="post-delete-btn"
                     class="uk-button uk-button-default logout-button uk-border-rounded"
@@ -119,6 +120,7 @@
                 <spring:message code="post.delete.button"/>
             </button>
         </div>
+        </c:if>
     </sec:authorize>
     <c:set var="comments" value="${comments}" scope="request"/>
     <c:set var="postId" value="${post.id}" scope="request"/>

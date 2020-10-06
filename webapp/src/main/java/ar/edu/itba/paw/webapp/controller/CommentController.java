@@ -71,12 +71,4 @@ public class CommentController {
 
         return mv;
     }
-
-    @RequestMapping(path = "/comment/delete/{id}", method = RequestMethod.POST)
-    public ModelAndView delete(@PathVariable final long id, @RequestParam final long postId) {
-
-        commentService.delete(id);
-
-        return new ModelAndView("redirect:/post/" + postId);
-    }
 }

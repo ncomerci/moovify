@@ -46,8 +46,9 @@ window.addEventListener('load', () => {
     document.querySelectorAll(".reply-button")
         .forEach(button => button.addEventListener('click', () => openCommentForm(button.dataset.id), false));
 
-    document.getElementById('pagination-page-size').addEventListener('change',
-        () => document.getElementById('pagination-form').submit())
+    const pageSize = document.getElementById('pagination-page-size');
+
+    if(pageSize) pageSize.addEventListener('change',() => document.getElementById('pagination-form').submit());
 
     document.querySelectorAll(".delete-comment-button")
         .forEach(button => button.addEventListener('click', () => deleteComment(button.dataset.id), false));

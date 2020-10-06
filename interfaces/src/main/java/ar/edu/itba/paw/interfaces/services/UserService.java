@@ -20,6 +20,8 @@ public interface UserService {
 
     void changePassword(long user_id, String password);
 
+    void delete(long user_id);
+
     void addRoles(long userId, Collection<String> roleNames);
 
     Optional<User> confirmRegistration(String token);

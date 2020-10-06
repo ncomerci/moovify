@@ -53,6 +53,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                     // Home Controller
                         // "/"
+                    .antMatchers("/adminPanel").hasRole("ADMIN")
 
                     // User Controller
                         // "/user/{userId:[\d]+}
@@ -66,6 +67,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                             "/user/updatePassword/token",
                             "/user/updatePassword").anonymous()
                     .antMatchers(HttpMethod.POST,"/user/promote/{id:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/user/delete/{id:[\\d]+}").hasRole("ADMIN")
 
                     // Post Controller
                         // "/post/{postId}"

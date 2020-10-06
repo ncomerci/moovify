@@ -75,6 +75,7 @@
     </nav>
 </header>
 
+<sec:authorize access="hasRole('NOT_VALIDATED')">
 <!-- Confirm email modal -->
 <div id="confirm-email-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
@@ -86,3 +87,4 @@
         </p>
     </div>
 </div>
+</sec:authorize>
