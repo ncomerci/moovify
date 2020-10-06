@@ -414,9 +414,9 @@ public class CommentDaoImpl implements CommentDao {
     // You cannot ask comments with children without paginating
     private Collection<Comment> buildAndExecuteQuery(String customWhereStatement, Object[] args) {
 
-        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
+        final String select = buildSelectStatement();
 
-        final String from = BASE_COMMENT_FROM + " " + LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
+        final String from = buildFromStatement();
 
         return executeQuery(select, from, customWhereStatement, "", args, false);
     }
@@ -427,11 +427,11 @@ public class CommentDaoImpl implements CommentDao {
     // It is important to consider we couldn't limit the width of the tree, only it's height.
     private PaginatedCollection<Comment> getPaginatedChildrenQuery(SortCriteria sortCriteria, int pageNumber, int pageSize, Long rootId, boolean isRootPost) {
 
-        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
+        final String select = buildSelectStatement();
 
-        final String nonBaseFrom = LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
+        final String nonBaseFrom = buildNonBaseFromStatement();
 
-        final String from = BASE_COMMENT_FROM + " " + nonBaseFrom;
+        final String from = buildFromStatement();
 
         final String firstLevelCommentsWhere = isRootPost?
                 // parent_id is null (is root) and it's post is rootId
@@ -453,10 +453,21 @@ public class CommentDaoImpl implements CommentDao {
 
         final String orderBy = buildOrderByStatement(sortCriteria);
 
-        final String newWhere =
-                "WHERE " + COMMENTS + ".comment_id IN (SELECT " + COMMENTS + ".comment_id FROM " + COMMENTS + " WHERE " + COMMENTS + ".comment_id IN (" +
-                "SELECT " + COMMENTS + ".comment_id " + from + " " + firstLevelCommentsWhere +
-                " ) " + orderBy + " " + pagination + ")";
+//        final String newWhere =
+//                "WHERE " + COMMENTS + ".comment_id IN (SELECT " + COMMENTS + ".comment_id FROM " + COMMENTS + " WHERE " + COMMENTS + ".comment_id IN (" +
+//                "SELECT " + COMMENTS + ".comment_id " + from + " " + firstLevelCommentsWhere +
+//                " ) " + orderBy + " " + pagination + ")";
+
+        final String newWhere = "WHERE " + COMMENTS + ".comment_id IN ( " +
+                "SELECT AUX.comment_id " +
+                "FROM (" +
+                "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + COMMENTS + ".comment_id " +
+                from + " " +
+                firstLevelCommentsWhere +
+                " ) AUX " +
+                "GROUP BY AUX.comment_id " +
+                "ORDER BY MIN(AUX.row_num) " +
+                pagination + ")";
 
         final String recursiveQuery =
                     PAGINATION_RECURSIVE_QUERY_UPPER +
@@ -475,9 +486,9 @@ public class CommentDaoImpl implements CommentDao {
 
     private PaginatedCollection<Comment> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
 
-        final String select = BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
+        final String select = buildSelectStatement();
 
-        final String from = BASE_COMMENT_FROM + " " + LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
+        final String from = buildFromStatement();
 
         // Execute original query to count total comments in the query
         final int totalCommentCount = jdbcTemplate.queryForObject(
@@ -488,15 +499,38 @@ public class CommentDaoImpl implements CommentDao {
 
         final String orderBy = buildOrderByStatement(sortCriteria);
 
-        final String newWhere =
-                "WHERE " + COMMENTS + ".comment_id IN (SELECT " + COMMENTS + ".comment_id FROM " + COMMENTS + " WHERE " + COMMENTS + ".comment_id IN (" +
-                        "SELECT " + COMMENTS + ".comment_id " + from + " " + customWhereStatement +
-                        " ) " + orderBy + " " + pagination + ")";
+//        final String newWhere =
+//                "WHERE " + COMMENTS + ".comment_id IN (SELECT " + COMMENTS + ".comment_id FROM " + COMMENTS + " WHERE " + COMMENTS + ".comment_id IN (" +
+//                        "SELECT " + COMMENTS + ".comment_id " + from + " " + customWhereStatement +
+//                        " ) " + orderBy + " " + pagination + ")";
+
+        final String newWhere = "WHERE " + COMMENTS + ".comment_id IN ( " +
+                "SELECT AUX.comment_id " +
+                "FROM (" +
+                "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + COMMENTS + ".comment_id " +
+                from + " " +
+                customWhereStatement +
+                " ) AUX " +
+                "GROUP BY AUX.comment_id " +
+                "ORDER BY MIN(AUX.row_num) " +
+                pagination + ")";
 
 
         final Collection<Comment> results = executeQuery(select, from, newWhere, orderBy, args, false);
 
         return new PaginatedCollection<>(results, pageNumber, pageSize, totalCommentCount);
+    }
+
+    private String buildSelectStatement() {
+        return BASE_COMMENT_SELECT + ", " + LIKES_SELECT + ", " + POST_SELECT + ", " + USER_SELECT;
+    }
+
+    private String buildFromStatement() {
+        return BASE_COMMENT_FROM + buildNonBaseFromStatement();
+    }
+
+    private String buildNonBaseFromStatement() {
+        return LIKES_FROM + " " + POST_FROM + " " + USER_FROM;
     }
 
     private String buildOrderByStatement(SortCriteria sortCriteria) {

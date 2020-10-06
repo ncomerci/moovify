@@ -218,9 +218,20 @@ public class MovieDaoImpl implements MovieDao {
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
-        final String newWhere = "WHERE " + MOVIES + ".movie_id IN (SELECT " + MOVIES + ".movie_id FROM " + MOVIES + " WHERE " + MOVIES + ".movie_id IN (" +
-                "SELECT " + MOVIES + ".movie_id " + from + " " + customWhereStatement +
-                " ) " + orderBy + " " + pagination + ")";
+//        final String newWhere = "WHERE " + MOVIES + ".movie_id IN (SELECT " + MOVIES + ".movie_id FROM " + MOVIES + " WHERE " + MOVIES + ".movie_id IN (" +
+//                "SELECT " + MOVIES + ".movie_id " + from + " " + customWhereStatement +
+//                " ) " + orderBy + " " + pagination + ")";
+
+        final String newWhere = "WHERE " + MOVIES + ".movie_id IN ( " +
+                "SELECT AUX.movie_id " +
+                "FROM (" +
+                "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + MOVIES + ".movie_id " +
+                from + " " +
+                customWhereStatement +
+                " ) AUX " +
+                "GROUP BY AUX.movie_id " +
+                "ORDER BY MIN(AUX.row_num) " +
+                pagination + ")";
 
         final Collection<Movie> results = executeQuery(select, from, newWhere, orderBy, args);
 

@@ -63,7 +63,8 @@ public class SearchController {
         mv.addObject("sortCriteria", searchService.getAllUserSortCriteria());
 
         mv.addObject("users",
-                searchService.searchUsers(searchUsersForm.getQuery(),"", "", pageNumber, pageSize));
+                searchService.searchUsers(searchUsersForm.getQuery(),searchUsersForm.getRole(),
+                        searchUsersForm.getSortCriteria(), pageNumber, pageSize));
 
         return mv;
     }

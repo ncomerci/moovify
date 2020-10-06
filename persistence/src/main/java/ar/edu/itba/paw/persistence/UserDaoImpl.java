@@ -292,9 +292,16 @@ public class UserDaoImpl implements UserDao {
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
-        final String newWhere = "WHERE " + USERS + ".user_id IN (SELECT " + USERS + ".user_id FROM " + USERS + " WHERE " + USERS + ".user_id IN (" +
-                "SELECT " + USERS + ".user_id " + from + " " + customWhereStatement +
-                " ) " + orderBy + " " + pagination + ")";
+        final String newWhere = "WHERE " + USERS + ".user_id IN ( " +
+                "SELECT AUX.user_id " +
+                "FROM (" +
+                    "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + USERS + ".user_id " +
+                    from + " " +
+                    customWhereStatement +
+                " ) AUX " +
+                "GROUP BY AUX.user_id " +
+                "ORDER BY MIN(AUX.row_num) " +
+                pagination + ")";
 
         final Collection<User> results = executeQuery(select, from, newWhere, orderBy, args);
 
@@ -359,7 +366,7 @@ public class UserDaoImpl implements UserDao {
     private static final String SEARCH_BY_ROLE = USERS + ".user_id IN ( " +
             "SELECT " + USER_ROLE + ".user_id " +
             "FROM " + ROLES + " " +
-                "INNER JOIN " + USER_ROLE + " ON " + ROLES + ".user_id = " + USER_ROLE + ".user_id " +
+                "INNER JOIN " + USER_ROLE + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id " +
             "WHERE " + ROLES + ".role = ?)";
 
     @Override

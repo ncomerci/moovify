@@ -286,9 +286,20 @@ public class PostDaoImpl implements PostDao {
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
-        final String newWhere = "WHERE " + POSTS + ".post_id IN (SELECT " + POSTS + ".post_id FROM " + POSTS + " WHERE " + POSTS + ".post_id IN (" +
-                                    "SELECT " + POSTS + ".post_id " + from + " " + customWhereStatement +
-                                " ) " + orderBy + " " + pagination + ")";
+//        final String newWhere = "WHERE " + POSTS + ".post_id IN (SELECT " + POSTS + ".post_id FROM " + POSTS + " WHERE " + POSTS + ".post_id IN (" +
+//                                    "SELECT " + POSTS + ".post_id " + from + " " + customWhereStatement +
+//                                " ) " + orderBy + " " + pagination + ")";
+
+        final String newWhere = "WHERE " + POSTS + ".post_id IN ( " +
+                "SELECT AUX.post_id " +
+                "FROM (" +
+                "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + POSTS + ".post_id " +
+                from + " " +
+                customWhereStatement +
+                " ) AUX " +
+                "GROUP BY AUX.post_id " +
+                "ORDER BY MIN(AUX.row_num) " +
+                pagination + ")";
 
         final Collection<Post> results = executeQuery(select, from, newWhere, orderBy, args);
 

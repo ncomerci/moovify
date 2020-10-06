@@ -7,6 +7,7 @@
 <head>
     <title><spring:message code="search.pageTitle" arguments="${query}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp"/>
+    <script src="<c:url value="/resources/js/search/user.js"/>"></script>
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
 </head>
 <body>
@@ -20,6 +21,35 @@
             <c:set var="currentSearch" value="2" scope="request" />
             <jsp:include page="/WEB-INF/jsp/search/defaultForm.jsp"/>
         </section>
+
+        <div class="uk-form-horizontal uk-grid-small" uk-grid>
+            <div class="uk-width-1-2">
+                <div class="uk-margin">
+                    <form:label path="role" class="uk-form-label" for="role" style="width: auto"><spring:message code="search.user.role.label"/></form:label>
+                    <div class="uk-form-controls" style="margin-left: 100px">
+                        <form:select path="role" class="uk-select uk-form-blank">
+                            <form:option value="any"><spring:message code="search.user.roles.all"/></form:option>
+                            <c:forEach items="${roleOptions}" var="role" >
+                                <form:option value="${role}"><spring:message code="search.user.roles.${role}"/></form:option>
+                            </c:forEach>
+                        </form:select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uk-width-1-2">
+                <div class="uk-margin">
+                    <form:label path="sortCriteria" class="uk-form-label" for="sort-criteria" style="width: auto"><spring:message code="search.user.sortCriteria.label"/></form:label>
+                    <div class="uk-form-controls" style="margin-left: 100px">
+                        <form:select path="sortCriteria" class="uk-select uk-form-blank">
+                            <c:forEach items="${sortCriteria}" var="criteria" >
+                                <form:option value="${criteria}"><spring:message code="search.user.sortCriteria.${criteria}"/></form:option>
+                            </c:forEach>
+                        </form:select>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <section id="search-results" class="uk-flex uk-flex-wrap">
             <c:if test="${empty users.results}">
@@ -42,6 +72,8 @@
             <c:set var="collection" value="${users}" scope="request"/>
             <c:url var="baseURL" value="/search/users/" scope="request">
                 <c:param name="query" value="${searchUsersForm.query}"/>
+                <c:param name="role" value="${searchUsersForm.role}"/>
+                <c:param name="sortCriteria" value="${searchUsersForm.sortCriteria}"/>
             </c:url>
             <c:set var="numberOfInputs" value="${2}" scope="request"/>
             <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
