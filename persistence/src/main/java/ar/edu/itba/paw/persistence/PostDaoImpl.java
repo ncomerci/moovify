@@ -232,7 +232,7 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public void delete(long id) {
-        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = false WHERE post_id = " + id);
+        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = false WHERE post_id = ?",  id);
     }
 
     @Override
@@ -326,9 +326,11 @@ public class PostDaoImpl implements PostDao {
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }
 
+    private static final String ENABLED_FILTER = POSTS + ".enabled = true";
+
     @Override
     public Optional<Post> findPostById(long id){
-        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ?", new Object[]{ id })
+        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ? AND " + ENABLED_FILTER, new Object[]{ id })
                 .stream().findFirst();
     }
 
@@ -338,19 +340,19 @@ public class PostDaoImpl implements PostDao {
                         POSTS + ".post_id IN ( " +
                         "SELECT " + POST_MOVIE + ".post_id " +
                         "FROM " + POST_MOVIE +
-                        " WHERE " + POST_MOVIE + ".movie_id = ?)",
+                        " WHERE " + POST_MOVIE + ".movie_id = ?) AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[] { movie_id });
     }
 
     @Override
     public PaginatedCollection<Post> findPostsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery("WHERE " + POSTS + ".user_id = ?",
+        return buildAndExecutePaginatedQuery("WHERE " + POSTS + ".user_id = ? AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ user_id });
     }
 
     @Override
     public PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery("", sortCriteria, pageNumber, pageSize, null);
+        return buildAndExecutePaginatedQuery("WHERE " + ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
 
     // Search Query Statements
@@ -376,7 +378,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
-                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS + " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
     }
 
@@ -384,7 +386,8 @@ public class PostDaoImpl implements PostDao {
     public PaginatedCollection<Post> searchPostsByCategory(String query, String category, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
-                                    " AND " + SEARCH_BY_POST_CATEGORY,
+                                    " AND " + SEARCH_BY_POST_CATEGORY +
+                                    " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, category });
     }
 
@@ -392,7 +395,8 @@ public class PostDaoImpl implements PostDao {
     public PaginatedCollection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
-                                    " AND " + SEARCH_POSTS_OLDER_THAN,
+                                    " AND " + SEARCH_POSTS_OLDER_THAN +
+                                    " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, Timestamp.valueOf(fromDate) });
     }
 
@@ -401,7 +405,8 @@ public class PostDaoImpl implements PostDao {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
                                     " AND " + SEARCH_BY_POST_CATEGORY +
-                                    " AND " + SEARCH_POSTS_OLDER_THAN,
+                                    " AND " + SEARCH_POSTS_OLDER_THAN +
+                                    " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, category, Timestamp.valueOf(fromDate) });
     }
 }

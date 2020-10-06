@@ -41,18 +41,20 @@ public class CommentController {
         }
 
 //        Goes back to the specific view that generated the request
-        return new ModelAndView("redirect:"+ request.getHeader("Referer"));
+        return new ModelAndView("redirect:"+ request.getHeader("Referer") + "#comment-section");
     }
 
     @RequestMapping(path = "/comment/like",  method = RequestMethod.POST)
     public ModelAndView post(@RequestParam final long post_id, @RequestParam final long comment_id,
-                             @RequestParam(defaultValue = "false") final boolean value, final Principal principal) {
+                             @RequestParam(defaultValue = "false") final boolean value,
+                             final Principal principal,
+                             final HttpServletRequest request) {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         commentService.likeComment(comment_id, user.getId(), value);
 
-        return new ModelAndView("redirect:/post/" + post_id + "#" + comment_id);
+        return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-section");
 
     }
 

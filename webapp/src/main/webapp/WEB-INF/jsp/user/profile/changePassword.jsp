@@ -6,7 +6,12 @@
 
 <html>
 <head>
-    <title><spring:message code="user.profile.edit.changePassword" arguments="${loggedUser.username}"/></title>
+    <title>
+        <spring:message code="user.profile.edit.changePassword" arguments="${loggedUser.username}"/>
+        <c:if test="${loggedUser.admin}">
+            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+        </c:if>
+    </title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body style="min-height: 1000px">
@@ -21,22 +26,21 @@
         <form:form modelAttribute="changePasswordForm" class="uk-form-horizontal uk-margin-large" action="${action}" method="post">
 
         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
-            <div class="uk-width-1-2">
-                <h2 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.changePassword" /></h2>
+            <div class="uk-width-1-3">
+                <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.changePassword" /></h3>
             </div>
-            <div class="uk-width-1-2">
+            <div class="uk-width-2-3">
                 <c:set var="passError"><form:errors path="password"/></c:set>
                 <div class="uk-inline">
                     <form:label path="password">
                         <spring:message code="user.profile.edit.newPassword" var="newPassword"/>
+                        <span class="uk-form-icon <c:out value="${not empty passError ? 'icon-error':''}"/>" uk-icon="icon: lock"></span>
                         <c:choose>
                             <c:when test="${not empty passError}">
-                                <span class="uk-form-icon icon-error" uk-icon="icon: lock"></span>
-                                <form:password class="uk-input uk-form-danger "  path="password"  placeholder="${newPassword}" />
+                                <form:password class="uk-input uk-form-danger"  path="password"  placeholder="${newPassword}" />
                             </c:when>
                             <c:otherwise>
-                                <span class="uk-form-icon" uk-icon="icon: lock"></span>
-                                <form:password class="uk-input "  path="password"  placeholder="${newPassword}" />
+                                <form:password class="uk-input"  path="password"  placeholder="${newPassword}" />
                             </c:otherwise>
                         </c:choose>
                     </form:label>
@@ -47,21 +51,20 @@
         </div>
 
         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
-            <div class="uk-width-1-2">
-                <h2 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.repeatPassword" /></h2>
+            <div class="uk-width-1-3">
+                <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.repeatPassword" /></h3>
             </div>
-            <div class="uk-width-1-2">
+            <div class="uk-width-2-3">
                 <c:set var="repPassError"><form:errors path="repeatPassword"/></c:set>
                 <div class="uk-inline">
                     <form:label path="repeatPassword">
                         <spring:message code="user.create.repeatPassword" var="repeatPassword"/>
+                        <span class="uk-form-icon <c:out value="${not empty repPassError ? 'icon-error':''}"/>" uk-icon="icon: lock"></span>
                         <c:choose>
                             <c:when test="${not empty repPassError}">
-                                <span class="uk-form-icon icon-error" uk-icon="icon: lock"></span>
-                                <form:password class="uk-input uk-form-danger "  path="repeatPassword" placeholder="${repeatPassword}" />
+                                <form:password class="uk-input uk-form-danger"  path="repeatPassword" placeholder="${repeatPassword}" />
                             </c:when>
                             <c:otherwise>
-                                <span class="uk-form-icon" uk-icon="icon: lock"></span>
                                 <form:password class="uk-input"  path="repeatPassword" placeholder="${repeatPassword}" />
                             </c:otherwise>
                         </c:choose>

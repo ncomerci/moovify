@@ -18,10 +18,10 @@
         </label>
         <div class="uk-form-controls" style="margin-left: 100px">
             <select id="pagination-page-size" name="pageSize" class="uk-select uk-form-blank">
-                <option <c:out value="${ collection.pageSize == 2 ? 'selected' : ''}"/> label="2" value="2"></option>
-                <option <c:out value="${ collection.pageSize == 5 ? 'selected' : ''}"/> label="5" value="5"></option>
-                <option <c:out value="${ collection.pageSize == 10 ? 'selected' : ''}"/> label="10" value="10"></option>
-                <option <c:out value="${ collection.pageSize == 25 ? 'selected' : ''}"/> label="25" value="25"></option>
+                <option <c:out value="${ collection.pageSize == 2 ? 'selected' : ''}"/> label="2" value="2">2</option>
+                <option <c:out value="${ collection.pageSize == 5 ? 'selected' : ''}"/> label="5" value="5">5</option>
+                <option <c:out value="${ collection.pageSize == 10 ? 'selected' : ''}"/> label="10" value="10">10</option>
+                <option <c:out value="${ collection.pageSize == 25 ? 'selected' : ''}"/> label="25" value="25">25</option>
             </select>
         </div>
     </div>
@@ -44,7 +44,7 @@
                     <c:param name = "pageSize" value = "${collection.pageSize}"/>
                 </c:url>
                 <li class="${ firstPage + index == collection.pageNumber ? 'uk-active' : ''}">
-                    <a href="${pageURL}"><c:out value="${firstPage + index + 1}"/></a>
+                    <a href="${pageURL}" class="${ firstPage + index == collection.pageNumber ? 'uk-disabled' : ''}"><c:out value="${firstPage + index + 1}"/></a>
                 </li>
             </c:if>
         </c:forEach>

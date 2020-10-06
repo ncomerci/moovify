@@ -2,17 +2,17 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<jsp:useBean id="message" scope="request" type="java.lang.String"/>
+<jsp:useBean id="code" scope="request" type="java.lang.String"/>
+
 <html>
 <head>
-    <title><spring:message code="error.moovifyNotFound"/></title>
+    <title><spring:message code="error.moovifyErrorTitle" arguments="${code}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body>
 <%-- La saco porque explota cuando hay errores. De ultima hay que hacer una especial que no pueda fallar, que sea estatica --%>
 <%--<jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />--%>
-
-<jsp:useBean id="message" scope="request" type="java.lang.String"/>
-<jsp:useBean id="code" scope="request" type="java.lang.String"/>
 
 <main class="uk-container uk-container-large">
     <div class="uk-margin-auto">

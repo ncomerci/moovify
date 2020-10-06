@@ -88,4 +88,8 @@ public class User {
     public long getTotalLikes() {
         return totalLikes;
     }
+
+    public boolean isAdmin() {
+        return roles.stream().anyMatch(role -> role.getRole().equals(Role.ADMIN_ROLE));
+    }
 }

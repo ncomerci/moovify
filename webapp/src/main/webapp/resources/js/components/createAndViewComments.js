@@ -82,6 +82,7 @@ function openCommentForm(parentId) {
 
     parentComment.appendChild(replyForm);
     replyForm.classList.remove('uk-hidden');
+    replyForm.elements['textarea'].focus();
 }
 
 function submitCommentReply() {

@@ -43,6 +43,9 @@
 <%--                            <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>--%>
                             <img src="<c:url value="/user/avatar/${loggedUser.avatarId}" />" class="uk-comment-avatar uk-border-circle" width="45" height="45" alt="User Avatar">
                             <span class="uk-text-bold uk-margin-small-left">${loggedUser.username}</span>
+                            <c:if test="${loggedUser.admin}">
+                                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                            </c:if>
                         </a>
                         <div class="uk-navbar-dropdown">
                             <ul class="uk-nav uk-navbar-dropdown-nav">

@@ -8,6 +8,10 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.ImageNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.form.*;
+
+/*import ar.edu.itba.paw.webapp.form.UserEditForm;*/
+import ar.edu.itba.paw.webapp.form.editProfile.*;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
 import ar.edu.itba.paw.webapp.form.UpdatePasswordForm;
 import ar.edu.itba.paw.webapp.form.UserCreateForm;
@@ -32,9 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -189,7 +191,7 @@ public class UserController {
     }
 
     @RequestMapping(path = {"/user/profile", "/user/profile/posts"}, method = RequestMethod.GET)
-    public ModelAndView profilePosts(HttpServletRequest request, Principal principal,
+    public ModelAndView profilePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, HttpServletRequest request, Principal principal,
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
@@ -210,8 +212,24 @@ public class UserController {
         return mv;
     }
 
+    @RequestMapping(path = "/user/profile/avatar", method = RequestMethod.POST)
+    public ModelAndView registerProfilePost(@Valid @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, final BindingResult bindingResult,
+                                HttpServletRequest httpServletRequest, Principal principal) throws IOException {
+
+        if(bindingResult.hasErrors())
+            return profilePosts(avatarEditForm,httpServletRequest,principal,5,0);
+
+
+        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        userService.updateAvatar(user, avatarEditForm.getAvatar().getBytes());
+
+        return new ModelAndView("redirect:/user/profile");
+    }
+
+
     @RequestMapping(path = "/user/profile/comments", method = RequestMethod.GET)
-    public ModelAndView profileComments(Principal principal,
+    public ModelAndView profileComments(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, Principal principal,
                                         @RequestParam(defaultValue = "5") final int pageSize,
                                         @RequestParam(defaultValue = "0") final int pageNumber) {
 
@@ -352,5 +370,12 @@ public class UserController {
 
     private Collection<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
         return roles.stream().map((role) -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).collect(Collectors.toList());
+    }
+
+    @RequestMapping(path = "/user/promote/{id}", method = RequestMethod.POST)
+    public ModelAndView promoteUser(@PathVariable long id) {
+
+        userService.addRoles(id, Collections.singletonList("ADMIN"));
+        return new ModelAndView("redirect:/user/" + id);
     }
 }

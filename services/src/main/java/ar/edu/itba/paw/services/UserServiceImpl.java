@@ -82,13 +82,21 @@ public class UserServiceImpl implements UserService {
             return imageService.getImage(avatarId, AVATAR_SECURITY_TAG);
     }
 
+    @Override
+    public void addRoles(long userId, Collection<String> roleNames) {
+        userDao.addRoles(userId, roleNames);
+    }
+
+    @Override
     public void updateAvatar(User user, byte[] newAvatar) {
 
-        imageService.deleteImage(user.getAvatarId());
+
 
         final long newAvatarId = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
 
         userDao.updateAvatarId(user.getId(), newAvatarId);
+
+        imageService.deleteImage(user.getAvatarId());
     }
 
     @Override
