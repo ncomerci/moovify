@@ -18,11 +18,12 @@ public class Movie {
     private final float runtime;
     private final float voteAverage;
     private final LocalDate releaseDate;
+    private final long postCount;
     private final Collection<MovieCategory> categories;
 
     public Movie(long id, LocalDateTime creationDate, String title, String originalTitle, long tmdbId,
                  String imdbId, String originalLanguage, String overview, float popularity, float runtime,
-                 float voteAverage, LocalDate releaseDate, Collection<MovieCategory> categories) {
+                 float voteAverage, LocalDate releaseDate, long postCount, Collection<MovieCategory> categories) {
         this.id = id;
         this.creationDate = creationDate;
         this.title = title;
@@ -35,6 +36,7 @@ public class Movie {
         this.runtime = runtime;
         this.voteAverage = voteAverage;
         this.releaseDate = releaseDate;
+        this.postCount = postCount;
         this.categories = categories;
     }
 
@@ -84,6 +86,10 @@ public class Movie {
 
     public LocalDate getReleaseDate() {
         return releaseDate;
+    }
+
+    public long getPostCount() {
+        return postCount;
     }
 
     public Collection<MovieCategory> getCategories() {

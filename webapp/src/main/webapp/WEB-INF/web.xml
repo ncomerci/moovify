@@ -72,7 +72,6 @@
     <url-pattern>/</url-pattern>
   </servlet-mapping>
 
-<!--  TODO: Este de abajo es el que me da duda si puede ir e Web Config o en otro lado-->
   <mime-mapping>
     <extension>ico</extension>
     <mime-type>image/x-icon</mime-type>

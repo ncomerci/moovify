@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentDao commentDao;
 
+    @Transactional
     @Override
     public long register(long postId, Long parentId, String body, long userId) {
         return commentDao.register(postId, parentId,
@@ -24,6 +26,7 @@ public class CommentServiceImpl implements CommentService {
                         .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId, true);
     }
 
+    @Transactional
     @Override
     public void likeComment(Comment comment, User user, int value) {
         if(value == 0)
@@ -33,10 +36,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public void delete(long id) { commentDao.delete(id); }
+    public void delete(long id) {
+        commentDao.delete(id);
+    }
 
     @Override
-    public Optional<Comment> findCommentById(long commentId){
+    public Optional<Comment> findCommentById(long commentId) {
         return commentDao.findCommentById(commentId);
     }
 
@@ -47,12 +52,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public PaginatedCollection<Comment> findCommentDescendants(long commentId, int pageNumber, int pageSize) {
-        return commentDao.findCommentDescendants(commentId, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+        return commentDao.findCommentDescendants(commentId, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
     @Override
     public PaginatedCollection<Comment> findPostCommentDescendants(long post_id, int pageNumber, int pageSize) {
-        return commentDao.findPostCommentDescendants(post_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+        return commentDao.findPostCommentDescendants(post_id, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
     @Override

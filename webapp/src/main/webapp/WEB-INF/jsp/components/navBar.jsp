@@ -6,6 +6,9 @@
     <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
 </sec:authorize>
 
+<%-- Added to prevent a bug in Firefox which starts loading page before finishing loading the stylesheets, cause a Flash Of Unstyled Content --%>
+<%--<script>0</script>--%>
+
 <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
     <nav class="uk-navbar-container" uk-navbar>
         <a class="uk-logo" href="<c:url value="/" />"><img id="nav-logo" src="<c:url value="/resources/images/logo.png"/>" alt="Moovify"></a>

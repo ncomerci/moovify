@@ -14,7 +14,6 @@ import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Optional;
 
 @Repository
@@ -25,6 +24,9 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
     private static final String ROLES = TableNames.ROLES.getTableName();
     private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
     private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
+    private static final String COMMENTS = TableNames.COMMENTS.getTableName();
+    private static final String POSTS = TableNames.POSTS.getTableName();
+    private static final String POSTS_LIKES = TableNames.POSTS_LIKES.getTableName();
 
 
     private static final String GET_TOKEN_QUERY = "SELECT " +
@@ -41,6 +43,8 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
             ROLES + ".role_id r_role_id, " +
             ROLES + ".role r_role, " +
 
+            "TOTAL_LIKES.total_likes u_total_likes, " +
+
             PASSWORD_RESET_TOKEN + ".token_id t_token_id, " +
             PASSWORD_RESET_TOKEN + ".token t_token, " +
             PASSWORD_RESET_TOKEN + ".expiry t_expiry, " +
@@ -48,10 +52,33 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
             COMMENTS_LIKES + ".comment_id c_comment_id " +
 
             "FROM " + PASSWORD_RESET_TOKEN +
+
+            " INNER JOIN ( " +
+                "SELECT " + USERS + ".user_id, coalesce(post_likes.total_likes, 0) + coalesce(comment_likes.total_likes, 0) total_likes " +
+                "FROM " + USERS +
+                    " LEFT OUTER JOIN ( " +
+                        "SELECT " + POSTS + ".user_id, SUM(" + POSTS_LIKES + ".value) total_likes " +
+                        "FROM " + POSTS +
+                            " INNER JOIN " + POSTS_LIKES + " ON " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id " +
+                        "GROUP BY " + POSTS + ".user_id " +
+                    ") post_likes ON " + USERS + ".user_id = post_likes.user_id " +
+
+                    "LEFT OUTER JOIN ( " +
+                        "SELECT " + COMMENTS + ".user_id, SUM(" + COMMENTS_LIKES + ".value) total_likes " +
+                        "FROM " + COMMENTS +
+                            " INNER JOIN " + COMMENTS_LIKES + " ON " + COMMENTS + ".comment_id = " + COMMENTS_LIKES + ".comment_id " +
+                        "GROUP BY " + COMMENTS + ".user_id " +
+                    ") comment_likes ON " + USERS + ".user_id = comment_likes.user_id " +
+            ") TOTAL_LIKES ON TOTAL_LIKES.user_id = " + USERS + ".user_id " +
+
             " INNER JOIN " + USERS + " ON " + PASSWORD_RESET_TOKEN + ".user_id = " + USERS + ".user_id " +
+
             "INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
+
             "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
+
             "LEFT OUTER JOIN " + COMMENTS_LIKES + " ON " + COMMENTS_LIKES + ".user_id = " + USERS + ".user_id "+
+
             "WHERE " + PASSWORD_RESET_TOKEN + ".token = ?";
 
 
@@ -66,7 +93,7 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
                                 rs.getString("u_username"), rs.getString("u_password"),
                                 rs.getString("u_name"), rs.getString("u_email"),
                                 rs.getString("u_description"),
-                                rs.getLong("u_avatar_id"),
+                                rs.getLong("u_avatar_id"), rs.getLong("u_total_likes"),
                                 new ArrayList<>(), rs.getBoolean("u_enabled")
                         )
                 );
