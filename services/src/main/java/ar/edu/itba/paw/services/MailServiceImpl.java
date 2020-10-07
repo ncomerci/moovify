@@ -68,14 +68,14 @@ public class MailServiceImpl implements MailService {
             message.setTo(destination);
 
             message.setText(templateEngine.process(template, context), true);
+
+            emailSender.send(mimeMessage);
+
+            LOGGER.debug("Email sent successfully. Subject {}; Destination {}; Template {}", subject, destination, template);
         }
         catch(MessagingException e) {
             LOGGER.error("Email sending failed. Subject {}; Destination {}; Template {}", subject, destination, template, e);
         }
-
-        LOGGER.debug("Email sent successfully. Subject {}; Destination {}; Template {}", subject, destination, template);
-
-        emailSender.send(mimeMessage);
     }
 
 }

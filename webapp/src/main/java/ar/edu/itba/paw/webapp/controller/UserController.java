@@ -91,7 +91,7 @@ public class UserController {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.editName(user.getId(), nameEditForm.getName());
+        userService.updateName(user, nameEditForm.getName());
 
         return new ModelAndView("redirect:/user/profile/edit");
     }
@@ -107,7 +107,7 @@ public class UserController {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.editUsername(user.getId(), usernameEditForm.getUsername());
+        userService.updateUsername(user, usernameEditForm.getUsername());
 
         manualLogin(request, usernameEditForm.getUsername(), user.getPassword(), user.getRoles());
 
@@ -125,7 +125,7 @@ public class UserController {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.editDescription(user.getId(), descriptionEditForm.getDescription());
+        userService.updateDescription(user, descriptionEditForm.getDescription());
 
         return new ModelAndView("redirect:/user/profile/edit");
     }
@@ -144,7 +144,7 @@ public class UserController {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.changePassword(user.getId(), changePasswordForm.getPassword());
+        userService.updatePassword(user, changePasswordForm.getPassword());
 
         return new ModelAndView("redirect:/user/profile");
     }
@@ -157,16 +157,19 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/view/viewPosts");
 
+        final User user;
+
         final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
 
         if(flashParams != null && flashParams.containsKey("user"))
-            mv.addObject("user", flashParams.get("user"));
+            user = (User) flashParams.get("user");
 
         else
-            mv.addObject("user", userService.findById(userId)
-                .orElseThrow(UserNotFoundException::new));
+            user = userService.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        mv.addObject("posts", postService.findPostsByUserId(userId, pageNumber, pageSize));
+        mv.addObject("user", user);
+
+        mv.addObject("posts", postService.findPostsByUser(user, pageNumber, pageSize));
 
         return mv;
     }
@@ -179,16 +182,19 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/view/viewComments");
 
+        final User user;
+
         final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
 
         if(flashParams != null && flashParams.containsKey("user"))
-            mv.addObject("user", flashParams.get("user"));
+            user = (User) flashParams.get("user");
 
         else
-            mv.addObject("user", userService.findById(userId)
-                    .orElseThrow(UserNotFoundException::new));
+            user = userService.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        mv.addObject("comments", commentService.findCommentsByUserId(userId, pageNumber, pageSize));
+        mv.addObject("user", user);
+
+        mv.addObject("comments", commentService.findCommentsByUser(user, pageNumber, pageSize));
 
         return mv;
     }
@@ -208,11 +214,10 @@ public class UserController {
             user = (User) flashParams.get("user");
 
         else
-            user = userService.findByUsername(principal.getName())
-                    .orElseThrow(UserNotFoundException::new);
+            user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
-        mv.addObject("posts", postService.findPostsByUserId(user.getId(), pageNumber, pageSize));
+        mv.addObject("posts", postService.findPostsByUser(user, pageNumber, pageSize));
 
         return mv;
     }
@@ -222,7 +227,6 @@ public class UserController {
                                             final BindingResult bindingResult,
                                             HttpServletRequest request,
                                             final Principal principal) throws IOException {
-
         if(bindingResult.hasErrors())
             return profilePosts(avatarEditForm, request, principal,5,0);
 
@@ -244,7 +248,7 @@ public class UserController {
         final User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
-        mv.addObject("comments", commentService.findCommentsByUserId(user.getId(), pageNumber, pageSize));
+        mv.addObject("comments", commentService.findCommentsByUser(user, pageNumber, pageSize));
 
         return mv;
     }

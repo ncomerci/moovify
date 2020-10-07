@@ -6,6 +6,7 @@ import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,8 +43,8 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public Collection<Movie> findMoviesByPostId(long postId) {
-        return movieDao.findMoviesByPostId(postId);
+    public Collection<Movie> findMoviesByPost(Post post) {
+        return movieDao.findMoviesByPostId(post.getId());
     }
 
     @Override

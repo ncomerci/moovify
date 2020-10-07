@@ -3,20 +3,19 @@ package ar.edu.itba.paw.interfaces.services;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.User;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface UserService {
 
     User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate);
 
-    void editName(long user_id, String name);
+    void updateName(User user, String name);
 
-    void editUsername(long user_id, String username);
+    void updateUsername(User user, String username);
 
-    void editDescription(long user_id, String description);
+    void updateDescription(User user, String description);
 
-    void changePassword(long user_id, String password);
+    void updatePassword(User user, String password);
 
     void delete(long user_id);
 

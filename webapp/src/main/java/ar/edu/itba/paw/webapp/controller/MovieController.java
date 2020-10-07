@@ -57,8 +57,11 @@ public class MovieController {
                              @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("movie/view");
-        mv.addObject("movie", movieService.findById(movieId).orElseThrow(MovieNotFoundException::new));
-        mv.addObject("posts", postService.findPostsByMovieId(movieId, pageNumber, pageSize));
+
+        final Movie movie = movieService.findById(movieId).orElseThrow(MovieNotFoundException::new);
+
+        mv.addObject("movie", movie);
+        mv.addObject("posts", postService.findPostsByMovie(movie, pageNumber, pageSize));
         return mv;
     }
 }

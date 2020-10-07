@@ -19,15 +19,15 @@ public interface CommentService {
 
     Optional<Comment> findCommentById(long id);
 
-    PaginatedCollection<Comment> findCommentChildren(long commentId, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentChildren(Comment comment, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentDescendants(long commentId, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentDescendants(Comment comment, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findPostCommentDescendants(long post_id, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findPostCommentDescendants(Post post, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByPostId(long post_id, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByPost(Post post, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByUserId(long user_id, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByUser(User user, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> getDeletedComments(int pageNumber, int pageSize);
 }

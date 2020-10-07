@@ -53,7 +53,7 @@ public class CommentController {
     }
 
     @RequestMapping(path = "/comment/like",  method = RequestMethod.POST)
-    public ModelAndView post(@RequestParam final long post_id, @RequestParam final long comment_id,
+    public ModelAndView post(@RequestParam final long comment_id,
                              @RequestParam(defaultValue = "0") final int value,
                              final Principal principal,
                              final HttpServletRequest request) {
@@ -74,8 +74,10 @@ public class CommentController {
 
         final ModelAndView mv = new ModelAndView("comment/view");
 
-        mv.addObject("comment", commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new));
-        mv.addObject("children", commentService.findCommentDescendants(id, pageNumber, pageSize));
+        final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
+
+        mv.addObject("comment", comment);
+        mv.addObject("children", commentService.findCommentDescendants(comment, pageNumber, pageSize));
 
         return mv;
     }

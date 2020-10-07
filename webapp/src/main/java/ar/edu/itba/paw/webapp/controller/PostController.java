@@ -56,9 +56,11 @@ public class PostController {
             mv.addObject("likeCurrentValue", userService.hasUserLiked(user.getId(), postId));
         }
 
-        mv.addObject("post", postService.findPostById(postId).orElseThrow(PostNotFoundException::new));
-        mv.addObject("movies", movieService.findMoviesByPostId(postId));
-        mv.addObject("comments", commentService.findPostCommentDescendants(postId, pageNumber, pageSize));
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+
+        mv.addObject("post", post);
+        mv.addObject("movies", movieService.findMoviesByPost(post));
+        mv.addObject("comments", commentService.findPostCommentDescendants(post, pageNumber, pageSize));
 
         return mv;
     }
@@ -96,7 +98,7 @@ public class PostController {
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         final long post = postService.register(postCreateForm.getTitle(), postCreateForm.getBody(),
-                postCreateForm.getCategory(), user.getId(),
+                postCreateForm.getCategory(), user,
                 postCreateForm.getTags() == null ? Collections.emptySet() : postCreateForm.getTags(),
                 postCreateForm.getMovies());
 

@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
@@ -54,24 +53,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void editName(long user_id, String name) {
-        userDao.editName(user_id, name);
+    public void updateName(User user, String name) {
+        userDao.editName(user.getId(), name);
     }
 
     @Override
-    public void editUsername(long user_id, String username) {
-        userDao.editUsername(user_id, username);
+    public void updateUsername(User user, String username) {
+        userDao.editUsername(user.getId(), username);
     }
 
     @Override
-    public void editDescription(long user_id, String description) {
-        userDao.editDescription(user_id, description);
+    public void updateDescription(User user, String description) {
+        userDao.editDescription(user.getId(), description);
     }
 
 
     @Override
-    public void changePassword(long user_id, String password) {
-        userDao.updatePassword(user_id, passwordEncoder.encode(password));
+    public void updatePassword(User user, String password) {
+        userDao.updatePassword(user.getId(), passwordEncoder.encode(password));
+    }
+
+    @Override
+    public void updateAvatar(User user, byte[] newAvatar) {
+
+        final long newAvatarId = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
+
+        userDao.updateAvatarId(user.getId(), newAvatarId);
+
+        imageService.deleteImage(user.getAvatarId());
     }
 
     public Optional<byte[]> getAvatar(long avatarId) {
@@ -95,21 +104,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void promoteUserToAdmin(User user) {
+
         userDao.addRoles(user.getId(), Collections.singletonList(Role.ADMIN_ROLE));
 
         user.getRoles().add(new Role(Role.ADMIN_ROLE));
-    }
-
-    @Override
-    public void updateAvatar(User user, byte[] newAvatar) {
-
-
-
-        final long newAvatarId = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
-
-        userDao.updateAvatarId(user.getId(), newAvatarId);
-
-        imageService.deleteImage(user.getAvatarId());
     }
 
     @Override
