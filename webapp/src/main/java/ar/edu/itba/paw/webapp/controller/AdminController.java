@@ -68,11 +68,11 @@ public class AdminController {
     //    ================ COMMENTS PRIVILEGES ================
 
     @RequestMapping(path = "/comment/delete/{id}", method = RequestMethod.POST)
-    public ModelAndView deleteComment(@PathVariable final long id, @RequestParam final long postId) {
+    public ModelAndView deleteComment(@PathVariable final long id) {
 
         commentService.delete(id);
 
-        return new ModelAndView("redirect:/post/" + postId);
+        return new ModelAndView("redirect:/comment/" + id);
     }
 
     @RequestMapping(path = "/comment/restore/{id}", method = RequestMethod.POST)

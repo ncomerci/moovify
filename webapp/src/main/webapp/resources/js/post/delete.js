@@ -8,15 +8,14 @@ window.addEventListener('load', () => {
 })
 
 function deletePost(postId, modalTitle) {
-    console.log(postId);
     document.getElementById('delete-modal').getElementsByClassName('uk-modal-title')[0].textContent = modalTitle;
     document.getElementById('')
     document.getElementById('modal-confirm')
-        .addEventListener('click', () => submitDeleteForm(`/post/delete/${postId}`), false);
+        .addEventListener('click', () => submitDeleteForm(postId), false);
 }
 
-function submitDeleteForm(action) {
+function submitDeleteForm(postId) {
     const deleteForm = document.forms['delete-form'];
-    deleteForm.action = action;
+    deleteForm.action += `post/delete/${postId}`;
     deleteForm.submit();
 }

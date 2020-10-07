@@ -89,11 +89,7 @@
 
 <sec:authorize access="hasRole('ADMIN')">
     <%--  Delete form  --%>
-    <form method="post" action="" id="delete-form">
-        <label>
-            <input hidden type="number" name="postId" value="${postId}"/>
-        </label>
-    </form>
+    <form method="post" action="<c:url value="/"/>" id="delete-form"></form>
 
     <!-- delete confirmation modal -->
     <div id="delete-modal" uk-modal>
