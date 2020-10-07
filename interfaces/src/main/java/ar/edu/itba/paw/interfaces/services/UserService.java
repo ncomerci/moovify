@@ -3,6 +3,7 @@ package ar.edu.itba.paw.interfaces.services;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.User;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public interface UserService {
@@ -16,6 +17,10 @@ public interface UserService {
     void editDescription(long user_id, String description);
 
     void changePassword(long user_id, String password);
+
+    void delete(long user_id);
+
+    void restore(long user_id);
 
     void promoteUserToAdmin(User user);
 
@@ -44,4 +49,6 @@ public interface UserService {
     Optional<User> findByEmail(String email);
 
     PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize);
+
+    PaginatedCollection<User> getDeletedUsers(int pageNumber, int pageSize);
 }

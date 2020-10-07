@@ -15,6 +15,8 @@ public interface PostService {
 
     void delete(long id);
 
+    void restore(long id);
+
     void likePost(Post post, User user, int value);
 
     Optional<Post> findPostById(long id);
@@ -28,6 +30,8 @@ public interface PostService {
     PaginatedCollection<Post> getAllPostsOrderByOldest(int pageNumber, int pageSize);
 
     PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> getDeletedPosts(int pageNumber, int pageSize);
 
     Collection<PostCategory> getAllPostCategories();
 }

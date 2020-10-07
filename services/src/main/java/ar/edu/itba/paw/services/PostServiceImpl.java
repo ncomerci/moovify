@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
@@ -35,6 +36,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public void delete(long id) {
         postDao.delete(id);
+    }
+
+    @Override
+    public void restore(long id) {
+        postDao.restore(id);
     }
 
     @Override
@@ -74,6 +80,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize) {
         return postDao.getAllPosts(PostDao.SortCriteria.HOTTEST, pageNumber, pageSize);
+    }
+
+    @Override
+    public PaginatedCollection<Post> getDeletedPosts(int pageNumber, int pageSize) {
+        return postDao.getDeletedPosts(PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override

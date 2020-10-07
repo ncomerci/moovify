@@ -73,7 +73,7 @@
                 <form:errors path="repeatPassword" element="p" cssClass="error" cssStyle="color:red;" />
             </div>
             <div class="uk-text-center uk-margin-medium-top">
-                <input class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="submit" value="<spring:message code="user.profile.edit.changePassword"/>" />
+                <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.profile.edit.changePassword"/>" />
             </div>
         </div>
 

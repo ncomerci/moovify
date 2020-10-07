@@ -61,7 +61,7 @@
                 </label>
             </div>
             <div class="uk-text-center">
-                <input class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="submit" value="<spring:message code="user.login.loginTitle"/>" />
+                <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.login.loginTitle"/>" />
             </div>
             <div class="uk-text-center uk-text-bold uk-text-muted uk-margin"><spring:message code="user.login.noAccount"/> <a href="<c:url value="/user/create"/>"><spring:message code="user.create.signUpTitle"/></a></div>
         </fieldset>

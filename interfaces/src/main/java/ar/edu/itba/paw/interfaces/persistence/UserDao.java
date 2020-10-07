@@ -21,6 +21,10 @@ public interface UserDao {
 
     void editDescription(long user_id, String description);
 
+    void delete(long user_id);
+
+    void restore(long user_id);
+
     void replaceUserRole(final long userId, final String newRole, final String oldRole);
 
     boolean userHasRole(long userId, String role);
@@ -46,4 +50,8 @@ public interface UserDao {
     PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<User> getDeletedUsers(SortCriteria sortCriteria, int pageNumber, int pageSize);
 }

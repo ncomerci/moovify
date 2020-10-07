@@ -63,14 +63,6 @@ public class PostController {
         return mv;
     }
 
-    @RequestMapping(path = "/post/delete/{postId}", method = RequestMethod.POST)
-    public ModelAndView delete(@PathVariable final long postId) {
-
-        postService.delete(postId);
-
-        return new ModelAndView("redirect:/");
-    }
-
     @RequestMapping(path = "/post/like", method = RequestMethod.POST )
     public ModelAndView likePost(@RequestParam final long postId,
                                  @RequestParam(defaultValue = "0") final int value,

@@ -410,6 +410,11 @@ public class CommentDaoImpl implements CommentDao {
         jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = false WHERE comment_id = ?", id);
     }
 
+    @Override
+    public void restore(long id) {
+        jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = true WHERE comment_id = ?", id);
+    }
+
     private Collection<Comment> executeQuery(String select, String from, String where, String orderBy, Object[] args, boolean withChildren) {
 
         final String query = select + " " + from + " " + where + " " + orderBy;
@@ -595,5 +600,17 @@ public class CommentDaoImpl implements CommentDao {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + COMMENTS + ".user_id = ? AND " + COMMENTS + ".enabled = true", sortCriteria, pageNumber, pageSize,
                 new Object[] { user_id });
+    }
+
+    @Override
+    public PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + COMMENTS + ".enabled = false", sortCriteria, pageNumber, pageSize, null);
+    }
+
+    @Override
+    public PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + COMMENTS + ".body ILIKE '%' || ? || '%' AND " + COMMENTS + ".enabled = false",
+                sortCriteria, pageNumber, pageSize, new Object[]{query});
     }
 }

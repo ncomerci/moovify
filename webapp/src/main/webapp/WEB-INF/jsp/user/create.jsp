@@ -129,7 +129,7 @@
                     <form:label path="avatar">
                         <div uk-form-custom>
                             <form:input path="avatar" type="file" />
-                            <button class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="button" tabindex="-1"><spring:message code="user.create.selectFile"/></button>
+                            <button class="uk-button uk-button-primary uk-border-rounded extended-button" type="button" tabindex="-1"><spring:message code="user.create.selectFile"/></button>
                         </div>
                     </form:label>
                 </div>
@@ -138,7 +138,7 @@
         </div>
 
         <div class="uk-text-center uk-margin-medium-top">
-            <input class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="submit" value="<spring:message code="user.create.button"/>" />
+            <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.create.button"/>" />
         </div>
         <div class="uk-text-center uk-text-bold uk-text-muted uk-margin"><spring:message code="user.create.alreadyAccount"/> <a href="<c:url value="/login"/>"><spring:message code="user.login.loginTitle"/></a></div>
         <div>

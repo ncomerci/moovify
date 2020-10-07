@@ -360,18 +360,6 @@ public class UserController {
         return userService.getAvatar(avatarId).orElseThrow(ImageNotFoundException::new);
     }
 
-    @RequestMapping(path = "/user/promote/{id}", method = RequestMethod.POST)
-    public ModelAndView promoteUser(@PathVariable long id, RedirectAttributes redirectAttributes) {
-
-        final User user = userService.findById(id).orElseThrow(UserNotFoundException::new);
-
-        userService.promoteUserToAdmin(user);
-
-        redirectAttributes.addFlashAttribute("user", user);
-
-        return new ModelAndView("redirect:/user/" + user.getId());
-    }
-
     private void manualLogin(HttpServletRequest request, String username, String password, Collection<Role> roles) {
 
         PreAuthenticatedAuthenticationToken token =

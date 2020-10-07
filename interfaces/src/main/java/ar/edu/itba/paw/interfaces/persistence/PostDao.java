@@ -17,6 +17,8 @@ public interface PostDao {
 
     void delete(long id);
 
+    void restore(long id);
+
     void likePost(long post_id, long user_id, int value);
 
     void removeLike(long post_id, long user_id);
@@ -29,7 +31,11 @@ public interface PostDao {
 
     PaginatedCollection<Post> findPostsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
+    PaginatedCollection<Post> getDeletedPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
+
     PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> searchDeletedPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> searchPostsByCategory(String query, String category, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
