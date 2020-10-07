@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface UserDao {
 
     enum SortCriteria {
-        NEWEST, OLDEST
+        NEWEST, OLDEST, LIKES, NAME
     }
 
     User register(String username, String password, String name, String email, String description, Collection<String> roleNames,  Long avatarId, boolean enabled);
@@ -31,7 +31,7 @@ public interface UserDao {
 
     boolean userHasRole(String email, String role);
 
-    boolean hasUserLiked(String username, long postId);
+    int hasUserLiked(long user_id, long post_id);
 
     Collection<Role> addRoles(long userId, Collection<String> roleNames);
 
@@ -45,11 +45,13 @@ public interface UserDao {
 
     Optional<User> findByEmail(String email);
 
+    PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize);
+
     PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<User> getDeletedUsers(SortCriteria sortCriteria, int pageNumber, int pageSize);
 }

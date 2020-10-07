@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface MovieDao {
 
     enum SortCriteria {
-        NEWEST, OLDEST
+        NEWEST, OLDEST, TITLE, POST_COUNT
     }
 
     Optional<Movie> findById(long id);
@@ -24,4 +24,12 @@ public interface MovieDao {
     Collection<Movie> getAllMoviesNotPaginated();
 
     PaginatedCollection<Movie> searchMovies(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Movie> searchMoviesByCategory (String query, String category, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Movie> searchMoviesByReleaseDate (String query, LocalDate since, LocalDate upTo, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Movie> searchMoviesByCategoryAndReleaseDate (String query, String category, LocalDate since, LocalDate upTo, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+
 }

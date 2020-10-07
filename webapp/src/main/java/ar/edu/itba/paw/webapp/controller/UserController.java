@@ -8,9 +8,9 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.ImageNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
-import ar.edu.itba.paw.webapp.form.*;
-
-/*import ar.edu.itba.paw.webapp.form.UserEditForm;*/
+import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
+import ar.edu.itba.paw.webapp.form.UpdatePasswordForm;
+import ar.edu.itba.paw.webapp.form.UserCreateForm;
 import ar.edu.itba.paw.webapp.form.editProfile.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,14 +23,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.security.Principal;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -85,9 +85,8 @@ public class UserController {
                                  @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm,
                                  Principal principal) {
 
-        if(bindingResult.hasErrors()){
+        if(bindingResult.hasErrors())
             return editProfile(nameEditForm, usernameEditForm, descriptionEditForm ) ;
-        }
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
@@ -150,55 +149,65 @@ public class UserController {
     }
 
     @RequestMapping(path = {"/user/{userId}", "/user/{userId}/posts"} , method = RequestMethod.GET)
-    public ModelAndView viewPosts(HttpServletRequest request,
+    public ModelAndView viewPosts(RedirectAttributes redirectAttributes,
                                   @PathVariable final long userId,
                                   @RequestParam(defaultValue = "5") final int pageSize,
                                   @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("user/view/viewPosts");
 
-        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+        Map<String, ?> flashParams = redirectAttributes.getFlashAttributes();
 
-        if(inputFlashMap == null || !inputFlashMap.containsKey("user"))
+        if(flashParams != null && flashParams.containsKey("user"))
+            mv.addObject("user", flashParams.get("user"));
+
+        else
             mv.addObject("user", userService.findById(userId)
                 .orElseThrow(UserNotFoundException::new));
 
         mv.addObject("posts", postService.findPostsByUserId(userId, pageNumber, pageSize));
+
         return mv;
     }
 
     @RequestMapping(path = "/user/{userId}/comments", method = RequestMethod.GET)
-    public ModelAndView viewComments(HttpServletRequest request, @PathVariable final long userId,
+    public ModelAndView viewComments(RedirectAttributes redirectAttributes,
+                                     @PathVariable final long userId,
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("user/view/viewComments");
 
-        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+        Map<String, ?> flashParams = redirectAttributes.getFlashAttributes();
 
-        if(inputFlashMap == null || !inputFlashMap.containsKey("user"))
+        if(flashParams != null && flashParams.containsKey("user"))
+            mv.addObject("user", flashParams.get("user"));
+
+        else
             mv.addObject("user", userService.findById(userId)
                     .orElseThrow(UserNotFoundException::new));
 
         mv.addObject("comments", commentService.findCommentsByUserId(userId, pageNumber, pageSize));
+
         return mv;
     }
 
     @RequestMapping(path = {"/user/profile", "/user/profile/posts"}, method = RequestMethod.GET)
-    public ModelAndView profilePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, HttpServletRequest request, Principal principal,
+    public ModelAndView profilePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, RedirectAttributes redirectAttributes, Principal principal,
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("user/profile/profilePosts");
 
         User user;
-        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+        Map<String, ?> flashParams = redirectAttributes.getFlashAttributes();
 
-        if(inputFlashMap == null || !inputFlashMap.containsKey("user"))
-            user = userService.findByUsername(principal.getName())
-                .orElseThrow(UserNotFoundException::new);
+        if(flashParams != null && flashParams.containsKey("user"))
+            user = (User) flashParams.get("user");
+
         else
-            user = (User) inputFlashMap.get("user");
+            user = userService.findByUsername(principal.getName())
+                    .orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
         mv.addObject("posts", postService.findPostsByUserId(user.getId(), pageNumber, pageSize));
@@ -208,10 +217,10 @@ public class UserController {
 
     @RequestMapping(path = "/user/profile/avatar", method = RequestMethod.POST)
     public ModelAndView registerProfilePost(@Valid @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, final BindingResult bindingResult,
-                                HttpServletRequest httpServletRequest, Principal principal) throws IOException {
+                                RedirectAttributes redirectAttributes, Principal principal) throws IOException {
 
         if(bindingResult.hasErrors())
-            return profilePosts(avatarEditForm,httpServletRequest,principal,5,0);
+            return profilePosts(avatarEditForm, redirectAttributes, principal,5,0);
 
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
@@ -220,7 +229,6 @@ public class UserController {
 
         return new ModelAndView("redirect:/user/profile");
     }
-
 
     @RequestMapping(path = "/user/profile/comments", method = RequestMethod.GET)
     public ModelAndView profileComments(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, Principal principal,
@@ -313,22 +321,22 @@ public class UserController {
 
     @RequestMapping(path = "/user/updatePassword", method = RequestMethod.GET)
     public ModelAndView showUpdatePassword(@ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm,
-                                           HttpServletRequest request) {
+                                           RedirectAttributes redirectAttributes) {
 
-        Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+        Map<String, ?> flashParams = redirectAttributes.getFlashAttributes();
 
-        if(inputFlashMap != null && inputFlashMap.containsKey("token"))
-            updatePasswordForm.setToken((String) inputFlashMap.get("token"));
+        if(flashParams != null && flashParams.containsKey("token"))
+            updatePasswordForm.setToken((String) flashParams.get("token"));
 
         return new ModelAndView("user/resetPassword/updatePassword");
     }
 
     @RequestMapping(path = "/user/updatePassword", method = RequestMethod.POST)
     public ModelAndView updatePassword(@Valid @ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm,
-                                       final BindingResult bindingResult, HttpServletRequest request) {
+                                       final BindingResult bindingResult, HttpServletRequest request, RedirectAttributes redirectAttributes) {
 
         if(bindingResult.hasErrors())
-            return showUpdatePassword(updatePasswordForm, request);
+            return showUpdatePassword(updatePasswordForm, redirectAttributes);
 
         User user = userService.updatePassword(updatePasswordForm.getPassword(), updatePasswordForm.getToken())
                 .orElseThrow(InvalidResetPasswordToken::new);
@@ -343,7 +351,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/avatar/{avatarId}", method = RequestMethod.GET, produces = "image/*")
-    public @ResponseBody byte[] getAvatar(@PathVariable long avatarId) throws IOException, URISyntaxException {
+    public @ResponseBody byte[] getAvatar(@PathVariable long avatarId) {
 
         return userService.getAvatar(avatarId).orElseThrow(ImageNotFoundException::new);
     }

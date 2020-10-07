@@ -3,6 +3,7 @@ package ar.edu.itba.paw.interfaces.services;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
+import ar.edu.itba.paw.models.User;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -16,7 +17,7 @@ public interface PostService {
 
     void restore(long id);
 
-    void likePost(long post_id, long user_id, boolean value);
+    void likePost(Post post, User user, int value);
 
     Optional<Post> findPostById(long id);
 

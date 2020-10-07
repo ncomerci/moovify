@@ -3,8 +3,6 @@ package ar.edu.itba.paw.interfaces.services;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.User;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -24,7 +22,7 @@ public interface UserService {
 
     void restore(long user_id);
 
-    void addRoles(long userId, Collection<String> roleNames);
+    void promoteUserToAdmin(User user);
 
     Optional<User> confirmRegistration(String token);
 
@@ -34,11 +32,11 @@ public interface UserService {
 
     boolean validatePasswordResetToken(String token);
 
-    boolean hasUserLiked(String username, long postId);
+    int hasUserLiked(long user_id, long post_id);
 
     Optional<User> updatePassword(String password, String token);
 
-    Optional<byte[]> getAvatar(long avatarId) throws IOException, URISyntaxException;
+    Optional<byte[]> getAvatar(long avatarId);
 
     void updateAvatar(User user, byte[] newAvatar);
 

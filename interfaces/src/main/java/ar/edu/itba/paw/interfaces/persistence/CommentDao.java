@@ -13,7 +13,7 @@ public interface CommentDao {
 
     long register(long postId, Long parentId, String body, long userId, boolean enabled);
 
-    void likeComment(long comment_id, long user_id);
+    void likeComment(long comment_id, long user_id, int value);
 
     void removeLike(long comment_id, long user_id);
 

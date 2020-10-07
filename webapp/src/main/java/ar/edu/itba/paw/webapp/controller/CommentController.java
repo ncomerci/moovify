@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
@@ -46,13 +47,13 @@ public class CommentController {
 
     @RequestMapping(path = "/comment/like",  method = RequestMethod.POST)
     public ModelAndView post(@RequestParam final long post_id, @RequestParam final long comment_id,
-                             @RequestParam(defaultValue = "false") final boolean value,
+                             @RequestParam(defaultValue = "0") final int value,
                              final Principal principal,
                              final HttpServletRequest request) {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-
-        commentService.likeComment(comment_id, user.getId(), value);
+        Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
+        commentService.likeComment(comment, user, value);
 
         return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-section");
 

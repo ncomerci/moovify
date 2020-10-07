@@ -1,10 +1,13 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.services.MailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -18,6 +21,8 @@ import java.util.Map;
 public class MailServiceImpl implements MailService {
 
     private static final String EMAIL_ENCODING = StandardCharsets.UTF_8.displayName();
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MailServiceImpl.class);
 
     @Autowired
     private JavaMailSender emailSender;
@@ -38,8 +43,9 @@ public class MailServiceImpl implements MailService {
     // message.addInline(imageResourceName, imageSource, imageContentType);
     // message.addAttachment("logo.png", new ClassPathResource("memorynotfound-logo.png"));
 
+    @Async
     @Override
-    public void sendEmail(String destination, String subject, String template, Map<String, Object> variables) throws MessagingException {
+    public void sendEmail(String destination, String subject, String template, Map<String, Object> variables) {
 
         // Prepare the evaluation context
         final Context context = new Context();
@@ -50,14 +56,22 @@ public class MailServiceImpl implements MailService {
         // Prepare message using a Spring helper
         final MimeMessage mimeMessage = emailSender.createMimeMessage();
 
-        final MimeMessageHelper message =
-                new MimeMessageHelper(mimeMessage, true, EMAIL_ENCODING);
+        try {
 
-        message.setSubject(subject);
-        message.setFrom(MOOVIFY_EMAIL_ADDRESS);
-        message.setTo(destination);
+            final MimeMessageHelper message =
+                    new MimeMessageHelper(mimeMessage, true, EMAIL_ENCODING);
 
-        message.setText(templateEngine.process(template, context), true);
+            message.setSubject(subject);
+            message.setFrom(MOOVIFY_EMAIL_ADDRESS);
+            message.setTo(destination);
+
+            message.setText(templateEngine.process(template, context), true);
+        }
+        catch(MessagingException e) {
+            LOGGER.error("Email sending failed. Subject {}; Destination {}; Template {}", subject, destination, template, e);
+        }
+
+        LOGGER.debug("Email sent successfully. Subject {}; Destination {}; Template {}", subject, destination, template);
 
         emailSender.send(mimeMessage);
     }

@@ -23,7 +23,7 @@
         <ul>
             <c:forEach items="${movie.categories}" var="category">
                 <li>
-                    <c:out value="${category.name}"/>
+                    <spring:message code="search.movies.categories.${category.name}"/>
                 </li>
             </c:forEach>
         </ul>

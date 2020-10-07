@@ -3,11 +3,20 @@ package ar.edu.itba.paw.models;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Map;
 
 public class Comment {
 
     public static int getTotalComments(Collection<Comment> comments) {
         return comments.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount() + 1, Integer::sum);
+    }
+
+    public static boolean hasUserVotedComment(Comment comment, long user_id){
+        return comment.getVotedBy().containsKey(user_id);
+    }
+
+    public static boolean hasUserLikedComment(Comment comment, long user_id){
+        return comment.getVotedBy().get(user_id);
     }
 
     private final long id;
@@ -18,9 +27,11 @@ public class Comment {
     private final String body;
     private final User user;
     private final long likes;
+    private final Map<Long, Boolean> votedBy;
     private final boolean enabled;
 
-    public Comment(long id, LocalDateTime creationDate, Post post, Long parentId, Collection<Comment> children, String body, User user, boolean enabled, long likes) {
+
+    public Comment(long id, LocalDateTime creationDate, Post post, Long parentId, Collection<Comment> children, String body, User user, boolean enabled, long likes, Map<Long, Boolean> votedBy) {
         this.id = id;
         this.creationDate = creationDate;
         this.post = post;
@@ -30,6 +41,7 @@ public class Comment {
         this.user = user;
         this.enabled = enabled;
         this.likes = likes;
+        this.votedBy = votedBy;
     }
 
     public long getId() {
@@ -63,6 +75,10 @@ public class Comment {
 
     public long getLikes() {
         return likes;
+    }
+
+    public Map<Long, Boolean> getVotedBy() {
+        return votedBy;
     }
 
     public int getDescendantCount() {

@@ -23,8 +23,10 @@ public class UserDaoImpl implements UserDao {
     private static final String USERS = TableNames.USERS.getTableName();
     private static final String ROLES = TableNames.ROLES.getTableName();
     private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
+    private static final String POSTS = TableNames.POSTS.getTableName();
     private static final String POSTS_LIKES = TableNames.POSTS_LIKES.getTableName();
     private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
+    private static final String COMMENTS = TableNames.COMMENTS.getTableName();
 
     private static final String BASE_USER_SELECT = "SELECT " +
             USERS + ".user_id u_user_id, " +
@@ -37,22 +39,36 @@ public class UserDaoImpl implements UserDao {
             USERS + ".avatar_id u_avatar_id, " +
             USERS + ".enabled u_enabled";
 
+    private static final String TOTAL_LIKES_SELECT = "TOTAL_LIKES.total_likes u_total_likes";
+
     private static final String ROLE_SELECT =
             ROLES + ".role_id r_role_id, " +
             ROLES + ".role r_role";
 
-    private static final String LIKES_SELECT =
-            COMMENTS_LIKES + ".comment_id c_comment_id";
-
 
     private static final String BASE_USER_FROM = "FROM " + USERS;
+
+    private static final String TOTAL_LIKES_FROM = "INNER JOIN ( " +
+            "SELECT " + USERS + ".user_id, coalesce(post_likes.total_likes, 0) + coalesce(comment_likes.total_likes, 0) total_likes " +
+                    "FROM " + USERS +
+                        " LEFT OUTER JOIN ( " +
+                            "SELECT " + POSTS + ".user_id, SUM(" + POSTS_LIKES + ".value) total_likes " +
+                            "FROM " + POSTS +
+                                " INNER JOIN " + POSTS_LIKES + " ON " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id " +
+                            "GROUP BY " + POSTS + ".user_id " +
+                        ") post_likes ON " + USERS + ".user_id = post_likes.user_id " +
+
+                        "LEFT OUTER JOIN ( " +
+                            "SELECT " + COMMENTS + ".user_id, SUM(" + COMMENTS_LIKES + ".value) total_likes " +
+                            "FROM " + COMMENTS +
+                                " INNER JOIN " + COMMENTS_LIKES + " ON " + COMMENTS + ".comment_id = " + COMMENTS_LIKES + ".comment_id " +
+                            "GROUP BY " + COMMENTS + ".user_id " +
+                    ") comment_likes ON " + USERS + ".user_id = comment_likes.user_id " +
+            ") TOTAL_LIKES ON TOTAL_LIKES.user_id = " + USERS + ".user_id";
 
     private static final String ROLE_FROM =
             "INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
             "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id";
-
-    private static final String LIKES_FROM =
-            "LEFT OUTER JOIN " + COMMENTS_LIKES + " ON " + COMMENTS_LIKES + ".user_id = " + USERS + ".user_id ";
 
 
     private static final ResultSetExtractor<Collection<User>> USER_ROW_MAPPER = (rs) -> {
@@ -60,7 +76,6 @@ public class UserDaoImpl implements UserDao {
         Map<Long, Role> idToRoleMap = new HashMap<>();
         long userId;
         long role_id;
-        long comment_id;
 
         while(rs.next()){
 
@@ -70,8 +85,9 @@ public class UserDaoImpl implements UserDao {
                 idToUserMap.put(userId,
                         new User(userId, rs.getObject("u_creation_date", LocalDateTime.class),
                                 rs.getString("u_username"), rs.getString("u_password"),
-                                rs.getString("u_name"), rs.getString("u_email"), rs.getString("u_description"), rs.getLong("u_avatar_id"),
-                                new HashSet<>(), rs.getBoolean("u_enabled"), new HashSet<>())
+                                rs.getString("u_name"), rs.getString("u_email"), rs.getString("u_description"),
+                                rs.getLong("u_avatar_id"), rs.getLong("u_total_likes"),
+                                new HashSet<>(), rs.getBoolean("u_enabled"))
                 );
             }
 
@@ -82,10 +98,6 @@ public class UserDaoImpl implements UserDao {
 
             idToUserMap.get(userId).getRoles().add(idToRoleMap.get(role_id));
 
-            comment_id = rs.getLong("c_comment_id");
-
-            if(comment_id > 0)
-                idToUserMap.get(userId).getLikedComments().add(comment_id);
         }
 
         return idToUserMap.values();
@@ -99,12 +111,11 @@ public class UserDaoImpl implements UserDao {
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, USERS + ".creation_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, USERS + ".creation_date");
+        sortCriteriaQuery.put(SortCriteria.LIKES, "TOTAL_LIKES.total_likes desc");
+        sortCriteriaQuery.put(SortCriteria.NAME, USERS + ".name");
 
         return sortCriteriaQuery;
     }
-
-    private static final String ENABLED_FILTER = USERS + ".enabled = true";
-    private static final String NOT_ENABLED_FILTER = USERS + ".enabled = false";
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert jdbcUserInsert;
@@ -155,7 +166,7 @@ public class UserDaoImpl implements UserDao {
             jdbcUserRoleInsert.execute(map);
         }
 
-        return new User(userId, creationDate, username, password, name, email, description, avatarId, roles, true , Collections.emptySet());
+        return new User(userId, creationDate, username, password, name, email, description, avatarId, 0, roles, true);
     }
 
     @Override
@@ -193,6 +204,7 @@ public class UserDaoImpl implements UserDao {
         jdbcTemplate.update("UPDATE " + USERS + " SET enabled = true WHERE user_id = ?", userId);
     }
 
+    // TODO: can be done in a single query. Important!
     @Override
     public Collection<Role> addRoles(long userId, Collection<String> roleNames) {
         Collection<Role> roles = roleDao.findRolesByName(roleNames);
@@ -227,11 +239,10 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean hasUserLiked(String username, long postId) {
+    public int hasUserLiked(long user_id, long post_id) {
         return jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM " + USERS +
-                " LEFT OUTER JOIN " + POSTS_LIKES + " ON " + USERS + ".user_id = " + POSTS_LIKES + ".user_id" +
-                " WHERE username = ? AND post_id = ?", new Object[] { username, postId }, Integer.class) > 0;
+                "SELECT COALESCE(SUM(" + POSTS_LIKES + ".value), 0)  FROM " + POSTS_LIKES +
+                " WHERE user_id = ? AND post_id = ?", new Object[] { user_id, post_id }, Integer.class);
     }
 
     @Override
@@ -258,18 +269,18 @@ public class UserDaoImpl implements UserDao {
 
     private Collection<User> buildAndExecuteQuery(String customWhereStatement, Object[] args){
 
-        final String select = BASE_USER_SELECT + ", " + ROLE_SELECT + ", " + LIKES_SELECT;
+        final String select = buildSelectStatement();
 
-        final String from = BASE_USER_FROM + " " + ROLE_FROM + " " + LIKES_FROM;
+        final String from = buildFromStatement();
 
         return executeQuery(select, from, customWhereStatement, "", args);
     }
 
     private PaginatedCollection<User> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
 
-        final String select = BASE_USER_SELECT + ", " + ROLE_SELECT + ", " + LIKES_SELECT;
+        final String select = buildSelectStatement();
 
-        final String from = BASE_USER_FROM + " " + ROLE_FROM + " " + LIKES_FROM;
+        final String from = buildFromStatement();
 
         // Execute original query to count total posts in the query
         final int totalUserCount = jdbcTemplate.queryForObject(
@@ -279,13 +290,28 @@ public class UserDaoImpl implements UserDao {
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
-        final String newWhere = "WHERE " + USERS + ".user_id IN (SELECT " + USERS + ".user_id FROM " + USERS + " WHERE " + USERS + ".user_id IN (" +
-                "SELECT " + USERS + ".user_id " + from + " " + customWhereStatement +
-                " ) " + orderBy + " " + pagination + ")";
+        final String newWhere = "WHERE " + USERS + ".user_id IN ( " +
+                "SELECT AUX.user_id " +
+                "FROM (" +
+                    "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + USERS + ".user_id " +
+                    from + " " +
+                    customWhereStatement +
+                " ) AUX " +
+                "GROUP BY AUX.user_id " +
+                "ORDER BY MIN(AUX.row_num) " +
+                pagination + ")";
 
         final Collection<User> results = executeQuery(select, from, newWhere, orderBy, args);
 
         return new PaginatedCollection<>(results, pageNumber, pageSize, totalUserCount);
+    }
+
+    private String buildSelectStatement() {
+        return BASE_USER_SELECT + ", " + TOTAL_LIKES_SELECT + ", " + ROLE_SELECT;
+    }
+
+    private String buildFromStatement() {
+        return BASE_USER_FROM + " " + TOTAL_LIKES_FROM + " " + ROLE_FROM;
     }
 
     private String buildOrderByStatement(SortCriteria sortCriteria) {
@@ -304,9 +330,7 @@ public class UserDaoImpl implements UserDao {
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }
 
-    // TODO: CHECK USERS ENABLED. findById, searchUsers
-//    " WHERE " + USERS + ".user_id = ?" + " AND "+ USERS + ".enabled = true"
-//    WHERE " + USERS + ".username ILIKE '%' || ? || '%'" + " AND "+ USERS + ".enabled = true
+    private static final String ENABLED_FILTER = USERS + ".enabled = true";
 
     @Override
     public Optional<User> findById(long id) {
@@ -327,26 +351,45 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%' AND " + ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{query});
-    }
-
-    @Override
-    public PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%' AND " + NOT_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{query});
-    }
-
-    @Override
     public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
 
+    // Search Query Statements
+    private static final String SEARCH_BY_NAME = USERS + ".name ILIKE '%' || ? || '%'";
+
+    private static final String SEARCH_BY_ROLE = USERS + ".user_id IN ( " +
+            "SELECT " + USER_ROLE + ".user_id " +
+            "FROM " + ROLES + " " +
+                "INNER JOIN " + USER_ROLE + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id " +
+            "WHERE " + ROLES + ".role = ?)";
+
+    @Override
+    public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_NAME +
+                                    " AND " + ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query });
+    }
+
+    @Override
+    public PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%' AND " + USERS + ".enabled = false",
+                sortCriteria, pageNumber, pageSize, new Object[]{query});
+    }
+
+    @Override
+    public PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_NAME +
+                                                                " AND " + SEARCH_BY_ROLE +
+                                                                " AND " + ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, role });
+    }
+
     @Override
     public PaginatedCollection<User> getDeletedUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
-                "WHERE " + NOT_ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
+                "WHERE " + USERS + ".enabled = false", sortCriteria, pageNumber, pageSize, null);
     }
 }

@@ -4,6 +4,8 @@ import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Collections;
 
@@ -101,10 +104,15 @@ public class AdminController {
     //    ================ USERS PRIVILEGES ================
 
     @RequestMapping(path = "/user/promote/{id}", method = RequestMethod.POST)
-    public ModelAndView promoteUser(@PathVariable long id) {
+    public ModelAndView promoteUser(@PathVariable long id, RedirectAttributes redirectAttributes) {
 
-        userService.addRoles(id, Collections.singletonList("ADMIN"));
-        return new ModelAndView("redirect:/user/" + id);
+        final User user = userService.findById(id).orElseThrow(UserNotFoundException::new);
+
+        userService.promoteUserToAdmin(user);
+
+        redirectAttributes.addFlashAttribute("user", user);
+
+        return new ModelAndView("redirect:/user/" + user.getId());
     }
 
     @RequestMapping(path = "/user/delete/{id}", method = RequestMethod.POST)

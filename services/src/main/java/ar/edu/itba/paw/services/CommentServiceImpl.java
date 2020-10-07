@@ -4,8 +4,10 @@ import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -15,6 +17,7 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentDao commentDao;
 
+    @Transactional
     @Override
     public long register(long postId, Long parentId, String body, long userId) {
         return commentDao.register(postId, parentId,
@@ -23,16 +26,19 @@ public class CommentServiceImpl implements CommentService {
                         .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId, true);
     }
 
+    @Transactional
     @Override
-    public void likeComment(long comment_id, long user_id, boolean value) {
-        if(value)
-            commentDao.likeComment(comment_id, user_id);
-        else
-            commentDao.removeLike(comment_id, user_id);
+    public void likeComment(Comment comment, User user, int value) {
+        if(value == 0)
+            commentDao.removeLike(comment.getId(), user.getId());
+        else if(value == -1 || value == 1)
+            commentDao.likeComment(comment.getId(), user.getId(), value);
     }
 
     @Override
-    public void delete(long id) { commentDao.delete(id); }
+    public void delete(long id) {
+        commentDao.delete(id);
+    }
 
     @Override
     public void restore(long id) {
@@ -40,7 +46,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Optional<Comment> findCommentById(long commentId){
+    public Optional<Comment> findCommentById(long commentId) {
         return commentDao.findCommentById(commentId);
     }
 
@@ -51,12 +57,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public PaginatedCollection<Comment> findCommentDescendants(long commentId, int pageNumber, int pageSize) {
-        return commentDao.findCommentDescendants(commentId, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+        return commentDao.findCommentDescendants(commentId, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
     @Override
     public PaginatedCollection<Comment> findPostCommentDescendants(long post_id, int pageNumber, int pageSize) {
-        return commentDao.findPostCommentDescendants(post_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+        return commentDao.findPostCommentDescendants(post_id, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
     @Override

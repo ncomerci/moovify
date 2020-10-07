@@ -15,15 +15,12 @@ public class User {
     private final String email;
     private final String description;
     private final long avatarId;
+    private final long totalLikes;
     private final Collection<Role> roles;
-    private final Collection<Long> likedComments;
     private final boolean enabled;
 
-    public static boolean hasUserLikedComment(User user, long comment_id){
-        return user.getLikedComments().contains(comment_id);
-    }
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Long avatarId, Collection<Role> roles, boolean enabled, Collection<Long> likedComments) {
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Long avatarId, long totalLikes, Collection<Role> roles, boolean enabled) {
         this.id = id;
         this.creationDate = creationDate;
         this.username = username;
@@ -32,9 +29,9 @@ public class User {
         this.email = email;
         this.description = description;
         this.avatarId = (avatarId == null)? DEFAULT_AVATAR_ID : avatarId;
+        this.totalLikes = totalLikes;
         this.roles = roles;
         this.enabled = enabled;
-        this.likedComments = likedComments;
     }
 
     public long getId() {
@@ -69,10 +66,6 @@ public class User {
         return roles;
     }
 
-    public Collection<Long> getLikedComments() {
-        return likedComments;
-    }
-
     public boolean hasRole(String role) {
         return roles.stream().anyMatch(r -> r.getRole().equals(role));
     }
@@ -81,6 +74,10 @@ public class User {
 
     public long getAvatarId() {
         return avatarId;
+    }
+
+    public long getTotalLikes() {
+        return totalLikes;
     }
 
     public boolean isAdmin() {

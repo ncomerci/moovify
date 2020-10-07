@@ -26,29 +26,58 @@
 
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
     <div id="post-metadata" >
-        <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/>
-            <sec:authorize access="hasRole('USER')">
-                <c:if test="${!isPostLiked}">
-                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-post-button"  data-value="true">
-                        <span class="uk-text-right"><c:out value="${post.likes}"/></span>
-                        <span class="iconify" data-icon="ant-design:heart-outlined" data-inline="false"></span>
-                    </a>
-                </c:if>
-                <c:if test="${isPostLiked}">
-                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-post-button" data-value="false">
-                        <span class="uk-text-right iconify"><c:out value="${post.likes}"/></span>
-                        <span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span>
-                    </a>
-                </c:if>
-            </sec:authorize>
-            <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
-                <div class="uk-align-right">
-                    <span class="uk-text-right"><c:out value="${post.likes}"/><span class="iconify" data-icon="ant-design:heart-filled" data-inline="false"></span></span>
+        <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
+            <div class="uk-width-4-5">
+                <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
+            </div>
+            <div class="uk-width-1-5 uk-margin-small-top">
+                <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
+                    <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
+                        <div class="uk-text-center uk-padding-remove uk-margin-remove">
+                            <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
+                                <spring:message code="post.view.likes" arguments="${post.likes}"/>
+                            </p>
+                        </div>
+                    </sec:authorize>
+                    <sec:authorize access="hasRole('USER')">
+                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
+                            <sec:authorize access="hasRole('USER')">
+                                <c:if test="${likeCurrentValue != 1}">
+                                    <a class="like-post-button" data-value="${ 1 }">
+                                        <span class="iconify" data-icon="cil:chevron-top" data-inline="false"></span>
+                                    </a>
+                                </c:if>
+                                <c:if test="${likeCurrentValue == 1}">
+                                    <a class="like-post-button" data-value="${ 0 }">
+                                        <span class="iconify" data-icon="el:chevron-up" data-inline="false"></span>
+                                    </a>
+                                </c:if>
+                            </sec:authorize>
+                        </div>
+                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
+                            <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
+                                <c:out value="${post.likes}"/>
+                            </p>
+                        </div>
 
+                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
+                            <sec:authorize access="hasRole('USER')">
+                                <c:if test="${likeCurrentValue != -1}">
+                                    <a class=" like-post-button"  data-value="${ -1 }">
+                                        <span class="iconify" data-icon="cil:chevron-bottom" data-inline="true"></span>
+                                    </a>
+                                </c:if>
+                                <c:if test="${likeCurrentValue == -1}">
+                                    <a class="like-post-button"  data-value="${ 0 }">
+                                        <span class="iconify" data-icon="el:chevron-down" data-inline="true"></span>
+                                    </a>
+                                </c:if>
+                            </sec:authorize>
+                        </div>
+                    </sec:authorize>
                 </div>
-            </sec:authorize>
-        </h1>
-
+            </div>
+        </div>
         <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
 <%--                TODO: Create a custom taglib  --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
@@ -135,7 +164,7 @@
         <input hidden name="postId" type="number" value="${postId}"/>
     </label>
     <label>
-        <input hidden name="value" id="post-like-value" type="checkbox"/>
+        <input hidden name="value" id="post-like-value" type="number"/>
     </label>
 </form>
 

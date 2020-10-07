@@ -12,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.*;
 
 @Service
@@ -77,7 +74,7 @@ public class UserServiceImpl implements UserService {
         userDao.updatePassword(user_id, passwordEncoder.encode(password));
     }
 
-    public Optional<byte[]> getAvatar(long avatarId) throws IOException, URISyntaxException {
+    public Optional<byte[]> getAvatar(long avatarId) {
 
         if(avatarId == User.DEFAULT_AVATAR_ID)
             return Optional.of(imageService.getImage(DEFAULT_AVATAR_PATH));
@@ -97,8 +94,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addRoles(long userId, Collection<String> roleNames) {
-        userDao.addRoles(userId, roleNames);
+    public void promoteUserToAdmin(User user) {
+        userDao.addRoles(user.getId(), Collections.singletonList(Role.ADMIN_ROLE));
+
+        user.getRoles().add(new Role(Role.ADMIN_ROLE));
     }
 
     @Override
@@ -123,13 +122,7 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("token", token);
 
-        try {
-            mailService.sendEmail(user.getEmail(), "Moovify - Confirmation Email", confirmationMailTemplate, emailVariables);
-        }
-        catch (MessagingException e) {
-            // TODO: Log and rollback and handle exception better. Por ejemplo, mandarlo a Controller y mostrar un intentar enviar el mail de nuevo
-            System.out.println("Confirmation email failed to send");
-        }
+        mailService.sendEmail(user.getEmail(), "Moovify - Confirmation Email", confirmationMailTemplate, emailVariables);
     }
 
     @Override
@@ -142,13 +135,7 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("token", token);
 
-        try {
-            mailService.sendEmail(user.getEmail(), "Moovify - Password Reset", passwordResetMailTemplate, emailVariables);
-        }
-        catch (MessagingException e) {
-            // TODO: Log. Mejor handling del error de mail
-            System.out.println("Password reset email failed to send");
-        }
+        mailService.sendEmail(user.getEmail(), "Moovify - Password Reset", passwordResetMailTemplate, emailVariables);
     }
 
     @Override
@@ -176,8 +163,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean hasUserLiked(String username, long postId) {
-        return userDao.hasUserLiked(username, postId);
+    public int hasUserLiked(long user_id, long post_id) {
+        return userDao.hasUserLiked(user_id, post_id);
     }
 
     @Override

@@ -3,10 +3,12 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
+import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
+import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class PostServiceImpl implements PostService {
 
     @Autowired
     private PostDao postDao;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private PostCategoryDao categoryDao;
@@ -39,11 +44,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void likePost(long post_id, long user_id, boolean value) {
-        if(value)
-            postDao.likePost(post_id, user_id);
-        else
-            postDao.removeLike(post_id, user_id);
+    public void likePost(Post post, User user, int value) {
+        if(value == 0)
+            postDao.removeLike(post.getId(), user.getId());
+        else if(value == -1 || value == 1)
+            postDao.likePost(post.getId(), user.getId(), value);
     }
 
     @Override
