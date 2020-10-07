@@ -189,6 +189,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public void restore(long userId) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET enabled = true WHERE user_id = ?", userId);
+    }
+
+    @Override
     public Collection<Role> addRoles(long userId, Collection<String> roleNames) {
         Collection<Role> roles = roleDao.findRolesByName(roleNames);
 
@@ -324,6 +329,12 @@ public class UserDaoImpl implements UserDao {
     @Override
     public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%' AND " + ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{query});
+    }
+
+    @Override
+    public PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%' AND " + NOT_ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{query});
     }
 

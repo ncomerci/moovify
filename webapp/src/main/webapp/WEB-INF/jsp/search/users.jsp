@@ -23,7 +23,7 @@
 
         <section id="search-results" class="uk-flex uk-flex-wrap">
             <c:if test="${empty users.results}">
-                <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.user.userNotFound"/> </h1>
+                <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.notFound" arguments="users"/> </h1>
             </c:if>
             <c:forEach items="${users.results}" var="user">
                 <div class="uk-width-1-1">

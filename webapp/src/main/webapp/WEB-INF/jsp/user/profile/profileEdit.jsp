@@ -129,7 +129,7 @@
                 </div>
                 <div class="uk-width-1-2">
                     <a class="uk-text-center" href="<c:url value="/user/changePassword"/>">
-                        <button class="uk-button uk-button-primary uk-border-rounded user-profile-button" type="button"><spring:message code="user.profile.edit.changePassword"/></button>
+                        <button class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="user.profile.edit.changePassword"/></button>
                     </a>
                 </div>
             </div>

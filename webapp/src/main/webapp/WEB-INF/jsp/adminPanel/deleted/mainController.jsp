@@ -6,6 +6,10 @@
 <jsp:useBean id="currentSelection" scope="request" type="java.lang.String"/>
 <jsp:useBean id="query" scope="request" type="java.lang.String"/>
 
+<head>
+    <script src="<c:url value="/resources/js/adminPanel/mainController.js"/>"></script>
+</head>
+
 <div class="uk-search uk-search-large">
     <span uk-search-icon></span>
     <input class="uk-search-input" type="search" id="query-input" value="${query}" name="query">

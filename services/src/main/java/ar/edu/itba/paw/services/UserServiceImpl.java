@@ -92,6 +92,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void restore(long user_id) {
+        userDao.restore(user_id);
+    }
+
+    @Override
     public void addRoles(long userId, Collection<String> roleNames) {
         userDao.addRoles(userId, roleNames);
     }

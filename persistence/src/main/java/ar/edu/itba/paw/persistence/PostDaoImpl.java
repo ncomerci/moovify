@@ -271,6 +271,11 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
+    public void restore(long id) {
+        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = true WHERE post_id = ?",  id);
+    }
+
+    @Override
     public void likePost(long post_id, long user_id) {
 
         HashMap<String, Object> map = new HashMap<>();
@@ -420,6 +425,20 @@ public class PostDaoImpl implements PostDao {
         FilterCriteria[] filterCriteria = new FilterCriteria[]{
                 FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
                 FilterCriteria.ENABLED
+        };
+
+        Object[] args = new Object[]{
+                query, query, query,
+        };
+
+        return searchPostsByIntersectingFilterCriteria(filterCriteria, args, sortCriteria, pageNumber, pageSize);
+    }
+
+    @Override
+    public PaginatedCollection<Post> searchDeletedPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        FilterCriteria[] filterCriteria = new FilterCriteria[]{
+                FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
+                FilterCriteria.NOT_ENABLED
         };
 
         Object[] args = new Object[]{

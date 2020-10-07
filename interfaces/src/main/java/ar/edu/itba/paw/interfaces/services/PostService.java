@@ -14,6 +14,8 @@ public interface PostService {
 
     void delete(long id);
 
+    void restore(long id);
+
     void likePost(long post_id, long user_id, boolean value);
 
     Optional<Post> findPostById(long id);

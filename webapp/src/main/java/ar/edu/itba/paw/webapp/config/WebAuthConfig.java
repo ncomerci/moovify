@@ -53,7 +53,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                     // Home Controller
                         // "/"
-                    .antMatchers("/adminPanel").hasRole("ADMIN")
+                    .antMatchers("/admin/**").hasRole("ADMIN")
 
                     // User Controller
                         // "/user/{userId:[\d]+}
@@ -68,11 +68,13 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                             "/user/updatePassword").anonymous()
                     .antMatchers(HttpMethod.POST,"/user/promote/{id:[\\d]+}").hasRole("ADMIN")
                     .antMatchers(HttpMethod.POST,"/user/delete/{id:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST, "/user/restore/{id:[\\d]+}").hasRole("ADMIN")
 
                     // Post Controller
                         // "/post/{postId}"
                     .antMatchers("/post/create").hasRole("USER")
-                    .antMatchers("/post/delete/{postId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/post/delete/{postId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/post/restore/{postId:[\\d]+}").hasRole("ADMIN")
 
                     // Movie Controller
                         // "/movies/{movieId}
@@ -81,7 +83,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Comment Controller
                     .antMatchers("/comment/create").hasRole("USER")
                     .antMatchers(HttpMethod.POST, "/comment/like").hasRole("USER")
-                    .antMatchers("/comment/delete/{commentId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/comment/delete/{commentId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/comment/restore/{commentId:[\\d]+}").hasRole("ADMIN")
                         // "/comment/{commentId:[\\d]+}"
                     // Search Controller
                         // "/search/posts"

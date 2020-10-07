@@ -71,14 +71,20 @@
                         <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
                     </c:when>
                     <c:otherwise>
-                        <span class="uk-text-italic"><spring:message code="comment.notEnabled.fullMessage"/></span>
+                        <span class="uk-text-italic">
+                            <spring:message code="comment.notEnabled.fullMessage"/>
+                            <sec:authorize access="hasRole('ADMIN')">
+                                <br><br><hr>
+                                [ ${comment.user.username}: ${comment.body} ]
+                            </sec:authorize>
+                        </span>
                     </c:otherwise>
                 </c:choose>
             </div>
         </div>
     </div>
     <sec:authorize access="hasRole('ADMIN')">
-        <c:if test="${!comment.user.admin || comment.user.id == loggedUser.id}">
+        <c:if test="${comment.enabled}">
         <div class="uk-flex uk-flex-right">
             <button id="cmt-delete-btn"
                     class="uk-button uk-button-default logout-button uk-border-rounded delete-comment-button"

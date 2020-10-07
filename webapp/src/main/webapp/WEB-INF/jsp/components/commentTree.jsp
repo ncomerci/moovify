@@ -37,7 +37,6 @@
                                         </c:otherwise>
                                     </c:choose>
                                     <sec:authorize access="hasRole('ADMIN')">
-                                        <c:if test="${!comment.user.admin || comment.user.id == loggedUser.id}">
                                         <a href="#delete-modal"
                                            data-id="<c:out value="${comment.id}"/>"
                                            class="uk-link-muted delete-comment-button uk-position-small uk-hidden-hover"
@@ -45,7 +44,6 @@
                                         >
                                             <spring:message code="comment.delete.button"/>
                                         </a>
-                                        </c:if>
                                     </sec:authorize>
                                 </h4>
                                 </c:if>

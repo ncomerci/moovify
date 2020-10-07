@@ -12606,7 +12606,6 @@ iframe.uk-cover {
 }
 
 .user-profile-button {
-  width: 100% !important;
   border: 1px solid #30475e;
   color: #30475e;
 }
@@ -12618,7 +12617,6 @@ iframe.uk-cover {
 }
 
 .logout-button {
-  width: 100% !important;
   border: 1px solid #cf1b1b;
   color: #cf1b1b;
 }

@@ -14,6 +14,8 @@ public interface CommentService {
 
     void delete(long id);
 
+    void restore(long id);
+
     Optional<Comment> findCommentById(long id);
 
     PaginatedCollection<Comment> findCommentChildren(long commentId, int pageNumber, int pageSize);

@@ -35,6 +35,11 @@ public class CommentServiceImpl implements CommentService {
     public void delete(long id) { commentDao.delete(id); }
 
     @Override
+    public void restore(long id) {
+        commentDao.restore(id);
+    }
+
+    @Override
     public Optional<Comment> findCommentById(long commentId){
         return commentDao.findCommentById(commentId);
     }

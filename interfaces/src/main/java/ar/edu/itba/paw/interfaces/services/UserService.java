@@ -22,6 +22,8 @@ public interface UserService {
 
     void delete(long user_id);
 
+    void restore(long user_id);
+
     void addRoles(long userId, Collection<String> roleNames);
 
     Optional<User> confirmRegistration(String token);

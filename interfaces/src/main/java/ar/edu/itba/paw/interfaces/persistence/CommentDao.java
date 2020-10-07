@@ -19,6 +19,8 @@ public interface CommentDao {
 
     void delete(long id);
 
+    void restore(long id);
+
     Optional<Comment> findCommentById(long id);
 
     PaginatedCollection<Comment> findCommentChildren(long commentId, SortCriteria sortCriteria, int pageNumber, int pageSize);
@@ -32,4 +34,6 @@ public interface CommentDao {
     PaginatedCollection<Comment> findCommentsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 }

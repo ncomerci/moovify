@@ -34,6 +34,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public void restore(long id) {
+        postDao.restore(id);
+    }
+
+    @Override
     public void likePost(long post_id, long user_id, boolean value) {
         if(value)
             postDao.likePost(post_id, user_id);

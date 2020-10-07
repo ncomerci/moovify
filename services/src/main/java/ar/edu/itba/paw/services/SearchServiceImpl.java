@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.interfaces.persistence.MovieDao;
-import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
-import ar.edu.itba.paw.interfaces.persistence.PostDao;
+import ar.edu.itba.paw.interfaces.persistence.*;
 import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
-import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.exceptions.NonReachableStateException;
@@ -28,6 +25,9 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private CommentDao commentDao;
 
     private enum SearchOptions{
         BY_CATEGORY, OLDER_THAN
@@ -101,6 +101,12 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
+    public PaginatedCollection<Post> searchDeletedPosts(String query, int pageNumber, int pageSize) {
+        Objects.requireNonNull(query);
+        return postDao.searchDeletedPosts(query, SortCriteria.NEWEST, pageNumber, pageSize);
+    }
+
+    @Override
     public PaginatedCollection<Movie> searchMovies(String query, int pageNumber, int pageSize){
 
         Objects.requireNonNull(query);
@@ -114,5 +120,17 @@ public class SearchServiceImpl implements SearchService {
         Objects.requireNonNull(query);
 
         return userDao.searchUsers(query, UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    }
+
+    @Override
+    public PaginatedCollection<User> searchDeletedUsers(String query, int pageNumber, int pageSize) {
+        Objects.requireNonNull(query);
+        return userDao.searchDeletedUsers(query, UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    }
+
+    @Override
+    public PaginatedCollection<Comment> searchDeletedComments(String query, int pageNumber, int pageSize) {
+        Objects.requireNonNull(query);
+        return commentDao.searchDeletedComments(query, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 }

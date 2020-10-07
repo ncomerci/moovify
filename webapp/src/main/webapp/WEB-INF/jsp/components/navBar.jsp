@@ -48,19 +48,19 @@
                             <ul class="uk-nav uk-navbar-dropdown-nav">
                                 <li>
                                     <a class="uk-text-center" href="<c:url value="/user/profile"/>">
-                                        <button class="uk-button uk-button-default uk-border-rounded user-profile-button" type="button"><spring:message code="user.profile"/></button>
+                                        <button class="uk-button uk-button-default uk-border-rounded user-profile-button extended-button" type="button"><spring:message code="user.profile"/></button>
                                     </a>
                                 </li>
                                 <sec:authorize access="hasRole('ADMIN')">
                                 <li>
-                                    <a class="uk-text-center" href="<c:url value="/adminPanel"/>">
+                                    <a class="uk-text-center" href="<c:url value="/admin/deleted/posts"/>">
                                         <button class="uk-button uk-button-default uk-border-rounded extended-button" type="button"><spring:message code="adminPanel.btn"/></button>
                                     </a>
                                 </li>
                                 </sec:authorize>
                                 <li>
                                     <a class="uk-text-center" href="<c:url value="/logout"/>">
-                                        <button class="uk-button uk-button-default uk-border-rounded logout-button" type="button"><spring:message code="user.logout"/></button>
+                                        <button class="uk-button uk-button-default uk-border-rounded logout-button extended-button" type="button"><spring:message code="user.logout"/></button>
                                     </a>
                                 </li>
                             </ul>
