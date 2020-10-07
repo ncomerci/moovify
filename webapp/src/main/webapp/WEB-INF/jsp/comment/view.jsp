@@ -2,6 +2,7 @@
 <%@ taglib prefix="fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
@@ -21,48 +22,88 @@
 
     <div id="main-comment" class="uk-comment uk-visible-toggle uk-margin-medium-bottom uk-margin-medium-top">
         <header class="uk-comment-header uk-position-relative">
-            <div class="uk-grid-medium uk-flex-middle" uk-grid>
-                <c:if test="${comment.enabled}">
-                    <div class="uk-width-auto">
-                        <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/resources/images/avatar.jpg"/>" width="80" height="80" alt="">
-                    </div>
-                </c:if>
-                <div class="uk-width-expand" >
-                    <c:if test="${comment.enabled}">
-                        <h4 class="uk-comment-title uk-margin-remove">
-                            <c:choose>
-                                <c:when test="${comment.user.enabled}">
-                                    <a href="<c:url value="/user/${comment.user.id}"/>" <c:out value="${comment.user.admin ? 'class=uk-text-primary':''}"/>>
-                                        <c:out value="${comment.user.name}" />
-                                        <c:if test="${comment.user.admin}">
-                                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
-                                        </c:if>
-                                    </a>
-                                </c:when>
-                                <c:otherwise>
+            <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
+                <div class="uk-width-5-6">
+                    <div class="uk-grid-medium uk-flex-middle" uk-grid>
+                        <c:if test="${comment.enabled}">
+                            <div class="uk-width-auto">
+                                <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/user/avatar/${comment.user.avatarId}"/>" width="80" height="80" alt="">
+                            </div>
+                        </c:if>
+                        <div class="uk-width-expand" >
+                            <c:if test="${comment.enabled}">
+                                <h4 class="uk-comment-title uk-margin-remove">
+                                    <c:choose>
+                                        <c:when test="${comment.user.enabled}">
+                                            <a href="<c:url value="/user/${comment.user.id}"/>" <c:out value="${comment.user.admin ? 'class=uk-text-primary':''}"/>>
+                                                <c:out value="${comment.user.name}" />
+                                                <c:if test="${comment.user.admin}">
+                                                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                                </c:if>
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
                                     <span class="uk-text-italic">
                                         <spring:message code="user.notEnabled.name"/>
                                     </span>
-                                </c:otherwise>
-                            </c:choose>
-                        </h4>
-                    </c:if>
-                    <p class="uk-comment-meta uk-margin-remove-top">
-                        <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
-                        <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
-                    </p>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </h4>
+                            </c:if>
+                            <p class="uk-comment-meta uk-margin-remove-top">
+                                <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                                <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-6 uk-text-center uk-padding-remove uk-margin-top">
+                    <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
+                    <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
+                        <div class="uk-text-center uk-padding-remove uk-margin-remove">
+                            <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
+                                <spring:message code="post.view.likes" arguments="${comment.likes}"/>
+                            </p>
+                        </div>
+                    </sec:authorize>
+                    <sec:authorize access="hasRole('USER')">
+                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
+                            <sec:authorize access="hasRole('USER')">
+                                <c:if test="${!customTag:hasUserVotedComment(comment, loggedUser.id) or !customTag:hasUserLikedComment(comment,loggedUser.id)}">
+                                    <a class="like-comment-button" data-id="${comment.id}" data-value="${ 1 }">
+                                        <span class="iconify" data-icon="cil:chevron-top" data-inline="false"></span>
+                                    </a>
+                                </c:if>
+                                <c:if test="${customTag:hasUserVotedComment(comment, loggedUser.id) and customTag:hasUserLikedComment(comment,loggedUser.id)}">
+                                    <a class="like-comment-button" data-id="${comment.id}" data-value="${ 0 }">
+                                        <span class="iconify" data-icon="el:chevron-up" data-inline="false"></span>
+                                    </a>
+                                </c:if>
+                            </sec:authorize>
+                        </div>
+                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
+                            <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
+                                <c:out value="${comment.likes}"/>
+                            </p>
+                        </div>
+                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
+                            <sec:authorize access="hasRole('USER')">
+                                <c:if test="${!customTag:hasUserVotedComment(comment, loggedUser.id) or customTag:hasUserLikedComment(comment,loggedUser.id)}">
+                                    <a class="like-comment-button" data-id="${comment.id}"  data-value="${ -1 }">
+                                        <span class="iconify" data-icon="cil:chevron-bottom" data-inline="true"></span>
+                                    </a>
+                                </c:if>
+                                <c:if test="${customTag:hasUserVotedComment(comment, loggedUser.id) and !customTag:hasUserLikedComment(comment,loggedUser.id)}">
+                                    <a class="like-comment-button" data-id="${comment.id}" data-value="${ 0 }">
+                                        <span class="iconify" data-icon="el:chevron-down" data-inline="true"></span>
+                                    </a>
+                                </c:if>
+                            </sec:authorize>
+                        </div>
+                    </sec:authorize>
+                    </div>
                 </div>
             </div>
-            <sec:authorize access="hasRole('USER')">
-                <div class="uk-position-top-right">
-                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.id}" data-value="${!loggedUser.getLikedComments().contains(comment.getId()) ? 'true' : 'false'}">
-                        <span class="uk-text-right"><c:out value="${comment.likes}"/></span>
-                        <sec:authorize access="hasRole('USER')">
-                            <span class="iconify" data-icon="ant-design:${!loggedUser.getLikedComments().contains(comment.getId()) ? 'heart-outlined' : 'heart-filled'}" data-inline="false"></span>
-                        </sec:authorize>
-                    </a>
-                </div>
-            </sec:authorize>
         </header>
         <div class="uk-comment-body">
             <c:choose>

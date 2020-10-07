@@ -17,7 +17,7 @@
                                 <div class="uk-grid-medium uk-flex-middle" uk-grid>
                                     <c:if test="${comment.enabled}">
                                         <div class="uk-width-auto">
-                                            <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/resources/images/avatar.jpg"/>" width="80" height="80" alt="">
+                                            <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/user/avatar/${comment.user.avatarId}"/>" width="80" height="80" alt="">
                                         </div>
                                     </c:if>
                                     <div class="uk-width-expand">
@@ -60,10 +60,10 @@
                                 </div>
                             </div>
                             <c:if test="${comment.enabled}">
-                            <div class="uk-width-1-3 uk-text-center uk-padding-remove uk-margin-remove">
+                            <div class="uk-width-1-3 uk-text-center uk-padding-remove uk-margin-remove ">
                                 <div class="uk-position-top-right">
                                     <div class="uk-flex">
-                                        <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
+                                        <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-top" uk-grid>
                                             <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
                                                 <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover"><spring:message code="comment.create.reply"/></a>
                                             </div>
@@ -75,12 +75,12 @@
                                             <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
                                                 <div class="uk-text-center uk-padding-remove uk-margin-remove">
                                                     <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
-                                                        <spring:message code="post.view.likes" arguments="${post.likes}"/>
+                                                        <spring:message code="post.view.likes" arguments="${comment.likes}"/>
                                                     </p>
                                                 </div>
                                             </sec:authorize>
                                             <sec:authorize access="hasRole('USER')">
-                                                <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
+                                                <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right ">
                                                     <sec:authorize access="hasRole('USER')">
                                                         <c:if test="${!customTag:hasUserVotedComment(comment, loggedUser.id) or !customTag:hasUserLikedComment(comment,loggedUser.id)}">
                                                             <a class="like-comment-button" data-id="${comment.id}" data-value="${ 1 }">
@@ -96,7 +96,7 @@
                                                 </div>
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
                                                     <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
-                                                        <c:out value="${post.likes}"/>
+                                                        <c:out value="${comment.likes}"/>
                                                     </p>
                                                 </div>
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">

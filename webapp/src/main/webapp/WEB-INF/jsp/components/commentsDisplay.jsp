@@ -8,7 +8,7 @@
         <div class="uk-width-1-1">
             <div class="uk-flex">
                 <div class="uk-width-expand uk-margin-small-top">
-                    <a href="<c:url value="/post/${comment.post.id}#${comment.id}"/>">
+                    <a href="<c:url value="/comment/${comment.id}"/>">
                         <c:out value="${comment.body}"/>
                     </a>
                    <%--TODO una vez que se incluya al post dentro del comment, refactorear la vista para reflejarlo--%>

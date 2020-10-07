@@ -27,10 +27,10 @@
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
     <div id="post-metadata" >
         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
-            <div class="uk-width-4-5">
+            <div class="uk-width-5-6">
                 <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
             </div>
-            <div class="uk-width-1-5 uk-margin-small-top">
+            <div class="uk-width-1-6 uk-margin-top">
                 <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
                     <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
                         <div class="uk-text-center uk-padding-remove uk-margin-remove">
