@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <jsp:useBean id="posts" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection"/>
 
@@ -7,6 +8,16 @@
     <c:forEach items="${posts.results}" var="post">
         <div class="uk-width-1-1">
             <div class="uk-flex">
+                <sec:authorize access="hasRole('ADMIN')">
+                    <c:if test="${!post.enabled}">
+                        <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
+                                data-id="${post.id}"
+                                type="button"
+                        >
+                            <spring:message code="adminPanel.restore"/>
+                        </button>
+                    </c:if>
+                </sec:authorize>
                 <div class="uk-width-expand uk-margin-small-top">
                     <a href="<c:url value="/post/${post.id}"/>">
                         <c:out value="${post.title}"/>
@@ -21,7 +32,7 @@
                             </c:otherwise>
                         </c:choose>
                         <spring:message code="postDisplay.meta.description" arguments="${post.category.name},${name}"/>
-                        <c:if test="${post.user.admin}">
+                        <c:if test="${post.user.admin && post.user.enabled}">
                             <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
                         </c:if>
                     </p>

@@ -2,12 +2,13 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title th:text="#{mail.confirmation.title}"></title>
+    <title th:text="#{mail.newComment.title}"></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 <body style="margin: 0; padding: 0;">
 
-<!--/*@thymesVar id="token" type="java.lang.String"*/-->
+<!--/*@thymesVar id="post" type="ar.edu.itba.paw.models.Post"*/-->
+<!--/*@thymesVar id="comment" type="ar.edu.itba.paw.models.Comment"*/-->
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr>
@@ -24,19 +25,24 @@
                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
                             <tr>
                                 <td style="color: #153643; font-family: Arial, sans-serif; font-size: 24px;">
-                                    <h1 style="font-size: 20px" th:text="#{mail.confirmation.header}"></h1>
+
+                                        <h1 style="font-size: 20px" th:text="#{mail.newComment.header(${post.title})}"></h1>
+                                    </td>
+                                </tr>
+                            <tr>
+                                <td style="color: #153643; font-family: Arial, sans-serif; font-size: 24px;">
+
+                                    <h2 style="font-size: 16px" th:text="#{mail.newComment.subTitile(${comment.user.name})}"></h2>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="color: #153643; font-family: Arial, sans-serif; font-size: 24px;">
-                                    <h2 style="font-size: 16px" th:text="#{mail.confirmation.message}"></h2>
+                                <td style="padding: 20px 0 30px 0; color: #153643; font-family: Arial, sans-serif; font-size: 16px; line-height: 20px;">
+                                    <p th:text="${comment.body}"></p>
                                 </td>
                             </tr>
                             <tr>
                                 <td style="padding: 20px 0 30px 0; font-family: Arial, sans-serif; font-size: 16px; line-height: 20px;">
-                                    <a style="text-align: end; color: #222831"
-                                       th:href="@{__${applicationBasePath}__/user/registrationConfirm(token=${token})}"
-                                       th:text="#{mail.confirmation.confirmLink}"></a>
+                                    <a style="text-align: end; color: #222831" th:href="@{__${applicationBasePath}__/comment/__${comment.id}__}" th:text="#{mail.newComment.goToComment}"></a>
                                 </td>
                             </tr>
                         </table>

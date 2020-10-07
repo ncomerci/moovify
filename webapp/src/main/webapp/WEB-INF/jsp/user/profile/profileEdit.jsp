@@ -52,7 +52,7 @@
                 </div>
                 <div class="uk-width-1-6">
                     <div class="uk-text-center">
-                        <input class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="submit" value="<spring:message code="user.profile.edit.name"/>" />
+                        <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.profile.edit.name"/>" />
                     </div>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                 </div>
                 <div class="uk-width-1-6">
                     <div class="uk-text-center">
-                        <input class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="submit" value="<spring:message code="user.profile.edit.username"/>" />
+                        <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.profile.edit.username"/>" />
                     </div>
                 </div>
             </div>
@@ -116,7 +116,7 @@
                 </div>
                 <div class="uk-width-1-6">
                     <div class="uk-text-center">
-                        <input class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="submit" value="<spring:message code="user.profile.edit.description"/>" />
+                        <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.profile.edit.description"/>" />
                     </div>
                 </div>
             </div>
@@ -129,7 +129,7 @@
                 </div>
                 <div class="uk-width-1-2">
                     <a class="uk-text-center" href="<c:url value="/user/changePassword"/>">
-                        <button class="uk-button uk-button-primary uk-border-rounded user-profile-button" type="button"><spring:message code="user.profile.edit.changePassword"/></button>
+                        <button class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="user.profile.edit.changePassword"/></button>
                     </a>
                 </div>
             </div>

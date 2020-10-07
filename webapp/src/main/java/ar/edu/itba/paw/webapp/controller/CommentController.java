@@ -1,10 +1,13 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.CommentService;
+import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class CommentController {
     private CommentService commentService;
 
     @Autowired
+    private PostService postService;
+
+    @Autowired
     private UserService userService;
 
     @RequestMapping(path = "/comment/create",  method = RequestMethod.POST)
@@ -36,9 +42,10 @@ public class CommentController {
 
         if(!bindingResult.hasErrors()){
             User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+            Post post = postService.findPostById(commentCreateForm.getPostId()).orElseThrow(PostNotFoundException::new);
 
-            commentService.register(commentCreateForm.getPostId(), commentCreateForm.getParentId(),
-                    commentCreateForm.getCommentBody(), user.getId());
+            commentService.register(post, commentCreateForm.getParentId(),
+                    commentCreateForm.getCommentBody(), user, "newCommentEmail");
         }
 
 //        Goes back to the specific view that generated the request
@@ -46,7 +53,7 @@ public class CommentController {
     }
 
     @RequestMapping(path = "/comment/like",  method = RequestMethod.POST)
-    public ModelAndView post(@RequestParam final long post_id, @RequestParam final long comment_id,
+    public ModelAndView post(@RequestParam final long comment_id,
                              @RequestParam(defaultValue = "0") final int value,
                              final Principal principal,
                              final HttpServletRequest request) {
@@ -67,17 +74,11 @@ public class CommentController {
 
         final ModelAndView mv = new ModelAndView("comment/view");
 
-        mv.addObject("comment", commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new));
-        mv.addObject("children", commentService.findCommentDescendants(id, pageNumber, pageSize));
+        final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
+
+        mv.addObject("comment", comment);
+        mv.addObject("children", commentService.findCommentDescendants(comment, pageNumber, pageSize));
 
         return mv;
-    }
-
-    @RequestMapping(path = "/comment/delete/{id}", method = RequestMethod.POST)
-    public ModelAndView delete(@PathVariable final long id, @RequestParam final long postId) {
-
-        commentService.delete(id);
-
-        return new ModelAndView("redirect:/post/" + postId);
     }
 }

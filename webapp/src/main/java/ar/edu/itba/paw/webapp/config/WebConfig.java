@@ -63,7 +63,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Bean(name = "applicationBasePath")
     public String applicationBasePath() {
-        return "localhost:8080";
+        return "http://localhost:8080";
         // return "http://pawserver.it.itba.edu.ar/paw-2020b-3";
     }
 

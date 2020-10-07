@@ -20,30 +20,31 @@
         <c:out value="${comment.post.title}"/>
     </a>
 
+    <div id="${comment.id}">
     <div id="main-comment" class="uk-comment uk-visible-toggle uk-margin-medium-bottom uk-margin-medium-top">
         <header class="uk-comment-header uk-position-relative">
             <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
                 <div class="uk-width-5-6">
-                    <div class="uk-grid-medium uk-flex-middle" uk-grid>
-                        <c:if test="${comment.enabled}">
-                            <div class="uk-width-auto">
-                                <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/user/avatar/${comment.user.avatarId}"/>" width="80" height="80" alt="">
-                            </div>
-                        </c:if>
-                        <div class="uk-width-expand" >
-                            <c:if test="${comment.enabled}">
-                                <h4 class="uk-comment-title uk-margin-remove">
-                                    <c:choose>
-                                        <c:when test="${comment.user.enabled}">
-                                            <a href="<c:url value="/user/${comment.user.id}"/>" <c:out value="${comment.user.admin ? 'class=uk-text-primary':''}"/>>
-                                                <c:out value="${comment.user.name}" />
-                                                <c:if test="${comment.user.admin}">
-                                                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
-                                                </c:if>
-                                            </a>
-                                        </c:when>
-                                        <c:otherwise>
-                                    <span class="uk-text-italic">
+            <div class="uk-grid-medium uk-flex-middle" uk-grid>
+                <c:if test="${comment.enabled}">
+                    <div class="uk-width-auto">
+                        <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/resources/images/avatar.jpg"/>" width="80" height="80" alt="">
+                    </div>
+                </c:if>
+                <div class="uk-width-expand" >
+                    <c:if test="${comment.enabled}">
+                        <h4 class="uk-comment-title uk-margin-remove">
+                            <c:choose>
+                                <c:when test="${comment.user.enabled}">
+                                    <a href="<c:url value="/user/${comment.user.id}"/>" class="comment-user-name <c:out value="${comment.user.admin ? 'uk-text-primary':''}"/>">
+                                        <c:out value="${comment.user.name}" />
+                                        <c:if test="${comment.user.admin}">
+                                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                        </c:if>
+                                    </a>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="uk-text-italic comment-user-name">
                                         <spring:message code="user.notEnabled.name"/>
                                     </span>
                                         </c:otherwise>
@@ -105,17 +106,38 @@
                 </div>
             </div>
         </header>
-        <div class="uk-comment-body">
-            <c:choose>
-                <c:when test="${comment.enabled}">
-                    <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
-                </c:when>
-                <c:otherwise>
-                    <span class="uk-text-italic"><spring:message code="comment.notEnabled.fullMessage"/></span>
-                </c:otherwise>
-            </c:choose>
-        </div>
+    <div class="uk-comment-body">
+        <c:choose>
+            <c:when test="${comment.enabled}">
+                <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
+            </c:when>
+            <c:otherwise>
+                        <span class="uk-text-italic">
+                            <spring:message code="comment.notEnabled.fullMessage"/>
+                            <sec:authorize access="hasRole('ADMIN')">
+                                <br><br><hr>
+                                [ ${comment.user.username}: ${comment.body} ]
+                            </sec:authorize>
+                        </span>
+            </c:otherwise>
+        </c:choose>
     </div>
+    </div>
+    </div>
+    <sec:authorize access="hasRole('ADMIN')">
+        <c:if test="${comment.enabled}">
+        <div class="uk-flex uk-flex-right">
+            <button id="cmt-delete-btn"
+                    class="uk-button uk-button-default logout-button uk-border-rounded delete-comment-button"
+                    data-id="<c:out value="${comment.id}"/>"
+                    type="button"
+                    uk-toggle="target: #delete-modal"
+            >
+                <spring:message code="comment.delete.button"/>
+            </button>
+        </div>
+        </c:if>
+    </sec:authorize>
 
     <c:set var="comments" value="${children}" scope="request"/>
     <c:set var="postId" value="${comment.post.id}" scope="request"/>

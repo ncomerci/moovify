@@ -51,7 +51,9 @@ public class MailServiceImpl implements MailService {
         final Context context = new Context();
 
         context.setVariable("applicationBasePath", applicationBasePath);
-        context.setVariables(variables);
+
+        if(variables != null)
+            context.setVariables(variables);
 
         // Prepare message using a Spring helper
         final MimeMessage mimeMessage = emailSender.createMimeMessage();
@@ -66,14 +68,14 @@ public class MailServiceImpl implements MailService {
             message.setTo(destination);
 
             message.setText(templateEngine.process(template, context), true);
+
+            emailSender.send(mimeMessage);
+
+            LOGGER.debug("Email sent successfully. Subject {}; Destination {}; Template {}", subject, destination, template);
         }
         catch(MessagingException e) {
             LOGGER.error("Email sending failed. Subject {}; Destination {}; Template {}", subject, destination, template, e);
         }
-
-        LOGGER.debug("Email sent successfully. Subject {}; Destination {}; Template {}", subject, destination, template);
-
-        emailSender.send(mimeMessage);
     }
 
 }

@@ -43,13 +43,20 @@
                     <li class="userTitle"><spring:message code="user.profile.Description" arguments="${user.description}"/></li>
                 </c:if>
             </ul>
-            <c:if test="${!user.admin && loggedUser.admin}">
-                <div>
-                <button class="uk-button uk-button-default uk-border-rounded admin-button" type="button" uk-toggle="target: #modal-admin-promote">
-                    <spring:message code="user.profile.adminBtn"/>
-                </button>
-                </div>
-            </c:if>
+            <sec:authorize access="hasRole('ADMIN')">
+                <c:if test="${!user.admin}">
+                    <span>
+                        <button class="uk-button uk-button-default uk-border-rounded admin-button" type="button" uk-toggle="target: #modal-admin-promote">
+                            <spring:message code="user.profile.adminBtn"/>
+                        </button>
+                    </span>
+                </c:if>
+                <span>
+                    <button class="uk-button uk-button-default uk-border-rounded logout-button" type="button" uk-toggle="target: #modal-admin-delete">
+                        <spring:message code="user.profile.deleteBtn"/>
+                    </button>
+                </span>
+            </sec:authorize>
             <%--<p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>--%>
         </div>
 
@@ -93,5 +100,17 @@
         </div>
     </div>
 
+    <div id="modal-admin-delete" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h2 class="uk-modal-title"><spring:message code="user.profile.deleteTitle" arguments="${user.username}"/></h2>
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="user.profile.modalCancel"/></button>
+                <button id="delete-admin-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="user.profile.deleteBtn"/></button>
+            </p>
+        </div>
+    </div>
+
     <form id="promote-user-form" method="post" action="<c:url value="/user/promote/${user.id}"/>"></form>
+    <form id="delete-user-form" method="post" action="<c:url value="/user/delete/${user.id}"/>"></form>
+
 </sec:authorize>

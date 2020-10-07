@@ -9,13 +9,17 @@ public interface UserService {
 
     User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate);
 
-    void editName(long user_id, String name);
+    void updateName(User user, String name);
 
-    void editUsername(long user_id, String username);
+    void updateUsername(User user, String username);
 
-    void editDescription(long user_id, String description);
+    void updateDescription(User user, String description);
 
-    void changePassword(long user_id, String password);
+    void updatePassword(User user, String password);
+
+    void delete(long user_id);
+
+    void restore(long user_id);
 
     void promoteUserToAdmin(User user);
 
@@ -44,4 +48,6 @@ public interface UserService {
     Optional<User> findByEmail(String email);
 
     PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize);
+
+    PaginatedCollection<User> getDeletedUsers(int pageNumber, int pageSize);
 }

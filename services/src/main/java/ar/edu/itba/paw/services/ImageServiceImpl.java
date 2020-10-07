@@ -47,7 +47,7 @@ public class ImageServiceImpl implements ImageService {
         }
         catch(URISyntaxException uriSyntaxE) {
             LOGGER.error("There was a problem with URI Syntax searching {} image resource", imagePath, uriSyntaxE);
-            throw new RuntimeException();
+            throw new RuntimeException("Could not locate image resource");
         }
     }
 

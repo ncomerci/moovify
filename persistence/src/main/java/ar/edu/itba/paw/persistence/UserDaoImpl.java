@@ -194,6 +194,16 @@ public class UserDaoImpl implements UserDao {
         jdbcTemplate.update("UPDATE " + USERS + " SET avatar_id = ? WHERE user_id = ?", avatarId, userId);
     }
 
+    @Override
+    public void delete(long userId) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET enabled = false WHERE user_id = ?", userId);
+    }
+
+    @Override
+    public void restore(long userId) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET enabled = true WHERE user_id = ?", userId);
+    }
+
     // TODO: can be done in a single query. Important!
     @Override
     public Collection<Role> addRoles(long userId, Collection<String> roleNames) {
@@ -364,10 +374,22 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%' AND " + USERS + ".enabled = false",
+                sortCriteria, pageNumber, pageSize, new Object[]{query});
+    }
+
+    @Override
     public PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_NAME +
                                                                 " AND " + SEARCH_BY_ROLE +
                                                                 " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, role });
+    }
+
+    @Override
+    public PaginatedCollection<User> getDeletedUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + USERS + ".enabled = false", sortCriteria, pageNumber, pageSize, null);
     }
 }

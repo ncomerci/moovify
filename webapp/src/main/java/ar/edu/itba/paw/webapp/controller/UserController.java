@@ -23,6 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -90,7 +91,7 @@ public class UserController {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.editName(user.getId(), nameEditForm.getName());
+        userService.updateName(user, nameEditForm.getName());
 
         return new ModelAndView("redirect:/user/profile/edit");
     }
@@ -106,7 +107,7 @@ public class UserController {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.editUsername(user.getId(), usernameEditForm.getUsername());
+        userService.updateUsername(user, usernameEditForm.getUsername());
 
         manualLogin(request, usernameEditForm.getUsername(), user.getPassword(), user.getRoles());
 
@@ -124,7 +125,7 @@ public class UserController {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.editDescription(user.getId(), descriptionEditForm.getDescription());
+        userService.updateDescription(user, descriptionEditForm.getDescription());
 
         return new ModelAndView("redirect:/user/profile/edit");
     }
@@ -143,84 +144,91 @@ public class UserController {
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.changePassword(user.getId(), changePasswordForm.getPassword());
+        userService.updatePassword(user, changePasswordForm.getPassword());
 
         return new ModelAndView("redirect:/user/profile");
     }
 
     @RequestMapping(path = {"/user/{userId}", "/user/{userId}/posts"} , method = RequestMethod.GET)
-    public ModelAndView viewPosts(RedirectAttributes redirectAttributes,
+    public ModelAndView viewPosts(HttpServletRequest request,
                                   @PathVariable final long userId,
                                   @RequestParam(defaultValue = "5") final int pageSize,
                                   @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("user/view/viewPosts");
 
-        Map<String, ?> flashParams = redirectAttributes.getFlashAttributes();
+        final User user;
+
+        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
 
         if(flashParams != null && flashParams.containsKey("user"))
-            mv.addObject("user", flashParams.get("user"));
+            user = (User) flashParams.get("user");
 
         else
-            mv.addObject("user", userService.findById(userId)
-                .orElseThrow(UserNotFoundException::new));
+            user = userService.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        mv.addObject("posts", postService.findPostsByUserId(userId, pageNumber, pageSize));
+        mv.addObject("user", user);
+
+        mv.addObject("posts", postService.findPostsByUser(user, pageNumber, pageSize));
 
         return mv;
     }
 
     @RequestMapping(path = "/user/{userId}/comments", method = RequestMethod.GET)
-    public ModelAndView viewComments(RedirectAttributes redirectAttributes,
+    public ModelAndView viewComments(HttpServletRequest request,
                                      @PathVariable final long userId,
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("user/view/viewComments");
 
-        Map<String, ?> flashParams = redirectAttributes.getFlashAttributes();
+        final User user;
+
+        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
 
         if(flashParams != null && flashParams.containsKey("user"))
-            mv.addObject("user", flashParams.get("user"));
+            user = (User) flashParams.get("user");
 
         else
-            mv.addObject("user", userService.findById(userId)
-                    .orElseThrow(UserNotFoundException::new));
+            user = userService.findById(userId).orElseThrow(UserNotFoundException::new);
 
-        mv.addObject("comments", commentService.findCommentsByUserId(userId, pageNumber, pageSize));
+        mv.addObject("user", user);
+
+        mv.addObject("comments", commentService.findCommentsByUser(user, pageNumber, pageSize));
 
         return mv;
     }
 
     @RequestMapping(path = {"/user/profile", "/user/profile/posts"}, method = RequestMethod.GET)
-    public ModelAndView profilePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, RedirectAttributes redirectAttributes, Principal principal,
+    public ModelAndView profilePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
+                                     HttpServletRequest request, Principal principal,
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         final ModelAndView mv = new ModelAndView("user/profile/profilePosts");
 
         User user;
-        Map<String, ?> flashParams = redirectAttributes.getFlashAttributes();
+        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
 
         if(flashParams != null && flashParams.containsKey("user"))
             user = (User) flashParams.get("user");
 
         else
-            user = userService.findByUsername(principal.getName())
-                    .orElseThrow(UserNotFoundException::new);
+            user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
-        mv.addObject("posts", postService.findPostsByUserId(user.getId(), pageNumber, pageSize));
+        mv.addObject("posts", postService.findPostsByUser(user, pageNumber, pageSize));
 
         return mv;
     }
 
     @RequestMapping(path = "/user/profile/avatar", method = RequestMethod.POST)
-    public ModelAndView registerProfilePost(@Valid @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, final BindingResult bindingResult,
-                                RedirectAttributes redirectAttributes, Principal principal) throws IOException {
-
+    public ModelAndView registerProfilePost(@Valid @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
+                                            final BindingResult bindingResult,
+                                            HttpServletRequest request,
+                                            final Principal principal) throws IOException {
         if(bindingResult.hasErrors())
-            return profilePosts(avatarEditForm, redirectAttributes, principal,5,0);
+            return profilePosts(avatarEditForm, request, principal,5,0);
 
 
         User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
@@ -240,7 +248,7 @@ public class UserController {
         final User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
-        mv.addObject("comments", commentService.findCommentsByUserId(user.getId(), pageNumber, pageSize));
+        mv.addObject("comments", commentService.findCommentsByUser(user, pageNumber, pageSize));
 
         return mv;
     }
@@ -321,9 +329,9 @@ public class UserController {
 
     @RequestMapping(path = "/user/updatePassword", method = RequestMethod.GET)
     public ModelAndView showUpdatePassword(@ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm,
-                                           RedirectAttributes redirectAttributes) {
+                                           HttpServletRequest request) {
 
-        Map<String, ?> flashParams = redirectAttributes.getFlashAttributes();
+        Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
 
         if(flashParams != null && flashParams.containsKey("token"))
             updatePasswordForm.setToken((String) flashParams.get("token"));
@@ -333,10 +341,10 @@ public class UserController {
 
     @RequestMapping(path = "/user/updatePassword", method = RequestMethod.POST)
     public ModelAndView updatePassword(@Valid @ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm,
-                                       final BindingResult bindingResult, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+                                       final BindingResult bindingResult, HttpServletRequest request) {
 
         if(bindingResult.hasErrors())
-            return showUpdatePassword(updatePasswordForm, redirectAttributes);
+            return showUpdatePassword(updatePasswordForm, request);
 
         User user = userService.updatePassword(updatePasswordForm.getPassword(), updatePasswordForm.getToken())
                 .orElseThrow(InvalidResetPasswordToken::new);
@@ -354,18 +362,6 @@ public class UserController {
     public @ResponseBody byte[] getAvatar(@PathVariable long avatarId) {
 
         return userService.getAvatar(avatarId).orElseThrow(ImageNotFoundException::new);
-    }
-
-    @RequestMapping(path = "/user/promote/{id}", method = RequestMethod.POST)
-    public ModelAndView promoteUser(@PathVariable long id, RedirectAttributes redirectAttributes) {
-
-        final User user = userService.findById(id).orElseThrow(UserNotFoundException::new);
-
-        userService.promoteUserToAdmin(user);
-
-        redirectAttributes.addFlashAttribute("user", user);
-
-        return new ModelAndView("redirect:/user/" + user.getId());
     }
 
     private void manualLogin(HttpServletRequest request, String username, String password, Collection<Role> roles) {

@@ -2,7 +2,8 @@ window.addEventListener('load', () => {
 
     const deletePostBtn = document.getElementById('post-delete-btn');
 
-    deletePostBtn.addEventListener('click', () => deletePost(deletePostBtn.dataset.id, deletePostBtn.dataset.msg), false);
+    if(deletePostBtn)
+        deletePostBtn.addEventListener('click', () => deletePost(deletePostBtn.dataset.id, deletePostBtn.dataset.msg), false);
 
 })
 

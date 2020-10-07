@@ -53,6 +53,8 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
 
             "FROM " + USER_VERIFICATION_TOKEN +
 
+            " INNER JOIN " + USERS + " ON " + USER_VERIFICATION_TOKEN + ".user_id = " + USERS + ".user_id " +
+
             " INNER JOIN ( " +
                 "SELECT " + USERS + ".user_id, coalesce(post_likes.total_likes, 0) + coalesce(comment_likes.total_likes, 0) total_likes " +
                 "FROM " + USERS +
@@ -70,8 +72,6 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
                         "GROUP BY " + COMMENTS + ".user_id " +
                     ") comment_likes ON " + USERS + ".user_id = comment_likes.user_id " +
             ") TOTAL_LIKES ON TOTAL_LIKES.user_id = " + USERS + ".user_id " +
-
-            " INNER JOIN " + USERS + " ON " + USER_VERIFICATION_TOKEN + ".user_id = " + USERS + ".user_id " +
 
             "INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
 

@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -236,6 +237,11 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
+    public void restore(long id) {
+        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = true WHERE post_id = ?",  id);
+    }
+
+    @Override
     public void likePost(long post_id, long user_id, int value) {
 
         jdbcTemplate.update(
@@ -353,6 +359,11 @@ public class PostDaoImpl implements PostDao {
         return buildAndExecutePaginatedQuery("WHERE " + ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
 
+    @Override
+    public PaginatedCollection<Post> getDeletedPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery("WHERE " + POSTS + ".enabled = false", sortCriteria, pageNumber, pageSize, null);
+    }
+
     // Search Query Statements
     private static final String SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS = "( " +
                     POSTS + ".title ILIKE '%' || ? || '%'" +
@@ -378,6 +389,14 @@ public class PostDaoImpl implements PostDao {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
                                     " AND " + ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
+    }
+
+    @Override
+    public PaginatedCollection<Post> searchDeletedPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                        " AND " + POSTS + ".enabled = false",
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
     }
 
