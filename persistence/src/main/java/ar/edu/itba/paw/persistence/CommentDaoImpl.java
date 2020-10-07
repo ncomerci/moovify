@@ -359,7 +359,7 @@ public class CommentDaoImpl implements CommentDao {
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, COMMENTS + ".creation_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, COMMENTS + ".creation_date");
-        sortCriteriaQuery.put(SortCriteria.HOTTEST, COMMENTS_LIKES + ".likes");
+        sortCriteriaQuery.put(SortCriteria.HOTTEST, COMMENTS_LIKES + ".likes desc");
 
         return sortCriteriaQuery;
     }

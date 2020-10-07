@@ -35,14 +35,13 @@ public class CommentServiceImpl implements CommentService {
             commentDao.likeComment(comment.getId(), user.getId(), value);
     }
 
-
     @Override
     public void delete(long id) {
         commentDao.delete(id);
     }
 
     @Override
-    public Optional<Comment> findCommentById(long commentId){
+    public Optional<Comment> findCommentById(long commentId) {
         return commentDao.findCommentById(commentId);
     }
 
@@ -53,12 +52,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public PaginatedCollection<Comment> findCommentDescendants(long commentId, int pageNumber, int pageSize) {
-        return commentDao.findCommentDescendants(commentId, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+        return commentDao.findCommentDescendants(commentId, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
     @Override
     public PaginatedCollection<Comment> findPostCommentDescendants(long post_id, int pageNumber, int pageSize) {
-        return commentDao.findPostCommentDescendants(post_id, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+        return commentDao.findPostCommentDescendants(post_id, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
     @Override
