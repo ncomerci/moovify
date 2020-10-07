@@ -102,13 +102,15 @@
 
     <div id="modal-admin-delete" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
-            <h2 class="uk-modal-title"><spring:message code="user.profile.modalTitle" arguments="${user.username}"/></h2>
+            <h2 class="uk-modal-title"><spring:message code="user.profile.deleteTitle" arguments="${user.username}"/></h2>
             <p class="uk-text-right">
                 <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="user.profile.modalCancel"/></button>
-                <button id="modal-admin-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="user.profile.adminBtn"/></button>
+                <button id="delete-admin-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="user.profile.deleteBtn"/></button>
             </p>
         </div>
     </div>
 
     <form id="promote-user-form" method="post" action="<c:url value="/user/promote/${user.id}"/>"></form>
+    <form id="delete-user-form" method="post" action="<c:url value="/user/delete/${user.id}"/>"></form>
+
 </sec:authorize>

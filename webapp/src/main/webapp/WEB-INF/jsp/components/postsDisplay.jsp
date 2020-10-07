@@ -32,7 +32,7 @@
                             </c:otherwise>
                         </c:choose>
                         <spring:message code="postDisplay.meta.description" arguments="${post.category.name},${name}"/>
-                        <c:if test="${post.user.admin}">
+                        <c:if test="${post.user.admin && post.user.enabled}">
                             <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
                         </c:if>
                     </p>
