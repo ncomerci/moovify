@@ -21,7 +21,7 @@ public class SearchController {
     @Autowired
     private SearchService searchService;
 
-    @RequestMapping(path = "/search/posts/", method = RequestMethod.GET)
+    @RequestMapping(path = "/search/posts", method = RequestMethod.GET)
     public ModelAndView searchPosts(@Valid @ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm,
                                     @RequestParam(defaultValue = "5") final int pageSize,
                                     @RequestParam(defaultValue = "0") final int pageNumber) {
@@ -39,7 +39,7 @@ public class SearchController {
         return mv;
     }
 
-    @RequestMapping(path = "/search/movies/", method = RequestMethod.GET)
+    @RequestMapping(path = "/search/movies", method = RequestMethod.GET)
     public ModelAndView searchMovies(@Valid @ModelAttribute("searchMoviesForm") final SearchMoviesForm searchMoviesForm,
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
@@ -57,7 +57,7 @@ public class SearchController {
         return mv;
     }
 
-    @RequestMapping(path = "/search/users/", method = RequestMethod.GET)
+    @RequestMapping(path = "/search/users", method = RequestMethod.GET)
     public ModelAndView searchUsers(@Valid @ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm,
                                     @RequestParam(defaultValue = "5") final int pageSize,
                                     @RequestParam(defaultValue = "0") final int pageNumber) {
