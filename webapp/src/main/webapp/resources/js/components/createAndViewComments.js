@@ -99,11 +99,11 @@ function deleteComment(commentId) {
 
    document.getElementById('modal-body').textContent = `${name}: ${body}`;
    document.getElementById('modal-confirm')
-       .addEventListener('click', () => submitDeleteForm(`/comment/delete/${commentId}`), false);
+       .addEventListener('click', () => submitDeleteForm(commentId), false);
 }
 
-function submitDeleteForm(action) {
+function submitDeleteForm(commentId) {
     const deleteForm = document.forms['delete-form'];
-    deleteForm.action = action;
+    deleteForm.action += `comment/delete/${commentId}`;
     deleteForm.submit();
 }
