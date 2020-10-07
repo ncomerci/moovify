@@ -1,10 +1,13 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.CommentService;
+import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +28,9 @@ public class CommentController {
     private CommentService commentService;
 
     @Autowired
+    private PostService postService;
+
+    @Autowired
     private UserService userService;
 
     @RequestMapping(path = "/comment/create",  method = RequestMethod.POST)
@@ -36,9 +42,10 @@ public class CommentController {
 
         if(!bindingResult.hasErrors()){
             User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+            Post post = postService.findPostById(commentCreateForm.getPostId()).orElseThrow(PostNotFoundException::new);
 
-            commentService.register(commentCreateForm.getPostId(), commentCreateForm.getParentId(),
-                    commentCreateForm.getCommentBody(), user.getId());
+            commentService.register(post, commentCreateForm.getParentId(),
+                    commentCreateForm.getCommentBody(), user, "newCommentEmail");
         }
 
 //        Goes back to the specific view that generated the request

@@ -2,13 +2,17 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.CommentService;
+import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -17,13 +21,25 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private CommentDao commentDao;
 
+    @Autowired
+    private MailService mailService;
+
     @Transactional
     @Override
-    public long register(long postId, Long parentId, String body, long userId) {
-        return commentDao.register(postId, parentId,
+    public long register(Post post, Long parentId, String body, User user, String mailTemplate) {
+        long commentId = commentDao.register(post.getId(), parentId,
                 body.trim().replaceAll("[ \t]+", " ")
                         .replaceAll("(\r\n)+", "\n")
-                        .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), userId, true);
+                        .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), user.getId(), true);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("post", post);
+        map.put("comment", commentDao.findCommentById(commentId).orElseThrow(RuntimeException::new)); //TODO cambiar llamada
+
+        mailService.sendEmail(post.getUser().getEmail(),
+                "New comment on your post " + post.getTitle(), mailTemplate, map);
+
+        return commentId;
     }
 
     @Transactional

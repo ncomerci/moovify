@@ -54,14 +54,15 @@
                 </div>
             </div>
             <sec:authorize access="hasRole('USER')">
-                <div class="uk-position-top-right">
-                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.id}" data-value="${!loggedUser.getLikedComments().contains(comment.getId()) ? 'true' : 'false'}">
-                        <span class="uk-text-right"><c:out value="${comment.likes}"/></span>
-                        <sec:authorize access="hasRole('USER')">
-                            <span class="iconify" data-icon="ant-design:${!loggedUser.getLikedComments().contains(comment.getId()) ? 'heart-outlined' : 'heart-filled'}" data-inline="false"></span>
-                        </sec:authorize>
-                    </a>
-                </div>
+<%--                TODO fixear comment roto--%>
+<%--                <div class="uk-position-top-right">--%>
+<%--                    <a class="uk-padding-remove uk-align-right uk-margin-remove like-comment-button" data-id="${comment.id}" data-value="${!loggedUser.getLikedComments().contains(comment.getId()) ? 'true' : 'false'}">--%>
+<%--                        <span class="uk-text-right"><c:out value="${comment.likes}"/></span>--%>
+<%--                        <sec:authorize access="hasRole('USER')">--%>
+<%--                            <span class="iconify" data-icon="ant-design:${!loggedUser.getLikedComments().contains(comment.getId()) ? 'heart-outlined' : 'heart-filled'}" data-inline="false"></span>--%>
+<%--                        </sec:authorize>--%>
+<%--                    </a>--%>
+<%--                </div>--%>
             </sec:authorize>
         </header>
         <div class="uk-comment-body">

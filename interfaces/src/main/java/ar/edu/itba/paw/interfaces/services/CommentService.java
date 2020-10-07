@@ -2,14 +2,14 @@ package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface CommentService {
 
-    long register(long postId, Long parentId, String body, long userId);
+    long register(Post post, Long parentId, String body, User user, String mailTemplate);
 
     void likeComment(Comment comment, User user, int value);
 

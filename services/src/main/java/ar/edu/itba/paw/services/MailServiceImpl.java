@@ -51,7 +51,9 @@ public class MailServiceImpl implements MailService {
         final Context context = new Context();
 
         context.setVariable("applicationBasePath", applicationBasePath);
-        context.setVariables(variables);
+
+        if(variables != null)
+            context.setVariables(variables);
 
         // Prepare message using a Spring helper
         final MimeMessage mimeMessage = emailSender.createMimeMessage();
