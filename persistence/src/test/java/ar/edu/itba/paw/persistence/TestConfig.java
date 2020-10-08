@@ -1,4 +1,4 @@
-package Config;
+package ar.edu.itba.paw.persistence;
 
 import org.hsqldb.jdbc.JDBCDriver;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +25,8 @@ public class TestConfig {
     @Value("classpath:schema.sql")
     private Resource schemaSql;
 
+    @Value("classpath:test_inserts.sql")
+    private Resource testInserts;
 
     @Bean
     public DataSource dataSource(){
@@ -50,7 +52,7 @@ public class TestConfig {
 
     private DatabasePopulator databasePopulator() {
         final ResourceDatabasePopulator dbp = new ResourceDatabasePopulator();
-        dbp.addScripts(hsqldbSql, schemaSql);
+        dbp.addScripts(hsqldbSql, schemaSql, testInserts);
         
         return dbp;
     }

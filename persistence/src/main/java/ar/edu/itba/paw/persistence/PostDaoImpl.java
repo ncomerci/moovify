@@ -190,9 +190,11 @@ public class PostDaoImpl implements PostDao {
     @Override
     public Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Long> movies, boolean enabled) {
 
-        Objects.requireNonNull(title);
+        Objects.requireNonNull(title, "PostDao: register: title can't be null");
         Objects.requireNonNull(body);
         Objects.requireNonNull(movies);
+        Objects.requireNonNull(category);
+        Objects.requireNonNull(user);
 
         LocalDateTime creationDate = LocalDateTime.now();
 
