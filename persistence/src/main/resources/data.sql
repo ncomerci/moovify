@@ -24,25 +24,25 @@ VALUES ('NOT_VALIDATED') ON CONFLICT DO NOTHING;
 
 -- Populate Genre --
 
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(28, 'Action') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(12, 'Adventure') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(16, 'Animation') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(35, 'Comedy') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(80, 'Crime') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(99, 'Documentary') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(18, 'Drama') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10751, 'Family') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(14, 'Fantasy') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(36, 'History') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(27, 'Horror') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10402, 'Music') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(9648, 'Mystery') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10749, 'Romance') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(878, 'Science Fiction') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10770, 'TV Movie') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(53, 'Thriller') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10752, 'War') ON CONFLICT DO NOTHING;
-INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(37, 'Western') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(28, 'action') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(12, 'adventure') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(16, 'animation') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(35, 'comedy') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(80, 'crime') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(99, 'documentary') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(18, 'drama') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10751, 'family') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(14, 'fantasy') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(36, 'history') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(27, 'horror') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10402, 'music') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(9648, 'mystery') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10749, 'romance') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(878, 'scienceFiction') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10770, 'tvMovie') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(53, 'thriller') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10752, 'war') ON CONFLICT DO NOTHING;
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(37, 'western') ON CONFLICT DO NOTHING;
 
 -- Populate Movies --
 -- COPY movies(tmdb_id, imdb_id, original_language, original_title, overview, popularity, release_date, runtime, title, vote_average)
