@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.exceptions.DuplicateEmailException;
+import ar.edu.itba.paw.interfaces.exceptions.DuplicateUsernameException;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
@@ -64,9 +66,23 @@ public class UserController {
         if(bindingResult.hasErrors())
             return showUserCreateForm(userCreateForm);
 
-        final User user = userService.register(userCreateForm.getUsername(),
-                userCreateForm.getPassword(), userCreateForm.getName(),
-                userCreateForm.getEmail(), userCreateForm.getDescription(), userCreateForm.getAvatar().getBytes(), "confirmEmail");
+        final User user;
+
+        try {
+            user = userService.register(userCreateForm.getUsername(),
+                    userCreateForm.getPassword(), userCreateForm.getName(),
+                    userCreateForm.getEmail(), userCreateForm.getDescription(), userCreateForm.getAvatar().getBytes(), "confirmEmail");
+        }
+
+        catch(DuplicateUsernameException dupUsername) {
+            bindingResult.rejectValue("username", "validation.user.UniqueUsername");
+            return showUserCreateForm(userCreateForm);
+        }
+
+        catch (DuplicateEmailException dupEmail) {
+            bindingResult.rejectValue("email", "validation.user.UniqueEmail");
+            return showUserCreateForm(userCreateForm);
+        }
 
         manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
 
@@ -107,7 +123,12 @@ public class UserController {
 
         User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.updateUsername(user, usernameEditForm.getUsername());
+        try {
+            userService.updateUsername(user, usernameEditForm.getUsername());
+        }
+        catch(DuplicateUsernameException e) {
+            bindingResult.rejectValue("username", "validation.user.UniqueUsername");
+        }
 
         manualLogin(request, usernameEditForm.getUsername(), user.getPassword(), user.getRoles());
 
@@ -273,7 +294,19 @@ public class UserController {
         if(bindingResult.hasErrors())
             return showResetPassword(resetPasswordForm);
 
-        final User user = userService.findUserByEmail(resetPasswordForm.getEmail()).orElseThrow(UserNotFoundException::new);
+        final Optional<User> optUser = userService.findUserByEmail(resetPasswordForm.getEmail());
+
+        if(!optUser.isPresent()) {
+            bindingResult.rejectValue("email", "validation.resetPassword.InvalidEmail");
+            return showResetPassword(resetPasswordForm);
+        }
+
+        final User user = optUser.get();
+
+        if(!user.isValidated()) {
+            bindingResult.rejectValue("email", "validation.resetPassword.EmailNotValidated");
+            return showResetPassword(resetPasswordForm);
+        }
 
         userService.createPasswordResetEmail(user, "passwordResetEmail");
 

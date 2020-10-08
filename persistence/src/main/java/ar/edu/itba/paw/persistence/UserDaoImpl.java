@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.interfaces.exceptions.DuplicateEmailException;
+import ar.edu.itba.paw.interfaces.exceptions.DuplicateUsernameException;
 import ar.edu.itba.paw.interfaces.persistence.RoleDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.models.PaginatedCollection;
@@ -8,6 +10,7 @@ import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.exceptions.UserRegistrationWithoutRoleException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -138,7 +141,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User register(String username, String password, String name, String email, String description, Collection<String> roleNames, Long avatarId, boolean enabled) {
+    public User register(String username, String password, String name, String email, String description, Collection<String> roleNames, Long avatarId, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException {
 
         LocalDateTime creationDate = LocalDateTime.now();
 
@@ -159,7 +162,23 @@ public class UserDaoImpl implements UserDao {
         map.put("avatar_id", avatarId);
         map.put("enabled", enabled);
 
-        final long userId = jdbcUserInsert.executeAndReturnKey(map).longValue();
+        final long userId;
+
+        try {
+           userId = jdbcUserInsert.executeAndReturnKey(map).longValue();
+        }
+        catch(DuplicateKeyException e) {
+            final String errorMessage = e.getMessage();
+
+            if(errorMessage.contains("users_username_key"))
+                throw new DuplicateUsernameException();
+
+            else if(errorMessage.contains("users_email_key"))
+                throw new DuplicateEmailException();
+
+            else
+                throw e;
+        }
 
         for(Role role: roles){
             map = new HashMap<>();
@@ -177,8 +196,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void updateUsername(User user, String username) {
-        jdbcTemplate.update("UPDATE " + USERS + " SET  username = ? WHERE user_id = ?", username, user.getId());
+    public void updateUsername(User user, String username) throws DuplicateUsernameException {
+        try {
+            jdbcTemplate.update("UPDATE " + USERS + " SET  username = ? WHERE user_id = ?", username, user.getId());
+        }
+        catch(DuplicateKeyException e) {
+            throw new DuplicateUsernameException();
+        }
     }
 
     @Override

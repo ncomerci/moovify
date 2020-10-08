@@ -71,7 +71,6 @@ public class User {
         return roles.stream().anyMatch(r -> r.getRole().equals(role));
     }
 
-
     public Duration getTimeSinceCreation() {
         return Duration.between(creationDate, LocalDateTime.now());
     }
@@ -100,5 +99,9 @@ public class User {
 
     public boolean isAdmin() {
         return roles.stream().anyMatch(role -> role.getRole().equals(Role.ADMIN_ROLE));
+    }
+
+    public boolean isValidated() {
+        return roles.stream().noneMatch(role -> role.getRole().equals(Role.NOT_VALIDATED_ROLE));
     }
 }

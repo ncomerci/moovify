@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
+import ar.edu.itba.paw.interfaces.exceptions.DuplicateEmailException;
+import ar.edu.itba.paw.interfaces.exceptions.DuplicateUsernameException;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
@@ -14,11 +16,11 @@ public interface UserDao {
         NEWEST, OLDEST, LIKES, NAME
     }
 
-    User register(String username, String password, String name, String email, String description, Collection<String> roleNames,  Long avatarId, boolean enabled);
+    User register(String username, String password, String name, String email, String description, Collection<String> roleNames,  Long avatarId, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException;
 
     void updateName(User user, String name);
 
-    void updateUsername(User user, String username);
+    void updateUsername(User user, String username) throws DuplicateUsernameException;
 
     void updateDescription(User user, String description);
 

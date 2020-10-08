@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.form.Annotations.*;
+import ar.edu.itba.paw.webapp.form.Annotations.Avatar;
+import ar.edu.itba.paw.webapp.form.Annotations.PasswordsEqualConstraint;
+import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,7 +14,6 @@ import javax.validation.constraints.Size;
 public class UserCreateForm {
 
     @Size(min = 6, max = 50)
-    @UniqueUsername
     @Pattern(regexp = "[a-zA-Z0-9#_]+")
     private String username;
 
@@ -26,7 +27,6 @@ public class UserCreateForm {
 
     @Email
     @NotEmpty
-    @UniqueEmail
     private String email;
 
     @Size(max=400)

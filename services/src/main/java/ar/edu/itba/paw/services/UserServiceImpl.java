@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.exceptions.DuplicateEmailException;
+import ar.edu.itba.paw.interfaces.exceptions.DuplicateUsernameException;
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
@@ -40,7 +42,7 @@ public class UserServiceImpl implements UserService {
     private static final String AVATAR_SECURITY_TAG = "AVATAR";
 
     @Override
-    public User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) {
+    public User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) throws DuplicateUsernameException, DuplicateEmailException {
 
         final Long avatarId = (avatar.length == 0)? null : imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
 
@@ -58,7 +60,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUsername(User user, String username) {
+    public void updateUsername(User user, String username) throws DuplicateUsernameException {
         userDao.updateUsername(user, username);
     }
 
