@@ -1,7 +1,10 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
 import ar.edu.itba.paw.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -15,6 +18,8 @@ import java.util.*;
 
 @Repository
 public class CommentDaoImpl implements CommentDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentDaoImpl.class);
 
     // Constants with Table Names
     private static final String COMMENTS = TableNames.COMMENTS.getTableName();
@@ -394,8 +399,12 @@ public class CommentDaoImpl implements CommentDao {
 
         final long commentId = commentInsert.executeAndReturnKey(map).longValue();
 
-        return new Comment(commentId, creationDate, post, parentId, Collections.emptyList(),
+        final Comment comment = new Comment(commentId, creationDate, post, parentId, Collections.emptyList(),
                 body, user, enabled, 0, Collections.emptyMap());
+
+        LOGGER.debug("Inserted Comment: {}", comment);
+
+        return comment;
     }
 
     @Override
@@ -565,7 +574,7 @@ public class CommentDaoImpl implements CommentDao {
     private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
 
         if(pageNumber < 0 || pageSize <= 0)
-            throw new IllegalArgumentException("Illegal Comment pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
+            throw new InvalidPaginationArgumentException();
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }

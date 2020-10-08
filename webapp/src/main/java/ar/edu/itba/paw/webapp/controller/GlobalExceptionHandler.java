@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // TODO: add all RuntimeExceptions from webapp and interfaces
+
     @Autowired
     private MessageSource messageSource;
 

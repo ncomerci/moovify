@@ -2,6 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.MovieCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.MovieDao;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
 import ar.edu.itba.paw.models.PaginatedCollection;
@@ -255,7 +256,7 @@ public class MovieDaoImpl implements MovieDao {
     private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
 
         if(pageNumber < 0 || pageSize <= 0)
-            throw new IllegalArgumentException("Illegal Movie pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
+            throw new InvalidPaginationArgumentException();
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }

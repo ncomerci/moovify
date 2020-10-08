@@ -53,43 +53,60 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                     // Home Controller
                         // "/"
-                    .antMatchers("/admin/**").hasRole("ADMIN")
+                        // "/403"
 
                     // User Controller
                         // "/user/{userId:[\d]+}
+                        // "/user/{userId:[\d]+}/posts
+                        // "/user/{userId:[\d]+}/comments
+                        // /user/avatar/{avatarId:[\d]+}
                     .antMatchers("/login", "/user/create").anonymous()
-                    .antMatchers("/user/profile").authenticated()
+                    .antMatchers("/user/profile",
+                                            "/user/profile/posts",
+                                            "/user/profile/comments",
+                                            "/user/profile/edit",
+                                            "/user/changePassword").authenticated()
+                    .antMatchers(HttpMethod.POST,
+                             "/user/edit/name",
+                                        "/user/edit/username",
+                                        "/user/edit/description",
+                                        "/user/profile/avatar").authenticated()
                     .antMatchers(
                             "/user/registrationConfirm",
-                            "/user/resendConfirmation").hasRole("NOT_VALIDATED")
+                                        "/user/resendConfirmation").hasRole("NOT_VALIDATED")
                     .antMatchers(
                             "/user/resetPassword",
                             "/user/updatePassword/token",
                             "/user/updatePassword").anonymous()
-                    .antMatchers(HttpMethod.POST,"/user/promote/{id:[\\d]+}").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST,"/user/delete/{id:[\\d]+}").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST, "/user/restore/{id:[\\d]+}").hasRole("ADMIN")
 
                     // Post Controller
                         // "/post/{postId}"
                     .antMatchers("/post/create").hasRole("USER")
-                    .antMatchers(HttpMethod.POST,"/post/delete/{postId:[\\d]+}").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST,"/post/restore/{postId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST, "/post/like").hasRole("USER")
 
                     // Movie Controller
                         // "/movies/{movieId}
-                    .antMatchers("/movie/create", "/movie/register").hasRole("ADMIN")
+                    .antMatchers("/movie/create").hasRole("ADMIN")
 
                     // Comment Controller
-                    .antMatchers("/comment/create").hasRole("USER")
-                    .antMatchers(HttpMethod.POST, "/comment/like").hasRole("USER")
-                    .antMatchers(HttpMethod.POST,"/comment/delete/{commentId:[\\d]+}").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST,"/comment/restore/{commentId:[\\d]+}").hasRole("ADMIN")
                         // "/comment/{commentId:[\\d]+}"
+                    .antMatchers(HttpMethod.POST, "/comment/create").hasRole("USER")
+                    .antMatchers(HttpMethod.POST, "/comment/like").hasRole("USER")
+
                     // Search Controller
                         // "/search/posts"
                         // "/search/movies"
                         // "/search/users"
+
+                    // Admin Controller
+                    .antMatchers("/admin/**").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/comment/delete/{commentId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/comment/restore/{commentId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/post/delete/{postId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/post/restore/{postId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/user/promote/{id:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/user/delete/{id:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST, "/user/restore/{id:[\\d]+}").hasRole("ADMIN")
 
                     // Default
                     .antMatchers("/**").permitAll()

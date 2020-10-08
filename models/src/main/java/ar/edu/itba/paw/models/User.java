@@ -104,4 +104,21 @@ public class User {
     public boolean isValidated() {
         return roles.stream().noneMatch(role -> role.getRole().equals(Role.NOT_VALIDATED_ROLE));
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", creationDate=" + creationDate +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", description='" + description + '\'' +
+                ", avatarId=" + avatarId +
+                ", totalLikes=" + totalLikes +
+                ", roles=" + roles +
+                ", enabled=" + enabled +
+                '}';
+    }
 }

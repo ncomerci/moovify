@@ -54,20 +54,6 @@ public class CommentController {
         return new ModelAndView("redirect:"+ request.getHeader("Referer") + "#comment-section");
     }
 
-    @RequestMapping(path = "/comment/like",  method = RequestMethod.POST)
-    public ModelAndView post(@RequestParam final long comment_id,
-                             @RequestParam(defaultValue = "0") final int value,
-                             final Principal principal,
-                             final HttpServletRequest request) {
-
-        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-        Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
-        commentService.likeComment(comment, user, value);
-
-        return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-section");
-
-    }
-
     @RequestMapping(path = "/comment/{id}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long id,
                              @RequestParam(defaultValue = "5") final int pageSize,
@@ -82,5 +68,19 @@ public class CommentController {
         mv.addObject("children", commentService.findCommentDescendants(comment, pageNumber, pageSize));
 
         return mv;
+    }
+
+    @RequestMapping(path = "/comment/like",  method = RequestMethod.POST)
+    public ModelAndView post(@RequestParam final long comment_id,
+                             @RequestParam(defaultValue = "0") final int value,
+                             final Principal principal,
+                             final HttpServletRequest request) {
+
+        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
+        commentService.likeComment(comment, user, value);
+
+        return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-section");
+
     }
 }

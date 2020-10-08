@@ -89,4 +89,20 @@ public class Post {
     }
 
     public boolean isEnabled() { return enabled; }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", creationDate=" + creationDate +
+                ", title='" + title + '\'' +
+                ", body='" + body + '\'' +
+                ", wordCount=" + wordCount +
+                ", user=" + user +
+                ", category=" + category +
+                ", tags=" + tags +
+                ", likes=" + likes +
+                ", enabled=" + enabled +
+                '}';
+    }
 }

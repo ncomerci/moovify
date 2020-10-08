@@ -102,4 +102,20 @@ public class Comment {
     }
 
     public boolean isEnabled() { return enabled; }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", creationDate=" + creationDate +
+                ", post=" + post +
+                ", parentId=" + parentId +
+                ", children=" + children +
+                ", body='" + body + '\'' +
+                ", user=" + user +
+                ", likes=" + likes +
+                ", votedBy=" + votedBy +
+                ", enabled=" + enabled +
+                '}';
+    }
 }

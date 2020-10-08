@@ -95,4 +95,24 @@ public class Movie {
     public Collection<MovieCategory> getCategories() {
         return categories;
     }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id=" + id +
+                ", creationDate=" + creationDate +
+                ", title='" + title + '\'' +
+                ", originalTitle='" + originalTitle + '\'' +
+                ", tmdbId=" + tmdbId +
+                ", imdbId='" + imdbId + '\'' +
+                ", originalLanguage='" + originalLanguage + '\'' +
+                ", overview='" + overview + '\'' +
+                ", popularity=" + popularity +
+                ", runtime=" + runtime +
+                ", voteAverage=" + voteAverage +
+                ", releaseDate=" + releaseDate +
+                ", postCount=" + postCount +
+                ", categories=" + categories +
+                '}';
+    }
 }

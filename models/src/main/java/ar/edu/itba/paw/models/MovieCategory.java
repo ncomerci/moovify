@@ -23,4 +23,13 @@ public class MovieCategory {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "MovieCategory{" +
+                "id=" + id +
+                ", tmdbCategoryId=" + tmdbCategoryId +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

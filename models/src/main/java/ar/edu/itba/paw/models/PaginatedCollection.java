@@ -35,4 +35,14 @@ public class PaginatedCollection<T> {
     public int getLastPageNumber() {
         return (totalCount - 1) / pageSize;
     }
+
+    @Override
+    public String toString() {
+        return "PaginatedCollection{" +
+                "results=" + results +
+                ", pageNumber=" + pageNumber +
+                ", pageSize=" + pageSize +
+                ", totalCount=" + totalCount +
+                '}';
+    }
 }

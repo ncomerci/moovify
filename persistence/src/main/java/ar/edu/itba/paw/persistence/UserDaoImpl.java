@@ -1,9 +1,10 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.interfaces.exceptions.DuplicateEmailException;
-import ar.edu.itba.paw.interfaces.exceptions.DuplicateUsernameException;
 import ar.edu.itba.paw.interfaces.persistence.RoleDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
@@ -336,7 +337,7 @@ public class UserDaoImpl implements UserDao {
     private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
 
         if(pageNumber < 0 || pageSize <= 0)
-            throw new IllegalArgumentException("Illegal User pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
+            throw new InvalidPaginationArgumentException();
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }

@@ -5,12 +5,15 @@
 
 <jsp:useBean id="currentSelection" scope="request" type="java.lang.String"/>
 <jsp:useBean id="query" scope="request" type="java.lang.String"/>
+<jsp:useBean id="selectedView" scope="request" type="java.lang.String"/>
 
 <%--
 -- mainController.js required.
 -- surrounding with form required
 --%>
-
+<h2 class="uk-text-center uk-margin-remove uk-text-capitalize">
+    <spring:message code="admin.deleted.title" arguments="${selectedView}"/>
+</h2>
 <div class="uk-search uk-search-large">
     <span uk-search-icon></span>
     <input class="uk-search-input search-query-input" type="search" id="query-input" value="${query}" name="query">
