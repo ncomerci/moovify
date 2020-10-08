@@ -108,7 +108,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.POST,"/user/delete/{id:[\\d]+}").hasRole("ADMIN")
                     .antMatchers(HttpMethod.POST, "/user/restore/{id:[\\d]+}").hasRole("ADMIN")
 
-
                     // Default
                     .antMatchers("/**").permitAll()
 

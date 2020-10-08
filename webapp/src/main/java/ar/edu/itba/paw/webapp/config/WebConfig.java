@@ -1,11 +1,14 @@
 package ar.edu.itba.paw.webapp.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -41,8 +44,12 @@ import java.util.Properties;
         "ar.edu.itba.paw.persistence",
     })
 @Configuration
-// TODO: Set Up @PropertySource
+@PropertySource({ "classpath:/config/web-config-develop.properties" })
+//@PropertySource({ "classpath:/config/web-config-production.properties" })
 public class WebConfig extends WebMvcConfigurerAdapter {
+
+    @Autowired
+    private Environment env;
 
     @Value("classpath:schema.sql")
     private Resource schemaSql;
@@ -63,8 +70,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Bean(name = "applicationBasePath")
     public String applicationBasePath() {
-        return "http://localhost:8080";
-        // return "http://pawserver.it.itba.edu.ar/paw-2020b-3";
+
+        return env.getProperty("app.base_path");
     }
 
     @Override
@@ -78,14 +85,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
         ds.setDriverClass(org.postgresql.Driver.class);
-        ds.setUrl("jdbc:postgresql://localhost/moovify");
-        ds.setUsername("admin");
-        ds.setPassword("papanata");
-
-        // FOR DEPLOYMENT
-//        ds.setUrl("jdbc:postgresql://10.16.1.110/paw-2020b-3");
-//        ds.setUsername("paw-2020b-3");
-//        ds.setPassword("ce3Xh7mfS");
+        ds.setUrl(env.getProperty("db.url"));
+        ds.setUsername(env.getProperty("db.username"));
+        ds.setPassword(env.getProperty("db.password"));
 
         return ds;
     }
@@ -134,17 +136,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
         final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
-        // Deploy Mail Server
-//        mailSender.setHost("smtp.gmail.com");
-//        mailSender.setPort(587);
-//        mailSender.setUsername("MoovifyCo@gmail.com");
-//        mailSender.setPassword("#Papanata");
-
-        // Development Mail Server
-        mailSender.setHost("smtp.mailtrap.io");
-        mailSender.setPort(587);
-        mailSender.setUsername("e6c828d95e9959");
-        mailSender.setPassword("bbfccd607177ac");
+        mailSender.setHost(env.getProperty("mail.host"));
+        mailSender.setPort(env.getProperty("mail.port", Integer.class));
+        mailSender.setUsername(env.getProperty("mail.username"));
+        mailSender.setPassword(env.getProperty("mail.password"));
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
