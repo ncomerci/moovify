@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -113,7 +114,6 @@ public class SearchServiceImpl implements SearchService {
 //        sortCriteriaMap.put("oldest", UserDao.SortCriteria.OLDEST);
         sortCriteriaMap.put("likes", UserDao.SortCriteria.LIKES);
 
-
         return sortCriteriaMap;
     }
 
@@ -132,6 +132,7 @@ public class SearchServiceImpl implements SearchService {
         movieCategoriesOptions = movieCategoryDao.getAllCategories().stream().map(MovieCategory::getName).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<PaginatedCollection<Post>> searchPosts(String query, String category, String period, String sortCriteria, int pageNumber, int pageSize) {
 
@@ -174,6 +175,7 @@ public class SearchServiceImpl implements SearchService {
         return Optional.empty();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<PaginatedCollection<Movie>> searchMovies(String query, String category, String decade, String sortCriteria, int pageNumber, int pageSize){
 
@@ -218,6 +220,7 @@ public class SearchServiceImpl implements SearchService {
         return Optional.empty();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<PaginatedCollection<User>> searchUsers(String query, String role, String sortCriteria, int pageNumber, int pageSize) {
 
@@ -245,6 +248,7 @@ public class SearchServiceImpl implements SearchService {
         return Optional.empty();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<PaginatedCollection<Post>> searchDeletedPosts(String query, int pageNumber, int pageSize) {
 
@@ -254,6 +258,7 @@ public class SearchServiceImpl implements SearchService {
         return Optional.of(postDao.searchDeletedPosts(query, SortCriteria.NEWEST, pageNumber, pageSize));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<PaginatedCollection<Comment>> searchDeletedComments(String query, int pageNumber, int pageSize) {
 
@@ -263,6 +268,7 @@ public class SearchServiceImpl implements SearchService {
         return Optional.of(commentDao.searchDeletedComments(query, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<PaginatedCollection<User>> searchDeletedUsers(String query, int pageNumber, int pageSize) {
 

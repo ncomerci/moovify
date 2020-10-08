@@ -250,23 +250,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean userHasRole(User user, String role) {
-        return jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM " + USER_ROLE +
-                        " INNER JOIN " + ROLES + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
-                        " WHERE user_id = ? AND role = ?", new Object[]{ user.getId(), role }, Integer.class) > 0;
-    }
-
-    @Override
-    public boolean userHasRole(String userEmail, String role) {
-        return jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM " + USERS +
-                        " INNER JOIN "+ USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id" +
-                        " INNER JOIN " + ROLES + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
-                        " WHERE email = ? AND role = ?", new Object[]{ userEmail, role }, Integer.class) > 0;
-    }
-
-    @Override
     public int hasUserLiked(User user, Post post) {
         return jdbcTemplate.queryForObject(
                 "SELECT COALESCE(SUM(" + POSTS_LIKES + ".value), 0)  FROM " + POSTS_LIKES +

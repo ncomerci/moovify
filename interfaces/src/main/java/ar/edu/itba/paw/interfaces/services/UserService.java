@@ -42,8 +42,6 @@ public interface UserService {
 
     void updateAvatar(User user, byte[] newAvatar);
 
-    boolean emailExistsAndIsValidated(String email);
-
     Optional<User> findUserById(long id);
 
     Optional<User> findUserByUsername(String username);

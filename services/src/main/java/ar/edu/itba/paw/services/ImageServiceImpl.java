@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -22,11 +23,13 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     private ImageDao imageDao;
 
+    @Transactional
     @Override
     public long uploadImage(byte[] image, String securityTag) {
         return imageDao.uploadImage(image, securityTag);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<byte[]> getImage(long imageId, String securityTag) {
         return imageDao.getImage(imageId, securityTag);
@@ -51,6 +54,7 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
+    @Transactional
     @Override
     public void deleteImage(long imageId) {
         imageDao.deleteImage(imageId);

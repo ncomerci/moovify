@@ -55,41 +55,49 @@ public class CommentServiceImpl implements CommentService {
             commentDao.likeComment(comment, user, value);
     }
 
+    @Transactional
     @Override
     public void deleteComment(Comment comment) {
         commentDao.deleteComment(comment);
     }
 
+    @Transactional
     @Override
     public void restoreComment(Comment comment) {
         commentDao.restoreComment(comment);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Optional<Comment> findCommentById(long commentId) {
         return commentDao.findCommentById(commentId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<Comment> findCommentChildren(Comment comment, int pageNumber, int pageSize) {
         return commentDao.findCommentChildren(comment, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<Comment> findCommentDescendants(Comment comment, int pageNumber, int pageSize) {
         return commentDao.findCommentDescendants(comment, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<Comment> findPostCommentDescendants(Post post, int pageNumber, int pageSize) {
         return commentDao.findPostCommentDescendants(post, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<Comment> findCommentsByPost(Post post, int pageNumber, int pageSize) {
         return commentDao.findCommentsByPost(post, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<Comment> findCommentsByUser(User user, int pageNumber, int pageSize) {
         return commentDao.findCommentsByUser(user, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);

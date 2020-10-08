@@ -30,10 +30,6 @@ public interface UserDao {
 
     void replaceUserRole(final User user, final String newRole, final String oldRole);
 
-    boolean userHasRole(User user, String role);
-
-    boolean userHasRole(String userEmail, String role);
-
     int hasUserLiked(User user, Post post);
 
     Collection<Role> addRoles(User user, Collection<String> roleNames);
