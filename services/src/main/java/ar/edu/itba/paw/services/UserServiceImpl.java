@@ -1,10 +1,10 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.interfaces.exceptions.DuplicateEmailException;
-import ar.edu.itba.paw.interfaces.exceptions.DuplicateUsernameException;
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;

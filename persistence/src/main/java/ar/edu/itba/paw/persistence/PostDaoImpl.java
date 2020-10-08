@@ -1,7 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.interfaces.exceptions.InvalidMovieIdException;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidMovieIdException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
 import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -336,7 +337,7 @@ public class PostDaoImpl implements PostDao {
     private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
 
         if (pageNumber < 0 || pageSize <= 0)
-            throw new IllegalArgumentException("Illegal Posts pagination arguments. Page Number: " + pageNumber + ". Page Size: " + pageSize);
+            throw new InvalidPaginationArgumentException();
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }

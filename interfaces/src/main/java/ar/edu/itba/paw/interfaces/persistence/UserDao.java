@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
-import ar.edu.itba.paw.interfaces.exceptions.DuplicateEmailException;
-import ar.edu.itba.paw.interfaces.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;

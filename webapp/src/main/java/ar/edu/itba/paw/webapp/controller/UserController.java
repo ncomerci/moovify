@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.exceptions.DuplicateEmailException;
-import ar.edu.itba.paw.interfaces.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
