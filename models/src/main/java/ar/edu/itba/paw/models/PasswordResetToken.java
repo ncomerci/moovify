@@ -41,4 +41,14 @@ public class PasswordResetToken {
     public boolean isValid() {
         return expiryDate.compareTo(LocalDateTime.now()) >= 0;
     }
+
+    @Override
+    public String toString() {
+        return "PasswordResetToken{" +
+                "tokenId=" + tokenId +
+                ", user=" + user +
+                ", token='" + token + '\'' +
+                ", expiryDate=" + expiryDate +
+                '}';
+    }
 }

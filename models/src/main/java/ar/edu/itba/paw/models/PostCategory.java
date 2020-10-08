@@ -25,4 +25,13 @@ public class PostCategory {
     public String getName() {
         return name;
     }
+
+    @Override
+    public String toString() {
+        return "PostCategory{" +
+                "id=" + id +
+                ", creationDate=" + creationDate +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
