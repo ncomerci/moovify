@@ -2,10 +2,8 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.*;
 import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
-import ar.edu.itba.paw.interfaces.persistence.*;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.models.*;
-import ar.edu.itba.paw.services.exceptions.NonReachableStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 @Service
 @DependsOn("dataSourceInitializer")
@@ -136,6 +133,146 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
+    public Optional<PaginatedCollection<Post>> searchPosts(String query, String category, String period, String sortCriteria, int pageNumber, int pageSize) {
+
+        if(query == null)
+            return Optional.empty();
+
+        final EnumSet<PostSearchOptions> options = EnumSet.noneOf(PostSearchOptions.class);
+        final PostDao.SortCriteria sc;
+
+        if(category != null && postCategoriesOptions.contains(category))
+            options.add(PostSearchOptions.BY_CATEGORY);
+
+
+        if(period != null && postPeriodOptionsMap.containsKey(period))
+            options.add(PostSearchOptions.OLDER_THAN);
+
+
+        if(sortCriteria != null && postSortCriteriaMap.containsKey(sortCriteria))
+            sc = postSortCriteriaMap.get(sortCriteria);
+
+        else
+            sc = DEFAULT_POST_SORT_CRITERIA;
+
+
+        if(options.isEmpty())
+            return Optional.of(postDao.searchPosts(query, sc, pageNumber, pageSize));
+
+        else if(options.size() == 1) {
+
+            if(options.contains(PostSearchOptions.OLDER_THAN))
+                return Optional.of(postDao.searchPostsOlderThan(query, postPeriodOptionsMap.get(period), sc, pageNumber, pageSize));
+
+            else if(options.contains(PostSearchOptions.BY_CATEGORY))
+                return Optional.of(postDao.searchPostsByCategory(query, category, sc, pageNumber, pageSize));
+        }
+
+        else if(options.contains(PostSearchOptions.OLDER_THAN) && options.contains(PostSearchOptions.BY_CATEGORY) && options.size() == 2)
+            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, postPeriodOptionsMap.get(period), sc, pageNumber, pageSize));
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<PaginatedCollection<Movie>> searchMovies(String query, String category, String decade, String sortCriteria, int pageNumber, int pageSize){
+
+        if(query == null)
+            return Optional.empty();
+
+        final EnumSet<MovieSearchOptions> options = EnumSet.noneOf(MovieSearchOptions.class);
+        final MovieDao.SortCriteria sc;
+        LocalDate since = LocalDate.ofYearDay(1900,1);
+        LocalDate upTo = LocalDate.ofYearDay(2100, 1);
+
+        if(category != null && movieCategoriesOptions.contains(category))
+            options.add(MovieSearchOptions.BY_CATEGORY);
+
+        if(decade != null && movieDecadeMap.containsKey(decade)){
+            options.add(MovieSearchOptions.BY_RELEASE_DATE);
+            since = movieDecadeMap.get(decade);
+            upTo = since.plusYears(10);
+        }
+
+        if (sortCriteria != null && movieSortCriteriaMap.containsKey(sortCriteria))
+            sc = movieSortCriteriaMap.get(sortCriteria);
+        else
+            sc = DEFAULT_MOVIE_SORT_CRITERIA;
+
+
+        if(options.isEmpty())
+            return Optional.of(movieDao.searchMovies(query, sc, pageNumber, pageSize));
+
+        else if (options.size() == 1) {
+
+            if (options.contains(MovieSearchOptions.BY_CATEGORY))
+                return Optional.of(movieDao.searchMoviesByCategory(query, category, sc, pageNumber, pageSize));
+
+            else if (options.contains(MovieSearchOptions.BY_RELEASE_DATE))
+                return Optional.of(movieDao.searchMoviesByReleaseDate(query, since, upTo, sc, pageNumber, pageSize));
+        }
+
+        else if (options.size() == 2 && options.contains(MovieSearchOptions.BY_CATEGORY) && options.contains(MovieSearchOptions.BY_RELEASE_DATE))
+            return Optional.of(movieDao.searchMoviesByCategoryAndReleaseDate(query, category, since, upTo, sc, pageNumber, pageSize));
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<PaginatedCollection<User>> searchUsers(String query, String role, String sortCriteria, int pageNumber, int pageSize) {
+
+        if(query == null)
+            return Optional.empty();
+
+        final EnumSet<UserSearchOptions> options = EnumSet.noneOf(UserSearchOptions.class);
+        final UserDao.SortCriteria sc;
+
+        if(role != null && userRoleOptionsMap.containsKey(role))
+            options.add(UserSearchOptions.BY_ROLE);
+
+        if(sortCriteria != null && userSortCriteriaMap.containsKey(sortCriteria))
+            sc = userSortCriteriaMap.get(sortCriteria);
+
+        else
+            sc = DEFAULT_USER_SORT_CRITERIA;
+
+        if(options.isEmpty())
+            return Optional.of(userDao.searchUsers(query, sc, pageNumber, pageSize));
+
+        else if(options.contains(UserSearchOptions.BY_ROLE))
+            return Optional.of(userDao.searchUsersByRole(query, userRoleOptionsMap.get(role), sc, pageNumber, pageSize));
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<PaginatedCollection<Post>> searchDeletedPosts(String query, int pageNumber, int pageSize) {
+
+        if(query == null)
+            return Optional.empty();
+
+        return Optional.of(postDao.searchDeletedPosts(query, SortCriteria.NEWEST, pageNumber, pageSize));
+    }
+
+    @Override
+    public Optional<PaginatedCollection<Comment>> searchDeletedComments(String query, int pageNumber, int pageSize) {
+
+        if(query == null)
+            return Optional.empty();
+
+        return Optional.of(commentDao.searchDeletedComments(query, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize));
+    }
+
+    @Override
+    public Optional<PaginatedCollection<User>> searchDeletedUsers(String query, int pageNumber, int pageSize) {
+
+        if(query == null)
+            return Optional.empty();
+
+        return Optional.of(userDao.searchDeletedUsers(query, UserDao.SortCriteria.NEWEST, pageNumber, pageSize));
+    }
+
+    @Override
     public Collection<String> getAllPostSortCriteria() {
         return postSortCriteriaMap.keySet();
     }
@@ -173,133 +310,5 @@ public class SearchServiceImpl implements SearchService {
     @Override
     public Collection<String> getUserRoleOptions() {
         return userRoleOptionsMap.keySet();
-    }
-
-    @Override
-    public PaginatedCollection<Post> searchPosts(String query, String category, String period, String sortCriteria, int pageNumber, int pageSize) {
-
-        Objects.requireNonNull(query);
-
-        final EnumSet<PostSearchOptions> options = EnumSet.noneOf(PostSearchOptions.class);
-        final PostDao.SortCriteria sc;
-
-        if(category != null && postCategoriesOptions.contains(category))
-            options.add(PostSearchOptions.BY_CATEGORY);
-
-
-        if(period != null && postPeriodOptionsMap.containsKey(period))
-            options.add(PostSearchOptions.OLDER_THAN);
-
-
-        if(sortCriteria != null && postSortCriteriaMap.containsKey(sortCriteria))
-            sc = postSortCriteriaMap.get(sortCriteria);
-
-        else
-            sc = DEFAULT_POST_SORT_CRITERIA;
-
-
-        if(options.isEmpty())
-            return postDao.searchPosts(query, sc, pageNumber, pageSize);
-
-        else if(options.size() == 1) {
-
-            if(options.contains(PostSearchOptions.OLDER_THAN))
-                return postDao.searchPostsOlderThan(query, postPeriodOptionsMap.get(period), sc, pageNumber, pageSize);
-
-            else if(options.contains(PostSearchOptions.BY_CATEGORY))
-                return postDao.searchPostsByCategory(query, category, sc, pageNumber, pageSize);
-        }
-
-        else if(options.contains(PostSearchOptions.OLDER_THAN) && options.contains(PostSearchOptions.BY_CATEGORY) && options.size() == 2)
-            return postDao.searchPostsByCategoryAndOlderThan(query, category, postPeriodOptionsMap.get(period), sc, pageNumber, pageSize);
-
-        throw new NonReachableStateException();
-    }
-
-    @Override
-    public PaginatedCollection<Post> searchDeletedPosts(String query, int pageNumber, int pageSize) {
-        Objects.requireNonNull(query);
-        return postDao.searchDeletedPosts(query, SortCriteria.NEWEST, pageNumber, pageSize);
-    }
-
-    @Override
-    public PaginatedCollection<Movie> searchMovies(String query, String category, String decade, String sortCriteria, int pageNumber, int pageSize){
-
-        Objects.requireNonNull(query);
-
-        final EnumSet<MovieSearchOptions> options = EnumSet.noneOf(MovieSearchOptions.class);
-        final MovieDao.SortCriteria sc;
-        LocalDate since = LocalDate.ofYearDay(1900,1);
-        LocalDate upTo = LocalDate.ofYearDay(2100, 1);
-
-        if(category != null && movieCategoriesOptions.contains(category))
-            options.add(MovieSearchOptions.BY_CATEGORY);
-
-        if(decade != null && movieDecadeMap.containsKey(decade)){
-            options.add(MovieSearchOptions.BY_RELEASE_DATE);
-            since = movieDecadeMap.get(decade);
-            upTo = since.plusYears(10);
-        }
-
-        if (sortCriteria != null && movieSortCriteriaMap.containsKey(sortCriteria))
-            sc = movieSortCriteriaMap.get(sortCriteria);
-        else
-            sc = DEFAULT_MOVIE_SORT_CRITERIA;
-
-
-        if(options.isEmpty())
-            return movieDao.searchMovies(query, sc, pageNumber, pageSize);
-
-        else if (options.size() == 1) {
-
-            if (options.contains(MovieSearchOptions.BY_CATEGORY))
-                return movieDao.searchMoviesByCategory(query, category, sc, pageNumber, pageSize);
-
-            else if (options.contains(MovieSearchOptions.BY_RELEASE_DATE))
-                return movieDao.searchMoviesByReleaseDate(query, since, upTo, sc, pageNumber, pageSize);
-        }
-
-        else if (options.size() == 2 && options.contains(MovieSearchOptions.BY_CATEGORY) && options.contains(MovieSearchOptions.BY_RELEASE_DATE))
-            return movieDao.searchMoviesByCategoryAndReleaseDate(query, category, since, upTo, sc, pageNumber, pageSize);
-
-        throw new NonReachableStateException();
-    }
-
-    @Override
-    public PaginatedCollection<User> searchUsers(String query, String role, String sortCriteria, int pageNumber, int pageSize) {
-
-        Objects.requireNonNull(query);
-
-        final EnumSet<UserSearchOptions> options = EnumSet.noneOf(UserSearchOptions.class);
-        final UserDao.SortCriteria sc;
-
-        if(role != null && userRoleOptionsMap.containsKey(role))
-            options.add(UserSearchOptions.BY_ROLE);
-
-        if(sortCriteria != null && userSortCriteriaMap.containsKey(sortCriteria))
-            sc = userSortCriteriaMap.get(sortCriteria);
-
-        else
-            sc = DEFAULT_USER_SORT_CRITERIA;
-
-        if(options.isEmpty())
-            return userDao.searchUsers(query, sc, pageNumber, pageSize);
-
-        else if(options.contains(UserSearchOptions.BY_ROLE))
-                return userDao.searchUsersByRole(query, userRoleOptionsMap.get(role), sc, pageNumber, pageSize);
-
-        throw new NonReachableStateException();
-    }
-
-    @Override
-    public PaginatedCollection<User> searchDeletedUsers(String query, int pageNumber, int pageSize) {
-        Objects.requireNonNull(query);
-        return userDao.searchDeletedUsers(query, UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
-    }
-
-    @Override
-    public PaginatedCollection<Comment> searchDeletedComments(String query, int pageNumber, int pageSize) {
-        Objects.requireNonNull(query);
-        return commentDao.searchDeletedComments(query, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 }

@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -55,6 +52,15 @@ public class GlobalExceptionHandler {
     public ModelAndView handleUserNotFound(){
         ModelAndView mv = new ModelAndView("errorView");
         mv.addObject("message", messageSource.getMessage("error.userNotFoundException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "404" );
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(InvalidSearchArgumentsException.class)
+    public ModelAndView handleInvalidSearchArguments(){
+        ModelAndView mv = new ModelAndView("errorView");
+        mv.addObject("message", messageSource.getMessage("error.invalidSearchArgumentsException",null, LocaleContextHolder.getLocale()) );
         mv.addObject("code", "404" );
         return mv;
     }

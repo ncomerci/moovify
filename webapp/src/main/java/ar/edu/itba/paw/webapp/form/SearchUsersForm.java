@@ -1,14 +1,9 @@
 package ar.edu.itba.paw.webapp.form;
 
-import javax.validation.constraints.NotNull;
-
 public class SearchUsersForm {
 
-    @NotNull
     private String query;
-
     private String role;
-
     private String sortCriteria;
 
     public String getQuery() {

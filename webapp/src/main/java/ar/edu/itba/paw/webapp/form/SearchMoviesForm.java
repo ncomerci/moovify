@@ -1,11 +1,8 @@
 package ar.edu.itba.paw.webapp.form;
 
-import javax.validation.constraints.NotNull;
-
 public class SearchMoviesForm {
-    @NotNull
-    private String query;
 
+    private String query;
     private String movieCategory;
     private String decade;
     private String sortCriteria;

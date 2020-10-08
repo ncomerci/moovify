@@ -5,6 +5,7 @@ import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.Collections;
 
 @Controller
 public class AdminController {
@@ -39,7 +38,8 @@ public class AdminController {
 
         ModelAndView mv = new ModelAndView("adminPanel/deleted/posts");
         mv.addObject("query", query);
-        mv.addObject("posts", searchService.searchDeletedPosts(query, pageNumber, pageSize));
+        mv.addObject("posts", searchService.searchDeletedPosts(query, pageNumber, pageSize)
+                .orElseThrow(InvalidSearchArgumentsException::new));
         return mv;
     }
 
@@ -50,7 +50,8 @@ public class AdminController {
 
         ModelAndView mv = new ModelAndView("adminPanel/deleted/comments");
         mv.addObject("query", query);
-        mv.addObject("comments", searchService.searchDeletedComments(query, pageNumber, pageSize));
+        mv.addObject("comments", searchService.searchDeletedComments(query, pageNumber, pageSize)
+                .orElseThrow(InvalidSearchArgumentsException::new));
         return mv;
     }
 
@@ -61,7 +62,8 @@ public class AdminController {
 
         ModelAndView mv = new ModelAndView("adminPanel/deleted/users");
         mv.addObject("query", query);
-        mv.addObject("users", searchService.searchDeletedUsers(query, pageNumber, pageSize));
+        mv.addObject("users", searchService.searchDeletedUsers(query, pageNumber, pageSize)
+                .orElseThrow(InvalidSearchArgumentsException::new));
         return mv;
     }
 

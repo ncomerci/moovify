@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.SearchService;
+import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.form.SearchMoviesForm;
 import ar.edu.itba.paw.webapp.form.SearchPostsForm;
 import ar.edu.itba.paw.webapp.form.SearchUsersForm;
@@ -12,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.validation.Valid;
-
 
 @Controller
 public class SearchController {
@@ -22,7 +21,7 @@ public class SearchController {
     private SearchService searchService;
 
     @RequestMapping(path = "/search/posts", method = RequestMethod.GET)
-    public ModelAndView searchPosts(@Valid @ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm,
+    public ModelAndView searchPosts(@ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm,
                                     @RequestParam(defaultValue = "5") final int pageSize,
                                     @RequestParam(defaultValue = "0") final int pageNumber) {
 
@@ -33,14 +32,14 @@ public class SearchController {
         mv.addObject("periodOptions", searchService.getPostPeriodOptions());
         mv.addObject("sortCriteria", searchService.getAllPostSortCriteria());
 
-        mv.addObject("posts",
-                searchService.searchPosts(searchPostsForm.getQuery(), searchPostsForm.getPostCategory(),
-                        searchPostsForm.getPostAge(), searchPostsForm.getSortCriteria(), pageNumber, pageSize));
+        mv.addObject("posts", searchService.searchPosts(searchPostsForm.getQuery(),
+                searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(), searchPostsForm.getSortCriteria(),
+                pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new));
         return mv;
     }
 
     @RequestMapping(path = "/search/movies", method = RequestMethod.GET)
-    public ModelAndView searchMovies(@Valid @ModelAttribute("searchMoviesForm") final SearchMoviesForm searchMoviesForm,
+    public ModelAndView searchMovies(@ModelAttribute("searchMoviesForm") final SearchMoviesForm searchMoviesForm,
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
@@ -53,12 +52,12 @@ public class SearchController {
         mv.addObject("movies",
                 searchService.searchMovies(searchMoviesForm.getQuery(), searchMoviesForm.getMovieCategory(),
                         searchMoviesForm.getDecade(), searchMoviesForm.getSortCriteria(),
-                        pageNumber, pageSize));
+                        pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new));
         return mv;
     }
 
     @RequestMapping(path = "/search/users", method = RequestMethod.GET)
-    public ModelAndView searchUsers(@Valid @ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm,
+    public ModelAndView searchUsers(@ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm,
                                     @RequestParam(defaultValue = "5") final int pageSize,
                                     @RequestParam(defaultValue = "0") final int pageNumber) {
 
@@ -70,7 +69,7 @@ public class SearchController {
 
         mv.addObject("users",
                 searchService.searchUsers(searchUsersForm.getQuery(),searchUsersForm.getRole(),
-                        searchUsersForm.getSortCriteria(), pageNumber, pageSize));
+                        searchUsersForm.getSortCriteria(), pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new));
 
         return mv;
     }
