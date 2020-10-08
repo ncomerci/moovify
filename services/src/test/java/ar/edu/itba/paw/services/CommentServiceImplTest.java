@@ -31,6 +31,9 @@ public class CommentServiceImplTest {
     @Mock
     private CommentDao dao;
 
+    @Mock
+    private MailService mailService;
+
     @InjectMocks
     private final CommentServiceImpl commentService = new CommentServiceImpl();
 

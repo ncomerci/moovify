@@ -7,7 +7,6 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
-import com.sun.istack.internal.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +26,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public Comment register(Post post, Comment parent, @NotNull String body, User user, String mailTemplate) {
+    public Comment register(Post post, Comment parent, String body, User user, String mailTemplate) {
 
         final Comment comment = commentDao.register(post, parent,
                 body.trim().replaceAll("[ \t]+", " ")
