@@ -6,9 +6,10 @@
 <jsp:useBean id="currentSelection" scope="request" type="java.lang.String"/>
 <jsp:useBean id="query" scope="request" type="java.lang.String"/>
 
-<head>
-    <script src="<c:url value="/resources/js/adminPanel/mainController.js"/>"></script>
-</head>
+<%--
+-- mainController.js required.
+-- surrounding with form required
+--%>
 
 <div class="uk-search uk-search-large">
     <span uk-search-icon></span>
