@@ -47,9 +47,11 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void register() {
+    public void testRegister() {
 
         final Post post = postDao.register(TITLE, BODY, WORD_COUNT, CATEGORY, USER, TAGS, MOVIES, ENABLE);
+
+        Assert.assertNotNull(post);
 
         final String whereClause = "post_id = " + post.getId() + " AND title = " + "'" + TITLE + "'" +
                 " AND body = " + "'" + BODY + "'";
@@ -60,12 +62,36 @@ public class PostDaoImplTest {
 
     }
 
-    @Test
-    public void deletePost() {
+    @Test(expected = NullPointerException.class)
+    public void testRegisterFail() {
+
+        postDao.register(null, null, WORD_COUNT, null, null, null, null, false);
     }
 
+    @Rollback
     @Test
-    public void restorePost() {
+    public void testDeletePost() {
+        //Supongo que habia por lo menos uno
+        final int countPreExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), "enabled = true");
+
+        postDao.deletePost(Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(1L).getMock());
+
+        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), "enabled = true");
+
+        Assert.assertEquals(countPreExecution - 1, countPostExecution);
+    }
+
+    @Rollback
+    @Test
+    public void testRestorePost() {
+        //Supongo que habia por lo menos uno
+        final int countPreExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), "enabled = false");
+
+        postDao.restorePost(Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(4L).getMock());
+
+        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), "enabled = false");
+
+        Assert.assertEquals(countPreExecution - 1, countPostExecution);
     }
 
     @Test
@@ -78,6 +104,8 @@ public class PostDaoImplTest {
 
     @Test
     public void findPostById() {
+
+
     }
 
     @Test
