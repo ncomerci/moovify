@@ -6,7 +6,7 @@
 <head>
     <title><spring:message code="user.create.signUpTitle"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
-
+    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
@@ -35,7 +35,7 @@
                     </c:choose>
                 </form:label>
             </div>
-            <form:errors path="name" element="p" cssClass="error" cssStyle="color:red;"/>
+            <form:errors path="name" element="p" cssClass="error uk-margin-remove-top"/>
         </div>
 
         <div class="uk-margin">
@@ -55,7 +55,7 @@
                     </c:choose>
                 </form:label>
             </div>
-            <form:errors path="email" element="p" cssClass="error" cssStyle="color:red;"/>
+            <form:errors path="email" element="p" cssClass="error uk-margin-remove-top"/>
         </div>
 
         <div class="uk-margin">
@@ -75,7 +75,7 @@
                     </c:choose>
                 </form:label>
             </div>
-            <form:errors path="username" element="p" cssClass="error" cssStyle="color:red;" />
+            <form:errors path="username" element="p" cssClass="error uk-margin-remove-top"/>
         </div>
 
         <div class="uk-margin">
@@ -86,7 +86,7 @@
                     <c:choose>
                         <c:when test="${not empty passError}">
                             <span class="uk-form-icon icon-error" uk-icon="icon: lock"></span>
-                            <form:password class="uk-input uk-form-danger"  path="password"  placeholder="${password}" />
+                            <form:password class="uk-input uk-form-danger" path="password"  placeholder="${password}" />
                         </c:when>
                         <c:otherwise>
                             <span class="uk-form-icon" uk-icon="icon: lock"></span>
@@ -95,12 +95,12 @@
                     </c:choose>
                 </form:label>
             </div>
-            <form:errors path="password" element="p" cssClass="error" cssStyle="color:red;" />
-            <form:errors element="p" cssClass="error" cssStyle="color:red;"/>
+            <form:errors path="password" element="p" cssClass="error uk-margin-remove-top"/>
+            <form:errors element="p" cssClass="error uk-margin-remove-top"/>
         </div>
 
         <div class="uk-margin">
-            <c:set var="repPassError"><form:errors path="repeatPassword"/></c:set>
+            <c:set var="repPassError"><form:errors path="repeatPassword" cssClass="error uk-margin-remove-top"/></c:set>
             <div class="uk-inline">
                 <form:label path="repeatPassword">
                     <spring:message code="user.create.repeatPassword" var="repeatPassword"/>
@@ -116,7 +116,7 @@
                     </c:choose>
                 </form:label>
             </div>
-            <form:errors path="repeatPassword" element="p" cssClass="error" cssStyle="color:red;" />
+            <form:errors path="repeatPassword" element="p" cssClass="error uk-margin-remove-top"/>
         </div>
 
         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
@@ -129,18 +129,25 @@
                     <form:label path="avatar">
                         <div uk-form-custom>
                             <form:input path="avatar" type="file" />
-                            <button class="uk-button uk-button-primary uk-border-rounded extended-button" type="button" tabindex="-1"><spring:message code="user.create.selectFile"/></button>
+                            <button class="uk-button uk-button-primary uk-border-rounded extended-button" type="button" tabindex="-1">
+                                <spring:message code="user.create.selectFile"/>
+                            </button>
                         </div>
                     </form:label>
                 </div>
-                <form:errors path="avatar" element="p" cssClass="error" cssStyle="color:red;" />
+                <form:errors path="avatar" element="p" cssClass="error uk-margin-remove-top"/>
             </div>
         </div>
 
         <div class="uk-text-center uk-margin-medium-top">
             <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.create.button"/>" />
         </div>
-        <div class="uk-text-center uk-text-bold uk-text-muted uk-margin"><spring:message code="user.create.alreadyAccount"/> <a href="<c:url value="/login"/>"><spring:message code="user.login.loginTitle"/></a></div>
+        <div class="uk-text-center uk-text-bold uk-text-muted uk-margin">
+            <spring:message code="user.create.alreadyAccount"/>
+            <a href="<c:url value="/login"/>">
+                <spring:message code="user.login.loginTitle"/>
+            </a>
+        </div>
         <div>
             <div class="uk-inline">
                 <form:hidden path="description"/>

@@ -9,9 +9,14 @@
 <head>
     <title><c:out value="Comment"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
+    <link rel="stylesheet" href="<c:url value="/resources/css/postView.css"/>"/>
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
     <script src="<c:url value="/resources/js/components/createAndViewComments.js"/>"></script>
-    <link rel="stylesheet" href="<c:url value="/resources/css/postView.css"/>"/>
+
+    <sec:authorize access="isAuthenticated()">
+        <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+    </sec:authorize>
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
@@ -109,7 +114,7 @@
     <div class="uk-comment-body">
         <c:choose>
             <c:when test="${comment.enabled}">
-                <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
+                <span class="pre-line"><c:out value="${comment.body}"/></span>
             </c:when>
             <c:otherwise>
                         <span class="uk-text-italic">

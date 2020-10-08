@@ -6,15 +6,20 @@
 
 <html>
 <head>
+    <sec:authorize access="isAuthenticated()">
+        <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+    </sec:authorize>
     <title>
         <spring:message code="user.profile.edit.changePassword" arguments="${loggedUser.username}"/>
         <c:if test="${loggedUser.admin}">
             <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
         </c:if>
+
     </title>
+    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
-<body style="min-height: 1000px">
+<body class="min-height-1000">
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <div class="uk-container uk-margin-medium-top">
@@ -45,8 +50,8 @@
                         </c:choose>
                     </form:label>
                 </div>
-                <form:errors path="password" element="p" cssClass="error" cssStyle="color:red;" />
-                <form:errors element="p" cssClass="error" cssStyle="color:red;"/>
+                <form:errors path="password" element="p" cssClass="error"/>
+                <form:errors element="p" cssClass="error"/>
             </div>
         </div>
 
@@ -70,7 +75,7 @@
                         </c:choose>
                     </form:label>
                 </div>
-                <form:errors path="repeatPassword" element="p" cssClass="error" cssStyle="color:red;" />
+                <form:errors path="repeatPassword" element="p" cssClass="error" />
             </div>
             <div class="uk-text-center uk-margin-medium-top">
                 <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.profile.edit.changePassword"/>" />

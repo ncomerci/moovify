@@ -8793,6 +8793,10 @@ iframe.uk-cover {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
+.uk-margin-remove-horizontal {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
 .uk-margin-remove-adjacent + *,
 .uk-margin-remove-first-child > :first-child {
   margin-top: 0 !important;

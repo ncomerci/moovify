@@ -10,7 +10,7 @@
 
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp"/>
     <jsp:include page="/WEB-INF/jsp/dependencies/mdEditor.jsp"/>
-
+    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
     <script src="<c:url value="/resources/js/post/create.js" />"></script>
 </head>
 <body>
@@ -35,7 +35,7 @@
             <form:input path="title" class="uk-input uk-form-small" id="title-text" type="text" minlength="6"
                         placeholder="${titlePlaceholder}" required="required"/>
         </form:label>
-        <form:errors path="title" element="p" cssClass="error" cssStyle="color:red;"/>
+        <form:errors path="title" element="p" cssClass="error"/>
     </div>
 
     <div class="uk-margin-left uk-margin-bottom">
@@ -48,7 +48,7 @@
                     <form:option value="${category.id}"><spring:message code="${category.name}"/></form:option>
                 </c:forEach>
             </form:select>
-            <form:errors path="category" element="p" cssClass="error" cssStyle="color:red;"/>
+            <form:errors path="category" element="p" cssClass="error"/>
         </div>
 
         <div class="uk-margin-auto">
@@ -82,16 +82,18 @@
                     <button id="add-movie-button" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
                             type="button"><spring:message code="post.create.modal.addButton"/></button>
                 </div>
-                <p id="movie-error" class="uk-margin-remove-top" style="display: none; color: red"><spring:message
-                        code="post.create.modal.movieError.client"/></p>
+                <p id="movie-error" class="uk-margin-remove-top error hidden">
+                    <spring:message code="post.create.modal.movieError.client"/>
+                </p>
             </div>
             <div id="movies-selected" class="uk-width-3-4 uk-margin"></div>
 
 
             <div class="uk-margin-medium">
                 <h1 class="uk-h2 uk-margin-remove-top"><spring:message code="post.create.modal.tags"/></h1>
-                <label for="add-tag-input" class="uk-margin-bottom"><spring:message
-                        code="post.create.modal.tags.constrains"/></label>
+                <label for="add-tag-input" class="uk-margin-bottom">
+                    <spring:message code="post.create.modal.tags.constrains"/>
+                </label>
                 <div class="uk-flex">
                     <input id="add-tag-input"
                            class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"

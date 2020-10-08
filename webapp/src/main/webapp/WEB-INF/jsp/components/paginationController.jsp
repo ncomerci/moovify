@@ -11,19 +11,17 @@
 -- Include paginationController.js
 --%>
 
-<div class="uk-flex uk-flex-wrap">
-    <div class="uk-form-horizontal uk-margin-auto-vertical">
-        <label for="pagination-page-size" class="uk-form-label" style="width: auto">
+<div class="uk-flex uk-margin-small-top uk-flex-baseline">
+    <div class="uk-width-auto uk-flex uk-flex-wrap uk-flex-baseline">
+        <label for="pagination-page-size" class="uk-form-label uk-margin-small-right uk-width-auto">
             <spring:message code="paginationController.pageSize.message"/>
         </label>
-        <div class="uk-form-controls" style="margin-left: 100px">
-            <select id="pagination-page-size" name="pageSize" class="uk-select uk-form-blank">
-                <option <c:out value="${ collection.pageSize == 2 ? 'selected' : ''}"/> label="2" value="2">2</option>
-                <option <c:out value="${ collection.pageSize == 5 ? 'selected' : ''}"/> label="5" value="5">5</option>
-                <option <c:out value="${ collection.pageSize == 10 ? 'selected' : ''}"/> label="10" value="10">10</option>
-                <option <c:out value="${ collection.pageSize == 25 ? 'selected' : ''}"/> label="25" value="25">25</option>
-            </select>
-        </div>
+        <select id="pagination-page-size" name="pageSize" class="uk-select uk-form-blank uk-width-expand">
+            <option <c:out value="${ collection.pageSize == 2 ? 'selected' : ''}"/> label="2" value="2">2</option>
+            <option <c:out value="${ collection.pageSize == 5 ? 'selected' : ''}"/> label="5" value="5">5</option>
+            <option <c:out value="${ collection.pageSize == 10 ? 'selected' : ''}"/> label="10" value="10">10</option>
+            <option <c:out value="${ collection.pageSize == 25 ? 'selected' : ''}"/> label="25" value="25">25</option>
+        </select>
     </div>
     <ul id="pagination-page-selector" class="uk-width-expand uk-pagination uk-flex-center" uk-margin>
         <c:if test="${collection.pageNumber > 0}">

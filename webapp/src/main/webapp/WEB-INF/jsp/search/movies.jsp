@@ -23,50 +23,38 @@
             <c:set var="currentSearch" value="1" scope="request"/>
             <jsp:include page="/WEB-INF/jsp/search/defaultForm.jsp"/>
 
-            <div class="uk-form-horizontal uk-grid-small" uk-grid>
-                <div class="uk-width-1-3">
-                    <div class="uk-margin">
-                        <form:label path="movieCategory" class="uk-form-label" for="post-category" style="width: auto">
-                            <spring:message code="search.movies.categories.label"/>
-                        </form:label>
-                        <div class="uk-form-controls" style="margin-left: 100px">
-                            <form:select path="movieCategory" class="uk-select uk-form-blank">
-                                <form:option value="all"><spring:message code="search.movies.categories.all"/></form:option>
-                                <c:forEach items="${categories}" var="category" >
-                                    <form:option value="${category}"><spring:message code="search.movies.categories.${category}"/></form:option>
-                                </c:forEach>
-                            </form:select>
-                        </div>
-                    </div>
+            <div class="uk-flex uk-margin-small-top">
+                <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+                    <form:label path="movieCategory" class="uk-form-label uk-margin-small-right uk-width-auto" for="post-category">
+                        <spring:message code="search.movies.categories.label"/>
+                    </form:label>
+                    <form:select path="movieCategory" class="uk-select uk-form-blank uk-width-expand">
+                        <form:option value="all"><spring:message code="search.movies.categories.all"/></form:option>
+                        <c:forEach items="${categories}" var="category" >
+                            <form:option value="${category}"><spring:message code="search.movies.categories.${category}"/></form:option>
+                        </c:forEach>
+                    </form:select>
                 </div>
-                <div class="uk-width-1-3">
-                    <div class="uk-margin">
-                        <form:label path="decade" class="uk-form-label" for="decade" style="width: auto">
-                            <spring:message code="search.movies.decades.label"/>
-                        </form:label>
-                        <div class="uk-form-controls" style="margin-left: 100px">
-                            <form:select path="decade" class="uk-select uk-form-blank">
-                                <form:option value="any"><spring:message code="search.movies.decades.any"/></form:option>
-                                <c:forEach items="${decades}" var="decade" >
-                                    <form:option value="${decade}"><spring:message code="search.movies.decades.${decade}"/></form:option>
-                                </c:forEach>
-                            </form:select>
-                        </div>
-                    </div>
+                <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+                    <form:label path="decade" class="uk-padding-small-left uk-form-label uk-margin-small-right uk-width-auto" for="decade">
+                        <spring:message code="search.movies.decades.label"/>
+                    </form:label>
+                    <form:select path="decade" class="uk-select uk-form-blank uk-width-expand">
+                        <form:option value="any"><spring:message code="search.movies.decades.any"/></form:option>
+                        <c:forEach items="${decades}" var="decade" >
+                            <form:option value="${decade}"><spring:message code="search.movies.decades.${decade}"/></form:option>
+                        </c:forEach>
+                    </form:select>
                 </div>
-                <div class="uk-width-1-3">
-                    <div class="uk-margin">
-                        <form:label path="sortCriteria" class="uk-form-label" for="sort-criteria" style="width: auto">
-                            <spring:message code="search.movies.sortCriteria.label"/>
-                        </form:label>
-                        <div class="uk-form-controls" style="margin-left: 100px">
-                            <form:select path="sortCriteria" class="uk-select uk-form-blank">
-                                <c:forEach items="${sortCriteria}" var="criteria" >
-                                    <form:option value="${criteria}"><spring:message code="search.movies.sortCriteria.${criteria}"/></form:option>
-                                </c:forEach>
-                            </form:select>
-                        </div>
-                    </div>
+                <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+                    <form:label path="sortCriteria" class="uk-form-label uk-margin-small-right uk-width-auto" for="sort-criteria">
+                        <spring:message code="search.movies.sortCriteria.label"/>
+                    </form:label>
+                    <form:select path="sortCriteria" class="uk-select uk-form-blank uk-width-expand">
+                        <c:forEach items="${sortCriteria}" var="criteria" >
+                            <form:option value="${criteria}"><spring:message code="search.movies.sortCriteria.${criteria}"/></form:option>
+                        </c:forEach>
+                    </form:select>
                 </div>
             </div>
         </section>

@@ -5,6 +5,7 @@
 
 <html>
 <head>
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
     <title>
         <spring:message code="user.profile.Profile" arguments="${loggedUser.username}"/>
         <c:if test="${loggedUser.admin}">
@@ -12,11 +13,11 @@
         </c:if>
     </title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
-
+    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
     <script src="<c:url value="/resources/js/user/profile.js" />"></script>
 </head>
-<body style="min-height: 1000px">
+<body class="min-height-1000">
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <div>

@@ -5,6 +5,10 @@
 <%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
 
 <jsp:useBean id="comments" scope="request" type="java.util.Collection"/>
+<sec:authorize access="isAuthenticated()">
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+</sec:authorize>
+
 <ul class="uk-comment-list" id="comment-section">
     <c:forEach items="${comments}" var="comment" >
 
@@ -123,7 +127,7 @@
                     <div class="uk-comment-body">
                         <c:choose>
                             <c:when test="${comment.enabled}">
-                                <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
+                                <span class="pre-line"><c:out value="${comment.body}"/></span>
                             </c:when>
                             <c:otherwise>
                                 <div class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></div>

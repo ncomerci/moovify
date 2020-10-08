@@ -7,6 +7,7 @@
 <head>
     <title><spring:message code="user.updatePassword.title" /></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
@@ -16,7 +17,7 @@
 <c:url value="/user/updatePassword" var="action"/>
 <form:form modelAttribute="updatePasswordForm" action="${action}" method="post">
 
-    <form:errors path="password" element="p" cssClass="error" cssStyle="color:red;"/>
+    <form:errors path="password" element="p" cssClass="error"/>
     <div class="uk-grid-small uk-margin-auto" uk-grid>
         <div class="uk-width-1-2@s">
             <c:set var="passwordError"><form:errors path="password"/></c:set>

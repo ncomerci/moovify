@@ -6,7 +6,8 @@
 <html>
 <head>
     <title><spring:message code="user.resetPassword.title" /></title>
-    <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+    <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp"/>
+    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
@@ -23,7 +24,7 @@
         <div class="uk-margin">
             <div class="uk-inline uk-text-center">
                 <c:set var="emailError"><form:errors path="email"/></c:set>
-                <form:errors path="email" element="p" cssClass="error" cssStyle="color:red;"/>
+                <form:errors path="email" element="p" cssClass="error"/>
                 <form:label path="email">
                     <spring:message code="user.resetPassword.email" var="email"/>
                     <c:choose>

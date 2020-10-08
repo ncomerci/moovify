@@ -12,6 +12,7 @@
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
 </head>
 <body>
+
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <main class="uk-container-small uk-margin-auto uk-padding-small">
@@ -22,44 +23,38 @@
             <c:set var="currentSearch" value="0" scope="request" />
             <jsp:include page="defaultForm.jsp"/>
 
-            <div class="uk-form-horizontal uk-grid-small" uk-grid>
-                <div class="uk-width-1-3">
-                    <div class="uk-margin">
-                        <form:label path="postCategory" class="uk-form-label" for="post-category" style="width: auto"><spring:message code="search.posts.categories.label"/></form:label>
-                        <div class="uk-form-controls" style="margin-left: 100px">
-                            <form:select path="postCategory" class="uk-select uk-form-blank">
-                                <form:option value="all"><spring:message code="search.posts.categories.all"/></form:option>
-                                <c:forEach items="${categories}" var="category" >
-                                    <form:option value="${category}"><spring:message code="search.posts.categories.${category}"/></form:option>
-                                </c:forEach>
-                            </form:select>
-                        </div>
-                    </div>
+            <div class="uk-flex uk-margin-small-top">
+                <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+                    <form:label path="postCategory" class="uk-padding-small-left uk-form-label uk-margin-small-right uk-width-auto" for="post-category">
+                        <spring:message code="search.posts.categories.label"/>
+                    </form:label>
+                    <form:select path="postCategory" class="uk-select uk-form-blank uk-width-expand">
+                        <form:option value="all"><spring:message code="search.posts.categories.all"/></form:option>
+                        <c:forEach items="${categories}" var="category" >
+                            <form:option value="${category}"><spring:message code="search.posts.categories.${category}"/></form:option>
+                        </c:forEach>
+                    </form:select>
                 </div>
-                <div class="uk-width-1-3">
-                    <div class="uk-margin">
-                        <form:label path="postAge" class="uk-form-label" for="post-age" style="width: auto"><spring:message code="search.posts.postAge.label"/></form:label>
-                        <div class="uk-form-controls" style="margin-left: 100px">
-                            <form:select path="postAge" class="uk-select uk-form-blank">
-                                <form:option value="allTime"><spring:message code="search.posts.postAge.allTime"/></form:option>
-                                <c:forEach items="${periodOptions}" var="period" >
-                                    <form:option value="${period}"><spring:message code="search.posts.postAge.${period}"/></form:option>
-                                </c:forEach>
-                            </form:select>
-                        </div>
-                    </div>
+                <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+                    <form:label path="postAge" class="uk-padding-small-left uk-form-label uk-margin-small-right uk-width-auto" for="post-age">
+                        <spring:message code="search.posts.postAge.label"/>
+                    </form:label>
+                    <form:select path="postAge" class="uk-select uk-form-blank uk-width-expand">
+                        <form:option value="allTime"><spring:message code="search.posts.postAge.allTime"/></form:option>
+                        <c:forEach items="${periodOptions}" var="period" >
+                            <form:option value="${period}"><spring:message code="search.posts.postAge.${period}"/></form:option>
+                        </c:forEach>
+                    </form:select>
                 </div>
-                <div class="uk-width-1-3">
-                    <div class="uk-margin">
-                        <form:label path="sortCriteria" class="uk-form-label" for="sort-criteria" style="width: auto"><spring:message code="search.posts.sortCriteria.label"/></form:label>
-                        <div class="uk-form-controls" style="margin-left: 100px">
-                            <form:select path="sortCriteria" class="uk-select uk-form-blank">
-                                <c:forEach items="${sortCriteria}" var="criteria" >
-                                    <form:option value="${criteria}"><spring:message code="search.posts.sortCriteria.${criteria}"/></form:option>
-                                </c:forEach>
-                            </form:select>
-                        </div>
-                    </div>
+                <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+                    <form:label path="sortCriteria" class="uk-padding-small-left uk-form-label uk-margin-small-right uk-width-auto" for="sort-criteria">
+                        <spring:message code="search.posts.sortCriteria.label"/>
+                    </form:label>
+                    <form:select path="sortCriteria" class="uk-select uk-form-blank uk-width-expand">
+                        <c:forEach items="${sortCriteria}" var="criteria" >
+                            <form:option value="${criteria}"><spring:message code="search.posts.sortCriteria.${criteria}"/></form:option>
+                        </c:forEach>
+                    </form:select>
                 </div>
             </div>
         </section>

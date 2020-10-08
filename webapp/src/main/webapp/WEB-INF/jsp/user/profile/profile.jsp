@@ -43,7 +43,7 @@
 
                     </div>
                 </div>
-                <div> <form:errors path="avatar" element="p" cssClass="error" cssStyle="color:red;" /></div>
+                <div> <form:errors path="avatar" element="p" cssClass="error"/></div>
             </form:form>
         </div>
         <div class="uk-width-2-3@m">

@@ -76,7 +76,7 @@
                     </li>
                     <li>
                         <a class="uk-text-center" href="<c:url value="/user/create"/>">
-                            <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder" style="color: #30475e" type="button"><spring:message code="user.signup"/></button>
+                            <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-text-primary" type="button"><spring:message code="user.signup"/></button>
                         </a>
                     </li>
                 </sec:authorize>

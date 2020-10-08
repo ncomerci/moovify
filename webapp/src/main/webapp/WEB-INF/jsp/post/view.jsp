@@ -13,6 +13,7 @@
     <title><c:out value="${post.title}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
     <link rel="stylesheet" href="<c:url value="/resources/css/postView.css" />" />
+    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js"></script>
     <script src="<c:url value="/resources/js/components/createAndViewComments.js"/>"></script>
     <script src="<c:url value="/resources/js/post/view.js"/>"></script>

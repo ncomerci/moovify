@@ -6,15 +6,17 @@
 
 <html>
 <head>
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
     <title>
         <spring:message code="user.profile.editingProfile" arguments="${loggedUser.username}"/>
         <c:if test="${loggedUser.admin}">
             <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
         </c:if>
     </title>
+    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
-<body style="min-height: 1000px">
+<body class="min-height-1000">
 
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
@@ -48,7 +50,7 @@
                             </c:choose>
                         </form:label>
                     </div>
-                    <form:errors path="name" element="p" cssClass="error" cssStyle="color:red;"/>
+                    <form:errors path="name" element="p" cssClass="error"/>
                 </div>
                 <div class="uk-width-1-6">
                     <div class="uk-text-center">
@@ -80,7 +82,7 @@
                             </c:choose>
                         </form:label>
                     </div>
-                    <form:errors path="username" element="p" cssClass="error" cssStyle="color:red;" />
+                    <form:errors path="username" element="p" cssClass="error"/>
                 </div>
                 <div class="uk-width-1-6">
                     <div class="uk-text-center">
@@ -112,7 +114,7 @@
                             </c:choose>
                         </form:label>
                     </div>
-                    <form:errors path="description" element="p" cssClass="error" cssStyle="color:red;"/>
+                    <form:errors path="description" element="p" cssClass="error"/>
                 </div>
                 <div class="uk-width-1-6">
                     <div class="uk-text-center">

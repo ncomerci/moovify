@@ -19,7 +19,7 @@
     <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${comments.totalCount}"/></h1>
     <sec:authorize access="hasRole('USER')">
         <c:if test="${enableReplies}">
-            <div style="padding-bottom: 25px">
+            <div class="uk-padding uk-padding-remove-horizontal uk-padding-remove-top">
                 <c:url value="/comment/create" var="action"/>
                 <%--@elvariable id="CommentCreateForm" type="ar.edu.itba.paw.webapp.form.CommentCreateForm"--%>
                 <form:form id="spring-form" modelAttribute="CommentCreateForm" action="${action}" method="post">
