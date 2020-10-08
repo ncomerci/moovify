@@ -9,13 +9,13 @@ import java.util.Optional;
 
 public interface CommentService {
 
-    long register(Post post, Long parentId, String body, User user, String mailTemplate);
+    Comment register(Post post, Comment parent, String body, User user, String mailTemplate);
 
     void likeComment(Comment comment, User user, int value);
 
-    void delete(long id);
+    void deleteComment(Comment comment);
 
-    void restore(long id);
+    void restoreComment(Comment comment);
 
     Optional<Comment> findCommentById(long id);
 
@@ -28,6 +28,4 @@ public interface CommentService {
     PaginatedCollection<Comment> findCommentsByPost(Post post, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> findCommentsByUser(User user, int pageNumber, int pageSize);
-
-    PaginatedCollection<Comment> getDeletedComments(int pageNumber, int pageSize);
 }

@@ -21,29 +21,29 @@ public class PostServiceImpl implements PostService {
     private PostCategoryDao categoryDao;
 
     @Override
-    public long register(String title, String body, long category, User user, Set<String> tags, Set<Long> movies){
+    public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> movies){
         return postDao.register(title, body.trim(),
-                body.split("\\s+").length, category, user.getId(), tags, movies, true);
+                body.split("\\s+").length, category, user, tags, movies, true);
     }
 
     @Override
-    public void delete(long id) {
-        postDao.delete(id);
+    public void deletePost(Post post) {
+        postDao.deletePost(post);
     }
 
     @Override
-    public void restore(long id) {
-        postDao.restore(id);
+    public void restorePost(Post post) {
+        postDao.restorePost(post);
     }
 
     @Override
     public void likePost(Post post, User user, int value) {
 
         if(value == 0)
-            postDao.removeLike(post.getId(), user.getId());
+            postDao.removeLike(post, user);
 
         else if(value == -1 || value == 1)
-            postDao.likePost(post.getId(), user.getId(), value);
+            postDao.likePost(post, user, value);
     }
 
     @Override
@@ -54,12 +54,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PaginatedCollection<Post> findPostsByMovie(Movie movie, int pageNumber, int pageSize) {
-        return postDao.findPostsByMovieId(movie.getId(), PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
+        return postDao.findPostsByMovie(movie, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
     public PaginatedCollection<Post> findPostsByUser(User user, int pageNumber, int pageSize) {
-        return postDao.findPostsByUserId(user.getId(), PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
+        return postDao.findPostsByUser(user, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override
@@ -78,12 +78,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PaginatedCollection<Post> getDeletedPosts(int pageNumber, int pageSize) {
-        return postDao.getDeletedPosts(PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public Collection<PostCategory> getAllPostCategories() {
+        return categoryDao.getAllPostCategories();
     }
 
     @Override
-    public Collection<PostCategory> getAllPostCategories() {
-        return categoryDao.getAllPostCategories();
+    public Optional<PostCategory> findCategoryById(long categoryId) {
+        return categoryDao.findPostCategoryById(categoryId);
     }
 }

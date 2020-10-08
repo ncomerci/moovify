@@ -8,11 +8,11 @@ import java.util.Set;
 
 public interface PostService {
 
-    long register(String title, String body, long category, User user, Set<String> tags, Set<Long> movies);
+    Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> movies);
 
-    void delete(long id);
+    void deletePost(Post post);
 
-    void restore(long id);
+    void restorePost(Post post);
 
     void likePost(Post post, User user, int value);
 
@@ -28,7 +28,7 @@ public interface PostService {
 
     PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> getDeletedPosts(int pageNumber, int pageSize);
-
     Collection<PostCategory> getAllPostCategories();
+
+    Optional<PostCategory> findCategoryById(long categoryId);
 }

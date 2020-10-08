@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface MovieService {
 
-    Optional<Movie> findById(long id);
+    Optional<Movie> findMovieById(long id);
 
     Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage,
                    String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<Long> categories);

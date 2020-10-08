@@ -375,44 +375,51 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public long register(long postId, Long parentId, String body, long userId, boolean enabled) {
+    public Comment register(Post post, Comment parent, String body, User user, boolean enabled) {
 
         Objects.requireNonNull(body);
+
+        final Long parentId = (parent == null)? null : parent.getId();
 
         LocalDateTime creationDate = LocalDateTime.now();
 
         HashMap<String, Object> map = new HashMap<>();
+
         map.put("creation_date", Timestamp.valueOf(creationDate));
-        map.put("post_id", postId);
+        map.put("post_id", post.getId());
         map.put("parent_id", parentId);
         map.put("body", body);
-        map.put("user_id", userId);
+        map.put("user_id", user.getId());
         map.put("enabled", enabled);
 
-        return commentInsert.executeAndReturnKey(map).longValue();
+        final long commentId = commentInsert.executeAndReturnKey(map).longValue();
+
+        return new Comment(commentId, creationDate, post, parentId, Collections.emptyList(),
+                body, user, enabled, 0, Collections.emptyMap());
     }
 
     @Override
-    public void likeComment(long comment_id, long user_id, int value) {
+    public void likeComment(Comment comment, User user, int value) {
 
         jdbcTemplate.update(
                 "INSERT INTO " + COMMENTS_LIKES + " (comment_id, user_id, value) VALUES ( ?, ?, ?) " +
-                        "ON CONFLICT (comment_id, user_id) DO UPDATE SET value = ? ", comment_id, user_id, value, value );
+                        "ON CONFLICT (comment_id, user_id) DO UPDATE SET value = ? ", comment.getId(), user.getId(), value, value);
     }
 
     @Override
-    public void removeLike(long comment_id, long user_id) {
-        jdbcTemplate.update( "DELETE FROM " + COMMENTS_LIKES + " WHERE " + COMMENTS_LIKES + ".comment_id = ? " + " AND "+ COMMENTS_LIKES + ".user_id = ?", comment_id, user_id );
+    public void removeLike(Comment comment, User user) {
+        jdbcTemplate.update( "DELETE FROM " + COMMENTS_LIKES + " WHERE " + COMMENTS_LIKES + ".comment_id = ? " + " AND "+ COMMENTS_LIKES + ".user_id = ?",
+                comment.getId(), user.getId());
     }
 
     @Override
-    public void delete(long id) {
-        jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = false WHERE comment_id = ?", id);
+    public void deleteComment(Comment comment) {
+        jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = false WHERE comment_id = ?", comment.getId());
     }
 
     @Override
-    public void restore(long id) {
-        jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = true WHERE comment_id = ?", id);
+    public void restoreComment(Comment comment) {
+        jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = true WHERE comment_id = ?", comment.getId());
     }
 
     private Collection<Comment> executeQuery(String select, String from, String where, String orderBy, Object[] args, boolean withChildren) {
@@ -566,40 +573,40 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public Optional<Comment> findCommentById(long id) {
         return buildAndExecuteQuery(
-                "WHERE " + COMMENTS + ".comment_id = ?", new Object[] { id })
+                "WHERE " + COMMENTS + ".comment_id = ?", new Object[]{ id })
                 .stream().findFirst();
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentDescendants(long commentId, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentDescendants(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return getPaginatedChildrenQuery(
-                sortCriteria, pageNumber, pageSize, commentId, false);
+                sortCriteria, pageNumber, pageSize, comment.getId(), false);
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentChildren(long commentId, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentChildren(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery("WHERE " + COMMENTS + ".parent_id = ?",
-                sortCriteria, pageNumber, pageSize, new Object[]{ commentId });
+                sortCriteria, pageNumber, pageSize, new Object[]{ comment.getId() });
     }
 
     @Override
-    public PaginatedCollection<Comment> findPostCommentDescendants(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findPostCommentDescendants(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return getPaginatedChildrenQuery(
-                sortCriteria, pageNumber, pageSize, post_id, true);
+                sortCriteria, pageNumber, pageSize, post.getId(), true);
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByPostId(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentsByPost(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + COMMENTS + ".post_id = ?", sortCriteria,
-                pageNumber, pageSize, new Object[] { post_id });
+                pageNumber, pageSize, new Object[]{ post.getId() });
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery(
                 "WHERE " + COMMENTS + ".user_id = ? AND " + COMMENTS + ".enabled = true", sortCriteria, pageNumber, pageSize,
-                new Object[] { user_id });
+                new Object[]{ user.getId() });
     }
 
     @Override
@@ -611,6 +618,6 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery("WHERE " + COMMENTS + ".body ILIKE '%' || ? || '%' AND " + COMMENTS + ".enabled = false",
-                sortCriteria, pageNumber, pageSize, new Object[]{query});
+                sortCriteria, pageNumber, pageSize, new Object[]{ query });
     }
 }

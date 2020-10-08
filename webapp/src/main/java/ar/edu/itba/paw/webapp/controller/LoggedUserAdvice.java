@@ -25,7 +25,7 @@ public class LoggedUserAdvice {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if(auth.isAuthenticated() && !isAnonymous(auth))
-            return userService.findByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
+            return userService.findUserByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
 
         return null;
     }

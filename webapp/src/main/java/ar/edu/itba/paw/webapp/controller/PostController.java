@@ -5,7 +5,9 @@ import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.PostCategory;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
@@ -17,10 +19,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.Map;
 
 
 @Controller
@@ -43,20 +49,22 @@ public class PostController {
     public ModelAndView view(@PathVariable final long postId,
                              @RequestParam(defaultValue = "5") final int pageSize,
                              @RequestParam(defaultValue = "0") final int pageNumber,
-                             @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm) {
+                             @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm,
+                             final HttpServletRequest request) {
 
         final ModelAndView mv = new ModelAndView("post/view");
 
+        final Post post = getPostFromFlashParamsOrById(postId, request);
+
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        User user;
-
         if(!isAnonymous(auth)) {
-            user = userService.findByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
-            mv.addObject("likeCurrentValue", userService.hasUserLiked(user.getId(), postId));
-        }
+            final User user = userService.findUserByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
 
-        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+            mv.addObject("likeCurrentValue", userService.hasUserLikedPost(user, post));
+
+            mv.addObject("loggedUser", user);
+        }
 
         mv.addObject("post", post);
         mv.addObject("movies", movieService.findMoviesByPost(post));
@@ -65,20 +73,20 @@ public class PostController {
         return mv;
     }
 
-    @RequestMapping(path = "/post/like", method = RequestMethod.POST )
+    @RequestMapping(path = "/post/like", method = RequestMethod.POST)
     public ModelAndView likePost(@RequestParam final long postId,
                                  @RequestParam(defaultValue = "0") final int value,
                                  final Principal principal) {
 
-        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-        Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
         postService.likePost(post, user, value);
 
         return new ModelAndView("redirect:/post/" + postId);
     }
 
-    @RequestMapping(path = "/post/create", method = RequestMethod.GET )
+    @RequestMapping(path = "/post/create", method = RequestMethod.GET)
     public ModelAndView showPostCreateForm(@ModelAttribute("postCreateForm") final PostCreateForm postCreateForm) {
 
         final ModelAndView mv = new ModelAndView("post/create");
@@ -89,24 +97,43 @@ public class PostController {
         return mv;
     }
 
-    @RequestMapping(path = "/post/create", method = RequestMethod.POST )
-    public ModelAndView showPostCreateForm(@Valid @ModelAttribute("postCreateForm") final PostCreateForm postCreateForm, final BindingResult errors, final Principal principal) {
+    @RequestMapping(path = "/post/create", method = RequestMethod.POST)
+    public ModelAndView showPostCreateForm(@Valid @ModelAttribute("postCreateForm") final PostCreateForm postCreateForm,
+                                           final BindingResult errors,
+                                           final Principal principal,
+                                           final RedirectAttributes redirectAttributes) {
 
         if (errors.hasErrors())
             return showPostCreateForm(postCreateForm);
 
-        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        final long post = postService.register(postCreateForm.getTitle(), postCreateForm.getBody(),
-                postCreateForm.getCategory(), user,
+        final PostCategory postCategory = postService.findCategoryById(postCreateForm.getCategory())
+                .orElseThrow(InvalidPostCategoryException::new);
+
+        final Post post = postService.register(postCreateForm.getTitle(), postCreateForm.getBody(),
+                postCategory, user,
                 postCreateForm.getTags() == null ? Collections.emptySet() : postCreateForm.getTags(),
                 postCreateForm.getMovies());
 
-        return new ModelAndView("redirect:/post/" + post);
+        redirectAttributes.addFlashAttribute("post", post);
+
+        return new ModelAndView("redirect:/post/" + post.getId());
     }
 
 
     private boolean isAnonymous(Authentication auth) {
         return auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ANONYMOUS"));
+    }
+
+    private Post getPostFromFlashParamsOrById(long postId, HttpServletRequest request) {
+
+        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
+
+        if(flashParams != null && flashParams.containsKey("post"))
+            return (Post) flashParams.get("post");
+
+        else
+            return postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
     }
 }

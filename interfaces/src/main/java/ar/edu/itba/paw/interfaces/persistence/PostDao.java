@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.*;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -13,23 +12,23 @@ public interface PostDao {
         NEWEST, OLDEST, HOTTEST
     }
 
-    long register(String title, String body, int wordCount, long category, long user, Set<String> tags, Set<Long> movies, boolean enabled);
+    Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Long> movies, boolean enabled);
 
-    void delete(long id);
+    void deletePost(Post post);
 
-    void restore(long id);
+    void restorePost(Post post);
 
-    void likePost(long post_id, long user_id, int value);
+    void likePost(Post post, User user, int value);
 
-    void removeLike(long post_id, long user_id);
+    void removeLike(Post post, User user);
 
     Optional<Post> findPostById(long id);
 
     PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> findPostsByMovieId(long movie_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Post> findPostsByMovie(Movie movie, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> findPostsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Post> findPostsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> getDeletedPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
 

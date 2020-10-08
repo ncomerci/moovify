@@ -4,7 +4,11 @@ import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Collections;
 
 @Controller
 public class AdminController {
@@ -38,8 +41,10 @@ public class AdminController {
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         ModelAndView mv = new ModelAndView("adminPanel/deleted/posts");
+
         mv.addObject("query", query);
         mv.addObject("posts", searchService.searchDeletedPosts(query, pageNumber, pageSize));
+
         return mv;
     }
 
@@ -49,8 +54,10 @@ public class AdminController {
                                         @RequestParam(defaultValue = "0") final int pageNumber) {
 
         ModelAndView mv = new ModelAndView("adminPanel/deleted/comments");
+
         mv.addObject("query", query);
         mv.addObject("comments", searchService.searchDeletedComments(query, pageNumber, pageSize));
+
         return mv;
     }
 
@@ -60,27 +67,33 @@ public class AdminController {
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         ModelAndView mv = new ModelAndView("adminPanel/deleted/users");
+
         mv.addObject("query", query);
         mv.addObject("users", searchService.searchDeletedUsers(query, pageNumber, pageSize));
+
         return mv;
     }
 
     //    ================ COMMENTS PRIVILEGES ================
 
-    @RequestMapping(path = "/comment/delete/{id}", method = RequestMethod.POST)
-    public ModelAndView deleteComment(@PathVariable final long id, @RequestParam final long postId) {
+    @RequestMapping(path = "/comment/delete/{commentId}", method = RequestMethod.POST)
+    public ModelAndView deleteComment(@PathVariable final long commentId) {
 
-        commentService.delete(id);
+        final Comment comment = commentService.findCommentById(commentId).orElseThrow(CommentNotFoundException::new);
 
-        return new ModelAndView("redirect:/post/" + postId);
+        commentService.deleteComment(comment);
+
+        return new ModelAndView("redirect:/comment/" + commentId);
     }
 
-    @RequestMapping(path = "/comment/restore/{id}", method = RequestMethod.POST)
-    public ModelAndView restoreComment(@PathVariable final long id) {
+    @RequestMapping(path = "/comment/restore/{commentId}", method = RequestMethod.POST)
+    public ModelAndView restoreComment(@PathVariable final long commentId) {
 
-        commentService.restore(id);
+        final Comment comment = commentService.findCommentById(commentId).orElseThrow(CommentNotFoundException::new);
 
-        return new ModelAndView("redirect:/comment/" + id);
+        commentService.restoreComment(comment);
+
+        return new ModelAndView("redirect:/comment/" + commentId);
     }
 
     //    ================ POSTS PRIVILEGES ================
@@ -88,7 +101,9 @@ public class AdminController {
     @RequestMapping(path = "/post/delete/{postId}", method = RequestMethod.POST)
     public ModelAndView deletePost(@PathVariable final long postId) {
 
-        postService.delete(postId);
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+
+        postService.deletePost(post);
 
         return new ModelAndView("redirect:/");
     }
@@ -96,17 +111,19 @@ public class AdminController {
     @RequestMapping(path = "/post/restore/{postId}", method = RequestMethod.POST)
     public ModelAndView restorePost(@PathVariable final long postId) {
 
-        postService.restore(postId);
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+
+        postService.restorePost(post);
 
         return new ModelAndView("redirect:/post/" + postId);
     }
 
     //    ================ USERS PRIVILEGES ================
 
-    @RequestMapping(path = "/user/promote/{id}", method = RequestMethod.POST)
-    public ModelAndView promoteUser(@PathVariable long id, RedirectAttributes redirectAttributes) {
+    @RequestMapping(path = "/user/promote/{userId}", method = RequestMethod.POST)
+    public ModelAndView promoteUser(@PathVariable long userId, RedirectAttributes redirectAttributes) {
 
-        final User user = userService.findById(id).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
         userService.promoteUserToAdmin(user);
 
@@ -115,17 +132,23 @@ public class AdminController {
         return new ModelAndView("redirect:/user/" + user.getId());
     }
 
-    @RequestMapping(path = "/user/delete/{id}", method = RequestMethod.POST)
-    public ModelAndView deleteUser(@PathVariable long id) {
+    @RequestMapping(path = "/user/delete/{userId}", method = RequestMethod.POST)
+    public ModelAndView deleteUser(@PathVariable long userId) {
 
-        userService.delete(id);
+        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
+
+        userService.deleteUser(user);
+
         return new ModelAndView("redirect:/");
     }
 
-    @RequestMapping(path = "/user/restore/{id}", method = RequestMethod.POST)
-    public ModelAndView restoreUser(@PathVariable long id) {
+    @RequestMapping(path = "/user/restore/{userId}", method = RequestMethod.POST)
+    public ModelAndView restoreUser(@PathVariable long userId) {
 
-        userService.restore(id);
-        return new ModelAndView("redirect:/user/" + id);
+        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
+
+        userService.restoreUser(user);
+
+        return new ModelAndView("redirect:/user/" + userId);
     }
 }

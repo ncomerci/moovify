@@ -2,7 +2,6 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.*;
 import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
-import ar.edu.itba.paw.interfaces.persistence.*;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.services.exceptions.NonReachableStateException;
@@ -217,12 +216,6 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public PaginatedCollection<Post> searchDeletedPosts(String query, int pageNumber, int pageSize) {
-        Objects.requireNonNull(query);
-        return postDao.searchDeletedPosts(query, SortCriteria.NEWEST, pageNumber, pageSize);
-    }
-
-    @Override
     public PaginatedCollection<Movie> searchMovies(String query, String category, String decade, String sortCriteria, int pageNumber, int pageSize){
 
         Objects.requireNonNull(query);
@@ -289,6 +282,12 @@ public class SearchServiceImpl implements SearchService {
                 return userDao.searchUsersByRole(query, userRoleOptionsMap.get(role), sc, pageNumber, pageSize);
 
         throw new NonReachableStateException();
+    }
+
+    @Override
+    public PaginatedCollection<Post> searchDeletedPosts(String query, int pageNumber, int pageSize) {
+        Objects.requireNonNull(query);
+        return postDao.searchDeletedPosts(query, SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Override

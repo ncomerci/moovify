@@ -59,7 +59,7 @@ public class UserController {
 
     @RequestMapping(path = "/user/create", method = RequestMethod.POST)
     public ModelAndView register(@Valid @ModelAttribute("userCreateForm") final UserCreateForm userCreateForm, final BindingResult bindingResult,
-                                  HttpServletRequest request, final RedirectAttributes redirectAttributes) throws IOException {
+                                  final HttpServletRequest request, final RedirectAttributes redirectAttributes) throws IOException {
 
         if(bindingResult.hasErrors())
             return showUserCreateForm(userCreateForm);
@@ -89,7 +89,7 @@ public class UserController {
         if(bindingResult.hasErrors())
             return editProfile(nameEditForm, usernameEditForm, descriptionEditForm ) ;
 
-        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateName(user, nameEditForm.getName());
 
@@ -105,7 +105,7 @@ public class UserController {
         if(bindingResult.hasErrors())
             return editProfile(nameEditForm, usernameEditForm , descriptionEditForm);
 
-        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateUsername(user, usernameEditForm.getUsername());
 
@@ -123,7 +123,7 @@ public class UserController {
         if(bindingResult.hasErrors())
             return editProfile(nameEditForm, usernameEditForm , descriptionEditForm);
 
-        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateDescription(user, descriptionEditForm.getDescription());
 
@@ -142,7 +142,7 @@ public class UserController {
         if(bindingResult.hasErrors())
             return changePassword(changePasswordForm);
 
-        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updatePassword(user, changePasswordForm.getPassword());
 
@@ -157,15 +157,7 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/view/viewPosts");
 
-        final User user;
-
-        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
-
-        if(flashParams != null && flashParams.containsKey("user"))
-            user = (User) flashParams.get("user");
-
-        else
-            user = userService.findById(userId).orElseThrow(UserNotFoundException::new);
+        final User user = getUserFromFlashParamsOrById(userId, request);
 
         mv.addObject("user", user);
 
@@ -182,15 +174,7 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/view/viewComments");
 
-        final User user;
-
-        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
-
-        if(flashParams != null && flashParams.containsKey("user"))
-            user = (User) flashParams.get("user");
-
-        else
-            user = userService.findById(userId).orElseThrow(UserNotFoundException::new);
+        final User user = getUserFromFlashParamsOrById(userId, request);
 
         mv.addObject("user", user);
 
@@ -214,7 +198,7 @@ public class UserController {
             user = (User) flashParams.get("user");
 
         else
-            user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+            user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
         mv.addObject("posts", postService.findPostsByUser(user, pageNumber, pageSize));
@@ -225,13 +209,13 @@ public class UserController {
     @RequestMapping(path = "/user/profile/avatar", method = RequestMethod.POST)
     public ModelAndView registerProfilePost(@Valid @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
                                             final BindingResult bindingResult,
-                                            HttpServletRequest request,
+                                            final HttpServletRequest request,
                                             final Principal principal) throws IOException {
         if(bindingResult.hasErrors())
             return profilePosts(avatarEditForm, request, principal,5,0);
 
 
-        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateAvatar(user, avatarEditForm.getAvatar().getBytes());
 
@@ -245,7 +229,7 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/profile/profileComments");
 
-        final User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
         mv.addObject("comments", commentService.findCommentsByUser(user, pageNumber, pageSize));
@@ -289,7 +273,7 @@ public class UserController {
         if(bindingResult.hasErrors())
             return showResetPassword(resetPasswordForm);
 
-        final User user = userService.findByEmail(resetPasswordForm.getEmail()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByEmail(resetPasswordForm.getEmail()).orElseThrow(UserNotFoundException::new);
 
         userService.createPasswordResetEmail(user, "passwordResetEmail");
 
@@ -303,7 +287,7 @@ public class UserController {
     @RequestMapping(path = "/user/resendConfirmation", method = RequestMethod.GET)
     public ModelAndView confirmRegistration(Principal principal) {
 
-        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.createConfirmationEmail(user, "confirmEmail");
 
@@ -380,5 +364,16 @@ public class UserController {
 
     private Collection<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
         return roles.stream().map((role) -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).collect(Collectors.toList());
+    }
+
+    private User getUserFromFlashParamsOrById(long userId, HttpServletRequest request) {
+
+        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
+
+        if(flashParams != null && flashParams.containsKey("user"))
+            return (User) flashParams.get("user");
+
+        else
+            return userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
     }
 }
