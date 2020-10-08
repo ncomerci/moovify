@@ -98,12 +98,17 @@ function deleteComment(commentId) {
        .getElementsByTagName('span')[0].textContent;
 
    document.getElementById('modal-body').textContent = `${name}: ${body}`;
-   document.getElementById('modal-confirm')
-       .addEventListener('click', () => submitDeleteForm(commentId), false);
+
+   //esto es para limpiar los eventListeners del boton de confirmar del modal
+   const confirmBtn = document.getElementById('modal-comment-confirm');
+   const clonedBtn = confirmBtn.cloneNode(true);
+   confirmBtn.parentNode.replaceChild(clonedBtn, confirmBtn);
+
+    clonedBtn.addEventListener('click', () => submitCommentDeleteForm(commentId), false);
 }
 
-function submitDeleteForm(commentId) {
-    const deleteForm = document.forms['delete-form'];
+function submitCommentDeleteForm(commentId) {
+    const deleteForm = document.forms['delete-comment-form'];
     deleteForm.action += `comment/delete/${commentId}`;
     deleteForm.submit();
 }

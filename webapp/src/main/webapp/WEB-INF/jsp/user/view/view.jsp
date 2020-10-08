@@ -22,7 +22,7 @@
         <div class="uk-width-1-3@m uk-flex-first uk-text-center">
             <img class="uk-border-circle uk-margin-left" alt="" height="250" width="250" data-src="<c:url value="/user/avatar/${user.avatarId}"/>" uk-img>
         </div>
-        <div class="uk-width-2-3@m">
+        <div class="uk-width-2-3@m uk-padding-remove">
             <h3 class="uk-card-title uk-margin-remove-bottom userTitle">
                 <c:out value="${user.username} "/>
                 <c:if test="${user.admin}">

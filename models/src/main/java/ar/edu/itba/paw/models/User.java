@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.models;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
@@ -68,6 +69,23 @@ public class User {
 
     public boolean hasRole(String role) {
         return roles.stream().anyMatch(r -> r.getRole().equals(role));
+    }
+
+
+    public Duration getTimeSinceCreation() {
+        return Duration.between(creationDate, LocalDateTime.now());
+    }
+
+    public long getDaysSinceCreation() {
+        return getTimeSinceCreation().toDays();
+    }
+
+    public long getHoursSinceCreation() {
+        return getTimeSinceCreation().toHours();
+    }
+
+    public long getMinutesSinceCreation() {
+        return getTimeSinceCreation().toMinutes();
     }
 
     public boolean isEnabled() { return enabled; }

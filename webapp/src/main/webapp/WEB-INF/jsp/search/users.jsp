@@ -47,24 +47,13 @@
             </div>
         </section>
 
-        <section id="search-results" class="uk-flex uk-flex-wrap">
+        <section id="search-results" class="uk-margin-top">
             <c:if test="${empty users.results}">
                 <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.notFound" arguments="users"/> </h1>
             </c:if>
-            <c:forEach items="${users.results}" var="user">
-                <div class="uk-width-1-1">
-                    <div class="uk-flex">
-                        <div class="uk-width-expand uk-margin-small-top">
-                            <a href="<c:url value="/user/${user.id}"/>" <c:out value="${user.admin ? 'class=uk-text-primary uk-text-middle': ''}"/>>
-                                <c:out value="${user.username}"/>
-                                <c:if test="${user.admin}">
-                                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
-                                </c:if>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </c:forEach>
+
+            <c:set var="posts" value="${users}" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/components/usersDisplay.jsp"/>
         </section>
 
         <c:if test="${not empty users.results}">

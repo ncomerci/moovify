@@ -65,7 +65,7 @@ public class PostDaoImpl implements PostDao {
 
     private static final String LIKES_FROM =
             "INNER JOIN " +
-                    "(SELECT " + POSTS + ".post_id, SUM( " + POSTS_LIKES + ".value ) likes " +
+                    "(SELECT " + POSTS + ".post_id, COALESCE(SUM( " + POSTS_LIKES + ".value ), 0) likes " +
                     "FROM " + POSTS + " LEFT OUTER JOIN " + POSTS_LIKES + " on " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id" +
                     " GROUP BY " + POSTS + ".post_id ) " + POSTS_LIKES + " ON " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id";
 

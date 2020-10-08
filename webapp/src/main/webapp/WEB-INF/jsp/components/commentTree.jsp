@@ -43,7 +43,7 @@
                                                     </c:otherwise>
                                                 </c:choose>
                                                 <sec:authorize access="hasRole('ADMIN')">
-                                                    <a href="#delete-modal"
+                                                    <a href="#delete-comment-modal"
                                                        data-id="<c:out value="${comment.id}"/>"
                                                        class="uk-link-muted delete-comment-button uk-position-small uk-hidden-hover"
                                                        uk-toggle

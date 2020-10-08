@@ -89,16 +89,16 @@
 
 <sec:authorize access="hasRole('ADMIN')">
     <%--  Delete form  --%>
-    <form method="post" action="<c:url value="/"/>" id="delete-form"></form>
+    <form method="post" action="<c:url value="/"/>" id="delete-comment-form"></form>
 
     <!-- delete confirmation modal -->
-    <div id="delete-modal" uk-modal>
+    <div id="delete-comment-modal" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
             <h2 class="uk-modal-title"><spring:message code="comment.delete.confirmTitle"/></h2>
             <p id="modal-body" class="uk-text-italic"></p>
             <p class="uk-text-right">
                 <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="comment.delete.cancelButton"/></button>
-                <button id="modal-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.delete.confirmButton"/></button>
+                <button id="modal-comment-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.delete.confirmButton"/></button>
             </p>
         </div>
     </div>
