@@ -5,6 +5,7 @@ import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -159,6 +160,7 @@ public class MovieDaoImpl implements MovieDao {
         Collection<MovieCategory> categoryCollection = movieCategoryDao.findCategoriesByTmdbId(categories);
 
         HashMap<String, Object> map = new HashMap<>();
+
         map.put("creation_date", Timestamp.valueOf(creationDate));
         map.put("title", title);
         map.put("original_title", originalTitle);
@@ -259,17 +261,17 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public Optional<Movie> findById(long id) {
-        return buildAndExecuteQuery(" WHERE " + MOVIES + ".movie_id = ?", new Object[]{ id })
+    public Optional<Movie> findMovieById(long movie_id) {
+        return buildAndExecuteQuery(" WHERE " + MOVIES + ".movie_id = ?", new Object[]{ movie_id })
                 .stream().findFirst();
     }
 
     @Override
-    public Collection<Movie> findMoviesByPostId(long postId) {
+    public Collection<Movie> findMoviesByPost(Post post) {
 
         return buildAndExecuteQuery(" WHERE " + MOVIES + ".movie_id IN (" +
                         "SELECT " + POST_MOVIE + ".movie_id FROM " + POST_MOVIE + " WHERE " + POST_MOVIE + ".post_id = ?)",
-                 new Object[]{ postId });
+                 new Object[]{ post.getId() });
     }
 
     @Override
@@ -304,7 +306,7 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public PaginatedCollection<Movie> searchMoviesByCategory (String query, String category, SortCriteria sortCriteria,
+    public PaginatedCollection<Movie> searchMoviesByCategory(String query, String category, SortCriteria sortCriteria,
                                                               int pageNumber, int pageSize) {
 
         final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY;
@@ -314,7 +316,7 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public PaginatedCollection<Movie> searchMoviesByReleaseDate (String query, LocalDate since, LocalDate upTo,
+    public PaginatedCollection<Movie> searchMoviesByReleaseDate(String query, LocalDate since, LocalDate upTo,
                                                                  SortCriteria sortCriteria, int pageNumber ,int pageSize) {
 
         final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_RELEASE_DATE;
@@ -324,12 +326,12 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
-    public PaginatedCollection<Movie> searchMoviesByCategoryAndReleaseDate (String query, String category, LocalDate since,
+    public PaginatedCollection<Movie> searchMoviesByCategoryAndReleaseDate(String query, String category, LocalDate since,
                                                                             LocalDate upTo, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY + " AND " + SEARCH_BY_RELEASE_DATE;
 
         return buildAndExecutePaginatedQuery(whereStatement,
-                sortCriteria, pageNumber, pageSize, new Object[]{ query, category ,since, upTo });
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, category, since, upTo });
     }
 }

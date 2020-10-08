@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.persistence.RoleDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.exceptions.UserRegistrationWithoutRoleException;
@@ -148,6 +149,7 @@ public class UserDaoImpl implements UserDao {
             throw new UserRegistrationWithoutRoleException();
 
         HashMap<String, Object> map = new HashMap<>();
+
         map.put("creation_date", Timestamp.valueOf(creationDate));
         map.put("username", username);
         map.put("password", password);
@@ -170,51 +172,53 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void editName(long user_id, String name) {
-        jdbcTemplate.update("UPDATE " + USERS + " SET  name = ? WHERE user_id = ?", name, user_id);
+    public void updateName(User user, String name) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET  name = ? WHERE user_id = ?", name, user.getId());
     }
 
     @Override
-    public void editUsername(long user_id, String username) {
-        jdbcTemplate.update("UPDATE " + USERS + " SET  username = ? WHERE user_id = ?", username, user_id);
+    public void updateUsername(User user, String username) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET  username = ? WHERE user_id = ?", username, user.getId());
     }
 
     @Override
-    public void editDescription(long user_id, String description) {
-        jdbcTemplate.update("UPDATE " + USERS + " SET  description = ? WHERE user_id = ?", description, user_id);
+    public void updateDescription(User user, String description) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET  description = ? WHERE user_id = ?", description, user.getId());
     }
 
     @Override
-    public void updatePassword(long userId, String password) {
-        jdbcTemplate.update("UPDATE " + USERS + " SET password = ? WHERE user_id = ?", password, userId);
+    public void updatePassword(User user, String password) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET password = ? WHERE user_id = ?", password, user.getId());
     }
 
     @Override
-    public void updateAvatarId(long userId, long avatarId) {
-        jdbcTemplate.update("UPDATE " + USERS + " SET avatar_id = ? WHERE user_id = ?", avatarId, userId);
+    public void updateAvatarId(User user, long avatarId) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET avatar_id = ? WHERE user_id = ?", avatarId, user.getId());
     }
 
     @Override
-    public void delete(long userId) {
-        jdbcTemplate.update("UPDATE " + USERS + " SET enabled = false WHERE user_id = ?", userId);
+    public void deleteUser(User user) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET enabled = false WHERE user_id = ?", user.getId());
     }
 
     @Override
-    public void restore(long userId) {
-        jdbcTemplate.update("UPDATE " + USERS + " SET enabled = true WHERE user_id = ?", userId);
+    public void restoreUser(User user) {
+        jdbcTemplate.update("UPDATE " + USERS + " SET enabled = true WHERE user_id = ?", user.getId());
     }
 
     // TODO: can be done in a single query. Important!
     @Override
-    public Collection<Role> addRoles(long userId, Collection<String> roleNames) {
+    public Collection<Role> addRoles(User user, Collection<String> roleNames) {
         Collection<Role> roles = roleDao.findRolesByName(roleNames);
 
         HashMap<String, Object> map;
 
         for (Role role: roles) {
             map = new HashMap<>();
-            map.put("user_id", userId);
+
+            map.put("user_id", user.getId());
             map.put("role_id", role.getId());
+
             jdbcUserRoleInsert.execute(map);
         }
 
@@ -222,38 +226,38 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean userHasRole(long userId, String role) {
+    public boolean userHasRole(User user, String role) {
         return jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM " + USER_ROLE +
                         " INNER JOIN " + ROLES + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
-                        " WHERE user_id = ? AND role = ?", new Object[]{ userId, role}, Integer.class) > 0;
+                        " WHERE user_id = ? AND role = ?", new Object[]{ user.getId(), role }, Integer.class) > 0;
     }
 
     @Override
-    public boolean userHasRole(String email, String role) {
+    public boolean userHasRole(String userEmail, String role) {
         return jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM " + USERS +
                         " INNER JOIN "+ USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id" +
                         " INNER JOIN " + ROLES + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
-                        " WHERE email = ? AND role = ?", new Object[]{ email, role }, Integer.class) > 0;
+                        " WHERE email = ? AND role = ?", new Object[]{ userEmail, role }, Integer.class) > 0;
     }
 
     @Override
-    public int hasUserLiked(long user_id, long post_id) {
+    public int hasUserLiked(User user, Post post) {
         return jdbcTemplate.queryForObject(
                 "SELECT COALESCE(SUM(" + POSTS_LIKES + ".value), 0)  FROM " + POSTS_LIKES +
-                " WHERE user_id = ? AND post_id = ?", new Object[] { user_id, post_id }, Integer.class);
+                " WHERE user_id = ? AND post_id = ?", new Object[]{ user.getId(), post.getId() }, Integer.class);
     }
 
     @Override
-    public void replaceUserRole(final long userId, final String newRole, final String oldRole) {
+    public void replaceUserRole(final User user, final String newRole, final String oldRole) {
 
         jdbcTemplate.update("UPDATE " + USER_ROLE +
                 " SET role_id = (SELECT role_id FROM " + ROLES + " WHERE role = ?)" +
                 "FROM " + ROLES +
                 " WHERE " + USER_ROLE + ".user_id = ?" +
                 "  AND " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
-                "  AND " + ROLES + ".role = ?", newRole, userId, oldRole);
+                "  AND " + ROLES + ".role = ?", newRole, user.getId(), oldRole);
     }
 
     private Collection<User> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
@@ -333,19 +337,19 @@ public class UserDaoImpl implements UserDao {
     private static final String ENABLED_FILTER = USERS + ".enabled = true";
 
     @Override
-    public Optional<User> findById(long id) {
+    public Optional<User> findUserById(long id) {
         return buildAndExecuteQuery("WHERE " + USERS + ".user_id = ? AND " + ENABLED_FILTER,
                 new Object[]{ id }).stream().findFirst();
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
+    public Optional<User> findUserByUsername(String username) {
         return buildAndExecuteQuery("WHERE " + USERS + ".username = ? AND " + ENABLED_FILTER,
                 new Object[]{ username }).stream().findFirst();
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
+    public Optional<User> findUserByEmail(String email) {
         return buildAndExecuteQuery("WHERE " + USERS + ".email = ? AND " + ENABLED_FILTER,
                 new Object[]{ email }).stream().findFirst();
     }
@@ -358,6 +362,8 @@ public class UserDaoImpl implements UserDao {
 
     // Search Query Statements
     private static final String SEARCH_BY_NAME = USERS + ".name ILIKE '%' || ? || '%'";
+
+    private static final String SEARCH_BY_USERNAME = USERS + ".name ILIKE '%' || ? || '%'";
 
     private static final String SEARCH_BY_ROLE = USERS + ".user_id IN ( " +
             "SELECT " + USER_ROLE + ".user_id " +
@@ -375,8 +381,9 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery("WHERE " + USERS + ".username ILIKE '%' || ? || '%' AND " + USERS + ".enabled = false",
-                sortCriteria, pageNumber, pageSize, new Object[]{query});
+        return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_USERNAME +
+                                                                " AND " + USERS + ".enabled = false",
+                sortCriteria, pageNumber, pageSize, new Object[]{ query });
     }
 
     @Override
@@ -385,11 +392,5 @@ public class UserDaoImpl implements UserDao {
                                                                 " AND " + SEARCH_BY_ROLE +
                                                                 " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, role });
-    }
-
-    @Override
-    public PaginatedCollection<User> getDeletedUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return buildAndExecutePaginatedQuery(
-                "WHERE " + USERS + ".enabled = false", sortCriteria, pageNumber, pageSize, null);
     }
 }

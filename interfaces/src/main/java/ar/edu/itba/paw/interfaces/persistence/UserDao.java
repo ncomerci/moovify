@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
@@ -15,35 +16,35 @@ public interface UserDao {
 
     User register(String username, String password, String name, String email, String description, Collection<String> roleNames,  Long avatarId, boolean enabled);
 
-    void editName(long user_id, String name);
+    void updateName(User user, String name);
 
-    void editUsername(long user_id, String username);
+    void updateUsername(User user, String username);
 
-    void editDescription(long user_id, String description);
+    void updateDescription(User user, String description);
 
-    void delete(long user_id);
+    void deleteUser(User user);
 
-    void restore(long user_id);
+    void restoreUser(User user);
 
-    void replaceUserRole(final long userId, final String newRole, final String oldRole);
+    void replaceUserRole(final User user, final String newRole, final String oldRole);
 
-    boolean userHasRole(long userId, String role);
+    boolean userHasRole(User user, String role);
 
-    boolean userHasRole(String email, String role);
+    boolean userHasRole(String userEmail, String role);
 
-    int hasUserLiked(long user_id, long post_id);
+    int hasUserLiked(User user, Post post);
 
-    Collection<Role> addRoles(long userId, Collection<String> roleNames);
+    Collection<Role> addRoles(User user, Collection<String> roleNames);
 
-    void updatePassword(long userId, String password);
+    void updatePassword(User user, String password);
 
-    void updateAvatarId(long userId, long avatarId);
+    void updateAvatarId(User user, long avatarId);
 
-    Optional<User> findById(long id);
+    Optional<User> findUserById(long id);
 
-    Optional<User> findByUsername(String username);
+    Optional<User> findUserByUsername(String username);
 
-    Optional<User> findByEmail(String email);
+    Optional<User> findUserByEmail(String email);
 
     PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
@@ -52,6 +53,4 @@ public interface UserDao {
     PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
-
-    PaginatedCollection<User> getDeletedUsers(SortCriteria sortCriteria, int pageNumber, int pageSize);
 }

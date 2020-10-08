@@ -16,6 +16,6 @@ public class UniqueUsernameConstraintValidator implements ConstraintValidator<Un
    }
 
    public boolean isValid(String obj, ConstraintValidatorContext context) {
-      return !userService.findByUsername(obj).isPresent();
+      return !userService.findUserByUsername(obj).isPresent();
    }
 }

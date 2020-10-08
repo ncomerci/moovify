@@ -25,8 +25,8 @@ public class MovieServiceImpl implements MovieService {
 
 
     @Override
-    public Optional<Movie> findById(long id) {
-        return movieDao.findById(id);
+    public Optional<Movie> findMovieById(long id) {
+        return movieDao.findMovieById(id);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Collection<Movie> findMoviesByPost(Post post) {
-        return movieDao.findMoviesByPostId(post.getId());
+        return movieDao.findMoviesByPost(post);
     }
 
     @Override

@@ -41,10 +41,12 @@ public class CommentController {
         redirectAttributes.addFlashAttribute(commentCreateForm);
 
         if(!bindingResult.hasErrors()){
-            User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-            Post post = postService.findPostById(commentCreateForm.getPostId()).orElseThrow(PostNotFoundException::new);
 
-            commentService.register(post, commentCreateForm.getParentId(),
+            final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+            final Post post = postService.findPostById(commentCreateForm.getPostId()).orElseThrow(PostNotFoundException::new);
+            final Comment parent = commentService.findCommentById(commentCreateForm.getParentId()).orElseThrow(CommentNotFoundException::new);
+
+            commentService.register(post, parent,
                     commentCreateForm.getCommentBody(), user, "newCommentEmail");
         }
 
@@ -58,7 +60,7 @@ public class CommentController {
                              final Principal principal,
                              final HttpServletRequest request) {
 
-        User user = userService.findByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
         Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
         commentService.likeComment(comment, user, value);
 

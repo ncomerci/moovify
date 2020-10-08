@@ -54,23 +54,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateName(User user, String name) {
-        userDao.editName(user.getId(), name);
+        userDao.updateName(user, name);
     }
 
     @Override
     public void updateUsername(User user, String username) {
-        userDao.editUsername(user.getId(), username);
+        userDao.updateUsername(user, username);
     }
 
     @Override
     public void updateDescription(User user, String description) {
-        userDao.editDescription(user.getId(), description);
+        userDao.updateDescription(user, description);
     }
 
 
     @Override
     public void updatePassword(User user, String password) {
-        userDao.updatePassword(user.getId(), passwordEncoder.encode(password));
+        userDao.updatePassword(user, passwordEncoder.encode(password));
     }
 
     @Override
@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
         final long newAvatarId = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
 
-        userDao.updateAvatarId(user.getId(), newAvatarId);
+        userDao.updateAvatarId(user, newAvatarId);
 
         imageService.deleteImage(user.getAvatarId());
     }
@@ -93,19 +93,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(long userId) {
-        userDao.delete(userId);
+    public void deleteUser(User userId) {
+        userDao.deleteUser(userId);
     }
 
     @Override
-    public void restore(long user_id) {
-        userDao.restore(user_id);
+    public void restoreUser(User user) {
+        userDao.restoreUser(user);
     }
 
     @Override
     public void promoteUserToAdmin(User user) {
 
-        userDao.addRoles(user.getId(), Collections.singletonList(Role.ADMIN_ROLE));
+        userDao.addRoles(user, Collections.singletonList(Role.ADMIN_ROLE));
 
         user.getRoles().add(new Role(Role.ADMIN_ROLE));
     }
@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
 
         final String token = UUID.randomUUID().toString();
 
-        userVerificationTokenDao.createVerificationToken(token, UserVerificationToken.calculateExpiryDate(), user.getId());
+        userVerificationTokenDao.createVerificationToken(token, UserVerificationToken.calculateExpiryDate(), user);
 
         Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("token", token);
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
         
         final String token = UUID.randomUUID().toString();
 
-        passwordResetTokenDao.createPasswordResetToken(token, PasswordResetToken.calculateExpiryDate(), user.getId());
+        passwordResetTokenDao.createPasswordResetToken(token, PasswordResetToken.calculateExpiryDate(), user);
 
         Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("token", token);
@@ -138,6 +138,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> confirmRegistration(String token) {
+
         Optional<UserVerificationToken> optToken = userVerificationTokenDao.getVerificationToken(token);
 
         if(!optToken.isPresent() || !optToken.get().isValid())
@@ -148,7 +149,7 @@ public class UserServiceImpl implements UserService {
         replaceUserRole(user, Role.USER_ROLE, Role.NOT_VALIDATED_ROLE);
 
         // Delete Token. It is not needed anymore
-        userVerificationTokenDao.deleteVerificationToken(user.getId());
+        userVerificationTokenDao.deleteVerificationToken(user);
 
         return Optional.of(user);
     }
@@ -161,12 +162,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int hasUserLiked(long user_id, long post_id) {
-        return userDao.hasUserLiked(user_id, post_id);
+    public int hasUserLikedPost(User user, Post post) {
+        return userDao.hasUserLiked(user, post);
     }
 
     @Override
     public Optional<User> updatePassword(String password, String token) {
+
         Optional<PasswordResetToken> optToken = passwordResetTokenDao.getResetPasswordToken(token);
 
         if(!optToken.isPresent() || !optToken.get().isValid())
@@ -174,10 +176,10 @@ public class UserServiceImpl implements UserService {
 
         final User user = optToken.get().getUser();
 
-        userDao.updatePassword(user.getId(), passwordEncoder.encode(password));
+        userDao.updatePassword(user, passwordEncoder.encode(password));
 
         // Delete Token. It is not needed anymore
-        passwordResetTokenDao.deletePasswordResetToken(user.getId());
+        passwordResetTokenDao.deletePasswordResetToken(user);
 
         return Optional.of(user);
     }
@@ -188,18 +190,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(long id) {
-        return userDao.findById(id);
+    public Optional<User> findUserById(long id) {
+        return userDao.findUserById(id);
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return userDao.findByUsername(username);
+    public Optional<User> findUserByUsername(String username) {
+        return userDao.findUserByUsername(username);
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        return userDao.findByEmail(email);
+    public Optional<User> findUserByEmail(String email) {
+        return userDao.findUserByEmail(email);
     }
 
     @Override
@@ -207,19 +209,12 @@ public class UserServiceImpl implements UserService {
         return userDao.getAllUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
-    @Override
-    public PaginatedCollection<User> getDeletedUsers(int pageNumber, int pageSize) {
-        return userDao.getDeletedUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
-    }
-
     private void replaceUserRole(User user, String newRole, String oldRole) {
 
-        userDao.replaceUserRole(user.getId(), newRole, oldRole);
+        userDao.replaceUserRole(user, newRole, oldRole);
 
         user.getRoles().removeIf(role -> role.getRole().equals(oldRole));
 
         user.getRoles().add(new Role(newRole));
     }
-
-
 }

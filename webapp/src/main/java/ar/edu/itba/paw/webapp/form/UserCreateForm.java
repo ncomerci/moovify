@@ -19,7 +19,6 @@ public class UserCreateForm {
     @ValidPassword
     private String password;
 
-
     private String repeatPassword;
 
     @Pattern(regexp = "[a-zA-Z]+")

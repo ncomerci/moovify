@@ -2,6 +2,8 @@ package ar.edu.itba.paw.interfaces.persistence;
 
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.User;
 
 import java.util.Optional;
 
@@ -11,27 +13,27 @@ public interface CommentDao {
         NEWEST, OLDEST, HOTTEST
     }
 
-    long register(long postId, Long parentId, String body, long userId, boolean enabled);
+    Comment register(Post post, Comment parent, String body, User user, boolean enabled);
 
-    void likeComment(long comment_id, long user_id, int value);
+    void likeComment(Comment comment, User user, int value);
 
-    void removeLike(long comment_id, long user_id);
+    void removeLike(Comment comment, User user);
 
-    void delete(long id);
+    void deleteComment(Comment comment);
 
-    void restore(long id);
+    void restoreComment(Comment comment);
 
     Optional<Comment> findCommentById(long id);
 
-    PaginatedCollection<Comment> findCommentChildren(long commentId, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentChildren(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentDescendants(long commentId, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentDescendants(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findPostCommentDescendants(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findPostCommentDescendants(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByPostId(long post_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByPost(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize);
 

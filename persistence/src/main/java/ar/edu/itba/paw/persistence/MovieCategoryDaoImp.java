@@ -20,7 +20,8 @@ public class MovieCategoryDaoImp implements MovieCategoryDao {
     private static final RowMapper<MovieCategory> ROW_MAPPER = (rs, rowNum) -> new MovieCategory(
             rs.getLong("category_id"),
             rs.getLong("tmdb_category_id"),
-            rs.getString("name"));
+            rs.getString("name")
+    );
 
 
     private final JdbcTemplate jdbcTemplate;

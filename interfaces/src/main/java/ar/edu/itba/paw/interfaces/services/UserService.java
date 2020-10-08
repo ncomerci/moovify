@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Optional;
@@ -17,9 +18,9 @@ public interface UserService {
 
     void updatePassword(User user, String password);
 
-    void delete(long user_id);
+    void deleteUser(User user);
 
-    void restore(long user_id);
+    void restoreUser(User user);
 
     void promoteUserToAdmin(User user);
 
@@ -31,7 +32,7 @@ public interface UserService {
 
     boolean validatePasswordResetToken(String token);
 
-    int hasUserLiked(long user_id, long post_id);
+    int hasUserLikedPost(User user, Post post);
 
     Optional<User> updatePassword(String password, String token);
 
@@ -41,13 +42,11 @@ public interface UserService {
 
     boolean emailExistsAndIsValidated(String email);
 
-    Optional<User> findById(long id);
+    Optional<User> findUserById(long id);
 
-    Optional<User> findByUsername(String username);
+    Optional<User> findUserByUsername(String username);
 
-    Optional<User> findByEmail(String email);
+    Optional<User> findUserByEmail(String email);
 
     PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize);
-
-    PaginatedCollection<User> getDeletedUsers(int pageNumber, int pageSize);
 }

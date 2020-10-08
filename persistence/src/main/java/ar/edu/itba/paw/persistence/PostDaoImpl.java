@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.persistence;
 
-import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.models.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,7 +170,6 @@ public class PostDaoImpl implements PostDao {
     private final SimpleJdbcInsert postInsert;
     private final SimpleJdbcInsert postMoviesInsert;
     private final SimpleJdbcInsert tagsInsert;
-    private final SimpleJdbcInsert postLikesInsert;
 
     @Autowired
     public PostDaoImpl(final DataSource ds){
@@ -187,13 +185,10 @@ public class PostDaoImpl implements PostDao {
 
         tagsInsert = new SimpleJdbcInsert(ds)
                 .withTableName(TAGS);
-
-        postLikesInsert = new SimpleJdbcInsert(ds)
-                .withTableName(POSTS_LIKES);
     }
     
     @Override
-    public long register(String title, String body, int wordCount, long categoryId, long userId, Set<String> tags, Set<Long> movies, boolean enabled) {
+    public Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Long> movies, boolean enabled) {
 
         Objects.requireNonNull(title);
         Objects.requireNonNull(body);
@@ -202,57 +197,62 @@ public class PostDaoImpl implements PostDao {
         LocalDateTime creationDate = LocalDateTime.now();
 
         HashMap<String, Object> map = new HashMap<>();
+
         map.put("title", title);
         map.put("creation_date", Timestamp.valueOf(creationDate));
         map.put("word_count", wordCount);
         map.put("body", body);
-        map.put("category_id", categoryId);
-        map.put("user_id", userId);
+        map.put("category_id", category.getId());
+        map.put("user_id", user.getId());
         map.put("enabled", enabled);
 
         final long postId = postInsert.executeAndReturnKey(map).longValue();
 
         for(Long movie_id: movies){
             map = new HashMap<>();
+
             map.put("movie_id", movie_id);
             map.put("post_id", postId);
+
             postMoviesInsert.execute(map);
         }
 
         if(tags != null) {
             for (String tag : tags) {
                 map = new HashMap<>();
+
                 map.put("tag", tag);
                 map.put("post_id", postId);
+
                 tagsInsert.execute(map);
             }
         }
 
-        return postId;
+        return new Post(postId, creationDate, title, body, wordCount, category, user, tags, enabled, 0);
     }
 
     @Override
-    public void delete(long id) {
-        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = false WHERE post_id = ?",  id);
+    public void deletePost(Post post) {
+        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = false WHERE post_id = ?", post.getId());
     }
 
     @Override
-    public void restore(long id) {
-        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = true WHERE post_id = ?",  id);
+    public void restorePost(Post post) {
+        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = true WHERE post_id = ?", post.getId());
     }
 
     @Override
-    public void likePost(long post_id, long user_id, int value) {
+    public void likePost(Post post, User user, int value) {
 
         jdbcTemplate.update(
                 "INSERT INTO " + POSTS_LIKES + " (post_id, user_id, value) VALUES (?, ?, ?) " +
-                        "ON CONFLICT (post_id, user_id) DO UPDATE SET value = ? ", post_id, user_id, value, value);
+                        "ON CONFLICT (post_id, user_id) DO UPDATE SET value = ? ", post.getId(), user.getId(), value, value);
 
     }
 
     @Override
-    public void removeLike(long post_id, long user_id) {
-        jdbcTemplate.update( "DELETE FROM " + POSTS_LIKES + " WHERE " + POSTS_LIKES + ".post_id = ? " + " AND "+ POSTS_LIKES + ".user_id = ?", post_id, user_id );
+    public void removeLike(Post post, User user) {
+        jdbcTemplate.update( "DELETE FROM " + POSTS_LIKES + " WHERE " + POSTS_LIKES + ".post_id = ? " + " AND "+ POSTS_LIKES + ".user_id = ?", post.getId(), user.getId());
     }
 
     private Collection<Post> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
@@ -339,19 +339,19 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public PaginatedCollection<Post> findPostsByMovieId(long movie_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> findPostsByMovie(Movie movie, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery("WHERE " +
                         POSTS + ".post_id IN ( " +
                         "SELECT " + POST_MOVIE + ".post_id " +
                         "FROM " + POST_MOVIE +
                         " WHERE " + POST_MOVIE + ".movie_id = ?) AND " + ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[] { movie_id });
+                sortCriteria, pageNumber, pageSize, new Object[]{ movie.getId() });
     }
 
     @Override
-    public PaginatedCollection<Post> findPostsByUserId(long user_id, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> findPostsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return buildAndExecutePaginatedQuery("WHERE " + POSTS + ".user_id = ? AND " + ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ user_id });
+                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override

@@ -29,7 +29,7 @@ public class PostCategoryDaoImpl implements PostCategoryDao {
     }
 
     @Override
-    public Optional<PostCategory> findById(long id) {
+    public Optional<PostCategory> findPostCategoryById(long id) {
         return jdbcTemplate.query("SELECT * FROM " + POST_CATEGORY + " WHERE " + POST_CATEGORY + ".category_id = ?",
                 new Object[]{ id }, POST_CATEGORY_ROW_MAPPER).stream().findFirst();
     }

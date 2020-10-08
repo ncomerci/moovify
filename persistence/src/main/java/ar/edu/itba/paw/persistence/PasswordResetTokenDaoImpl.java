@@ -127,17 +127,21 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
                 .usingGeneratedKeyColumns("token_id");
     }
 
+    // TODO: Can be done in a single query
     @Override
-    public long createPasswordResetToken(String token, LocalDateTime expiryDate, long userId) {
+    public PasswordResetToken createPasswordResetToken(String token, LocalDateTime expiryDate, User user) {
 
-        deletePasswordResetToken(userId);
+        deletePasswordResetToken(user);
 
         HashMap<String, Object> map = new HashMap<>();
+
         map.put("token", token);
         map.put("expiry", expiryDate);
-        map.put("user_id", userId);
+        map.put("user_id", user.getId());
 
-        return jdbcTokenInsert.executeAndReturnKey(map).longValue();
+        final long tokenId = jdbcTokenInsert.executeAndReturnKey(map).longValue();
+
+        return new PasswordResetToken(tokenId, token, expiryDate, user);
     }
 
     @Override
@@ -147,7 +151,7 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
     }
 
     @Override
-    public void deletePasswordResetToken(long userId) {
-        jdbcTemplate.update("DELETE FROM " + PASSWORD_RESET_TOKEN + " WHERE user_id = ?", userId);
+    public void deletePasswordResetToken(User user) {
+        jdbcTemplate.update("DELETE FROM " + PASSWORD_RESET_TOKEN + " WHERE user_id = ?", user.getId());
     }
 }

@@ -29,14 +29,14 @@ public class RoleDaoImpl implements RoleDao {
     @Override
     public Optional<Role> findRoleById(long id) {
         return jdbcTemplate.query("SELECT * FROM " + ROLES + " WHERE " + ROLES + ".role_id = ?",
-                new Object[] { id }, ROLE_ROW_MAPPER)
+                new Object[]{ id }, ROLE_ROW_MAPPER)
                 .stream().findFirst();
     }
 
     @Override
     public Optional<Role> findRoleByName(String name) {
         return jdbcTemplate.query("SELECT * FROM " + ROLES + " WHERE " + ROLES + ".role = ?",
-                new Object[] { name }, ROLE_ROW_MAPPER)
+                new Object[]{ name }, ROLE_ROW_MAPPER)
                 .stream().findFirst();
     }
 

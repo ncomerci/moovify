@@ -58,7 +58,7 @@ public class MovieController {
 
         final ModelAndView mv = new ModelAndView("movie/view");
 
-        final Movie movie = movieService.findById(movieId).orElseThrow(MovieNotFoundException::new);
+        final Movie movie = movieService.findMovieById(movieId).orElseThrow(MovieNotFoundException::new);
 
         mv.addObject("movie", movie);
         mv.addObject("posts", postService.findPostsByMovie(movie, pageNumber, pageSize));

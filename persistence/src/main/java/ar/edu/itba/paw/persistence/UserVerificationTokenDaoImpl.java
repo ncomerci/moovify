@@ -131,16 +131,18 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
 
     // TODO: Insert or Update instead of Delete and Insert
     @Override
-    public long createVerificationToken(String token, LocalDateTime expiryDate, long userId) {
+    public UserVerificationToken createVerificationToken(String token, LocalDateTime expiryDate, User user) {
 
-        deleteVerificationToken(userId);
+        deleteVerificationToken(user);
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("token", token);
         map.put("expiry", expiryDate);
-        map.put("user_id", userId);
+        map.put("user_id", user.getId());
 
-        return jdbcTokenInsert.executeAndReturnKey(map).longValue();
+        final long tokenId = jdbcTokenInsert.executeAndReturnKey(map).longValue();
+
+        return new UserVerificationToken(tokenId, token, expiryDate, user);
     }
 
     @Override
@@ -150,7 +152,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
     }
 
     @Override
-    public void deleteVerificationToken(long userId) {
-        jdbcTemplate.update("DELETE FROM " + USER_VERIFICATION_TOKEN + " WHERE user_id = ?", userId);
+    public void deleteVerificationToken(User user) {
+        jdbcTemplate.update("DELETE FROM " + USER_VERIFICATION_TOKEN + " WHERE user_id = ?", user.getId());
     }
 }
