@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <jsp:useBean id="comments" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection"/>
@@ -24,10 +25,23 @@
                         <c:set var="length" value="${fn:length(comment.body)}"/>
                         <c:out value="${fn:substring(comment.body, 0, maxLength)}${length > maxLength ? '...':''}"/>
                     </a>
-                   <%--TODO una vez que se incluya al post dentro del comment, refactorear la vista para reflejarlo--%>
-                    <%--<p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
-                        <spring:message code="commentDisplay.meta.description" arguments="${comment.category.name},${post.user.name}"/>
-                    </p>--%>
+                    <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
+                        <c:choose>
+                            <c:when test="${comment.user.enabled}">
+                                <c:set var="name" value="${comment.user.name}"/>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="name"><spring:message code="user.notEnabled.name"/></c:set>
+                            </c:otherwise>
+                        </c:choose>
+                        <spring:message code="commentDisplay.meta.description" arguments="${comment.user.name}, ${comment.likes}"/>
+                        <c:if test="${comment.likes  >= 0}">
+                            <span uk-icon="icon: chevron-up; ratio: 0.8"></span>
+                        </c:if>
+                        <c:if test="${comment.likes < 0 }">
+                            <span uk-icon="icon: chevron-down; ratio: 0.8"></span>
+                        </c:if>
+                    </p>
                 </div>
                 <div class="uk-width-auto">
                     <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">

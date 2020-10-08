@@ -27,10 +27,10 @@
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
     <div id="post-metadata" >
         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
-            <div class="uk-width-4-5">
+            <div class="uk-width-5-6">
                 <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
             </div>
-            <div class="uk-width-1-5 uk-margin-small-top">
+            <div class="uk-width-1-6 uk-margin-top">
                 <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
                     <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
                         <div class="uk-text-center uk-padding-remove uk-margin-remove">
@@ -141,9 +141,8 @@
             <button id="post-delete-btn"
                     class="uk-button uk-button-default logout-button uk-border-rounded"
                     data-id="${post.id}"
-                    data-msg="<spring:message code="post.delete.modalTitle"/>"
                     type="button"
-                    uk-toggle="target: #delete-modal"
+                    uk-toggle="target: #delete-post-modal"
             >
                 <spring:message code="post.delete.button"/>
             </button>
@@ -168,3 +167,18 @@
     </label>
 </form>
 
+<sec:authorize access="hasRole('ADMIN')">
+    <%--  Delete form  --%>
+    <form method="post" action="<c:url value="/"/>" id="delete-post-form"></form>
+
+    <!-- delete confirmation modal -->
+    <div id="delete-post-modal" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h2 class="uk-modal-title"><spring:message code="post.delete.modalTitle"/></h2>
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="comment.delete.cancelButton"/></button>
+                <button id="modal-post-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.delete.confirmButton"/></button>
+            </p>
+        </div>
+    </div>
+</sec:authorize>

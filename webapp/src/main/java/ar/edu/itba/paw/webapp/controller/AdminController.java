@@ -83,7 +83,7 @@ public class AdminController {
 
         commentService.deleteComment(comment);
 
-        return new ModelAndView("redirect:/comment/" + commentId);
+        return new ModelAndView("redirect:/comment/" + comment.getId());
     }
 
     @RequestMapping(path = "/comment/restore/{commentId}", method = RequestMethod.POST)
@@ -93,7 +93,7 @@ public class AdminController {
 
         commentService.restoreComment(comment);
 
-        return new ModelAndView("redirect:/comment/" + commentId);
+        return new ModelAndView("redirect:/comment/" + comment.getId());
     }
 
     //    ================ POSTS PRIVILEGES ================
@@ -115,7 +115,7 @@ public class AdminController {
 
         postService.restorePost(post);
 
-        return new ModelAndView("redirect:/post/" + postId);
+        return new ModelAndView("redirect:/post/" + post.getId());
     }
 
     //    ================ USERS PRIVILEGES ================
@@ -149,6 +149,6 @@ public class AdminController {
 
         userService.restoreUser(user);
 
-        return new ModelAndView("redirect:/user/" + userId);
+        return new ModelAndView("redirect:/user/" + user.getId());
     }
 }

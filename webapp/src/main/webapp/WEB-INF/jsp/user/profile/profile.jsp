@@ -26,7 +26,7 @@
                 <div class="uk-inline-clip uk-transition-toggle" tabindex="0">
                     <img class="uk-border-circle" alt="" height="200" width="200" data-src="<c:url value="/user/avatar/${loggedUser.avatarId}"/>" uk-img>
                         <%--@elvariable id="avatarEditForm" type=""--%>
-                    <div class="uk-position-center uk-text-center">
+                    <div class="uk-position-center uk-text-right">
 
                         <form:label path="avatar">
                             <div uk-form-custom>
@@ -38,15 +38,13 @@
                                     </div>
                                 </button>
                             </div>
-
                         </form:label>
-
                     </div>
                 </div>
                 <div> <form:errors path="avatar" element="p" cssClass="error" cssStyle="color:red;" /></div>
             </form:form>
         </div>
-        <div class="uk-width-2-3@m">
+        <div class="uk-width-2-3@m uk-padding-remove">
             <h3 class="uk-card-title uk-margin-remove-bottom userTitle">
                 <c:out value="${loggedUser.username}"/>
                 <c:if test="${loggedUser.admin}">
