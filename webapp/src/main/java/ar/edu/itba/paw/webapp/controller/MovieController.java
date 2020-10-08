@@ -28,7 +28,9 @@ public class MovieController {
     @RequestMapping(path = "/movie/create",  method = RequestMethod.GET)
     public ModelAndView create(){
         ModelAndView mv = new ModelAndView("movie/create");
+
         mv.addObject("categories", movieService.getAvailableCategories());
+
         return mv;
     }
 
