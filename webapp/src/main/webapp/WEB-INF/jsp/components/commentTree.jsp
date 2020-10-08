@@ -78,7 +78,7 @@
                                             </div>
                                             <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
                                                 <div class="uk-text-center uk-padding-remove uk-margin-remove">
-                                                    <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
+                                                    <p class="uk-text-center uk-align-center uk-text-lead">
                                                         <spring:message code="post.view.likes" arguments="${comment.likes}"/>
                                                     </p>
                                                 </div>
