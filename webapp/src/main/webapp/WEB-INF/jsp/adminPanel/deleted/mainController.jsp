@@ -12,7 +12,7 @@
 
 <div class="uk-search uk-search-large">
     <span uk-search-icon></span>
-    <input class="uk-search-input" type="search" id="query-input" value="${query}" name="query">
+    <input class="uk-search-input search-query-input" type="search" id="query-input" value="${query}" name="query">
 </div>
 <p class="uk-text-meta">
     <spring:message code="admin.deleted.searchResults"/>
