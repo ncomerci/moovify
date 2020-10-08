@@ -58,7 +58,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     private Resource dataSql;
 
     @Bean
-    public ViewResolver viewResolver(){
+    public ViewResolver viewResolver() {
         final InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 
         viewResolver.setViewClass(JstlView.class); // Es el default, pero lo aclaramos
@@ -81,7 +81,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public DataSource dataSource(){
+    public DataSource dataSource() {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
         ds.setDriverClass(org.postgresql.Driver.class);
@@ -116,7 +116,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public MessageSource messageSource(){
+    public MessageSource messageSource() {
         final ReloadableResourceBundleMessageSource msgSource = new ReloadableResourceBundleMessageSource();
 
         msgSource.setBasename("classpath:i18n/messages");

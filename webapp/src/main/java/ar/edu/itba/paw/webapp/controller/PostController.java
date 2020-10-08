@@ -112,9 +112,9 @@ public class PostController {
                 .orElseThrow(InvalidPostCategoryException::new);
 
         final Post post = postService.register(postCreateForm.getTitle(), postCreateForm.getBody(),
-                postCategory, user,
-                postCreateForm.getTags() == null ? Collections.emptySet() : postCreateForm.getTags(),
-                postCreateForm.getMovies());
+                    postCategory, user,
+                    postCreateForm.getTags() == null ? Collections.emptySet() : postCreateForm.getTags(),
+                    postCreateForm.getMovies());
 
         redirectAttributes.addFlashAttribute("post", post);
 

@@ -23,7 +23,7 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> movies){
+    public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> movies) {
         return postDao.register(title, body.trim(),
                 body.split("\\s+").length, category, user, tags, movies, true);
     }
