@@ -14,7 +14,7 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <main class="uk-container-small uk-margin-auto uk-padding-small">
-    <c:url value="/search/posts/" var="action"/>
+    <c:url value="/search/posts" var="action"/>
     <form:form modelAttribute="searchPostsForm" method="get" action="${action}">
         <section id="search-controllers">
             <c:set var="query" scope="request"><c:out value="${query}"/></c:set>
@@ -74,7 +74,7 @@
 
         <c:if test="${not empty posts.results}">
             <c:set var="collection" value="${posts}" scope="request"/>
-            <c:url var="baseURL" value="/search/posts/" scope="request">
+            <c:url var="baseURL" value="/search/posts" scope="request">
                 <c:param name="query" value="${searchPostsForm.query}"/>
                 <c:param name="postAge" value="${searchPostsForm.postAge}"/>
                 <c:param name="postCategory" value="${searchPostsForm.postCategory}"/>

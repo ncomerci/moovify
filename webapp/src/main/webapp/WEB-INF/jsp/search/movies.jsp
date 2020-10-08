@@ -15,7 +15,7 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp"/>
 
 <main class="uk-container-small uk-margin-auto uk-padding-small">
-    <c:url value="/search/movies/" var="action"/>
+    <c:url value="/search/movies" var="action"/>
     <form:form modelAttribute="searchMoviesForm" method="get" action="${action}">
         <section id="search-controllers">
             <c:set var="query" value="${query}" scope="request"/>
@@ -96,7 +96,7 @@
         </section>
         <c:if test="${not empty movies.results}">
             <c:set var="collection" value="${movies}" scope="request"/>
-            <c:url var="baseURL" value="/search/movies/" scope="request">
+            <c:url var="baseURL" value="/search/movies" scope="request">
                 <c:param name="query" value="${searchMoviesForm.query}"/>
                 <c:param name="decade" value="${searchMoviesForm.decade}"/>
                 <c:param name="sortCriteria" value="${searchMoviesForm.sortCriteria}"/>

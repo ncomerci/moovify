@@ -128,7 +128,9 @@
     <section id="post-tags">
         <h1 class="uk-text-meta"><spring:message code="post.view.tags"/></h1>
         <c:forEach items="${post.tags}" var="tag" >
-            <c:url var="tagLink" value="/search/posts/?query=${tag}"/>
+            <c:url var="tagLink" value="/search/posts">
+                <c:param name="query" value="${tag}"/>
+            </c:url>
             <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
                href="${tagLink}">
                 <c:out value="${tag}"/>
