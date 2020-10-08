@@ -108,7 +108,6 @@ function deleteComment(commentId) {
 }
 
 function submitCommentDeleteForm(commentId) {
-    console.log(commentId)
     const deleteForm = document.forms['delete-comment-form'];
     deleteForm.action += `comment/delete/${commentId}`;
     deleteForm.submit();

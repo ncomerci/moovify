@@ -17,7 +17,6 @@ function deletePost(postId) {
 }
 
 function submitPostDeleteForm(postId) {
-    console.log('POST')
     const deleteForm = document.forms['delete-post-form'];
     deleteForm.action += `post/delete/${postId}`;
     deleteForm.submit();
