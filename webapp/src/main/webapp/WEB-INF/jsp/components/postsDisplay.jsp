@@ -31,16 +31,13 @@
                                 <c:set var="name"><spring:message code="user.notEnabled.name"/></c:set>
                             </c:otherwise>
                         </c:choose>
-                        <spring:message code="postDisplay.meta.description" arguments="${post.category.name}, ${name}, ${post.likes}"/>
-                        <c:if test="${post.likes  >= 0}">
-                            <span uk-icon="icon: chevron-up; ratio: 0.8"></span>
-                        </c:if>
-                        <c:if test="${post.likes < 0 }">
-                            <span uk-icon="icon: chevron-down; ratio: 0.8"></span>
-                        </c:if>
+                        <spring:message code="postDisplay.meta.description" arguments="${post.category.name}, ${name}"/>
                         <c:if test="${post.user.admin && post.user.enabled}">
                             <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
                         </c:if>
+                        <spring:message code="postDisplay.meta.votes" arguments="${post.likes}"/>
+
+                        <span uk-icon="icon: <c:out value="${post.likes >= 0 ? 'chevron-up':'chevron-down'}"/>; ratio: 0.8"></span>
                     </p>
                 </div>
                 <div class="uk-width-auto">
