@@ -5,6 +5,7 @@
 <head>
     <title><spring:message code="user.passwordResetSuccess.title" /></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />

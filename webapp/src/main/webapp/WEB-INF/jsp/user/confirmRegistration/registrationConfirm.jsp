@@ -7,6 +7,10 @@
 <head>
     <title><spring:message code="email.emailConfirmation"/>></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+
+    <sec:authorize access="isAuthenticated()">
+        <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+    </sec:authorize>
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
