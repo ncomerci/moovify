@@ -20,6 +20,7 @@
         <section id="controllers">
             <c:set var="query" value="${query}" scope="request"/>
             <c:set var="currentSelection" value="0" scope="request"/>
+            <c:set var="selectedView" scope="request"><spring:message code="admin.deleted.posts"/></c:set>
             <jsp:include page="/WEB-INF/jsp/adminPanel/deleted/mainController.jsp"/>
         </section>
         <section id="search-results" class="uk-margin-top">
