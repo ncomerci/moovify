@@ -110,6 +110,7 @@ INSERT INTO public.user_role (user_id, role_id) VALUES (4, 3);
 INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:26:31.440000', 'Post Test 1', 1, 1, 554, 'body_test', true);
 INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:32:57.415000', 'Post Test 2', 2, 1, 2886, 'body_test', true);
 INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:49:38.898000', 'Post Test 3', 1, 1, 932, 'body_test', true);
+INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:59:38.898000', 'Post Test 4', 2, 1, 932, 'body_test', false);
 
 INSERT INTO public.post_movie (post_id, movie_id) VALUES (1, 8);
 INSERT INTO public.post_movie (post_id, movie_id) VALUES (1, 9);
