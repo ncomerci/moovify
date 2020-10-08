@@ -2,7 +2,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<jsp:useBean id="posts" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection"/>
+<jsp:useBean id="posts" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection<ar.edu.itba.paw.models.Post>"/>
 
 <div class="uk-flex uk-flex-wrap">
     <c:forEach items="${posts.results}" var="post">

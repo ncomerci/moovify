@@ -69,7 +69,9 @@
                                     <div class="uk-flex">
                                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-top" uk-grid>
                                             <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
-                                                <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover"><spring:message code="comment.create.reply"/></a>
+                                                <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover">
+                                                    <spring:message code="comment.create.reply"/>
+                                                </a>
                                             </div>
                                             <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
                                                 <a class="uk-link-muted reply-button uk-position-small uk-hidden-hover" href="<c:url value="/comment/${comment.id}"/>">

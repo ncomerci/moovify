@@ -7,6 +7,7 @@
 
 
 <jsp:useBean id="currentState" scope="request" type="java.lang.String"/>
+<jsp:useBean id="user" scope="request" type="ar.edu.itba.paw.models.User"/>
 
 <sec:authorize access="hasRole('ADMIN')">
     <script src="<c:url value="/resources/js/user/view.js"/>"></script>
