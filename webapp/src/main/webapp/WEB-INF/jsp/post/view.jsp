@@ -141,9 +141,8 @@
             <button id="post-delete-btn"
                     class="uk-button uk-button-default logout-button uk-border-rounded"
                     data-id="${post.id}"
-                    data-msg="<spring:message code="post.delete.modalTitle"/>"
                     type="button"
-                    uk-toggle="target: #delete-modal"
+                    uk-toggle="target: #delete-post-modal"
             >
                 <spring:message code="post.delete.button"/>
             </button>
@@ -168,3 +167,18 @@
     </label>
 </form>
 
+<sec:authorize access="hasRole('ADMIN')">
+    <%--  Delete form  --%>
+    <form method="post" action="<c:url value="/"/>" id="delete-post-form"></form>
+
+    <!-- delete confirmation modal -->
+    <div id="delete-post-modal" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h2 class="uk-modal-title"><spring:message code="post.delete.modalTitle"/></h2>
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="comment.delete.cancelButton"/></button>
+                <button id="modal-post-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.delete.confirmButton"/></button>
+            </p>
+        </div>
+    </div>
+</sec:authorize>
