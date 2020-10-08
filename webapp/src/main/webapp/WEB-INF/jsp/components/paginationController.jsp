@@ -13,6 +13,9 @@
 
 <div class="uk-flex uk-flex-wrap">
     <div class="uk-form-horizontal uk-margin-auto-vertical">
+        <label for="pagination-page-size" class="uk-form-label" style="width: auto">
+            <spring:message code="paginationController.pageSize.message"/>
+        </label>
         <div class="uk-form-controls" style="margin-left: 100px">
             <select id="pagination-page-size" name="pageSize" class="uk-select uk-form-blank">
                 <option <c:out value="${ collection.pageSize == 2 ? 'selected' : ''}"/> label="2" value="2">2</option>
