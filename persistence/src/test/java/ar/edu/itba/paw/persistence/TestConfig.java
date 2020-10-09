@@ -1,15 +1,20 @@
 package ar.edu.itba.paw.persistence;
 
-import org.hsqldb.jdbc.JDBCDriver;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 
@@ -17,10 +22,15 @@ import javax.sql.DataSource;
         "ar.edu.itba.paw.persistence",
 })
 @Configuration
+@EnableTransactionManagement
+@PropertySource({ "classpath:/test-config.properties" })
 public class TestConfig {
 
-    @Value("classpath:hsqldb.sql")
-    private Resource hsqldbSql;
+    @Autowired
+    private Environment env;
+
+    @Value("classpath:clean-up.sql")
+    private Resource cleanUp;
 
     @Value("classpath:schema.sql")
     private Resource schemaSql;
@@ -32,28 +42,43 @@ public class TestConfig {
     public DataSource dataSource(){
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
-        ds.setDriverClass(JDBCDriver.class);
-        ds.setUrl("jdbc:hsqldb:mem:moovify");
-        ds.setUsername("test");
-        ds.setPassword("");
+        ds.setDriverClass(org.postgresql.Driver.class);
+        ds.setUrl(env.getProperty("db.url"));
+        ds.setUsername(env.getProperty("db.username"));
+        ds.setPassword(env.getProperty("db.password"));
 
         return ds;
     }
 
     @Bean
     public DataSourceInitializer dataSourceInitializer(final DataSource ds) {
+
         final DataSourceInitializer dsi = new DataSourceInitializer();
 
         dsi.setDataSource(ds);
         dsi.setDatabasePopulator(databasePopulator());
+        dsi.setDatabaseCleaner(databaseCleaner());
 
         return dsi;
     }
 
-    private DatabasePopulator databasePopulator() {
+    private DatabasePopulator databaseCleaner() {
+
         final ResourceDatabasePopulator dbp = new ResourceDatabasePopulator();
-        dbp.addScripts(hsqldbSql, schemaSql, testInserts);
-        
+        dbp.addScripts(cleanUp);
+        return dbp;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(final DataSource ds) {
+
+        return new DataSourceTransactionManager(ds);
+    }
+
+    private DatabasePopulator databasePopulator() {
+
+        final ResourceDatabasePopulator dbp = new ResourceDatabasePopulator();
+        dbp.addScripts(schemaSql, testInserts);
         return dbp;
     }
 }
