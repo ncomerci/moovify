@@ -10,6 +10,8 @@ import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.persistence.exceptions.UserRegistrationWithoutRoleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,6 +26,8 @@ import java.util.*;
 
 @Repository
 public class UserDaoImpl implements UserDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
 
     private static final String USERS = TableNames.USERS.getTableName();
     private static final String ROLES = TableNames.ROLES.getTableName();
@@ -149,8 +153,10 @@ public class UserDaoImpl implements UserDao {
         // TODO: Se puede evitar esta query. Importante! Requiere un insert mas complejo.
         Collection<Role> roles = roleDao.findRolesByName(roleNames);
 
-        if(roles == null || roles.isEmpty())
+        if(roles == null || roles.isEmpty()) {
+            LOGGER.error("Tried to create User {} without valid roles (roles used: {})", username, roles);
             throw new UserRegistrationWithoutRoleException();
+        }
 
         HashMap<String, Object> map = new HashMap<>();
 
@@ -171,11 +177,15 @@ public class UserDaoImpl implements UserDao {
         catch(DuplicateKeyException e) {
             final String errorMessage = e.getMessage();
 
-            if(errorMessage.contains("users_username_key"))
+            if(errorMessage.contains("users_username_key")) {
+                LOGGER.error("Tried to create User with duplicated username {}", username);
                 throw new DuplicateUsernameException();
+            }
 
-            else if(errorMessage.contains("users_email_key"))
+            else if(errorMessage.contains("users_email_key")) {
+                LOGGER.error("Tried to create User with duplicated email {}", email);
                 throw new DuplicateEmailException();
+            }
 
             else
                 throw e;
@@ -188,12 +198,21 @@ public class UserDaoImpl implements UserDao {
             jdbcUserRoleInsert.execute(map);
         }
 
-        return new User(userId, creationDate, username, password, name, email, description, avatarId, 0, roles, true);
+        LOGGER.info("Created User {}", userId);
+
+        final User user = new User(userId, creationDate, username, password, name, email, description, avatarId, 0, roles, true);
+
+        LOGGER.debug("Created user {}", user);
+
+        return user;
     }
 
     @Override
     public void updateName(User user, String name) {
+
         jdbcTemplate.update("UPDATE " + USERS + " SET  name = ? WHERE user_id = ?", name, user.getId());
+
+        LOGGER.info("Updated name from User {} from {} to {}", user.getId(), user.getName(), name);
     }
 
     @Override
@@ -202,33 +221,51 @@ public class UserDaoImpl implements UserDao {
             jdbcTemplate.update("UPDATE " + USERS + " SET  username = ? WHERE user_id = ?", username, user.getId());
         }
         catch(DuplicateKeyException e) {
+            LOGGER.error("Tried to change User's {} username to {}, which already exists", user.getId(), username);
             throw new DuplicateUsernameException();
         }
+
+        LOGGER.info("Updated username from User {} from {} to {}", user.getId(), user.getUsername(), username);
     }
 
     @Override
     public void updateDescription(User user, String description) {
+
         jdbcTemplate.update("UPDATE " + USERS + " SET  description = ? WHERE user_id = ?", description, user.getId());
+
+        LOGGER.info("Updated description from User {} to {}", user.getId(), description);
     }
 
     @Override
     public void updatePassword(User user, String password) {
+
         jdbcTemplate.update("UPDATE " + USERS + " SET password = ? WHERE user_id = ?", password, user.getId());
+
+        LOGGER.info("Updated User's {} password to {}", user.getId(), password);
     }
 
     @Override
     public void updateAvatarId(User user, long avatarId) {
+
         jdbcTemplate.update("UPDATE " + USERS + " SET avatar_id = ? WHERE user_id = ?", avatarId, user.getId());
+
+        LOGGER.info("Updated User's {} avatar id to {}", user.getId(), avatarId);
     }
 
     @Override
     public void deleteUser(User user) {
+
         jdbcTemplate.update("UPDATE " + USERS + " SET enabled = false WHERE user_id = ?", user.getId());
+
+        LOGGER.info("Disabled User {}", user.getId());
     }
 
     @Override
     public void restoreUser(User user) {
+
         jdbcTemplate.update("UPDATE " + USERS + " SET enabled = true WHERE user_id = ?", user.getId());
+
+        LOGGER.info("Restored User {}", user.getId());
     }
 
     // TODO: can be done in a single query. Important!
@@ -247,14 +284,21 @@ public class UserDaoImpl implements UserDao {
             jdbcUserRoleInsert.execute(map);
         }
 
+        LOGGER.info("Added Roles {} to User {}", roleNames, user.getId());
+
         return roles;
     }
 
     @Override
     public int hasUserLiked(User user, Post post) {
-        return jdbcTemplate.queryForObject(
+
+        final int result = jdbcTemplate.queryForObject(
                 "SELECT COALESCE(SUM(" + POSTS_LIKES + ".value), 0)  FROM " + POSTS_LIKES +
                 " WHERE user_id = ? AND post_id = ?", new Object[]{ user.getId(), post.getId() }, Integer.class);
+
+        LOGGER.info("Checked if User {} had liked Post {}", user.getId(), post.getId());
+
+        return result;
     }
 
     @Override
@@ -266,11 +310,15 @@ public class UserDaoImpl implements UserDao {
                 " WHERE " + USER_ROLE + ".user_id = ?" +
                 "  AND " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
                 "  AND " + ROLES + ".role = ?", newRole, user.getId(), oldRole);
+
+        LOGGER.info("Replaced User {} Role from {} to {}", user.getId(), oldRole, newRole);
     }
 
     private Collection<User> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
 
         final String query = select + " " + from + " " + where + " " + orderBy;
+
+        LOGGER.debug("Query executed in UserDaoImpl : {}. Args: {}", query, args);
 
         if(args != null)
             return jdbcTemplate.query(query, args, USER_ROW_MAPPER);
@@ -285,7 +333,11 @@ public class UserDaoImpl implements UserDao {
 
         final String from = buildFromStatement();
 
-        return executeQuery(select, from, customWhereStatement, "", args);
+        final Collection<User> result =  executeQuery(select, from, customWhereStatement, "", args);
+
+        LOGGER.debug("Not paginated query executed for {} in UserDaoImpl with result {}", customWhereStatement, result);
+
+        return result;
     }
 
     private PaginatedCollection<User> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
@@ -315,7 +367,11 @@ public class UserDaoImpl implements UserDao {
 
         final Collection<User> results = executeQuery(select, from, newWhere, orderBy, args);
 
-        return new PaginatedCollection<>(results, pageNumber, pageSize, totalUserCount);
+        final PaginatedCollection<User> userPaginatedCollection = new PaginatedCollection<>(results, pageNumber, pageSize, totalUserCount);
+
+        LOGGER.debug("Paginated query executed in PostDaoImpl with result {}", userPaginatedCollection);
+
+        return userPaginatedCollection;
     }
 
     private String buildSelectStatement() {
@@ -328,16 +384,20 @@ public class UserDaoImpl implements UserDao {
 
     private String buildOrderByStatement(SortCriteria sortCriteria) {
 
-        if(!sortCriteriaQueryMap.containsKey(sortCriteria))
-            throw new IllegalArgumentException("SortCriteria implementation not found for " + sortCriteria + " in UserDaoImpl.");
+        if(!sortCriteriaQueryMap.containsKey(sortCriteria)) {
+            LOGGER.error("SortCriteria implementation not found for {} in UserDaoImpl", sortCriteria);
+            throw new IllegalArgumentException();
+        }
 
         return "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria);
     }
 
     private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
 
-        if(pageNumber < 0 || pageSize <= 0)
+        if(pageNumber < 0 || pageSize <= 0) {
+            LOGGER.error("Invalid pagination argument found in UserDaoImpl. pageSize: {}, pageNumber: {}", pageSize, pageNumber);
             throw new InvalidPaginationArgumentException();
+        }
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }
@@ -346,24 +406,32 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findUserById(long id) {
+
+        LOGGER.info("Find User By Id {}", id);
         return buildAndExecuteQuery("WHERE " + USERS + ".user_id = ? AND " + ENABLED_FILTER,
                 new Object[]{ id }).stream().findFirst();
     }
 
     @Override
     public Optional<User> findUserByUsername(String username) {
+
+        LOGGER.info("Find User By Username {}", username);
         return buildAndExecuteQuery("WHERE " + USERS + ".username = ? AND " + ENABLED_FILTER,
                 new Object[]{ username }).stream().findFirst();
     }
 
     @Override
     public Optional<User> findUserByEmail(String email) {
+
+        LOGGER.info("Find User By Email {}", email);
         return buildAndExecuteQuery("WHERE " + USERS + ".email = ? AND " + ENABLED_FILTER,
                 new Object[]{ email }).stream().findFirst();
     }
 
     @Override
     public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get All Users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
                 "WHERE " + ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
@@ -381,6 +449,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Users By Name {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
                 "WHERE " + SEARCH_BY_NAME +
                                     " AND " + ENABLED_FILTER,
@@ -396,6 +466,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Users By Name {} And Role {} Order By {}. Page number {}, Page Size {}", query, role, sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_NAME +
                                                                 " AND " + SEARCH_BY_ROLE +
                                                                 " AND " + ENABLED_FILTER,

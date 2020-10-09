@@ -402,7 +402,8 @@ public class CommentDaoImpl implements CommentDao {
         final Comment comment = new Comment(commentId, creationDate, post, parentId, Collections.emptyList(),
                 body, user, enabled, 0, Collections.emptyMap());
 
-        LOGGER.debug("Inserted Comment: {}", comment);
+        LOGGER.info("Created Comment: {}", comment.getId());
+        LOGGER.debug("Created Comment: {}", comment);
 
         return comment;
     }
@@ -413,29 +414,39 @@ public class CommentDaoImpl implements CommentDao {
         jdbcTemplate.update(
                 "INSERT INTO " + COMMENTS_LIKES + " (comment_id, user_id, value) VALUES ( ?, ?, ?) " +
                         "ON CONFLICT (comment_id, user_id) DO UPDATE SET value = ? ", comment.getId(), user.getId(), value, value);
+
+        LOGGER.info("User {} liked comment {} with value {}", user.getId(), comment.getId(), value);
     }
 
     @Override
     public void removeLike(Comment comment, User user) {
         jdbcTemplate.update( "DELETE FROM " + COMMENTS_LIKES + " WHERE " + COMMENTS_LIKES + ".comment_id = ? " + " AND "+ COMMENTS_LIKES + ".user_id = ?",
                 comment.getId(), user.getId());
+
+        LOGGER.info("User {} removed like from comment {}", user.getId(), comment.getId());
     }
 
     @Override
     public void deleteComment(Comment comment) {
         jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = false WHERE comment_id = ?", comment.getId());
+
+        LOGGER.info("Comment {} was disabled", comment.getId());
     }
 
     @Override
     public void restoreComment(Comment comment) {
         jdbcTemplate.update("UPDATE " + COMMENTS + " SET enabled = true WHERE comment_id = ?", comment.getId());
+
+        LOGGER.info("Comment {} was restored", comment.getId());
     }
 
     private Collection<Comment> executeQuery(String select, String from, String where, String orderBy, Object[] args, boolean withChildren) {
 
         final String query = select + " " + from + " " + where + " " + orderBy;
 
-        if(args != null){
+        LOGGER.debug("Query executed in CommentDaoImpl (with children {}): {}. Args: {}", withChildren, query, args);
+
+        if(args != null) {
             if(withChildren)
                 return jdbcTemplate.query(query, args, COMMENT_ROW_MAPPER_WITH_CHILDREN);
 
@@ -458,7 +469,11 @@ public class CommentDaoImpl implements CommentDao {
 
         final String from = buildFromStatement();
 
-        return executeQuery(select, from, customWhereStatement, "", args, false);
+        final Collection<Comment> result = executeQuery(select, from, customWhereStatement, "", args, false);
+
+        LOGGER.debug("Not paginated query executed for {} in CommentDaoImpl with result {}", customWhereStatement, result);
+
+        return result;
     }
 
     // The only way to paginate comments with children is to only ask for 1 Comment/Post (only 1 root in comment tree)
@@ -509,6 +524,8 @@ public class CommentDaoImpl implements CommentDao {
                         " FROM (SELECT * FROM " + COMMENTS + " " + newWhere + ") root_comments " +
                         PAGINATION_RECURSIVE_QUERY_LOWER;
 
+        LOGGER.debug("Paginated query with descendants recursive query {}", recursiveQuery);
+
         final String recursiveSelect = recursiveQuery + " " + select;
 
         // Replaces BASE_COMMENT_FROM. It should not have logic!!
@@ -516,7 +533,11 @@ public class CommentDaoImpl implements CommentDao {
 
         final Collection<Comment> results = executeQuery(recursiveSelect, recursiveFrom, "", orderBy, args, true);
 
-        return new PaginatedCollection<>(results, pageNumber, pageSize, totalCommentCount);
+        final PaginatedCollection<Comment> paginatedCollectionResult = new PaginatedCollection<>(results, pageNumber, pageSize, totalCommentCount);
+
+        LOGGER.debug("Paginated query with descendants (root {}, isPost: {}) executed in CommentDaoImpl with result {}", rootId, isRootPost, paginatedCollectionResult);
+
+        return paginatedCollectionResult;
     }
 
     private PaginatedCollection<Comment> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
@@ -548,7 +569,11 @@ public class CommentDaoImpl implements CommentDao {
 
         final Collection<Comment> results = executeQuery(select, from, newWhere, orderBy, args, false);
 
-        return new PaginatedCollection<>(results, pageNumber, pageSize, totalCommentCount);
+        PaginatedCollection<Comment> paginatedCollectionResult = new PaginatedCollection<>(results, pageNumber, pageSize, totalCommentCount);
+
+        LOGGER.debug("Paginated query without descendants executed in CommentDaoImpl with result {}", paginatedCollectionResult);
+
+        return paginatedCollectionResult;
     }
 
     private String buildSelectStatement() {
@@ -565,22 +590,30 @@ public class CommentDaoImpl implements CommentDao {
 
     private String buildOrderByStatement(SortCriteria sortCriteria) {
 
-        if(!sortCriteriaQueryMap.containsKey(sortCriteria))
-            throw new IllegalArgumentException("SortCriteria implementation not found for " + sortCriteria + " in CommentDaoImpl.");
+        if(!sortCriteriaQueryMap.containsKey(sortCriteria)) {
+
+            LOGGER.error("SortCriteria implementation not found for {} in CommentDaoImpl", sortCriteria);
+            throw new IllegalArgumentException();
+        }
 
         return "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria);
     }
 
     private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
 
-        if(pageNumber < 0 || pageSize <= 0)
+        if(pageNumber < 0 || pageSize <= 0) {
+
+            LOGGER.error("Invalid pagination argument found in CommentDaoImpl. pageSize: {}, pageNumber: {}", pageSize, pageNumber);
             throw new InvalidPaginationArgumentException();
+        }
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }
 
     @Override
     public Optional<Comment> findCommentById(long id) {
+
+        LOGGER.info("Find Comment By Id: {}", id);
         return buildAndExecuteQuery(
                 "WHERE " + COMMENTS + ".comment_id = ?", new Object[]{ id })
                 .stream().findFirst();
@@ -588,24 +621,32 @@ public class CommentDaoImpl implements CommentDao {
 
     @Override
     public PaginatedCollection<Comment> findCommentDescendants(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Find Comment {} Descendants Order By {}. Page number {}, Page Size {}", comment.getId(), sortCriteria, pageNumber, pageSize);
         return getPaginatedChildrenQuery(
                 sortCriteria, pageNumber, pageSize, comment.getId(), false);
     }
 
     @Override
     public PaginatedCollection<Comment> findCommentChildren(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Find Comment {} First Level Children Order By {}. Page number {}, Page Size {}", comment.getId(), sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery("WHERE " + COMMENTS + ".parent_id = ?",
                 sortCriteria, pageNumber, pageSize, new Object[]{ comment.getId() });
     }
 
     @Override
     public PaginatedCollection<Comment> findPostCommentDescendants(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Find Post {} Descendants Order By {}. Page number {}, Page Size {}", post.getId(), sortCriteria, pageNumber, pageSize);
         return getPaginatedChildrenQuery(
                 sortCriteria, pageNumber, pageSize, post.getId(), true);
     }
 
     @Override
     public PaginatedCollection<Comment> findCommentsByPost(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Find Comments By Post {} Order By {}. Page number {}, Page Size {}", post.getId(), sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
                 "WHERE " + COMMENTS + ".post_id = ?", sortCriteria,
                 pageNumber, pageSize, new Object[]{ post.getId() });
@@ -613,6 +654,8 @@ public class CommentDaoImpl implements CommentDao {
 
     @Override
     public PaginatedCollection<Comment> findCommentsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Find Comments By User {} Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
                 "WHERE " + COMMENTS + ".user_id = ? AND " + COMMENTS + ".enabled = true", sortCriteria, pageNumber, pageSize,
                 new Object[]{ user.getId() });
@@ -620,12 +663,16 @@ public class CommentDaoImpl implements CommentDao {
 
     @Override
     public PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get all deleted Comments Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
                 "WHERE " + COMMENTS + ".enabled = false", sortCriteria, pageNumber, pageSize, null);
     }
 
     @Override
     public PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Deleted Comments by Body {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery("WHERE " + COMMENTS + ".body ILIKE '%' || ? || '%' AND " + COMMENTS + ".enabled = false",
                 sortCriteria, pageNumber, pageSize, new Object[]{ query });
     }

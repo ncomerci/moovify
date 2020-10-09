@@ -7,6 +7,8 @@ import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -21,6 +23,8 @@ import java.util.*;
 
 @Repository
 public class MovieDaoImpl implements MovieDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieDaoImpl.class);
 
     private static final String MOVIES = TableNames.MOVIES.getTableName();
     private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
@@ -183,13 +187,20 @@ public class MovieDaoImpl implements MovieDao {
             movieToMovieCategoryJdbcInsert.execute(map);
         }
 
-        return new Movie(id, creationDate, title, originalTitle, tmdbId, imdbId,
+        final Movie movie = new Movie(id, creationDate, title, originalTitle, tmdbId, imdbId,
                 originalLanguage, overview, popularity, runtime, voteAverage, releaseDate, 0, categoryCollection);
+
+        LOGGER.info("Created Movie {}", movie.getId());
+        LOGGER.debug("Created Movie {}", movie);
+
+        return movie;
     }
 
     private Collection<Movie> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
 
         final String query = select + " " + from + " " + where + " " + orderBy;
+
+        LOGGER.debug("Query executed in MovieDaoImpl : {}. Args: {}", query, args);
 
         if(args != null)
             return jdbcTemplate.query(query, args, MOVIE_ROW_MAPPER);
@@ -204,7 +215,11 @@ public class MovieDaoImpl implements MovieDao {
 
         final String from = buildFromStatement();
 
-        return executeQuery(select, from, customWhereStatement, "", args);
+        Collection<Movie> result = executeQuery(select, from, customWhereStatement, "", args);
+
+        LOGGER.debug("Not paginated query executed for {} in MovieDaoImpl with result {}", customWhereStatement, result);
+
+        return result;
     }
 
     private PaginatedCollection<Movie> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
@@ -234,7 +249,11 @@ public class MovieDaoImpl implements MovieDao {
 
         final Collection<Movie> results = executeQuery(select, from, newWhere, orderBy, args);
 
-        return new PaginatedCollection<>(results, pageNumber, pageSize, totalMovieCount);
+        PaginatedCollection<Movie> moviePaginatedCollection = new PaginatedCollection<>(results, pageNumber, pageSize, totalMovieCount);
+
+        LOGGER.debug("Paginated query executed in MovieDaoImpl with result {}", moviePaginatedCollection);
+
+        return moviePaginatedCollection;
     }
 
     private String buildSelectStatement() {
@@ -247,22 +266,29 @@ public class MovieDaoImpl implements MovieDao {
 
     private String buildOrderByStatement(SortCriteria sortCriteria) {
 
-        if(!sortCriteriaQueryMap.containsKey(sortCriteria))
-            throw new IllegalArgumentException("SortCriteria implementation not found for " + sortCriteria + " in MovieDaoImpl.");
+        if(!sortCriteriaQueryMap.containsKey(sortCriteria)) {
+            LOGGER.error("SortCriteria implementation not found for {} in MovieDaoImpl", sortCriteria);
+            throw new IllegalArgumentException();
+        }
 
         return "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria);
     }
 
     private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
 
-        if(pageNumber < 0 || pageSize <= 0)
+        if(pageNumber < 0 || pageSize <= 0) {
+
+            LOGGER.error("Invalid pagination argument found in MovieDaoImpl. pageSize: {}, pageNumber: {}", pageSize, pageNumber);
             throw new InvalidPaginationArgumentException();
+        }
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }
 
     @Override
     public Optional<Movie> findMovieById(long movie_id) {
+
+        LOGGER.info("Find Movie By Id: {}", movie_id);
         return buildAndExecuteQuery(" WHERE " + MOVIES + ".movie_id = ?", new Object[]{ movie_id })
                 .stream().findFirst();
     }
@@ -270,6 +296,7 @@ public class MovieDaoImpl implements MovieDao {
     @Override
     public Collection<Movie> findMoviesByPost(Post post) {
 
+        LOGGER.info("Find Movies By Post: {}", post.getId());
         return buildAndExecuteQuery(" WHERE " + MOVIES + ".movie_id IN (" +
                         "SELECT " + POST_MOVIE + ".movie_id FROM " + POST_MOVIE + " WHERE " + POST_MOVIE + ".post_id = ?)",
                  new Object[]{ post.getId() });
@@ -277,11 +304,15 @@ public class MovieDaoImpl implements MovieDao {
 
     @Override
     public PaginatedCollection<Movie> getAllMovies(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get All Movies Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery("", sortCriteria, pageNumber, pageSize, null);
     }
 
     @Override
     public Collection<Movie> getAllMoviesNotPaginated() {
+
+        LOGGER.info("Get All Movies Not Paginated");
         return buildAndExecuteQuery("", null);
     }
 
@@ -300,6 +331,8 @@ public class MovieDaoImpl implements MovieDao {
     @Override
     public PaginatedCollection<Movie> searchMovies(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
+        LOGGER.info("Search Movies By Movie Title {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
+
         final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE;
 
         return buildAndExecutePaginatedQuery(whereStatement,
@@ -309,6 +342,8 @@ public class MovieDaoImpl implements MovieDao {
     @Override
     public PaginatedCollection<Movie> searchMoviesByCategory(String query, String category, SortCriteria sortCriteria,
                                                               int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Movies By Movie Title {} And Category {} Order By {}. Page number {}, Page Size {}", query, category, sortCriteria, pageNumber, pageSize);
 
         final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY;
 
@@ -320,6 +355,8 @@ public class MovieDaoImpl implements MovieDao {
     public PaginatedCollection<Movie> searchMoviesByReleaseDate(String query, LocalDate since, LocalDate upTo,
                                                                  SortCriteria sortCriteria, int pageNumber ,int pageSize) {
 
+        LOGGER.info("Search Movies By Movie Title {} And Release Date {} - {} Order By {}. Page number {}, Page Size {}", query, since, upTo, sortCriteria, pageNumber, pageSize);
+
         final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_RELEASE_DATE;
 
         return buildAndExecutePaginatedQuery(whereStatement,
@@ -329,6 +366,8 @@ public class MovieDaoImpl implements MovieDao {
     @Override
     public PaginatedCollection<Movie> searchMoviesByCategoryAndReleaseDate(String query, String category, LocalDate since,
                                                                             LocalDate upTo, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Movies By Movie Title {}, Category {} And Release Date {} - {} Order By {}. Page number {}, Page Size {}", query, category, since, upTo, sortCriteria, pageNumber, pageSize);
 
         final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY + " AND " + SEARCH_BY_RELEASE_DATE;
 

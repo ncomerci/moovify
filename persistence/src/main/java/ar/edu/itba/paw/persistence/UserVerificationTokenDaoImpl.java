@@ -4,6 +4,8 @@ import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.models.UserVerificationToken;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -18,6 +20,8 @@ import java.util.Optional;
 
 @Repository
 public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserVerificationTokenDaoImpl.class);
 
     private static final String USER_VERIFICATION_TOKEN = TableNames.USER_VERIFICATION_TOKEN.getTableName();
     private static final String USERS = TableNames.USERS.getTableName();
@@ -136,23 +140,34 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
         deleteVerificationToken(user);
 
         HashMap<String, Object> map = new HashMap<>();
+
         map.put("token", token);
         map.put("expiry", expiryDate);
         map.put("user_id", user.getId());
 
         final long tokenId = jdbcTokenInsert.executeAndReturnKey(map).longValue();
 
-        return new UserVerificationToken(tokenId, token, expiryDate, user);
+        final UserVerificationToken userVerificationToken = new UserVerificationToken(tokenId, token, expiryDate, user);
+
+        LOGGER.info("Created UserVerificationToken {}", userVerificationToken.getId());
+        LOGGER.debug("Created UserVerificationToken {}", userVerificationToken);
+
+        return userVerificationToken;
     }
 
     @Override
     public Optional<UserVerificationToken> getVerificationToken(String token) {
+
+        LOGGER.info("Get User Verficiation Token {}", token);
         return Optional.ofNullable(jdbcTemplate.query(
                 GET_TOKEN_QUERY, new Object[]{ token }, TOKEN_ROW_MAPPER));
     }
 
     @Override
     public void deleteVerificationToken(User user) {
+
         jdbcTemplate.update("DELETE FROM " + USER_VERIFICATION_TOKEN + " WHERE user_id = ?", user.getId());
+
+        LOGGER.info("Deleted Verification Token from User {}", user.getId());
     }
 }

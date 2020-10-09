@@ -4,6 +4,8 @@ import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.models.PasswordResetToken;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -18,6 +20,8 @@ import java.util.Optional;
 
 @Repository
 public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PasswordResetTokenDaoImpl.class);
 
     private static final String PASSWORD_RESET_TOKEN = TableNames.PASSWORD_RESET_TOKEN.getTableName();
     private static final String USERS = TableNames.USERS.getTableName();
@@ -141,17 +145,27 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
 
         final long tokenId = jdbcTokenInsert.executeAndReturnKey(map).longValue();
 
-        return new PasswordResetToken(tokenId, token, expiryDate, user);
+        PasswordResetToken passwordResetToken = new PasswordResetToken(tokenId, token, expiryDate, user);
+
+        LOGGER.info("Created PasswordResetToken {}", passwordResetToken.getTokenId());
+        LOGGER.debug("Created PasswordResetToken {}", passwordResetToken);
+
+        return passwordResetToken;
     }
 
     @Override
     public Optional<PasswordResetToken> getResetPasswordToken(String token) {
+
+        LOGGER.info("Get Password Reset Token {}", token);
         return Optional.ofNullable(jdbcTemplate.query(
                 GET_TOKEN_QUERY, new Object[]{ token }, TOKEN_ROW_MAPPER));
     }
 
     @Override
     public void deletePasswordResetToken(User user) {
+
         jdbcTemplate.update("DELETE FROM " + PASSWORD_RESET_TOKEN + " WHERE user_id = ?", user.getId());
+
+        LOGGER.info("Deleted Password Reset Token from User {}", user.getId());
     }
 }

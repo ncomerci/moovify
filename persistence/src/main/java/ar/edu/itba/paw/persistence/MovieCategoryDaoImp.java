@@ -2,6 +2,8 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.MovieCategoryDao;
 import ar.edu.itba.paw.models.MovieCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,6 +15,7 @@ import java.util.Collection;
 @Repository
 public class MovieCategoryDaoImp implements MovieCategoryDao {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieCategoryDaoImp.class);
 
     private static final String MOVIE_CATEGORIES = TableNames.MOVIE_CATEGORIES.getTableName();
 
@@ -42,12 +45,17 @@ public class MovieCategoryDaoImp implements MovieCategoryDao {
 
         whereBuilder.append("?)");
 
+        LOGGER.info("Find Movie Categories by Tmdb Id {}", categories);
+        LOGGER.debug("Find Movie Categories Where: {}", whereBuilder.toString());
+
         return jdbcTemplate.query("SELECT * FROM " + MOVIE_CATEGORIES + whereBuilder.toString(),
                 categoryArray, ROW_MAPPER);
     }
 
     @Override
     public Collection<MovieCategory> getAllCategories() {
+
+        LOGGER.info("Get All Movie Categories");
         return jdbcTemplate.query("SELECT * FROM " + MOVIE_CATEGORIES, ROW_MAPPER);
     }
 }

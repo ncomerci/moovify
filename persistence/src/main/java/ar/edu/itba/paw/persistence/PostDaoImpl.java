@@ -4,6 +4,8 @@ import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidMovieIdException;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
 import ar.edu.itba.paw.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,6 +21,8 @@ import java.util.*;
 
 @Repository
 public class PostDaoImpl implements PostDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostDaoImpl.class);
 
     // Constants with Table Names
     private static final String POSTS = TableNames.POSTS.getTableName();
@@ -222,8 +226,10 @@ public class PostDaoImpl implements PostDao {
             }
             catch(DataIntegrityViolationException e) {
 
-                if(e.getMessage().contains("post_movie_movie_id_fkey"))
-                        throw new InvalidMovieIdException();
+                if(e.getMessage().contains("post_movie_movie_id_fkey")) {
+                    LOGGER.warn("Invalid Movie Id {} Found While Registering Post {}", movie_id, postId);
+                    throw new InvalidMovieIdException();
+                }
 
                 throw e;
             }
@@ -240,17 +246,29 @@ public class PostDaoImpl implements PostDao {
             }
         }
 
-        return new Post(postId, creationDate, title, body, wordCount, category, user, tags, enabled, 0);
+        LOGGER.info("Created Post {}", postId);
+
+        final Post post = new Post(postId, creationDate, title, body, wordCount, category, user, tags, enabled, 0);
+
+        LOGGER.debug("Created Post {} with Movies {}", post, movies);
+
+        return post;
     }
 
     @Override
     public void deletePost(Post post) {
+
         jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = false WHERE post_id = ?", post.getId());
+
+        LOGGER.info("Post {} was disabled", post.getId());
     }
 
     @Override
     public void restorePost(Post post) {
+
         jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = true WHERE post_id = ?", post.getId());
+
+        LOGGER.info("Post {} was restored", post.getId());
     }
 
     @Override
@@ -260,16 +278,22 @@ public class PostDaoImpl implements PostDao {
                 "INSERT INTO " + POSTS_LIKES + " (post_id, user_id, value) VALUES (?, ?, ?) " +
                         "ON CONFLICT (post_id, user_id) DO UPDATE SET value = ? ", post.getId(), user.getId(), value, value);
 
+        LOGGER.info("User {} liked Post {} with Value {}", user.getId(), post.getId(), value);
     }
 
     @Override
     public void removeLike(Post post, User user) {
+
         jdbcTemplate.update( "DELETE FROM " + POSTS_LIKES + " WHERE " + POSTS_LIKES + ".post_id = ? " + " AND "+ POSTS_LIKES + ".user_id = ?", post.getId(), user.getId());
+
+        LOGGER.info("User {} removed like from Post {}", user.getId(), post.getId());
     }
 
     private Collection<Post> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
 
         final String query = select + " " + from + " " + where + " " + orderBy;
+
+        LOGGER.debug("Query executed in PostDaoImpl : {}. Args: {}", query, args);
 
         if(args != null)
             return jdbcTemplate.query(query, args, POST_ROW_MAPPER);
@@ -285,7 +309,11 @@ public class PostDaoImpl implements PostDao {
 
         final String from = buildFromStatement();
 
-        return executeQuery(select, from, customWhereStatement, "", args);
+        final Collection<Post> result = executeQuery(select, from, customWhereStatement, "", args);
+
+        LOGGER.debug("Not paginated query executed for {} in PostDaoImpl with result {}", customWhereStatement, result);
+
+        return result;
     }
 
     private PaginatedCollection<Post> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
@@ -315,7 +343,11 @@ public class PostDaoImpl implements PostDao {
 
         final Collection<Post> results = executeQuery(select, from, newWhere, orderBy, args);
 
-        return new PaginatedCollection<>(results, pageNumber, pageSize, totalPostCount);
+        final PaginatedCollection<Post> postPaginatedCollection = new PaginatedCollection<>(results, pageNumber, pageSize, totalPostCount);
+
+        LOGGER.debug("Paginated query executed in PostDaoImpl with result {}", postPaginatedCollection);
+
+        return postPaginatedCollection;
     }
 
     private String buildSelectStatement() {
@@ -328,16 +360,20 @@ public class PostDaoImpl implements PostDao {
 
     private String buildOrderByStatement(SortCriteria sortCriteria) {
 
-        if(!sortCriteriaQueryMap.containsKey(sortCriteria))
-            throw new IllegalArgumentException("SortCriteria implementation not found for " + sortCriteria + " in PostDaoImpl.");
+        if(!sortCriteriaQueryMap.containsKey(sortCriteria)) {
+            LOGGER.error("SortCriteria implementation not found for {} in PostDaoImpl", sortCriteria);
+            throw new IllegalArgumentException();
+        }
 
         return "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria);
     }
 
     private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
 
-        if (pageNumber < 0 || pageSize <= 0)
+        if (pageNumber < 0 || pageSize <= 0) {
+            LOGGER.error("Invalid pagination argument found in PostDaoImpl. pageSize: {}, pageNumber: {}", pageSize, pageNumber);
             throw new InvalidPaginationArgumentException();
+        }
 
         return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
     }
@@ -346,12 +382,16 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Optional<Post> findPostById(long id){
+
+        LOGGER.info("Find Post By Id {}", id);
         return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ? AND " + ENABLED_FILTER, new Object[]{ id })
                 .stream().findFirst();
     }
 
     @Override
     public PaginatedCollection<Post> findPostsByMovie(Movie movie, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Find Posts By Movie {} Order By {}. Page number {}, Page Size {}", movie.getId(), sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery("WHERE " +
                         POSTS + ".post_id IN ( " +
                         "SELECT " + POST_MOVIE + ".post_id " +
@@ -362,17 +402,23 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> findPostsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Find Posts By User {} Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery("WHERE " + POSTS + ".user_id = ? AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override
     public PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get All Posts Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery("WHERE " + ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
 
     @Override
     public PaginatedCollection<Post> getDeletedPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get Deleted Posts Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery("WHERE " + POSTS + ".enabled = false", sortCriteria, pageNumber, pageSize, null);
     }
 
@@ -398,6 +444,8 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Posts By Post Title, Tags and Movie {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
                                     " AND " + ENABLED_FILTER,
@@ -406,6 +454,8 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> searchDeletedPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Deleted Posts By Post Title, Tags and Movie {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
                         " AND " + POSTS + ".enabled = false",
@@ -414,6 +464,8 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> searchPostsByCategory(String query, String category, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Posts By Post Title, Tags, Movie {} And Category {} Order By {}. Page number {}, Page Size {}", query, category, sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
                                     " AND " + SEARCH_BY_POST_CATEGORY +
@@ -423,6 +475,8 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Posts By Post Title, Tags, Movie {} And Min Age {} Order By {}. Page number {}, Page Size {}", query, fromDate, sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
                                     " AND " + SEARCH_POSTS_OLDER_THAN +
@@ -432,6 +486,8 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Posts By Post Title, Tags, Movie {}, Category {} And Min Age {} Order By {}. Page number {}, Page Size {}", query, category, fromDate, sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
                                     " AND " + SEARCH_BY_POST_CATEGORY +

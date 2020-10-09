@@ -2,6 +2,8 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.RoleDao;
 import ar.edu.itba.paw.models.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,6 +15,8 @@ import java.util.Optional;
 
 @Repository
 public class RoleDaoImpl implements RoleDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RoleDaoImpl.class);
 
     private static final String ROLES = TableNames.ROLES.getTableName();
 
@@ -28,6 +32,8 @@ public class RoleDaoImpl implements RoleDao {
 
     @Override
     public Optional<Role> findRoleById(long id) {
+
+        LOGGER.info("Find Role By Id {}", id);
         return jdbcTemplate.query("SELECT * FROM " + ROLES + " WHERE " + ROLES + ".role_id = ?",
                 new Object[]{ id }, ROLE_ROW_MAPPER)
                 .stream().findFirst();
@@ -35,6 +41,8 @@ public class RoleDaoImpl implements RoleDao {
 
     @Override
     public Optional<Role> findRoleByName(String name) {
+
+        LOGGER.info("Find Role By Name {}", name);
         return jdbcTemplate.query("SELECT * FROM " + ROLES + " WHERE " + ROLES + ".role = ?",
                 new Object[]{ name }, ROLE_ROW_MAPPER)
                 .stream().findFirst();
@@ -49,12 +57,16 @@ public class RoleDaoImpl implements RoleDao {
 
         whereBuilder.append("?)");
 
+        LOGGER.info("Find Roles By Name {}", roleNames);
+
         return jdbcTemplate.query("SELECT * FROM " + ROLES + whereBuilder.toString(),
                 roleNames.toArray(), ROLE_ROW_MAPPER);
     }
 
     @Override
     public Collection<Role> getAllRoles() {
+
+        LOGGER.info("Get All Roles");
         return jdbcTemplate.query("SELECT * FROM " + ROLES, ROLE_ROW_MAPPER);
     }
 }
