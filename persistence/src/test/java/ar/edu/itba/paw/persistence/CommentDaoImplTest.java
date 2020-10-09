@@ -5,6 +5,7 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import javafx.geometry.Pos;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,14 +18,14 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
+@Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class CommentDaoImplTest {
@@ -36,6 +37,10 @@ public class CommentDaoImplTest {
     private static final long COMMENT_ID = 1L;
     private static final Comment COMMENT = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(COMMENT_ID).getMock();
     private static final String BODY = "testing";
+    private static final CommentDao.SortCriteria NEWEST = CommentDao.SortCriteria.NEWEST;
+    private static final int PAGE_NUMBER = 0;
+    private static final int PAGE_SIZE = 5;
+    private static final Map<String, Object> COMMENT_ROW = new HashMap<>();
 
     @Autowired
     private CommentDaoImpl commentDao;
@@ -47,6 +52,14 @@ public class CommentDaoImplTest {
     private SimpleJdbcInsert likeJdbcInsert;
     private SimpleJdbcInsert commentInsert;
 
+    private void mapInitializer() {
+        COMMENT_ROW.put("post_id", POST_ID);
+        COMMENT_ROW.put("user_id", USER_ID);
+        COMMENT_ROW.put("creation_date", Timestamp.valueOf(LocalDateTime.now()));
+        COMMENT_ROW.put("body", BODY);
+        COMMENT_ROW.put("enabled", true);
+    }
+
     @Before
     public void setUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
@@ -55,6 +68,7 @@ public class CommentDaoImplTest {
         this.commentInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TableNames.COMMENTS.getTableName())
                 .usingGeneratedKeyColumns("comment_id");
+        mapInitializer();
     }
 
 
@@ -81,9 +95,8 @@ public class CommentDaoImplTest {
 
     @Rollback
     @Test
-//    TODO: HSQLDB no tiene compatibilidad con el ON CONFLICT, que hacemos??
     public void testLikeComment() {
-/*//        1. precondiciones
+//        1. precondiciones
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS_LIKES.getTableName(),
                 "user_id = ? AND comment_id = ?", USER_ID, COMMENT_ID);
         final int value = 1;
@@ -95,29 +108,28 @@ public class CommentDaoImplTest {
         final String whereClause = String.format("user_id = %d AND comment_id = %d AND value = %d", USER_ID, COMMENT_ID, value);
         Assert.assertEquals(1,
                 JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS_LIKES.getTableName(), whereClause)
-        );*/
+        );
     }
 
     @Rollback
     @Test
     public void removeLike() {
 //        1. precondiciones
-        long comment_id = 2;
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS_LIKES.getTableName(),
-                "user_id = ? AND comment_id = ?", USER_ID, comment_id);
+                "user_id = ? AND comment_id = ?", USER_ID, COMMENT_ID);
         final long value = 1L;
         Map<String, Object> row = new HashMap<>();
-        row.put("COMMENT_ID", comment_id);
+        row.put("COMMENT_ID", COMMENT_ID);
         row.put("user_id", USER_ID);
         row.put("value", value);
         likeJdbcInsert.execute(row);
-        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(comment_id).getMock();
+        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(COMMENT_ID).getMock();
 
 //        2. ejercitar
         commentDao.removeLike(comment, USER);
 
 //        3. post-condiciones
-        final String whereClause = String.format("user_id = %d AND comment_id = %d", USER_ID, comment_id);
+        final String whereClause = String.format("user_id = %d AND comment_id = %d", USER_ID, COMMENT_ID);
         Assert.assertEquals(0,
                 JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS_LIKES.getTableName(), whereClause)
         );
@@ -127,13 +139,7 @@ public class CommentDaoImplTest {
     @Test
     public void testDeleteComment() {
 //        1. precondiciones
-        Map<String, Object> row = new HashMap<>();
-        row.put("user_id", USER_ID);
-        row.put("post_id", POST_ID);
-        row.put("creation_date", Timestamp.valueOf(LocalDateTime.now()));
-        row.put("body", "");
-        row.put("enabled", true);
-        long id = commentInsert.executeAndReturnKey(row).longValue();
+        long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
         Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(id).getMock();
 
 //        2. ejercitar
@@ -150,13 +156,7 @@ public class CommentDaoImplTest {
     @Test
     public void testRestoreComment() {
 //        1. precondiciones
-        Map<String, Object> row = new HashMap<>();
-        row.put("user_id", USER_ID);
-        row.put("post_id", POST_ID);
-        row.put("creation_date", Timestamp.valueOf(LocalDateTime.now()));
-        row.put("body", "");
-        row.put("enabled", false);
-        long id = commentInsert.executeAndReturnKey(row).longValue();
+        long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
         Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(id).getMock();
 
 //        2. ejercitar
@@ -173,13 +173,7 @@ public class CommentDaoImplTest {
     @Test
     public void testFindCommentById() {
 //        1. precondiciones
-        Map<String, Object> row = new HashMap<>();
-        row.put("user_id", USER_ID);
-        row.put("post_id", POST_ID);
-        row.put("creation_date", Timestamp.valueOf(LocalDateTime.now()));
-        row.put("body", "");
-        row.put("enabled", true);
-        long id = commentInsert.executeAndReturnKey(row).longValue();
+        long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
 
 //        2. ejercitar
         final Optional<Comment> comment = commentDao.findCommentById(id);
@@ -195,34 +189,108 @@ public class CommentDaoImplTest {
         );
     }
 
-//    TODO: de acá para abajo son todos tests con paginatedCollection
-
     @Rollback
     @Test
     public void testFindCommentDescendants() {
+//        1. precondiciones
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
+                "user_id = ? AND post_id = ?", USER_ID, POST_ID);
+        COMMENT_ROW.put("parent_id", 2);
+        long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
+        COMMENT_ROW.put("parent_id", null);
+        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(2L).getMock();
+
+//        2. ejercitar
+        final PaginatedCollection<Comment> commentDescendants = commentDao.findCommentDescendants(comment, NEWEST, PAGE_NUMBER, PAGE_SIZE);
+
+//        3. post-condiciones
+        Assert.assertNotNull(commentDescendants);
+        Assert.assertEquals(1, commentDescendants.getTotalCount());
+        final String whereClause = String.format("comment_id = %d AND user_id = %d AND post_id = %d", id, USER_ID, POST_ID);
+        Assert.assertEquals(1,
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+        );
     }
 
+    @Rollback
     @Test
-    public void findCommentChildren() {
+    public void testFindCommentsByPost() {
+//        1. precondiciones
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
+                "post_id = ?", POST_ID);
+        long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
+
+//        2. ejercitar
+        final PaginatedCollection<Comment> commentsByPost = commentDao.findCommentsByPost(POST, NEWEST, PAGE_NUMBER, PAGE_SIZE);
+
+//        3. post-condiciones
+        Assert.assertNotNull(commentsByPost);
+        Assert.assertEquals(id, commentsByPost.getResults().toArray(new Comment[0])[0].getId());
+        final String whereClause = String.format("comment_id = %d AND post_id = %d", id, POST_ID);
+        Assert.assertEquals(1,
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+        );
     }
 
+    @Rollback
     @Test
-    public void findPostCommentDescendants() {
+    public void testFindCommentsByUser() {
+//        1. precondiciones
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
+                "user_id = ?", USER_ID);
+        long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
+
+//        2. ejercitar
+        final PaginatedCollection<Comment> commentsByUser = commentDao.findCommentsByUser(USER, NEWEST, PAGE_NUMBER, PAGE_SIZE);
+
+//        3. post-condiciones
+        Assert.assertNotNull(commentsByUser);
+        Assert.assertEquals(id, commentsByUser.getResults().toArray(new Comment[0])[0].getId());
+        final String whereClause = String.format("comment_id = %d AND user_id = %d", id, USER_ID);
+        Assert.assertEquals(1,
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+        );
     }
 
+    @Rollback
     @Test
-    public void findCommentsByPost() {
+    public void testGetDeletedComments() {
+//        1. precondiciones
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
+                "enabled = false");
+        COMMENT_ROW.put("enabled", false);
+        long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
+
+//        2. ejercitar
+        final PaginatedCollection<Comment> deletedComments = commentDao.getDeletedComments(NEWEST, PAGE_NUMBER, PAGE_SIZE);
+
+//        3. post-condiciones
+        Assert.assertNotNull(deletedComments);
+        Assert.assertEquals(id, deletedComments.getResults().toArray(new Comment[0])[0].getId());
+        final String whereClause = String.format("comment_id = %d AND user_id = %d AND post_id = %d  AND enabled = false", id, USER_ID, POST_ID);
+        Assert.assertEquals(1,
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+        );
     }
 
+    @Rollback
     @Test
-    public void findCommentsByUser() {
-    }
+    public void testSearchDeletedComments() {
+        //        1. precondiciones
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
+                "body = ?", BODY);
+        COMMENT_ROW.put("enabled", false);
+        long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
 
-    @Test
-    public void getDeletedComments() {
-    }
+//        2. ejercitar
+        final PaginatedCollection<Comment> deletedComments = commentDao.searchDeletedComments(BODY, NEWEST, PAGE_NUMBER, PAGE_SIZE);
 
-    @Test
-    public void searchDeletedComments() {
+//        3. post-condiciones
+        Assert.assertNotNull(deletedComments);
+        Assert.assertEquals(id, deletedComments.getResults().toArray(new Comment[0])[0].getId());
+        final String whereClause = String.format("comment_id = %d AND body = '%s' AND enabled = false", id, BODY);
+        Assert.assertEquals(1,
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+        );
     }
 }
