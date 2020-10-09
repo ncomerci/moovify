@@ -404,7 +404,6 @@ public class CommentDaoImpl implements CommentDao {
         final Comment comment = new Comment(commentId, creationDate, post, parentId, Collections.emptyList(),
                 body, user, enabled, 0, Collections.emptyMap());
 
-        LOGGER.info("Created Comment: {}", comment.getId());
         LOGGER.debug("Created Comment: {}", comment);
 
         return comment;

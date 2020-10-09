@@ -198,8 +198,6 @@ public class UserDaoImpl implements UserDao {
             jdbcUserRoleInsert.execute(map);
         }
 
-        LOGGER.info("Created User {}", userId);
-
         final User user = new User(userId, creationDate, username, password, name, email, description, avatarId, 0, roles, true);
 
         LOGGER.debug("Created user {}", user);

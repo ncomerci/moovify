@@ -5,6 +5,8 @@ import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.form.SearchMoviesForm;
 import ar.edu.itba.paw.webapp.form.SearchPostsForm;
 import ar.edu.itba.paw.webapp.form.SearchUsersForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -17,6 +19,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class SearchController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchController.class);
+
     @Autowired
     private SearchService searchService;
 
@@ -24,6 +28,8 @@ public class SearchController {
     public ModelAndView searchPosts(@ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm,
                                     @RequestParam(defaultValue = "5") final int pageSize,
                                     @RequestParam(defaultValue = "0") final int pageNumber) {
+
+        LOGGER.info("Accessed /search/posts");
 
         final ModelAndView mv = new ModelAndView("search/posts");
 
@@ -35,6 +41,7 @@ public class SearchController {
         mv.addObject("posts", searchService.searchPosts(searchPostsForm.getQuery(),
                 searchPostsForm.getPostCategory(), searchPostsForm.getPostAge(), searchPostsForm.getSortCriteria(),
                 pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new));
+
         return mv;
     }
 
@@ -43,7 +50,10 @@ public class SearchController {
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
+        LOGGER.info("Accessed /search/movies");
+
         final ModelAndView mv = new ModelAndView("search/movies");
+
         mv.addObject("query", searchMoviesForm.getQuery());
         mv.addObject("categories", searchService.getMoviesCategories());
         mv.addObject("decades", searchService.getMoviesDecades());
@@ -60,6 +70,8 @@ public class SearchController {
     public ModelAndView searchUsers(@ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm,
                                     @RequestParam(defaultValue = "5") final int pageSize,
                                     @RequestParam(defaultValue = "0") final int pageNumber) {
+
+        LOGGER.info("Accessed /search/users");
 
         final ModelAndView mv = new ModelAndView("search/users");
 

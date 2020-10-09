@@ -9,6 +9,8 @@ import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
     private MailService mailService;
@@ -52,6 +56,8 @@ public class UserServiceImpl implements UserService {
                 name, email, description, Collections.singletonList(Role.NOT_VALIDATED_ROLE), avatarId, true);
 
         createConfirmationEmail(user, confirmationMailTemplate);
+
+        LOGGER.info("Created User {}", user.getId());
 
         return user;
     }
@@ -89,10 +95,14 @@ public class UserServiceImpl implements UserService {
         userDao.updateAvatarId(user, newAvatarId);
 
         imageService.deleteImage(user.getAvatarId());
+
+        LOGGER.info("User's {} Avatar was Updated to {}", user.getId(), newAvatarId);
     }
 
     @Transactional
     public Optional<byte[]> getAvatar(long avatarId) {
+
+        LOGGER.info("Accessing avatar {}. (Default {})", avatarId, avatarId == User.DEFAULT_AVATAR_ID);
 
         if(avatarId == User.DEFAULT_AVATAR_ID)
             return Optional.of(imageService.getImage(DEFAULT_AVATAR_PATH));
@@ -120,6 +130,8 @@ public class UserServiceImpl implements UserService {
         userDao.addRoles(user, Collections.singletonList(Role.ADMIN_ROLE));
 
         user.getRoles().add(new Role(Role.ADMIN_ROLE));
+
+        LOGGER.info("Promoted User {} to Admin", user.getId());
     }
 
     @Transactional
@@ -131,9 +143,12 @@ public class UserServiceImpl implements UserService {
         userVerificationTokenDao.createVerificationToken(token, UserVerificationToken.calculateExpiryDate(), user);
 
         Map<String, Object> emailVariables = new HashMap<>();
+
         emailVariables.put("token", token);
 
         mailService.sendEmail(user.getEmail(), "Moovify - Confirmation Email", confirmationMailTemplate, emailVariables);
+
+        LOGGER.info("Created and sent email confirmation token {} to User {}", token, user.getId());
     }
 
     @Transactional
@@ -148,6 +163,8 @@ public class UserServiceImpl implements UserService {
         emailVariables.put("token", token);
 
         mailService.sendEmail(user.getEmail(), "Moovify - Password Reset", passwordResetMailTemplate, emailVariables);
+
+        LOGGER.info("Created and sent email confirmation token {} to User {}", token, user.getId());
     }
 
     @Transactional
@@ -156,8 +173,10 @@ public class UserServiceImpl implements UserService {
 
         Optional<UserVerificationToken> optToken = userVerificationTokenDao.getVerificationToken(token);
 
-        if(!optToken.isPresent() || !optToken.get().isValid())
+        if(!optToken.isPresent() || !optToken.get().isValid()) {
+            LOGGER.warn("A user tried to confirm their email, but it's token {} was invalid", token);
             return Optional.empty();
+        }
 
         final User user = optToken.get().getUser();
 
@@ -165,6 +184,8 @@ public class UserServiceImpl implements UserService {
 
         // Delete Token. It is not needed anymore
         userVerificationTokenDao.deleteVerificationToken(user);
+
+        LOGGER.info("User {} has confirmed their email", user.getId());
 
         return Optional.of(user);
     }
@@ -189,8 +210,10 @@ public class UserServiceImpl implements UserService {
 
         Optional<PasswordResetToken> optToken = passwordResetTokenDao.getResetPasswordToken(token);
 
-        if(!optToken.isPresent() || !optToken.get().isValid())
+        if(!optToken.isPresent() || !optToken.get().isValid()) {
+            LOGGER.warn("A user tried to update their password, but it's token {} was invalid", token);
             return Optional.empty();
+        }
 
         final User user = optToken.get().getUser();
 
@@ -198,6 +221,8 @@ public class UserServiceImpl implements UserService {
 
         // Delete Token. It is not needed anymore
         passwordResetTokenDao.deletePasswordResetToken(user);
+
+        LOGGER.info("User {} has updated their password successfully", user.getId());
 
         return Optional.of(user);
     }

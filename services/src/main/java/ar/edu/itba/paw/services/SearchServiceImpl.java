@@ -4,6 +4,8 @@ import ar.edu.itba.paw.interfaces.persistence.*;
 import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 @Service
 @DependsOn("dataSourceInitializer")
 public class SearchServiceImpl implements SearchService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchServiceImpl.class);
 
     @Autowired
     private PostDao postDao;
@@ -156,6 +160,7 @@ public class SearchServiceImpl implements SearchService {
         else
             sc = DEFAULT_POST_SORT_CRITERIA;
 
+        LOGGER.debug("Search Posts using Filter Options {} and Sort Criteria {}", options, sc);
 
         if(options.isEmpty())
             return Optional.of(postDao.searchPosts(query, sc, pageNumber, pageSize));
@@ -177,7 +182,7 @@ public class SearchServiceImpl implements SearchService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<PaginatedCollection<Movie>> searchMovies(String query, String category, String decade, String sortCriteria, int pageNumber, int pageSize){
+    public Optional<PaginatedCollection<Movie>> searchMovies(String query, String category, String decade, String sortCriteria, int pageNumber, int pageSize) {
 
         if(query == null)
             return Optional.empty();
@@ -201,6 +206,7 @@ public class SearchServiceImpl implements SearchService {
         else
             sc = DEFAULT_MOVIE_SORT_CRITERIA;
 
+        LOGGER.debug("Search Movies using Filter Options {} and Sort Criteria {}", options, sc);
 
         if(options.isEmpty())
             return Optional.of(movieDao.searchMovies(query, sc, pageNumber, pageSize));
@@ -238,6 +244,8 @@ public class SearchServiceImpl implements SearchService {
 
         else
             sc = DEFAULT_USER_SORT_CRITERIA;
+
+        LOGGER.debug("Search Users using Filter Options {} and Sort Criteria {}", options, sc);
 
         if(options.isEmpty())
             return Optional.of(userDao.searchUsers(query, sc, pageNumber, pageSize));

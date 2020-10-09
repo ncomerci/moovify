@@ -12,6 +12,8 @@ import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
 import ar.edu.itba.paw.webapp.form.PostCreateForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +33,8 @@ import java.util.Map;
 
 @Controller
 public class PostController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
 
     @Autowired
     private PostService postService;
@@ -52,6 +56,8 @@ public class PostController {
                              @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm,
                              final HttpServletRequest request) {
 
+        LOGGER.info("Accessed /post/{}", postId);
+
         final ModelAndView mv = new ModelAndView("post/view");
 
         final Post post = getPostFromFlashParamsOrById(postId, request);
@@ -59,12 +65,17 @@ public class PostController {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if(!isAnonymous(auth)) {
+
             final User user = userService.findUserByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
 
             mv.addObject("likeCurrentValue", userService.hasUserLikedPost(user, post));
 
             mv.addObject("loggedUser", user);
+
+            LOGGER.info("Was accessed by User {}", user.getId());
         }
+        else
+            LOGGER.info("Was accessed by Anonymous User.");
 
         mv.addObject("post", post);
         mv.addObject("movies", movieService.findMoviesByPost(post));
@@ -78,6 +89,8 @@ public class PostController {
                                  @RequestParam(defaultValue = "0") final int value,
                                  final Principal principal) {
 
+        LOGGER.info("Accessed /post/like");
+
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
@@ -88,6 +101,8 @@ public class PostController {
 
     @RequestMapping(path = "/post/create", method = RequestMethod.GET)
     public ModelAndView showPostCreateForm(@ModelAttribute("postCreateForm") final PostCreateForm postCreateForm) {
+
+        LOGGER.info("Accessed /post/create");
 
         final ModelAndView mv = new ModelAndView("post/create");
 
@@ -103,8 +118,10 @@ public class PostController {
                                            final Principal principal,
                                            final RedirectAttributes redirectAttributes) {
 
-        if (errors.hasErrors())
+        if (errors.hasErrors()) {
+            LOGGER.warn("Errors were found in the form postCreateForm creating a Post");
             return showPostCreateForm(postCreateForm);
+        }
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
@@ -118,6 +135,8 @@ public class PostController {
 
         redirectAttributes.addFlashAttribute("post", post);
 
+        LOGGER.info("Accessed /post/create to create Post. Redirecting to /post/{}", post.getId());
+
         return new ModelAndView("redirect:/post/" + post.getId());
     }
 
@@ -130,8 +149,10 @@ public class PostController {
 
         final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
 
-        if(flashParams != null && flashParams.containsKey("post"))
+        if(flashParams != null && flashParams.containsKey("post")) {
+            LOGGER.debug("Got Post {} from Flash Params", postId);
             return (Post) flashParams.get("post");
+        }
 
         else
             return postService.findPostById(postId).orElseThrow(PostNotFoundException::new);

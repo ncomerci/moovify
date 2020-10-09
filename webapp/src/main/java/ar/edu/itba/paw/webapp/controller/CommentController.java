@@ -10,6 +10,8 @@ import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -23,6 +25,8 @@ import java.security.Principal;
 
 @Controller
 public class CommentController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentController.class);
     
     @Autowired
     private CommentService commentService;
@@ -48,7 +52,11 @@ public class CommentController {
 
             commentService.register(post, parent,
                     commentCreateForm.getCommentBody(), user, "newCommentEmail");
+
+            LOGGER.info("Accessed /comment/create and Created Comment successfully. Redirecting to {}{}", request.getHeader("Referer"), "#comment-section");
         }
+        else
+            LOGGER.warn("Accessed /comment/create and errors were found in creation form. Redirecting to {}{}", request.getHeader("Referer"), "#comment-section");
 
 //        Goes back to the specific view that generated the request
         return new ModelAndView("redirect:"+ request.getHeader("Referer") + "#comment-section");
@@ -59,6 +67,8 @@ public class CommentController {
                              @RequestParam(defaultValue = "5") final int pageSize,
                              @RequestParam(defaultValue = "0") final int pageNumber,
                              @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm) {
+
+        LOGGER.info("Accessed /comment/{}", id);
 
         final ModelAndView mv = new ModelAndView("comment/view");
 
@@ -76,8 +86,11 @@ public class CommentController {
                              final Principal principal,
                              final HttpServletRequest request) {
 
+        LOGGER.info("Accessed /comment/like");
+
         User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
         Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
+
         commentService.likeComment(comment, user, value);
 
         return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-section");

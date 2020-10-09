@@ -4,6 +4,8 @@ import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,8 @@ import java.util.Set;
 @Service
 public class PostServiceImpl implements PostService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostServiceImpl.class);
+
     @Autowired
     private PostDao postDao;
 
@@ -24,8 +28,13 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> movies) {
-        return postDao.register(title, body.trim(),
+
+        final Post post = postDao.register(title, body.trim(),
                 body.split("\\s+").length, category, user, tags, movies, true);
+
+        LOGGER.info("Created Post {}", post.getId());
+
+        return post;
     }
 
     @Transactional

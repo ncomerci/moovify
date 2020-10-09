@@ -59,7 +59,6 @@ public class MailServiceImpl implements MailService {
         final MimeMessage mimeMessage = emailSender.createMimeMessage();
 
         try {
-
             final MimeMessageHelper message =
                     new MimeMessageHelper(mimeMessage, true, EMAIL_ENCODING);
 
@@ -71,10 +70,10 @@ public class MailServiceImpl implements MailService {
 
             emailSender.send(mimeMessage);
 
-            LOGGER.debug("Email sent successfully. Subject {}; Destination {}; Template {}", subject, destination, template);
+            LOGGER.info("Email sent successfully. Subject {}; Destination {}; Template {}; Variables {}", subject, destination, template, variables);
         }
         catch(MessagingException e) {
-            LOGGER.error("Email sending failed. Subject {}; Destination {}; Template {}", subject, destination, template, e);
+            LOGGER.error("Email sending failed. Subject {}; Destination {}; Template {}; Variables {}", subject, destination, template, variables, e);
             throw new RuntimeException();
         }
     }

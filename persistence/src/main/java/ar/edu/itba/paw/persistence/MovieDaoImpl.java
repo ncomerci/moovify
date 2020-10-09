@@ -190,7 +190,6 @@ public class MovieDaoImpl implements MovieDao {
         final Movie movie = new Movie(id, creationDate, title, originalTitle, tmdbId, imdbId,
                 originalLanguage, overview, popularity, runtime, voteAverage, releaseDate, 0, categoryCollection);
 
-        LOGGER.info("Created Movie {}", movie.getId());
         LOGGER.debug("Created Movie {}", movie);
 
         return movie;

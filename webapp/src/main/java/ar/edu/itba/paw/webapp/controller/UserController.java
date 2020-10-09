@@ -14,6 +14,8 @@ import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
 import ar.edu.itba.paw.webapp.form.UpdatePasswordForm;
 import ar.edu.itba.paw.webapp.form.UserCreateForm;
 import ar.edu.itba.paw.webapp.form.editProfile.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -39,6 +41,8 @@ import java.util.stream.Collectors;
 @Controller
 public class UserController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
     @Autowired
     private UserService userService;
 
@@ -50,12 +54,15 @@ public class UserController {
 
     @RequestMapping(path = "/login", method = RequestMethod.GET)
     public ModelAndView login() {
+
+        LOGGER.info("Accessed /login");
         return new ModelAndView("user/login");
     }
 
     @RequestMapping(path = "/user/create", method = RequestMethod.GET)
     public ModelAndView showUserCreateForm(@ModelAttribute("userCreateForm") final UserCreateForm userCreateForm) {
 
+        LOGGER.info("Accessed /user/create");
         return new ModelAndView("user/create");
     }
 
@@ -63,8 +70,10 @@ public class UserController {
     public ModelAndView register(@Valid @ModelAttribute("userCreateForm") final UserCreateForm userCreateForm, final BindingResult bindingResult,
                                   final HttpServletRequest request, final RedirectAttributes redirectAttributes) throws IOException {
 
-        if(bindingResult.hasErrors())
+        if(bindingResult.hasErrors()) {
+            LOGGER.warn("Errors were found in the form userCreateForm creating a User");
             return showUserCreateForm(userCreateForm);
+        }
 
         final User user;
 
@@ -76,17 +85,23 @@ public class UserController {
 
         catch(DuplicateUsernameException dupUsername) {
             bindingResult.rejectValue("username", "validation.user.UniqueUsername");
+
+            LOGGER.warn("There was an error creating a User. Username {} was not unique", userCreateForm.getUsername());
             return showUserCreateForm(userCreateForm);
         }
 
         catch (DuplicateEmailException dupEmail) {
             bindingResult.rejectValue("email", "validation.user.UniqueEmail");
+
+            LOGGER.warn("There was an error creating a User. Email {} was not unique", userCreateForm.getEmail());
             return showUserCreateForm(userCreateForm);
         }
 
         manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
 
         redirectAttributes.addFlashAttribute("user", user);
+
+        LOGGER.info("User creation in /user/create was successful. Redirecting to /user/profile of User {}", user.getId());
 
         return new ModelAndView("redirect:/user/profile");
     }
@@ -96,6 +111,8 @@ public class UserController {
                                   @PathVariable final long userId,
                                   @RequestParam(defaultValue = "5") final int pageSize,
                                   @RequestParam(defaultValue = "0") final int pageNumber) {
+
+        LOGGER.info("Accessed /user/{}/posts", userId);
 
         final ModelAndView mv = new ModelAndView("user/view/viewPosts");
 
@@ -114,6 +131,8 @@ public class UserController {
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
+        LOGGER.info("Accessed /user/{}/comments", userId);
+
         final ModelAndView mv = new ModelAndView("user/view/viewComments");
 
         final User user = getUserFromFlashParamsOrById(userId, request);
@@ -131,16 +150,11 @@ public class UserController {
                                      @RequestParam(defaultValue = "5") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
+        LOGGER.info("Accessed /user/profile/posts");
+
         final ModelAndView mv = new ModelAndView("user/profile/profilePosts");
 
-        User user;
-        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
-
-        if(flashParams != null && flashParams.containsKey("user"))
-            user = (User) flashParams.get("user");
-
-        else
-            user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = getUserFromFlashParamsOrByUsername(principal.getName(), request);
 
         mv.addObject("loggedUser", user);
         mv.addObject("posts", postService.findPostsByUser(user, pageNumber, pageSize));
@@ -152,6 +166,8 @@ public class UserController {
     public ModelAndView profileComments(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, Principal principal,
                                         @RequestParam(defaultValue = "5") final int pageSize,
                                         @RequestParam(defaultValue = "0") final int pageNumber) {
+
+        LOGGER.info("Accessed /user/profile/comments");
 
         final ModelAndView mv = new ModelAndView("user/profile/profileComments");
 
@@ -165,6 +181,8 @@ public class UserController {
 
     @RequestMapping(path = "/user/profile/edit", method = RequestMethod.GET)
     public ModelAndView editProfile(@ModelAttribute("nameEditForm") final NameEditForm nameEditForm, @ModelAttribute("usernameEditForm") final UsernameEditForm usernameEditForm, @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm) {
+
+        LOGGER.info("Accessed /user/profile/edit");
         return new ModelAndView("user/profile/profileEdit");
     }
 
@@ -172,14 +190,18 @@ public class UserController {
     public ModelAndView editName(@Valid @ModelAttribute("nameEditForm") final NameEditForm nameEditForm, final BindingResult bindingResult,
                                  @ModelAttribute("usernameEditForm") final UsernameEditForm usernameEditForm,
                                  @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm,
-                                 Principal principal) {
+                                 final Principal principal) {
 
-        if(bindingResult.hasErrors())
-            return editProfile(nameEditForm, usernameEditForm, descriptionEditForm ) ;
+        if(bindingResult.hasErrors()) {
+            LOGGER.warn("Errors were found in the form nameEditForm editing name in /user/edit/name");
+            return editProfile(nameEditForm, usernameEditForm, descriptionEditForm);
+        }
 
         User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateName(user, nameEditForm.getName());
+
+        LOGGER.info("Edited User's {} name successfully. Redirecting to /user/profile/edit", user.getId());
 
         return new ModelAndView("redirect:/user/profile/edit");
     }
@@ -190,8 +212,10 @@ public class UserController {
                                      @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm,
                                      HttpServletRequest request, Principal principal) {
 
-        if(bindingResult.hasErrors())
-            return editProfile(nameEditForm, usernameEditForm , descriptionEditForm);
+        if(bindingResult.hasErrors()) {
+            LOGGER.warn("Errors were found in the form usernameEditForm editing username in /user/edit/username");
+            return editProfile(nameEditForm, usernameEditForm, descriptionEditForm);
+        }
 
         User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
@@ -200,9 +224,13 @@ public class UserController {
         }
         catch(DuplicateUsernameException e) {
             bindingResult.rejectValue("username", "validation.user.UniqueUsername");
+
+            LOGGER.warn("User {} tried to update it's username to a one which already existed, {}", user.getId(), usernameEditForm.getUsername());
         }
 
         manualLogin(request, usernameEditForm.getUsername(), user.getPassword(), user.getRoles());
+
+        LOGGER.info("Edited User's {} name successfully. Redirecting to /user/profile/edit", user.getId());
 
         return new ModelAndView("redirect:/user/profile/edit");
     }
@@ -213,12 +241,16 @@ public class UserController {
                                     @ModelAttribute("usernameEditForm") final UsernameEditForm usernameEditForm,
                                     Principal principal) {
 
-        if(bindingResult.hasErrors())
-            return editProfile(nameEditForm, usernameEditForm , descriptionEditForm);
+        if(bindingResult.hasErrors()) {
+            LOGGER.warn("Errors were found in the form descriptionEditForm editing description in /user/edit/description");
+            return editProfile(nameEditForm, usernameEditForm, descriptionEditForm);
+        }
 
         User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateDescription(user, descriptionEditForm.getDescription());
+
+        LOGGER.info("Edited User's {} description successfully. Redirecting to /user/profile/edit", user.getId());
 
         return new ModelAndView("redirect:/user/profile/edit");
     }
@@ -226,40 +258,52 @@ public class UserController {
     @RequestMapping(path = "/user/changePassword", method = RequestMethod.GET)
     public ModelAndView changePassword(@ModelAttribute("changePasswordForm") final ChangePasswordForm changePasswordForm) {
 
+        LOGGER.info("Accessed /user/changePassword");
         return new ModelAndView("user/profile/changePassword");
     }
 
     @RequestMapping(path = "/user/changePassword", method = RequestMethod.POST)
     public ModelAndView executeChangePassword(@Valid @ModelAttribute("changePasswordForm") final ChangePasswordForm changePasswordForm, final BindingResult bindingResult, Principal principal) {
 
-        if(bindingResult.hasErrors())
+        if(bindingResult.hasErrors()) {
+            LOGGER.warn("Errors were found in the form changePasswordForm changing password in /user/changePassword");
             return changePassword(changePasswordForm);
+        }
 
         User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updatePassword(user, changePasswordForm.getPassword());
 
+        LOGGER.info("Changed User's {} password successfully. Redirecting to /user/profile", user.getId());
+
         return new ModelAndView("redirect:/user/profile");
     }
 
     @RequestMapping(path = "/user/profile/avatar", method = RequestMethod.POST)
-    public ModelAndView registerProfilePost(@Valid @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
+    public ModelAndView updateAvatar(@Valid @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
                                             final BindingResult bindingResult,
                                             final HttpServletRequest request,
                                             final Principal principal) throws IOException {
-        if(bindingResult.hasErrors())
-            return profilePosts(avatarEditForm, request, principal,5,0);
+
+        if(bindingResult.hasErrors()) {
+            LOGGER.warn("Errors were found in the form avatarEditForm updating avatar in /user/profile/avatar");
+            return profilePosts(avatarEditForm, request, principal, 5, 0);
+        }
 
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateAvatar(user, avatarEditForm.getAvatar().getBytes());
 
+        LOGGER.info("Changed User's {} password successfully. Redirecting to /user/profile", user.getId());
+
         return new ModelAndView("redirect:/user/profile");
     }
 
     @RequestMapping(path = "/user/registrationConfirm", method = RequestMethod.GET)
     public ModelAndView confirmRegistration(HttpServletRequest request, @RequestParam String token) {
+
+        LOGGER.info("Accessed /user/registrationConfirm");
 
         final Optional<User> optUser = userService.confirmRegistration(token);
         boolean success;
@@ -274,9 +318,13 @@ public class UserController {
 
             // User roles have been updates. We need to refresh authorities
             manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
+
+            LOGGER.info("Successfully Confirmed User {} email", user.getId());
         }
-        else
+        else {
             success = false;
+            LOGGER.warn("User email confirmation failed");
+        }
 
         mv.addObject("success", success);
 
@@ -285,19 +333,24 @@ public class UserController {
 
     @RequestMapping(path = "/user/resetPassword", method = RequestMethod.GET)
     public ModelAndView showResetPassword(@ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm) {
+        LOGGER.info("Accessed /user/resetPassword");
         return new ModelAndView("user/resetPassword/resetPassword");
     }
 
     @RequestMapping(path = "/user/resetPassword", method = RequestMethod.POST)
     public ModelAndView resetPassword(@Valid @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm, final BindingResult bindingResult) {
 
-        if(bindingResult.hasErrors())
+        if(bindingResult.hasErrors()) {
+            LOGGER.warn("Errors were found in the form resetPasswordForm updating avatar in /user/resetPassword");
             return showResetPassword(resetPasswordForm);
+        }
 
         final Optional<User> optUser = userService.findUserByEmail(resetPasswordForm.getEmail());
 
         if(!optUser.isPresent()) {
             bindingResult.rejectValue("email", "validation.resetPassword.InvalidEmail");
+
+            LOGGER.warn("Email provided to reset password doesn't belong to any User");
             return showResetPassword(resetPasswordForm);
         }
 
@@ -305,6 +358,8 @@ public class UserController {
 
         if(!user.isValidated()) {
             bindingResult.rejectValue("email", "validation.resetPassword.EmailNotValidated");
+
+            LOGGER.warn("Email provided to reset password wasn't validated by User {}", user.getId());
             return showResetPassword(resetPasswordForm);
         }
 
@@ -314,11 +369,15 @@ public class UserController {
 
         mv.addObject("loggedUser", user);
 
+        LOGGER.info("Password reset successful by User {} in /user/resetPassword", user.getId());
+
         return mv;
     }
 
     @RequestMapping(path = "/user/resendConfirmation", method = RequestMethod.GET)
     public ModelAndView confirmRegistration(Principal principal) {
+
+        LOGGER.info("Accessed /user/resendConfirmation");
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
@@ -333,20 +392,31 @@ public class UserController {
 
     @RequestMapping(path = "/user/updatePassword/token", method = RequestMethod.GET)
     public ModelAndView validateResetPasswordToken(@RequestParam String token, RedirectAttributes redirectAttributes) {
+
+        LOGGER.info("Accessed /user/updatePassword/token");
+
         boolean validToken = userService.validatePasswordResetToken(token);
 
         if(validToken){
             redirectAttributes.addFlashAttribute("token", token);
 
+            LOGGER.info("Token {} provided to reset Password is valid", token);
+
             return new ModelAndView("redirect:/user/updatePassword");
         }
+        else
+            LOGGER.warn("Token {} provided to reset Password is invalid", token);
+
+        LOGGER.info("Redirecting to /user/resetPassword/updatePasswordError");
 
         return new ModelAndView("user/resetPassword/updatePasswordError");
     }
 
     @RequestMapping(path = "/user/updatePassword", method = RequestMethod.GET)
     public ModelAndView showUpdatePassword(@ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm,
-                                           HttpServletRequest request) {
+                                           final HttpServletRequest request) {
+
+        LOGGER.info("Accessed /user/updatePassword");
 
         final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
 
@@ -360,8 +430,10 @@ public class UserController {
     public ModelAndView updatePassword(@Valid @ModelAttribute("updatePasswordForm") final UpdatePasswordForm updatePasswordForm,
                                        final BindingResult bindingResult, HttpServletRequest request) {
 
-        if(bindingResult.hasErrors())
+        if(bindingResult.hasErrors()) {
+            LOGGER.warn("Errors were found in the form updatePasswordForm resetting password in /user/updatePassword");
             return showUpdatePassword(updatePasswordForm, request);
+        }
 
         final User user = userService.updatePassword(updatePasswordForm.getPassword(), updatePasswordForm.getToken())
                 .orElseThrow(InvalidResetPasswordToken::new);
@@ -372,16 +444,21 @@ public class UserController {
 
         mv.addObject("loggedUser", user);
 
+        LOGGER.info("User {} resetted password successfully in /user/updatePassword", user.getId());
+
         return mv;
     }
 
     @RequestMapping(path = "/user/avatar/{avatarId}", method = RequestMethod.GET, produces = "image/*")
     public @ResponseBody byte[] getAvatar(@PathVariable long avatarId) {
 
+        LOGGER.info("Accessed /user/avatar/{}", avatarId);
         return userService.getAvatar(avatarId).orElseThrow(ImageNotFoundException::new);
     }
 
     private void manualLogin(HttpServletRequest request, String username, String password, Collection<Role> roles) {
+
+        LOGGER.debug("Performing Manual Login (either to log a new user or refresh logged User credentials) for User [username={}; password={}; roles={}]", username, password, roles);
 
         final PreAuthenticatedAuthenticationToken token =
                 new PreAuthenticatedAuthenticationToken(username, password, getGrantedAuthorities(roles));
@@ -400,10 +477,25 @@ public class UserController {
 
         final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
 
-        if(flashParams != null && flashParams.containsKey("user"))
+        if(flashParams != null && flashParams.containsKey("user")) {
+            LOGGER.debug("Obtained User from Flash Params");
             return (User) flashParams.get("user");
+        }
 
         else
             return userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
+    private User getUserFromFlashParamsOrByUsername(String username, HttpServletRequest request) {
+
+        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
+
+        if(flashParams != null && flashParams.containsKey("user")) {
+            LOGGER.debug("Obtained User from Flash Params");
+            return (User) flashParams.get("user");
+        }
+
+        else
+            return userService.findUserByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 }

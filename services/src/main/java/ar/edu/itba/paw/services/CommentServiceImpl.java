@@ -7,6 +7,8 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import java.util.Optional;
 
 @Service
 public class CommentServiceImpl implements CommentService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentServiceImpl.class);
 
     @Autowired
     private CommentDao commentDao;
@@ -40,6 +44,8 @@ public class CommentServiceImpl implements CommentService {
 
         mailService.sendEmail(post.getUser().getEmail(),
                 "New comment on your post " + post.getTitle(), mailTemplate, map);
+
+        LOGGER.info("Created Comment: {}", comment.getId());
 
         return comment;
     }

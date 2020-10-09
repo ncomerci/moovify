@@ -248,8 +248,6 @@ public class PostDaoImpl implements PostDao {
             }
         }
 
-        LOGGER.info("Created Post {}", postId);
-
         final Post post = new Post(postId, creationDate, title, body, wordCount, category, user, tags, enabled, 0);
 
         LOGGER.debug("Created Post {} with Movies {}", post, movies);
