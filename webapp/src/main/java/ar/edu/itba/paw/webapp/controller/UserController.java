@@ -7,7 +7,7 @@ import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.exceptions.ImageNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
@@ -453,7 +453,7 @@ public class UserController {
     public @ResponseBody byte[] getAvatar(@PathVariable long avatarId) {
 
         LOGGER.info("Accessed /user/avatar/{}", avatarId);
-        return userService.getAvatar(avatarId).orElseThrow(ImageNotFoundException::new);
+        return userService.getAvatar(avatarId).orElseThrow(AvatarNotFoundException::new);
     }
 
     private void manualLogin(HttpServletRequest request, String username, String password, Collection<Role> roles) {
