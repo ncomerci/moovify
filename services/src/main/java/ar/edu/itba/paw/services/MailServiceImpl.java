@@ -75,6 +75,7 @@ public class MailServiceImpl implements MailService {
         }
         catch(MessagingException e) {
             LOGGER.error("Email sending failed. Subject {}; Destination {}; Template {}", subject, destination, template, e);
+            throw new RuntimeException();
         }
     }
 

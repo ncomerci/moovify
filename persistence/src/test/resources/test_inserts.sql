@@ -1,3 +1,50 @@
+
+-- Populate Post Categories --
+INSERT INTO POST_CATEGORY (creation_date, name)
+VALUES (now(), 'watchlist');
+
+INSERT INTO POST_CATEGORY (creation_date, name)
+VALUES (now(), 'critique');
+
+INSERT INTO POST_CATEGORY (creation_date, name)
+VALUES (now(), 'news');
+
+INSERT INTO POST_CATEGORY (creation_date, name)
+VALUES (now(), 'debate');
+
+-- Populate User Roles --
+INSERT INTO ROLES (role)
+VALUES ('USER');
+
+INSERT INTO ROLES (role)
+VALUES ('ADMIN');
+
+INSERT INTO ROLES (role)
+VALUES ('NOT_VALIDATED');
+
+-- Populate Genre --
+
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(28, 'action');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(12, 'adventure');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(16, 'animation');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(35, 'comedy');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(80, 'crime');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(99, 'documentary');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(18, 'drama');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10751, 'family');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(14, 'fantasy');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(36, 'history');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(27, 'horror');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10402, 'music');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(9648, 'mystery');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10749, 'romance');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(878, 'scienceFiction');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10770, 'tvMovie');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(53, 'thriller');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(10752, 'war');
+INSERT INTO  movie_categories(tmdb_category_id, name) VALUES(37, 'western');
+
+
 INSERT INTO public.movies (movie_id, creation_date, release_date, title, original_title, tmdb_id, imdb_id, original_language, overview, popularity, runtime, vote_average) VALUES (DEFAULT, '2020-09-23 15:24:35.483125', '2015-06-17', 'Minions', 'Minions', 211672, 'tt2293640', 'en', 'Minions Stuart, Kevin and Bob are recruited by Scarlet Overkill, a super-villain who, alongside her inventor husband Herb, hatches a plot to take over the world.', 547.488298, 91, 6.4);
 INSERT INTO public.movies (movie_id, creation_date, release_date, title, original_title, tmdb_id, imdb_id, original_language, overview, popularity, runtime, vote_average) VALUES (DEFAULT, '2020-09-23 15:24:35.483125', '2017-05-30', 'Wonder Woman', 'Wonder Woman', 297762, 'tt0451279', 'en', 'An Amazon princess comes to the world of Man to become the greatest of the female superheroes.', 294.337037, 141, 7.2);
 INSERT INTO public.movies (movie_id, creation_date, release_date, title, original_title, tmdb_id, imdb_id, original_language, overview, popularity, runtime, vote_average) VALUES (DEFAULT, '2020-09-23 15:24:35.483125', '2017-03-16', 'Beauty and the Beast', 'Beauty and the Beast', 321612, 'tt2771200', 'en', 'A live-action adaptation of Disney''s version of the classic ''Beauty and the Beast'' tale of a cursed prince and a beautiful young woman who helps him break the spell.', 287.253654, 129, 6.8);
@@ -63,6 +110,7 @@ INSERT INTO public.user_role (user_id, role_id) VALUES (4, 3);
 INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:26:31.440000', 'Post Test 1', 1, 1, 554, 'body_test', true);
 INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:32:57.415000', 'Post Test 2', 2, 1, 2886, 'body_test', true);
 INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:49:38.898000', 'Post Test 3', 1, 1, 932, 'body_test', true);
+INSERT INTO public.posts (post_id, creation_date, title, user_id, category_id, word_count, body, enabled) VALUES (DEFAULT, '2020-09-09 15:59:38.898000', 'Post Test 4', 2, 1, 932, 'body_test', false);
 
 INSERT INTO public.post_movie (post_id, movie_id) VALUES (1, 8);
 INSERT INTO public.post_movie (post_id, movie_id) VALUES (1, 9);

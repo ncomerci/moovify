@@ -382,7 +382,9 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public Comment register(Post post, Comment parent, String body, User user, boolean enabled) {
 
+        Objects.requireNonNull(post);
         Objects.requireNonNull(body);
+        Objects.requireNonNull(user);
 
         final Long parentId = (parent == null)? null : parent.getId();
 
