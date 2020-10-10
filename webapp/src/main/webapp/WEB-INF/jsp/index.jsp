@@ -9,7 +9,12 @@
 </head>
 <body>
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
-    <main class="uk-container uk-container-large">
+
+    <div class="uk-height-medium uk-background-cover uk-light uk-flex uk-flex-top" uk-parallax="bgy: -200" style="background-image: url(<c:url value="/resources/images/banner.jpg"/>);">
+        <h1 class="uk-width-1-2@m uk-text-center uk-margin-auto uk-margin-auto-vertical uk-text-primary uk-text-bold" uk-parallax="y: 100,0"><spring:message code="index.welcome"/></h1>
+    </div>
+
+    <main class="uk-container uk-container-large main-page">
 
         <div class="uk-column-1-2 uk-padding-large">
 
