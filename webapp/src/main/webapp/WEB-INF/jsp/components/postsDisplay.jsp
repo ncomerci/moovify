@@ -2,6 +2,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
+<%@ page contentType="text/html;charset=UTF-8" %>
+
 <jsp:useBean id="posts" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection<ar.edu.itba.paw.models.Post>"/>
 
 <sec:authorize access="isAuthenticated()">
