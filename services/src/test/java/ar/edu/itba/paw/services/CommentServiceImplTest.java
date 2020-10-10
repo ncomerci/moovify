@@ -58,6 +58,24 @@ public class CommentServiceImplTest {
     }
 
     @Test
+    public void testLikeCommentRemove() {
+
+        commentService.likeComment(Mockito.mock(Comment.class), Mockito.mock(User.class),0);
+    }
+
+    @Test
+    public void testLikeCommentGiveUpVote() {
+
+        commentService.likeComment(Mockito.mock(Comment.class), Mockito.mock(User.class),1);
+    }
+
+    @Test
+    public void testLikeCommentGiveDownVote() {
+
+        commentService.likeComment(Mockito.mock(Comment.class), Mockito.mock(User.class),-1);
+    }
+
+    @Test
     public void testDeleteComment() {
         commentService.deleteComment(Mockito.mock(Comment.class));
     }

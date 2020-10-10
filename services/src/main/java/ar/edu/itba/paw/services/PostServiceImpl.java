@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -28,6 +29,8 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> movies) {
+
+        Objects.requireNonNull(body);
 
         final Post post = postDao.register(title, body.trim(),
                 body.split("\\s+").length, category, user, tags, movies, true);
