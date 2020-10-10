@@ -48,10 +48,12 @@ public class CommentDaoImplTest {
     private DataSource ds;
 
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert likeJdbcInsert;
+    private SimpleJdbcInsert likeInsert;
     private SimpleJdbcInsert commentInsert;
+    private SimpleJdbcInsert userInsert;
 
     private void mapInitializer() {
+        COMMENT_ROW.put("parent_id", null);
         COMMENT_ROW.put("post_id", POST_ID);
         COMMENT_ROW.put("user_id", USER_ID);
         COMMENT_ROW.put("creation_date", Timestamp.valueOf(LocalDateTime.now()));
@@ -62,11 +64,14 @@ public class CommentDaoImplTest {
     @Before
     public void setUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
-        this.likeJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+        this.likeInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TableNames.COMMENTS_LIKES.getTableName());
         this.commentInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TableNames.COMMENTS.getTableName())
                 .usingGeneratedKeyColumns("comment_id");
+        this.userInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(TableNames.USERS.getTableName())
+                .usingGeneratedKeyColumns("user_id");
         mapInitializer();
     }
 
@@ -121,7 +126,7 @@ public class CommentDaoImplTest {
         row.put("COMMENT_ID", COMMENT_ID);
         row.put("user_id", USER_ID);
         row.put("value", value);
-        likeJdbcInsert.execute(row);
+        likeInsert.execute(row);
         Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(COMMENT_ID).getMock();
 
 //        2. ejercitar
@@ -190,24 +195,121 @@ public class CommentDaoImplTest {
 
     @Rollback
     @Test
-    public void testFindCommentDescendants() {
+    public void testFindCommentDescendantsByNewest() {
 //        1. precondiciones
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
                 "user_id = ? AND post_id = ?", USER_ID, POST_ID);
-        COMMENT_ROW.put("parent_id", 2);
-        long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
-        COMMENT_ROW.put("parent_id", null);
-        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(2L).getMock();
+
+        long parentId = 2L;
+        COMMENT_ROW.put("parent_id", parentId);
+        final int cant = PAGE_SIZE*2;
+        StringBuilder whereClause = new StringBuilder();
+        Long[] ids = new Long[cant];
+
+        for(int i = 0 ; i < cant ; i++) {
+            COMMENT_ROW.put("creation_date", Timestamp.valueOf(LocalDateTime.of(2020, 10, 10, i, 0)));
+            ids[i] = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
+            whereClause.append("comment_id = ").append(ids[i]).append(" OR ");
+        }
+        whereClause.setLength(whereClause.length() - " OR ".length());
+        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(parentId).getMock();
 
 //        2. ejercitar
-        final PaginatedCollection<Comment> commentDescendants = commentDao.findCommentDescendants(comment, NEWEST, PAGE_NUMBER, PAGE_SIZE);
+        final PaginatedCollection<Comment> commentDescendants1 = commentDao.findCommentDescendants(comment, NEWEST, PAGE_NUMBER, PAGE_SIZE);
+        final PaginatedCollection<Comment> commentDescendants2 = commentDao.findCommentDescendants(comment, NEWEST, PAGE_NUMBER+1, PAGE_SIZE);
 
 //        3. post-condiciones
-        Assert.assertNotNull(commentDescendants);
-        Assert.assertEquals(1, commentDescendants.getTotalCount());
-        final String whereClause = String.format("comment_id = %d AND user_id = %d AND post_id = %d", id, USER_ID, POST_ID);
-        Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+        Assert.assertNotNull(commentDescendants1);
+        Assert.assertNotNull(commentDescendants2);
+
+        final Collection<Comment> descendants1Results = commentDescendants1.getResults();
+        final Collection<Comment> descendants2Results = commentDescendants2.getResults();
+        final Comment[] array1 = descendants1Results.toArray(new Comment[0]);
+        final Comment[] array2 = descendants2Results.toArray(new Comment[0]);
+
+        Assert.assertEquals(PAGE_SIZE, descendants1Results.size());
+        Assert.assertEquals(PAGE_SIZE, descendants2Results.size());
+
+        for(int i = 0 ; i < PAGE_SIZE ; i++) {
+            Assert.assertEquals(ids[cant - 1 - i], (Long) array1[i].getId());
+            Assert.assertEquals(ids[cant/2 - 1 - i], (Long) array2[i].getId());
+
+        }
+        Assert.assertEquals(cant,
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause.toString())
+        );
+    }
+
+    private long insertUser(Timestamp creation_date, String username, String password, String name, String email, String description, boolean enabled) {
+        Map<String, Object> user_row = new HashMap<>();
+        user_row.put("creation_date", creation_date);
+        user_row.put("username", username);
+        user_row.put("password", password);
+        user_row.put("name", name);
+        user_row.put("email", email);
+        user_row.put("description", description);
+        user_row.put("enabled", enabled);
+
+        return userInsert.executeAndReturnKey(user_row).longValue();
+    }
+
+    @Rollback
+    @Test
+    public void testFindCommentDescendantsByHottest() {
+//        1. precondiciones
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
+                "user_id = ? AND post_id = ?", USER_ID, POST_ID);
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS_LIKES.getTableName(),
+                "user_id = ?", USER_ID);
+
+        final int cant = PAGE_SIZE*2;
+        long parentId = 2L;
+        COMMENT_ROW.put("parent_id", parentId);
+
+        StringBuilder whereClause = new StringBuilder();
+        Long[] ids = new Long[cant];
+        Long[] userIds = new Long[cant];
+        Map<String, Object> like_row = new HashMap<>();
+        like_row.put("value", 1);
+
+        int i, j;
+        for(i = 0 ; i < cant ; i++) {
+            COMMENT_ROW.put("creation_date", Timestamp.valueOf(LocalDateTime.of(2020, 10, 10, i, 0)));
+            ids[i] = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
+            userIds[i] = insertUser(Timestamp.valueOf(LocalDateTime.now()), String.valueOf(i), "", "", String.valueOf(i), "", true);
+            for(j = 0; j <= i ; j++) {
+                like_row.put("user_id", userIds[j]);
+                like_row.put("comment_id", ids[i]);
+                likeInsert.execute(like_row);
+            }
+            whereClause.append("comment_id = ").append(ids[i]).append(" OR ");
+        }
+        whereClause.setLength(whereClause.length() - " OR ".length());
+        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(parentId).getMock();
+
+//        2. ejercitar
+        final PaginatedCollection<Comment> commentDescendants1 = commentDao.findCommentDescendants(comment, CommentDao.SortCriteria.HOTTEST, PAGE_NUMBER, PAGE_SIZE);
+        final PaginatedCollection<Comment> commentDescendants2 = commentDao.findCommentDescendants(comment, CommentDao.SortCriteria.HOTTEST, PAGE_NUMBER+1, PAGE_SIZE);
+
+//        3. post-condiciones
+        Assert.assertNotNull(commentDescendants1);
+        Assert.assertNotNull(commentDescendants2);
+
+        final Collection<Comment> descendants1Results = commentDescendants1.getResults();
+        final Collection<Comment> descendants2Results = commentDescendants2.getResults();
+        final Comment[] array1 = descendants1Results.toArray(new Comment[0]);
+        final Comment[] array2 = descendants2Results.toArray(new Comment[0]);
+
+        Assert.assertEquals(PAGE_SIZE, descendants1Results.size());
+        Assert.assertEquals(PAGE_SIZE, descendants2Results.size());
+
+        for(i = 0 ; i < PAGE_SIZE ; i++) {
+            Assert.assertEquals(ids[cant - 1 - i], (Long) array1[i].getId());
+            Assert.assertEquals(ids[cant/2 - 1 - i], (Long) array2[i].getId());
+
+        }
+        Assert.assertEquals(cant,
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause.toString())
         );
     }
 
@@ -275,7 +377,7 @@ public class CommentDaoImplTest {
     @Rollback
     @Test
     public void testSearchDeletedComments() {
-        //        1. precondiciones
+//        1. precondiciones
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
                 "body = ?", BODY);
         COMMENT_ROW.put("enabled", false);

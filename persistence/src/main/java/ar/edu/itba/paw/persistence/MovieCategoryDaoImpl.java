@@ -13,9 +13,9 @@ import javax.sql.DataSource;
 import java.util.Collection;
 
 @Repository
-public class MovieCategoryDaoImp implements MovieCategoryDao {
+public class MovieCategoryDaoImpl implements MovieCategoryDao {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MovieCategoryDaoImp.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieCategoryDaoImpl.class);
 
     private static final String MOVIE_CATEGORIES = TableNames.MOVIE_CATEGORIES.getTableName();
 
@@ -29,7 +29,7 @@ public class MovieCategoryDaoImp implements MovieCategoryDao {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public MovieCategoryDaoImp(DataSource ds) {
+    public MovieCategoryDaoImpl(DataSource ds) {
         this.jdbcTemplate = new JdbcTemplate(ds);
     }
 
