@@ -9,9 +9,13 @@
 <jsp:useBean id="currentState" scope="request" type="java.lang.String"/>
 <jsp:useBean id="user" scope="request" type="ar.edu.itba.paw.models.User"/>
 
-<sec:authorize access="hasRole('ADMIN')">
-    <script src="<c:url value="/resources/js/user/view.js"/>"></script>
+<sec:authorize access="isAuthenticated()">
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
 </sec:authorize>
+
+<c:if test="${not empty loggedUser and loggedUser.admin}">
+    <script src="<c:url value="/resources/js/user/view.js"/>"></script>
+</c:if>
 
 <div class="uk-inline ">
     <div class="uk-cover-container">
@@ -44,7 +48,7 @@
                     <li class="userTitle"><spring:message code="user.profile.Description" arguments="${user.description}"/></li>
                 </c:if>
             </ul>
-            <sec:authorize access="hasRole('ADMIN')">
+            <c:if test="${not empty loggedUser and loggedUser.admin}">
                 <c:if test="${!user.admin}">
                     <span>
                         <button class="uk-button uk-button-default uk-border-rounded admin-button" type="button" uk-toggle="target: #modal-admin-promote">
@@ -57,12 +61,14 @@
                         <spring:message code="user.profile.deleteBtn"/>
                     </button>
                 </span>
-            </sec:authorize>
+            </c:if>
             <%--<p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>--%>
         </div>
 
     </div>
 </div>
+
+<%-- TODO: QUe onda ese userID ?? - Tobi --%>
 <div class="uk-container">
     <div class="uk-margin-medium-top">
         <ul class="uk-child-width-expand uk-tab">
@@ -90,7 +96,7 @@
     </div>
 </div>
 
-<sec:authorize access="hasRole('ADMIN')">
+<c:if test="${not empty loggedUser and loggedUser.admin}">
     <div id="modal-admin-promote" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
             <h2 class="uk-modal-title"><spring:message code="user.profile.modalTitle" arguments="${user.username}"/></h2>
@@ -114,4 +120,4 @@
     <form id="promote-user-form" method="post" action="<c:url value="/user/promote/${user.id}"/>"></form>
     <form id="delete-user-form" method="post" action="<c:url value="/user/delete/${user.id}"/>"></form>
 
-</sec:authorize>
+</c:if>

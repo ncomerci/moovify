@@ -4,7 +4,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-
+<sec:authorize access="isAuthenticated()">
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+</sec:authorize>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
@@ -17,9 +19,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js"></script>
     <script src="<c:url value="/resources/js/components/createAndViewComments.js"/>"></script>
     <script src="<c:url value="/resources/js/post/view.js"/>"></script>
-    <sec:authorize access="hasRole('ADMIN')">
+    <c:if test="${not empty loggedUser and loggedUser.admin}">
         <script src="<c:url value="/resources/js/post/delete.js"/>"></script>
-    </sec:authorize>
+    </c:if>
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
 </head>
 <body data-post-body="<c:out value="${post.body}"/>">
@@ -40,21 +42,13 @@
                             </p>
                         </div>
                     </sec:authorize>
-                    <sec:authorize access="hasRole('USER')">
+                    <c:if test="${not empty loggedUser and loggedUser.validated}">
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                            <sec:authorize access="hasRole('USER')">
-                                <c:if test="${likeCurrentValue != 1}">
-                                    <a class="like-post-button" data-value="${ 1 }">
-                                        <span class="iconify" data-icon="cil:chevron-top" data-inline="false"></span>
-                                    </a>
-                                </c:if>
-                                <c:if test="${likeCurrentValue == 1}">
-                                    <a class="like-post-button" data-value="${ 0 }">
-                                        <span class="iconify" data-icon="el:chevron-up" data-inline="false"></span>
-                                    </a>
-                                </c:if>
-                            </sec:authorize>
+                            <a class="like-post-button" data-value="${ likeCurrentValue == 1 ? 0 : 1 }">
+                                <span class="iconify" data-icon="<c:out value="${ likeCurrentValue == 1 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
+                            </a>
                         </div>
+
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
                             <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
                                 <c:out value="${post.likes}"/>
@@ -62,25 +56,15 @@
                         </div>
 
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                            <sec:authorize access="hasRole('USER')">
-                                <c:if test="${likeCurrentValue != -1}">
-                                    <a class=" like-post-button"  data-value="${ -1 }">
-                                        <span class="iconify" data-icon="cil:chevron-bottom" data-inline="true"></span>
-                                    </a>
-                                </c:if>
-                                <c:if test="${likeCurrentValue == -1}">
-                                    <a class="like-post-button"  data-value="${ 0 }">
-                                        <span class="iconify" data-icon="el:chevron-down" data-inline="true"></span>
-                                    </a>
-                                </c:if>
-                            </sec:authorize>
+                            <a class=" like-post-button"  data-value="${ likeCurrentValue != -1 ? -1 : 0 }">
+                                <span class="iconify" data-icon="<c:out value="${ likeCurrentValue != -1 ? 'cil:chevron-bottom' : 'el:chevron-down'}" />cil:chevron-bottom" data-inline="true"></span>
+                            </a>
                         </div>
-                    </sec:authorize>
+                    </c:if>
                 </div>
             </div>
         </div>
         <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
-<%--                TODO: Create a custom taglib  --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
                 <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                 <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
@@ -139,7 +123,7 @@
         </c:forEach>
     </section>
     <hr>
-    <sec:authorize access="hasRole('ADMIN')">
+    <c:if test="${not empty loggedUser and loggedUser.admin}">
         <div class="uk-flex uk-flex-right">
             <button id="post-delete-btn"
                     class="uk-button uk-button-default logout-button uk-border-rounded"
@@ -150,7 +134,7 @@
                 <spring:message code="post.delete.button"/>
             </button>
         </div>
-    </sec:authorize>
+    </c:if>
     <c:set var="comments" value="${comments}" scope="request"/>
     <c:set var="postId" value="${post.id}" scope="request"/>
     <c:set var="parentId" value="${0}" scope="request"/>
@@ -170,7 +154,7 @@
     </label>
 </form>
 
-<sec:authorize access="hasRole('ADMIN')">
+<c:if test="${not empty loggedUser and loggedUser.admin}">
     <%--  Delete form  --%>
     <form method="post" action="<c:url value="/"/>" id="delete-post-form"></form>
 
@@ -184,4 +168,4 @@
             </p>
         </div>
     </div>
-</sec:authorize>
+</c:if>

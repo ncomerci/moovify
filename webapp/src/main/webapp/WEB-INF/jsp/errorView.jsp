@@ -22,6 +22,7 @@
     </div>
     <br>
     <div class="uk-margin-auto">
+        <%-- TODO: Cambiar por boton que vaya al home. Hay veces donde goBack() no tiene sentido --%>
         <button class="uk-button uk-button-primary uk-border-rounded uk-margin-auto uk-align-center"
                 type="button"
                 onclick="goBack()"

@@ -42,7 +42,7 @@
                                                         </span>
                                                     </c:otherwise>
                                                 </c:choose>
-                                                <sec:authorize access="hasRole('ADMIN')">
+                                                <c:if test="${not empty loggedUser and loggedUser.admin}">
                                                     <a href="#delete-comment-modal"
                                                        data-id="<c:out value="${comment.id}"/>"
                                                        class="uk-link-muted delete-comment-button uk-position-small uk-hidden-hover"
@@ -50,7 +50,7 @@
                                                     >
                                                         <spring:message code="comment.delete.button"/>
                                                     </a>
-                                                </sec:authorize>
+                                                </c:if>
                                             </h4>
                                         </c:if>
                                         <c:if test="${!comment.enabled}">
@@ -85,20 +85,13 @@
                                                     </p>
                                                 </div>
                                             </sec:authorize>
-                                            <sec:authorize access="hasRole('USER')">
+                                            <c:if test="${not empty loggedUser and loggedUser.validated}">
+                                                <c:set var="hasUserVoted" value="${ customTag:hasUserVotedComment(comment, loggedUser.id) }" />
+                                                <c:set var="likeValue" value="${ hasUserVoted and customTag:hasUserLikedComment(comment,loggedUser.id) }" />
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right ">
-                                                    <sec:authorize access="hasRole('USER')">
-                                                        <c:if test="${!customTag:hasUserVotedComment(comment, loggedUser.id) or !customTag:hasUserLikedComment(comment,loggedUser.id)}">
-                                                            <a class="like-comment-button" data-id="${comment.id}" data-value="${ 1 }">
-                                                                <span class="iconify" data-icon="cil:chevron-top" data-inline="false"></span>
-                                                            </a>
-                                                        </c:if>
-                                                        <c:if test="${customTag:hasUserVotedComment(comment, loggedUser.id) and customTag:hasUserLikedComment(comment,loggedUser.id)}">
-                                                            <a class="like-comment-button" data-id="${comment.id}" data-value="${ 0 }">
-                                                                <span class="iconify" data-icon="el:chevron-up" data-inline="false"></span>
-                                                            </a>
-                                                        </c:if>
-                                                    </sec:authorize>
+                                                    <a class="like-comment-button" data-id="${comment.id}" data-value="${ likeValue ? 0 : 1 }">
+                                                        <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
+                                                    </a>
                                                 </div>
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
                                                     <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
@@ -106,20 +99,11 @@
                                                     </p>
                                                 </div>
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                                                    <sec:authorize access="hasRole('USER')">
-                                                        <c:if test="${!customTag:hasUserVotedComment(comment, loggedUser.id) or customTag:hasUserLikedComment(comment,loggedUser.id)}">
-                                                            <a class=" like-comment-button" data-id="${comment.id}"  data-value="${ -1 }">
-                                                                <span class="iconify" data-icon="cil:chevron-bottom" data-inline="true"></span>
-                                                            </a>
-                                                        </c:if>
-                                                        <c:if test="${customTag:hasUserVotedComment(comment, loggedUser.id) and !customTag:hasUserLikedComment(comment,loggedUser.id)}">
-                                                            <a class="like-comment-button" data-id="${comment.id}" data-value="${ 0 }">
-                                                                <span class="iconify" data-icon="el:chevron-down" data-inline="true"></span>
-                                                            </a>
-                                                        </c:if>
-                                                    </sec:authorize>
+                                                    <a class=" like-comment-button" data-id="${comment.id}"  data-value="${ !hasUserVoted or likeValue ? -1 : 0 }">
+                                                        <span class="iconify" data-icon="<c:out value="${ !hasUserVoted or likeValue ? 'cil:chevron-bottom' : 'el:chevron-down'}" />" data-inline="true"></span>
+                                                    </a>
                                                 </div>
-                                            </sec:authorize>
+                                            </c:if>
                                         </div>
                                     </div>
                                 </div>
@@ -133,9 +117,9 @@
                             </c:when>
                             <c:otherwise>
                                 <div class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></div>
-                                <sec:authorize access="hasRole('ADMIN')">
+                                <c:if test="${not empty loggedUser and loggedUser.admin}">
                                 <div class="uk-text-italic"><c:out value="[${comment.user.username}: ${comment.body}]"/></div>
-                                </sec:authorize>
+                                </c:if>
                             </c:otherwise>
                         </c:choose>
                     </div>

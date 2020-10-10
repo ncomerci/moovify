@@ -57,9 +57,9 @@
             <ul class="uk-list uk-list-bullet">
                 <li class="userTitle"><spring:message code="user.profile.Name" arguments="${loggedUser.name}"/></li>
                 <li class="userTitle"><spring:message code="user.profile.Email" arguments="${loggedUser.email}"/></li>
-                <sec:authorize access="hasRole('ADMIN')" >
+                <c:if test="${loggedUser.admin}" >
                     <li class="userTitle"><spring:message code="user.profile.Administrator"/></li>
-                </sec:authorize>
+                </c:if>
                 <c:if test="${fn:length(loggedUser.description) == 0}">
                     <li class="userTitle"><spring:message code="user.profile.notDescription"/> </li>
                 </c:if>
@@ -67,22 +67,22 @@
                     <li class="userTitle"><spring:message code="user.profile.Description" arguments="${loggedUser.description}"/></li>
                 </c:if>
             </ul>
-            <sec:authorize access="hasRole('USER')">
+            <c:if test="${loggedUser.validated}">
                 <p class="uk-margin-large-left">
                     <a href="<c:url value="/user/profile/edit"/>"> <button id="submit-form-button" class="uk-button uk-button-primary uk-border-rounded" type="button">
                         <spring:message code="user.profile.EditProfile"/></button></a>
                 </p>
-            </sec:authorize>
+            </c:if>
         </div>
     </div>
 </div>
 <div class="uk-container">
     <div class="uk-text-center uk-margin-auto">
-        <sec:authorize access="hasRole('NOT_VALIDATED')" >
+        <c:if test="${!loggedUser.validated}" >
             <h2><spring:message code="user.profile.ConfirmationEmail"/>  <a href="<c:url value="/user/resendConfirmation" /> "><spring:message code="user.profile.ResendEmail"/></a></h2>
-        </sec:authorize>
+        </c:if>
     </div>
-    <sec:authorize access="hasRole('USER')">
+    <c:if test="${loggedUser.validated}">
         <div class="uk-margin-medium-top">
             <ul class="uk-child-width-expand uk-tab">
                 <li class="${currentState == 0 ? 'uk-active' : ''}">
@@ -107,7 +107,7 @@
                 </li>
             </ul>
         </div>
-    </sec:authorize>
+    </c:if>
 </div>
 
 

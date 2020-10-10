@@ -11,40 +11,42 @@
 <jsp:useBean id="parentId" scope="request" type="java.lang.Long"/>
 <jsp:useBean id="enableReplies" scope="request" type="java.lang.Boolean"/>
 
+<sec:authorize access="isAuthenticated()">
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+</sec:authorize>
+
 <c:if test="${parentId == 0}">
     <c:set var="parentId" value="${null}"/>
 </c:if>
 
 <section id="post-comments" class="uk-container uk-container-small">
     <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${comments.totalCount}"/></h1>
-    <sec:authorize access="hasRole('USER')">
-        <c:if test="${enableReplies}">
-            <div class="uk-padding uk-padding-remove-horizontal uk-padding-remove-top">
-                <c:url value="/comment/create" var="action"/>
-                <%--@elvariable id="CommentCreateForm" type="ar.edu.itba.paw.webapp.form.CommentCreateForm"--%>
-                <form:form id="spring-form" modelAttribute="CommentCreateForm" action="${action}" method="post">
-                    <c:set var="placeholder"><spring:message code="comment.create.writeCommentPlaceholder"/></c:set>
-                    <div class="uk-margin">
-                        <form:label path="postId">
-                            <form:hidden path="postId" value="${postId}"/>
-                        </form:label>
-                        <form:label path="parentId">
-                            <form:hidden path="parentId" value="${parentId}"/>
-                        </form:label>
-                        <form:label path="commentBody">
-                            <form:textarea class="uk-textarea" rows="5" path="commentBody" placeholder="${placeholder}" />
-                        </form:label>
-                    </div>
-                    <div class="uk-margin-large-bottom uk-align-right">
-                        <input class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
-                    </div>
-                </form:form>
-            </div>
-        </c:if>
-    </sec:authorize>
-    <sec:authorize access="hasRole('NOT_VALIDATED')">
+    <c:if test="${not empty loggedUser and loggedUser.validated and enableReplies}">
+        <div class="uk-padding uk-padding-remove-horizontal uk-padding-remove-top">
+            <c:url value="/comment/create" var="action"/>
+            <%--@elvariable id="CommentCreateForm" type="ar.edu.itba.paw.webapp.form.CommentCreateForm"--%>
+            <form:form id="spring-form" modelAttribute="CommentCreateForm" action="${action}" method="post">
+                <c:set var="placeholder"><spring:message code="comment.create.writeCommentPlaceholder"/></c:set>
+                <div class="uk-margin">
+                    <form:label path="postId">
+                        <form:hidden path="postId" value="${postId}"/>
+                    </form:label>
+                    <form:label path="parentId">
+                        <form:hidden path="parentId" value="${parentId}"/>
+                    </form:label>
+                    <form:label path="commentBody">
+                        <form:textarea class="uk-textarea" rows="5" path="commentBody" placeholder="${placeholder}" />
+                    </form:label>
+                </div>
+                <div class="uk-margin-large-bottom uk-align-right">
+                    <input class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
+                </div>
+            </form:form>
+        </div>
+    </c:if>
+    <c:if test="${not empty loggedUser and !loggedUser.validated}">
         <div class="uk-text-bold uk-text-italic uk-text-secondary uk-text-center"><spring:message code="comment.create.not_validated"/></div>
-    </sec:authorize>
+    </c:if>
     <div class="uk-margin-large-top">
         <hr>
         <c:set var="paginatedComments" value="${comments}" scope="request"/>
@@ -87,7 +89,7 @@
         </label>
     </form>
 
-<sec:authorize access="hasRole('ADMIN')">
+<c:if test="${not empty loggedUser and loggedUser.admin}">
     <%--  Delete form  --%>
     <form method="post" action="<c:url value="/"/>" id="delete-comment-form"></form>
 
@@ -102,6 +104,6 @@
             </p>
         </div>
     </div>
-</sec:authorize>
+</c:if>
 </section>
 
