@@ -71,7 +71,7 @@ public class PostDaoImplTest {
     private SimpleJdbcInsert postLikeInsert;
 
     @Before
-    public void setUp() {
+    public void testSetUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.postInsert = new SimpleJdbcInsert(ds)
                 .withTableName(TableNames.POSTS.getTableName())
@@ -169,7 +169,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void likePost() {
+    public void testLikePost() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -185,14 +185,14 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test(expected = RuntimeException.class)
-    public void likePostInvalidArgs() {
+    public void testLikePostInvalidArgs() {
 
         postDao.likePost(null, null, 1);
     }
 
     @Rollback
     @Test
-    public void removeLike() {
+    public void testRemoveLike() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
         final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
@@ -208,7 +208,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test(expected = RuntimeException.class)
-    public void removeLikeInvalidArgs() {
+    public void testRemoveLikeInvalidArgs() {
 
         postDao.removeLike(null, null);
     }
@@ -217,7 +217,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void findPostById() {
+    public void testFindPostById() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -231,7 +231,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void findPostByIdInvalidArgs() {
+    public void testFindPostByIdInvalidArgs() {
 
         final Optional<Post> post = postDao.findPostById(-1L);
 
@@ -240,7 +240,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void findPostsByMovie() {
+    public void testFindPostsByMovie() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -260,7 +260,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void findPostsByUser() {
+    public void testFindPostsByUser() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -280,7 +280,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void getAllPostsNewest() {
+    public void testGetAllPostsNewest() {
 
         // Requires users with ID 1, 2 and 3.
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
@@ -298,7 +298,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void getAllPostsOldest() {
+    public void testGetAllPostsOldest() {
 
         //Requires users with ID 1, 2 and 3.
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
@@ -316,7 +316,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void getAllPostsHottest() {
+    public void testGetAllPostsHottest() {
 
         //Requires users with ID 1, 2 and 3.
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
@@ -342,7 +342,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void getAllPostsEmptyPage() {
+    public void testGetAllPostsEmptyPage() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -359,7 +359,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void getAllPostsExcludingNotEnabled() {
+    public void testGetAllPostsExcludingNotEnabled() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -375,7 +375,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test(expected = RuntimeException.class)
-    public void getAllPostsInvalidArgs() {
+    public void testGetAllPostsInvalidArgs() {
 
         postDao.getAllPosts(null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
@@ -384,7 +384,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void getDeletedPostsExcludingEnabled() {
+    public void testGetDeletedPostsExcludingEnabled() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -400,7 +400,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test(expected = RuntimeException.class)
-    public void getDeletedPostsInvalidArgs() {
+    public void testGetDeletedPostsInvalidArgs() {
 
         postDao.getDeletedPosts(null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
@@ -409,7 +409,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
-    public void searchPosts() {
+    public void testSearchPosts() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -425,14 +425,14 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test(expected = RuntimeException.class)
-    public void searchPostsInvalidArgs() {
+    public void testSearchPostsInvalidArgs() {
 
         postDao.searchPosts(null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
     @Rollback
     @Test
-    public void searchDeletedPosts() {
+    public void testSearchDeletedPosts() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -448,14 +448,14 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test(expected = RuntimeException.class)
-    public void searchDeletedPostsInvalidArgs() {
+    public void testSearchDeletedPostsInvalidArgs() {
 
         postDao.searchDeletedPosts(null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
     @Rollback
     @Test
-    public void searchPostsByCategory() {
+    public void testSearchPostsByCategory() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -471,14 +471,14 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test(expected = RuntimeException.class)
-    public void searchPostsByCategoryInvalidArgs() {
+    public void testSearchPostsByCategoryInvalidArgs() {
 
         postDao.searchPostsByCategory(null, null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
     @Rollback
     @Test
-    public void searchPostsOlderThan() {
+    public void testSearchPostsOlderThan() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -495,14 +495,14 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test(expected = RuntimeException.class)
-    public void searchPostsOlderThanInvalidArgs() {
+    public void testSearchPostsOlderThanInvalidArgs() {
 
         postDao.searchPostsOlderThan(null, null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
     @Rollback
     @Test
-    public void searchPostsByCategoryAndOlderThan() {
+    public void testSearchPostsByCategoryAndOlderThan() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
 
@@ -520,7 +520,7 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test(expected = RuntimeException.class)
-    public void searchPostsByCategoryAndOlderThanInvalidArgs() {
+    public void testSearchPostsByCategoryAndOlderThanInvalidArgs() {
 
         postDao.searchPostsByCategoryAndOlderThan(null, null, null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
