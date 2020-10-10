@@ -19,6 +19,7 @@ function interpretBody() {
     marked.setOptions({
         gfm: true,
         breaks: true,
+        sanitizer: DOMPurify.sanitize,
         //  silent: true,
     });
 
