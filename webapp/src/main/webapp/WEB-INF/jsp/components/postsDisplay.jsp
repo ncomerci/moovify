@@ -14,13 +14,6 @@
     <c:forEach items="${posts.results}" var="post">
         <div class="uk-width-1-1">
             <div class="uk-flex">
-                <c:if test="${not empty loggedUser and loggedUser.admin and !post.enabled}">
-                    <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
-                            data-id="${post.id}"
-                            type="button">
-                        <spring:message code="adminPanel.restore"/>
-                    </button>
-                </c:if>
                 <div class="uk-width-expand uk-margin-small-top">
                     <a href="<c:url value="/post/${post.id}"/>">
                         <c:out value="${post.title}"/>

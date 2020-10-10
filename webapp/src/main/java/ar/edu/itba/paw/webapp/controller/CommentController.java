@@ -49,7 +49,10 @@ public class CommentController {
 
             final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
             final Post post = postService.findPostById(commentCreateForm.getPostId()).orElseThrow(PostNotFoundException::new);
-            final Comment parent = commentService.findCommentById(commentCreateForm.getParentId()).orElseThrow(CommentNotFoundException::new);
+            final Comment parent =
+                    (commentCreateForm.getParentId() != null)?
+                    commentService.findCommentById(commentCreateForm.getParentId()).orElseThrow(CommentNotFoundException::new) :
+                    null;
 
             commentService.register(post, parent,
                     commentCreateForm.getCommentBody(), user, "newCommentEmail");
