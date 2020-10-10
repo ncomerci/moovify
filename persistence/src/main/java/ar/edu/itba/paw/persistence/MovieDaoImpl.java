@@ -197,7 +197,7 @@ public class MovieDaoImpl implements MovieDao {
 
     private Collection<Movie> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
 
-        final String query = select + " " + from + " " + where + " " + orderBy;
+        final String query = String.format("%s %s %s %s", select, from, where, orderBy);
 
         LOGGER.debug("Query executed in MovieDaoImpl : {}. Args: {}", query, args);
 
@@ -227,24 +227,24 @@ public class MovieDaoImpl implements MovieDao {
 
         final String from = buildFromStatement();
 
+        final String totalMovieCountQuery = String.format("SELECT COUNT(DISTINCT " + MOVIES + ".movie_id) %s %s", from, customWhereStatement);
+
         // Execute original query to count total posts in the query
-        final int totalMovieCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT " + MOVIES + ".movie_id) " + from + " " + customWhereStatement, args, Integer.class);
+        final int totalMovieCount = jdbcTemplate.queryForObject(totalMovieCountQuery, args, Integer.class);
 
         final String orderBy = buildOrderByStatement(sortCriteria);
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
-        final String newWhere = "WHERE " + MOVIES + ".movie_id IN ( " +
-                "SELECT AUX.movie_id " +
-                "FROM (" +
-                "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + MOVIES + ".movie_id " +
-                from + " " +
-                customWhereStatement +
-                " ) AUX " +
-                "GROUP BY AUX.movie_id " +
-                "ORDER BY MIN(AUX.row_num) " +
-                pagination + ")";
+        final String newWhere = String.format(
+                "WHERE " + MOVIES + ".movie_id IN ( " +
+                        "SELECT AUX.movie_id " +
+                        "FROM (" +
+                            "SELECT ROW_NUMBER() OVER( %s ) row_num, " + MOVIES + ".movie_id " +
+                            " %s %s ) AUX " +
+                        "GROUP BY AUX.movie_id " +
+                        "ORDER BY MIN(AUX.row_num) " +
+                        "%s )", orderBy, from, customWhereStatement, pagination);
 
         final Collection<Movie> results = executeQuery(select, from, newWhere, orderBy, args);
 
@@ -281,7 +281,7 @@ public class MovieDaoImpl implements MovieDao {
             throw new InvalidPaginationArgumentException();
         }
 
-        return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
+        return String.format("LIMIT %d OFFSET %d", pageSize, pageNumber * pageSize);
     }
 
     @Override

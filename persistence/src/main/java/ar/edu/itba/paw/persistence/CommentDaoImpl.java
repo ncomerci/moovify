@@ -376,7 +376,6 @@ public class CommentDaoImpl implements CommentDao {
         commentInsert = new SimpleJdbcInsert(ds)
                 .withTableName(COMMENTS)
                 .usingGeneratedKeyColumns("comment_id");
-
     }
 
     @Override
@@ -443,7 +442,7 @@ public class CommentDaoImpl implements CommentDao {
 
     private Collection<Comment> executeQuery(String select, String from, String where, String orderBy, Object[] args, boolean withChildren) {
 
-        final String query = select + " " + from + " " + where + " " + orderBy;
+        final String query = String.format("%s %s %s %s", select, from, where, orderBy);
 
         LOGGER.debug("Query executed in CommentDaoImpl (with children {}): {}. Args: {}", withChildren, query, args);
 
@@ -499,38 +498,38 @@ public class CommentDaoImpl implements CommentDao {
         // Add rootId to args list
         final Object[] args = new Object[]{ rootId };
 
+        final String totalCommentCountQuery = String.format(
+                "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id) %s %s", from, firstLevelCommentsWhere);
 
         // Execute original query to count total comments in the query
-        final int totalCommentCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id) " + from + " " + firstLevelCommentsWhere, args, Integer.class);
+        final int totalCommentCount = jdbcTemplate.queryForObject(totalCommentCountQuery, args, Integer.class);
 
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
         final String orderBy = buildOrderByStatement(sortCriteria);
 
-        final String newWhere = "WHERE " + COMMENTS + ".comment_id IN ( " +
-                "SELECT AUX.comment_id " +
-                "FROM (" +
-                "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + COMMENTS + ".comment_id " +
-                from + " " +
-                firstLevelCommentsWhere +
-                " ) AUX " +
-                "GROUP BY AUX.comment_id " +
-                "ORDER BY MIN(AUX.row_num) " +
-                pagination + ")";
+        final String newWhere = String.format(
+                "WHERE " + COMMENTS + ".comment_id IN ( " +
+                        "SELECT AUX.comment_id " +
+                        "FROM (" +
+                            "SELECT ROW_NUMBER() OVER( %s ) row_num, " + COMMENTS + ".comment_id " +
+                            " %s %s ) AUX " +
+                        "GROUP BY AUX.comment_id " +
+                        "ORDER BY MIN(AUX.row_num) " +
+                        " %s )", orderBy, from, firstLevelCommentsWhere, pagination);
 
-        final String recursiveQuery =
-                    PAGINATION_RECURSIVE_QUERY_UPPER +
-                        " FROM (SELECT * FROM " + COMMENTS + " " + newWhere + ") root_comments " +
-                        PAGINATION_RECURSIVE_QUERY_LOWER;
+        final String recursiveQuery = String.format(
+                        PAGINATION_RECURSIVE_QUERY_UPPER +
+                            " FROM (SELECT * FROM " + COMMENTS + " %s ) root_comments " +
+                        PAGINATION_RECURSIVE_QUERY_LOWER, newWhere);
 
         LOGGER.debug("Paginated query with descendants recursive query {}", recursiveQuery);
 
-        final String recursiveSelect = recursiveQuery + " " + select;
+        final String recursiveSelect = String.format("%s %s", recursiveQuery, select);
 
         // Replaces BASE_COMMENT_FROM. It should not have logic!!
-        final String recursiveFrom = "FROM (SELECT * FROM comments_rec) " + COMMENTS + " " + nonBaseFrom;
+        final String recursiveFrom = String.format("FROM (SELECT * FROM comments_rec) " + COMMENTS + " %s", nonBaseFrom);
 
         final Collection<Comment> results = executeQuery(recursiveSelect, recursiveFrom, "", orderBy, args, true);
 
@@ -547,26 +546,25 @@ public class CommentDaoImpl implements CommentDao {
 
         final String from = buildFromStatement();
 
+        final String totalCommentCountQuery = String.format("SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id) %s %s", from, customWhereStatement);
+
         // Execute original query to count total comments in the query
-        final int totalCommentCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id) " + from + " " + customWhereStatement, args, Integer.class);
+        final int totalCommentCount = jdbcTemplate.queryForObject(totalCommentCountQuery, args, Integer.class);
 
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
         final String orderBy = buildOrderByStatement(sortCriteria);
 
-        final String newWhere = "WHERE " + COMMENTS + ".comment_id IN ( " +
-                "SELECT AUX.comment_id " +
-                "FROM (" +
-                "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + COMMENTS + ".comment_id " +
-                from + " " +
-                customWhereStatement +
-                " ) AUX " +
-                "GROUP BY AUX.comment_id " +
-                "ORDER BY MIN(AUX.row_num) " +
-                pagination + ")";
-
+        final String newWhere = String.format(
+                "WHERE " + COMMENTS + ".comment_id IN ( " +
+                        "SELECT AUX.comment_id " +
+                        "FROM (" +
+                        "SELECT ROW_NUMBER() OVER( %s ) row_num, " + COMMENTS + ".comment_id " +
+                        " %s %s ) AUX " +
+                        "GROUP BY AUX.comment_id " +
+                        "ORDER BY MIN(AUX.row_num) " +
+                        " %s )", orderBy, from, customWhereStatement, pagination);
 
         final Collection<Comment> results = executeQuery(select, from, newWhere, orderBy, args, false);
 
@@ -608,7 +606,7 @@ public class CommentDaoImpl implements CommentDao {
             throw new InvalidPaginationArgumentException();
         }
 
-        return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
+        return String.format("LIMIT %s OFFSET %s", pageSize, pageNumber * pageSize);
     }
 
     @Override
