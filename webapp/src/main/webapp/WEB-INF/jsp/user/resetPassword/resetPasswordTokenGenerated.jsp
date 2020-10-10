@@ -15,7 +15,7 @@
             <spring:message code="user.resetPasswordTokenGenerated.title" arguments="${loggedUser.email}"/>
         </h1>
         <p class="uk-text-light uk-text-lead">
-            <spring:message code="email.resetPasswordTokenGenerated.body" arguments="${loggedUser.email}"/>
+            <spring:message code="mail.resetPasswordTokenGenerated.body" arguments="${loggedUser.email}"/>
         </p>
     </div>
 </body>

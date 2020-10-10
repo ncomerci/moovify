@@ -21,11 +21,11 @@
                         <c:choose>
                             <c:when test="${param.error != null}">
                                 <span class="uk-form-icon icon-error"  uk-icon="icon: user"></span>
-                                <input class="uk-input uk-form-danger" name="username" type="text" placeholder="<spring:message code="user.create.Username"/>"/>
+                                <input class="uk-input uk-form-danger" name="username" type="text" placeholder="<spring:message code="user.login.Username"/>"/>
                             </c:when>
                             <c:otherwise>
                                 <span class="uk-form-icon" uk-icon="icon: user"></span>
-                                <input class="uk-input" name="username" type="text" placeholder="<spring:message code="user.create.Username"/>"/>
+                                <input class="uk-input" name="username" type="text" placeholder="<spring:message code="user.login.Username"/>"/>
                             </c:otherwise>
                         </c:choose>
                     </label>
@@ -37,11 +37,11 @@
                         <c:choose>
                             <c:when test="${param.error != null}">
                         <span class="uk-form-icon icon-error"  uk-icon="icon: lock"></span>
-                        <input class="uk-input uk-form-danger" name="password" type="password" placeholder="<spring:message code="user.create.Password"/>" />
+                        <input class="uk-input uk-form-danger" name="password" type="password" placeholder="<spring:message code="user.login.Password"/>" />
                             </c:when>
                             <c:otherwise>
                                 <span class="uk-form-icon" uk-icon="icon: lock"></span>
-                                <input class="uk-input" name="password" type="password" placeholder="<spring:message code="user.create.Password"/>" />
+                                <input class="uk-input" name="password" type="password" placeholder="<spring:message code="user.login.Password"/>" />
                             </c:otherwise>
                         </c:choose>
                     </label>
