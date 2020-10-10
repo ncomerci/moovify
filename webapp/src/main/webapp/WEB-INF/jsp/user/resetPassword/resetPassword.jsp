@@ -12,7 +12,7 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
-<div class="uk-container uk-margin-medium-top">
+<div class="uk-container uk-margin-auto uk-margin-medium-top">
     <div>
         <h1 class="uk-margin-left uk-text-center"><spring:message code="user.resetPassword.header" /> </h1>
         <p class="uk-margin-left uk-text-center uk-text-bold uk-text-italic">
@@ -24,17 +24,10 @@
         <div class="uk-margin">
             <div class="uk-inline uk-text-center">
                 <c:set var="emailError"><form:errors path="email"/></c:set>
-                <form:errors path="email" element="p" cssClass="error"/>
+                <form:errors path="email" element="p" cssClass="error uk-margin-remove-bottom"/>
                 <form:label path="email">
                     <spring:message code="user.resetPassword.email" var="email"/>
-                    <c:choose>
-                        <c:when test="${not empty emailError}">
-                            <form:input class="uk-input uk-form-width-large uk-form-danger" path="email" placeholder="${email}" />
-                        </c:when>
-                        <c:otherwise>
-                            <form:input class="uk-input uk-form-width-large" path="email" placeholder="${email}" />
-                        </c:otherwise>
-                    </c:choose>
+                    <form:input class="uk-input uk-form-width-large ${not empty emailError ? 'uk-form-danger' : ''}" path="email" placeholder="${email}" />
                 </form:label>
             </div>
         </div>

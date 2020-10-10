@@ -20,7 +20,7 @@
 <div class="uk-inline ">
     <div class="uk-cover-container">
         <canvas height="350"></canvas>
-        <img alt="" src="<c:url value="/resources/images/background.jpg"/>"  uk-cover>
+        <img alt="" src="<c:url value="/resources/images/background.jpg"/>" uk-cover>
     </div>
     <div class="uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle" uk-grid>
         <div class="uk-width-1-3@m uk-flex-first uk-text-center">
@@ -33,11 +33,18 @@
                     <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
                 </c:if>
             </h3>
-            <p class="uk-text-meta uk-margin-remove-top "><spring:message code="user.profile.inMoovifySince"/><fmt:parseDate value="${user.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
-                <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" /></p>
+            <p class="uk-text-meta uk-margin-remove-top">
+                <fmt:parseDate value="${user.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
+                <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" var="parsedDateTime"/>
+                <spring:message code="user.profile.inMoovifySince" arguments="${parsedDateTime}"/>
+            </p>
             <ul class="uk-list uk-list-bullet">
-                <li class="userTitle"><spring:message code="user.profile.Name" arguments="${user.name}"/></li>
-                <li class="userTitle"><spring:message code="user.profile.Email" arguments="${user.email}"/></li>
+                <li class="userTitle">
+                    <spring:message code="user.profile.Name" arguments="${user.name}"/>
+                </li>
+                <li class="userTitle">
+                    <spring:message code="user.profile.Email" arguments="${user.email}"/>
+                </li>
                 <c:if test="${user.admin}">
                     <li class="userTitle"><spring:message code="user.profile.Administrator"/></li>
                 </c:if>
@@ -62,40 +69,31 @@
                     </button>
                 </span>
             </c:if>
-            <%--<p class="uk-margin userTitle">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aspernatur, aut autem debitis deleniti eius fuga fugiat harum magnam maxime natus necessitatibus nisi porro provident quae quam quisquam sit sunt suscipit!</p>--%>
         </div>
 
     </div>
 </div>
 
-<%-- TODO: QUe onda ese userID ?? - Tobi --%>
 <div class="uk-container">
     <div class="uk-margin-medium-top">
         <ul class="uk-child-width-expand uk-tab">
             <li class="${currentState == 0 ? 'uk-active' : ''}">
-                <c:choose>
-                    <c:when test="${currentState == 0}">
-                        <a href="#"><spring:message code="user.view.Posts" arguments="${user.username}"/></a>
-                    </c:when>
-                    <c:otherwise>
-                        <a href="<c:url value="${'/user/'}${userId}${'/posts'}"/>"><spring:message code="user.view.Posts" arguments="${user.username}"/></a>
-                    </c:otherwise>
-                </c:choose>
+                <c:url value="${'/user/'}${user.id}${'/posts'}" var="postsURL"/>
+                <a href="${currentState != 0 ? postsURL : '#'}">
+                    <spring:message code="user.view.Posts" arguments="${user.username}"/>
+                </a>
             </li>
             <li class="${currentState == 1 ? 'uk-active' : ''}">
-                <c:choose>
-                    <c:when test="${currentState == 1}">
-                        <a href="#"><spring:message code="user.view.Comments" arguments="${user.username}"/></a>
-                    </c:when>
-                    <c:otherwise>
-                        <a href="<c:url value="${'/user/'}${userId}${'/comments'}"/>"><spring:message code="user.view.Comments" arguments="${user.username}"/></a>
-                    </c:otherwise>
-                </c:choose>
+                <c:url value="${'/user/'}${user.id}${'/comments'}" var="commentsURL"/>
+                <a href="${currentState != 1 ? commentsURL : '#'}">
+                    <spring:message code="user.view.Comments" arguments="${user.username}"/>
+                </a>
             </li>
         </ul>
     </div>
 </div>
 
+<%--Delete and promte modals--%>
 <c:if test="${not empty loggedUser and loggedUser.admin}">
     <div id="modal-admin-promote" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
@@ -119,5 +117,4 @@
 
     <form id="promote-user-form" method="post" action="<c:url value="/user/promote/${user.id}"/>"></form>
     <form id="delete-user-form" method="post" action="<c:url value="/user/delete/${user.id}"/>"></form>
-
 </c:if>

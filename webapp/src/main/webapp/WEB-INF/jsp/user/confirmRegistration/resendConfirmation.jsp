@@ -14,8 +14,14 @@
 </head>
 <body>
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
-    <div class="uk-text-center uk-margin-auto">
-        <h2 class="userTitle"> <spring:message code="email.resendMessage" arguments="${loggedUser.name}, ${loggedUser.email}"/></h2>
+
+    <div class="uk-text-center uk-margin-auto uk-padding-large">
+        <h1 class="uk-h1">
+            <spring:message code="email.resendConfirmation.title" arguments="${loggedUser.name}"/>
+        </h1>
+        <p class="uk-text-bold">
+            <spring:message code="email.resendConfirmation.body" arguments="${loggedUser.email}"/>
+        </p>
     </div>
 </body>
 </html>

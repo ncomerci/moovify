@@ -21,14 +21,11 @@
             <c:out value="${message}"/>
     </div>
     <br>
-    <div class="uk-margin-auto">
-        <%-- TODO: Cambiar por boton que vaya al home. Hay veces donde goBack() no tiene sentido --%>
-        <button class="uk-button uk-button-primary uk-border-rounded uk-margin-auto uk-align-center"
-                type="button"
-                onclick="goBack()"
-        >
+    <div class="uk-margin-auto uk-width-small">
+        <a class="uk-button uk-button-primary uk-border-rounded uk-margin-auto uk-align-center"
+                href="<c:url value="/"/>">
             <spring:message code="error.goBack"/>
-        </button>
+        </a>
     </div>
 
 </main>
