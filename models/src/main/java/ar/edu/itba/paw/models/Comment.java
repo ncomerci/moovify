@@ -16,7 +16,7 @@ public class Comment {
     }
 
     public static boolean hasUserLikedComment(Comment comment, long user_id){
-        return comment.getVotedBy().get(user_id);
+        return comment.getVotedBy().get(user_id) > 0;
     }
 
     private final long id;
@@ -27,11 +27,11 @@ public class Comment {
     private final String body;
     private final User user;
     private final long likes;
-    private final Map<Long, Boolean> votedBy;
+    private final Map<Long, Integer> votedBy;
     private final boolean enabled;
 
 
-    public Comment(long id, LocalDateTime creationDate, Post post, Long parentId, Collection<Comment> children, String body, User user, boolean enabled, long likes, Map<Long, Boolean> votedBy) {
+    public Comment(long id, LocalDateTime creationDate, Post post, Long parentId, Collection<Comment> children, String body, User user, boolean enabled, long likes, Map<Long, Integer> votedBy) {
         this.id = id;
         this.creationDate = creationDate;
         this.post = post;
@@ -77,7 +77,7 @@ public class Comment {
         return likes;
     }
 
-    public Map<Long, Boolean> getVotedBy() {
+    public Map<Long, Integer> getVotedBy() {
         return votedBy;
     }
 
@@ -102,6 +102,13 @@ public class Comment {
     }
 
     public boolean isEnabled() { return enabled; }
+
+    public int getUserVote(User user) {
+        if(!getVotedBy().containsKey(user.getId()))
+            return 0;
+
+        return getVotedBy().get(user.getId());
+    }
 
     @Override
     public String toString() {

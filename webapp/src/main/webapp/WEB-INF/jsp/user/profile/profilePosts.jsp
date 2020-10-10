@@ -25,7 +25,7 @@
 
     <div class="uk-container">
         <c:if test="${empty posts}">
-            <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.posts.postsNotFound"/> </h2>
+            <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.profile.PostsNotFound"/> </h2>
         </c:if>
 
         <c:set var="posts" value="${posts}" scope="request"/>

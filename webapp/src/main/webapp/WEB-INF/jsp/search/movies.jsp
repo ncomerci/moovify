@@ -60,8 +60,8 @@
 
         <section id="search-results" class="uk-flex uk-flex-wrap">
             <c:if test="${empty movies.results}">
-                <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message
-                        code="search.notFound" arguments="movies"/></h1>
+                <h1 class="uk-text-meta uk-text-center uk-text-bold">
+                    <spring:message code="search.notFound" arguments="movies"/></h1>
             </c:if>
             <c:forEach items="${movies.results}" var="movie">
                 <div class="uk-width-1-1">

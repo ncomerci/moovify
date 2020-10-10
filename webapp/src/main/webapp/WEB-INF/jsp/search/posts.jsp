@@ -30,7 +30,7 @@
                     <form:select path="postCategory" class="uk-select uk-form-blank uk-width-expand">
                         <form:option value="all"><spring:message code="search.posts.categories.all"/></form:option>
                         <c:forEach items="${categories}" var="category" >
-                            <form:option value="${category}"><spring:message code="search.posts.categories.${category}"/></form:option>
+                            <form:option value="${category}"><spring:message code="${category}"/></form:option>
                         </c:forEach>
                     </form:select>
                 </div>

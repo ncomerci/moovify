@@ -16,8 +16,8 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp"/>
 
 <div class="uk-margin-auto uk-margin-top">
-    <h1 class="uk-article-title uk-margin-auto uk-text-center uk-text-primary"><spring:message
-            code="post.create.newPost"/></h1>
+    <h1 class="uk-article-title uk-margin-auto uk-text-center uk-text-primary">
+        <spring:message code="post.create.newPost"/></h1>
     <hr class="uk-divider-icon">
 </div>
 <div>
@@ -29,8 +29,8 @@
         <form:errors path="tags" element="p" cssClass="error"/>
         <spring:message code="post.create.titlePlaceholder" var="titlePlaceholder"/>
     <div class="uk-margin-left uk-margin-bottom">
-        <form:label path="title" class="uk-form-label uk-text-secondary uk-margin-auto" for="title-text"><spring:message
-                code="post.create.newPostTitle"/>
+        <form:label path="title" class="uk-form-label uk-text-secondary uk-margin-auto" for="title-text">
+            <spring:message code="post.create.newPostTitle"/>
             <form:input path="title" class="uk-input uk-form-small" id="title-text" type="text" minlength="6"
                         placeholder="${titlePlaceholder}" required="required"/>
         </form:label>
@@ -70,10 +70,12 @@
                 <button class="uk-modal-close" type="button" uk-close></button>
             </p>
             <div>
-                <h1 class="uk-h1 uk-margin-remove-top"><spring:message
-                        code="post.create.modal.moviesDiscussed.title"/></h1>
-                <label for="add-movie-input"><spring:message
-                        code="post.create.modal.moviesDiscussed.constrains"/></label>
+                <h1 class="uk-h1 uk-margin-remove-top">
+                    <spring:message code="post.create.modal.moviesDiscussed.title"/>
+                </h1>
+                <label for="add-movie-input">
+                    <spring:message code="post.create.modal.moviesDiscussed.constrains"/>
+                </label>
                 <div class="uk-flex">
                     <input id="add-movie-input"
                            class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand" list="movie-list"

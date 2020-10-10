@@ -217,7 +217,7 @@ public class CommentDaoImpl implements CommentDao {
             user_id = rs.getLong("cl_user_id");
 
             if(user_id > 0 && !idToCommentMap.get(comment_id).getVotedBy().containsKey(user_id))
-                idToCommentMap.get(comment_id).getVotedBy().put(user_id, rs.getLong("cl_value") > 0);
+                idToCommentMap.get(comment_id).getVotedBy().put(user_id, rs.getInt("cl_value"));
 
         }
 
@@ -317,7 +317,7 @@ public class CommentDaoImpl implements CommentDao {
             user_id = rs.getLong("cl_user_id");
 
             if(user_id > 0 && !idToCommentMap.get(comment_id).getVotedBy().containsKey(user_id))
-                idToCommentMap.get(comment_id).getVotedBy().put(user_id, rs.getLong("cl_value") > 0);
+                idToCommentMap.get(comment_id).getVotedBy().put(user_id, rs.getInt("cl_value"));
 
         }
 

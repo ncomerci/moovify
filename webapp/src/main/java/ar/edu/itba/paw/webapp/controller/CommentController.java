@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.IllegalCommentLikeException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
@@ -90,6 +91,9 @@ public class CommentController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
         final Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
+
+        if(!comment.isEnabled() || comment.getUserVote(user) == value)
+            throw new IllegalCommentLikeException();
 
         commentService.likeComment(comment, user, value);
 

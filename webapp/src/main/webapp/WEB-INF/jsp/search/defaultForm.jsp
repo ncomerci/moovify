@@ -9,7 +9,8 @@
 <div class="uk-flex uk-flex-middle">
     <div class="uk-search uk-search-large uk-width-expand">
         <span uk-search-icon></span>
-        <form:input path="query" class="uk-search-input search-query-input" type="search" placeholder="Search .."/>
+        <spring:message code="navbar.searchDots" var="queryPlaceholder" />
+        <form:input path="query" class="uk-search-input search-query-input" type="search" placeholder="${queryPlaceholder}"/>
     </div>
     <div class="uk-width-small">
         <button class="uk-button uk-button-default uk-border-rounded search-button extended-button" type="submit"><spring:message code="navbar.search"/></button>

@@ -61,7 +61,7 @@
 
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
                             <a class=" like-post-button"  data-value="${ likeCurrentValue != -1 ? -1 : 0 }">
-                                <span class="iconify" data-icon="<c:out value="${ likeCurrentValue != -1 ? 'cil:chevron-bottom' : 'el:chevron-down'}" />cil:chevron-bottom" data-inline="true"></span>
+                                <span class="iconify" data-icon="<c:out value="${ likeCurrentValue == -1 ?  'el:chevron-down': 'cil:chevron-bottom' }" />" data-inline="true"></span>
                             </a>
                         </div>
                     </c:if>

@@ -5,7 +5,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title><spring:message code="email.resendConfirmationEmail"/></title>
+    <title><spring:message code="mail.resendConfirmationEmail"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 
     <sec:authorize access="isAuthenticated()">
@@ -17,10 +17,10 @@
 
     <div class="uk-text-center uk-margin-auto uk-padding-large">
         <h1 class="uk-h1">
-            <spring:message code="email.resendConfirmation.title" arguments="${loggedUser.name}"/>
+            <spring:message code="mail.resendConfirmation.title" arguments="${loggedUser.name}"/>
         </h1>
         <p class="uk-text-bold">
-            <spring:message code="email.resendConfirmation.body" arguments="${loggedUser.email}"/>
+            <spring:message code="mail.resendConfirmation.body" arguments="${loggedUser.email}"/>
         </p>
     </div>
 </body>

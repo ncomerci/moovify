@@ -306,11 +306,11 @@ public class UserController {
         LOGGER.info("Accessed /user/registrationConfirm");
 
         final Optional<User> optUser = userService.confirmRegistration(token);
-        boolean success;
+        final boolean success;
 
         final ModelAndView mv = new ModelAndView("user/confirmRegistration/registrationConfirm");
 
-        if(optUser.isPresent()) {
+        if(optUser.isPresent() && optUser.get().isEnabled()) {
             success = true;
             final User user = optUser.get();
 

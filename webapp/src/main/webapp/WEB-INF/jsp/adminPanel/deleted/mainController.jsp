@@ -18,13 +18,12 @@
 <div class="uk-flex uk-flex-middle">
     <div class="uk-search uk-search-large uk-width-expand">
         <span uk-search-icon></span>
-        <input class="uk-search-input search-query-input" type="search" id="query-input" value="${query}" name="query">
+        <input class="uk-search-input search-query-input" type="search" id="query-input" value="${query}" name="query" placeholder="<spring:message code="navbar.searchDots" />">
     </div>
     <div class="uk-width-small">
         <button class="uk-button uk-button-default uk-border-rounded search-button extended-button" type="submit"><spring:message code="navbar.search"/></button>
     </div>
 </div>
-
 <p class="uk-text-meta">
     <spring:message code="admin.deleted.searchResults"/>
 </p>
