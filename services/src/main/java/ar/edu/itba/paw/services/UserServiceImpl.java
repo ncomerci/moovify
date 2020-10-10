@@ -201,7 +201,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean validatePasswordResetToken(String token) {
         return passwordResetTokenDao.getResetPasswordToken(token)
-                .map(PasswordResetToken::isValid)
+                .map(resetToken -> resetToken.isValid() && resetToken.getUser().isEnabled())
                 .orElse(false);
     }
 

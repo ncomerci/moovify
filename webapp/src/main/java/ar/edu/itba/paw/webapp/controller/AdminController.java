@@ -106,6 +106,9 @@ public class AdminController {
 
         final Comment comment = commentService.findCommentById(commentId).orElseThrow(CommentNotFoundException::new);
 
+        if(comment.isEnabled())
+            throw new RestoredEnabledModelException();
+
         commentService.restoreComment(comment);
 
         return new ModelAndView("redirect:/comment/" + comment.getId());
@@ -120,6 +123,9 @@ public class AdminController {
 
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
+        if(!post.isEnabled())
+            throw new DeletedDisabledModelException();
+
         postService.deletePost(post);
 
         return new ModelAndView("redirect:/");
@@ -131,6 +137,9 @@ public class AdminController {
         LOGGER.info("Accessed /post/restore/{} to restore post. Redirecting to /post/{}", postId, postId);
 
         final Post post = postService.findDeletedPostById(postId).orElseThrow(PostNotFoundException::new);
+
+        if(post.isEnabled())
+            throw new RestoredEnabledModelException();
 
         postService.restorePost(post);
 
@@ -146,8 +155,8 @@ public class AdminController {
 
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
-        if(user.isAdmin() || !user.isValidated())
-            throw new InvalidRoleException();
+        if(!user.isEnabled() || user.isAdmin() || !user.isValidated())
+            throw new InvalidUserPromotionException();
 
         userService.promoteUserToAdmin(user);
 
@@ -163,6 +172,9 @@ public class AdminController {
 
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
+        if(!user.isEnabled())
+            throw new DeletedDisabledModelException();
+
         userService.deleteUser(user);
 
         return new ModelAndView("redirect:/");
@@ -174,6 +186,9 @@ public class AdminController {
         LOGGER.info("Accessed /user/restore/{} to restore user. Redirecting to /user/{}", userId, userId);
 
         final User user = userService.findDeletedUserById(userId).orElseThrow(UserNotFoundException::new);
+
+        if(user.isEnabled())
+            throw new RestoredEnabledModelException();
 
         userService.restoreUser(user);
 

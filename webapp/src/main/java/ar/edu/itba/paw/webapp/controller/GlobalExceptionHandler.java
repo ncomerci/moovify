@@ -113,18 +113,7 @@ public class GlobalExceptionHandler {
 
         return mv;
     }
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(InvalidRoleException.class)
-    public ModelAndView handleInvalidRole() {
-        ModelAndView mv = new ModelAndView("errorView");
 
-        mv.addObject("message", messageSource.getMessage("error.invalidRoleException",null, LocaleContextHolder.getLocale()));
-        mv.addObject("code", "400" );
-
-        LOGGER.error("InvalidRoleException was thrown. Responding with Http Status 400");
-
-        return mv;
-    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidMovieIdException.class)
@@ -186,6 +175,76 @@ public class GlobalExceptionHandler {
         mv.addObject("code", "400" );
 
         LOGGER.error("InvalidPaginationArgumentException was thrown. Responding with Http Status 400");
+
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DeletedDisabledModelException.class)
+    public ModelAndView handleDeletedDisabledModel() {
+
+        final ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.DeletedDisabledModelException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "400" );
+
+        LOGGER.error("DeletedDisabledModelException was thrown. Responding with Http Status 400");
+
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalCommentLikeException.class)
+    public ModelAndView handleIllegalCommentLike() {
+
+        final ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.IllegalCommentLikeException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "400" );
+
+        LOGGER.error("IllegalCommentLikeException was thrown. Responding with Http Status 400");
+
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalPostLikeException.class)
+    public ModelAndView handleIllegalPostLike() {
+
+        final ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.IllegalPostLikeException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "400" );
+
+        LOGGER.error("IllegalPostLikeException was thrown. Responding with Http Status 400");
+
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidUserPromotionException.class)
+    public ModelAndView handleInvalidUserPromotion() {
+
+        final ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.InvalidUserPromotionException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "400" );
+
+        LOGGER.error("InvalidUserPromotionException was thrown. Responding with Http Status 400");
+
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(RestoredEnabledModelException.class)
+    public ModelAndView handleRestoredEnabledModel() {
+
+        final ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.RestoredEnabledModelException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "400" );
+
+        LOGGER.error("RestoredEnabledModelException was thrown. Responding with Http Status 400");
 
         return mv;
     }

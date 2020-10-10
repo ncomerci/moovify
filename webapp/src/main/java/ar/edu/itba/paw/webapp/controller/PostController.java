@@ -7,6 +7,7 @@ import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.exceptions.IllegalPostLikeException;
 import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
@@ -93,6 +94,9 @@ public class PostController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+
+        if(!post.isEnabled())
+            throw new IllegalPostLikeException();
 
         postService.likePost(post, user, value);
 
