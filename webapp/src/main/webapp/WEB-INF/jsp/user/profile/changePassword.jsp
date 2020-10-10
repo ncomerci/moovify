@@ -56,13 +56,13 @@
 
         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
             <div class="uk-width-1-3">
-                <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.repeatPassword" /></h3>
+                <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.newRepeatPassword" /></h3>
             </div>
             <div class="uk-width-2-3">
                 <c:set var="repPassError"><form:errors path="repeatPassword"/></c:set>
                 <div class="uk-inline">
                     <form:label path="repeatPassword">
-                        <spring:message code="user.create.repeatPassword" var="repeatPassword"/>
+                        <spring:message code="user.profile.edit.repeatPassword" var="repeatPassword"/>
                         <span class="uk-form-icon <c:out value="${not empty repPassError ? 'icon-error':''}"/>" uk-icon="icon: lock"></span>
                         <c:choose>
                             <c:when test="${not empty repPassError}">
