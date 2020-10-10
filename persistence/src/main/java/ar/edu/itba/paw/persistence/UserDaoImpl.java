@@ -413,6 +413,14 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public Optional<User> findDeletedUserById(long id) {
+
+        LOGGER.info("Find Deleted User By Id {}", id);
+        return buildAndExecuteQuery("WHERE " + USERS + ".user_id = ? AND " + USERS + ".enabled = false",
+                new Object[]{ id }).stream().findFirst();
+    }
+
+    @Override
     public Optional<User> findUserByUsername(String username) {
 
         LOGGER.info("Find User By Username {}", username);

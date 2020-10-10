@@ -13,7 +13,6 @@
             <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
         </c:if>
     </title>
-    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body class="min-height-1000">

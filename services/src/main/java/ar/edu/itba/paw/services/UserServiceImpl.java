@@ -242,6 +242,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
+    public Optional<User> findDeletedUserById(long id) {
+        return userDao.findDeletedUserById(id);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public Optional<User> findUserByUsername(String username) {
         return userDao.findUserByUsername(username);
     }

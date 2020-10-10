@@ -391,6 +391,14 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
+    public Optional<Post> findDeletedPostById(long id){
+
+        LOGGER.info("Find Deleted Post By Id {}", id);
+        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ? AND " + POSTS + ".enabled = false",
+                new Object[]{ id }).stream().findFirst();
+    }
+
+    @Override
     public PaginatedCollection<Post> findPostsByMovie(Movie movie, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Posts By Movie {} Order By {}. Page number {}, Page Size {}", movie.getId(), sortCriteria, pageNumber, pageSize);

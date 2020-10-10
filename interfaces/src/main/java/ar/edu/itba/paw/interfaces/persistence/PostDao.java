@@ -24,6 +24,8 @@ public interface PostDao {
 
     Optional<Post> findPostById(long id);
 
+    Optional<Post> findDeletedPostById(long id);
+
     PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> findPostsByMovie(Movie movie, SortCriteria sortCriteria, int pageNumber, int pageSize);

@@ -6,7 +6,7 @@
 <head>
     <title><spring:message code="user.create.signUpTitle"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
-    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
+    <script src="<c:url value="/resources/js/user/create.js" />" ></script>
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
@@ -88,10 +88,13 @@
                 <div class="uk-inline">
                     <form:label path="avatar">
                         <div uk-form-custom>
-                            <form:input path="avatar" type="file" />
+                            <form:input path="avatar" type="file" accept="image/*" />
                             <button class="uk-button uk-button-primary uk-border-rounded extended-button" type="button" tabindex="-1">
                                 <spring:message code="user.create.selectFile"/>
                             </button>
+<%--                        TODO: Nacho todo tuyo para dejarlo lindo :) - Tobi    --%>
+                            <p id="avatar-not-uploaded" ><spring:message code="user.create.noAvatarSelected" /></p>
+                            <p id="avatar-uploaded" class="hidden"><spring:message code="user.create.avatarSelected" /><span id="file-name"></span></p>
                         </div>
                     </form:label>
                 </div>

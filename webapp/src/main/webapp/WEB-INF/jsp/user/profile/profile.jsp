@@ -26,7 +26,7 @@
                     <div class="uk-position-center uk-text-right">
                         <form:label path="avatar">
                             <div uk-form-custom>
-                                <form:input id="avatar-edit" path="avatar" type="file"/>
+                                <form:input id="avatar-edit" path="avatar" type="file" accept="image/*" />
                                 <button class="uk-transition-fade uk-button-primary uk-border-rounded">
                                     <span type="button" uk-icon="icon: upload; ratio: 2.5"></span>
                                     <div>

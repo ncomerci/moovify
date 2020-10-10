@@ -16,3 +16,6 @@
 <script src="<c:url value="/resources/js/components/navBar.js" />"></script>
 <link rel="stylesheet" href="<c:url value="/resources/css/navBar.css" />" />
 
+<%-- Extra CSS Stylesheet --%>
+<link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
+

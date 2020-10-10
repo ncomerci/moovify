@@ -8,7 +8,6 @@
 <head>
     <title><spring:message code="adminPanel.title"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
-    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
     <script src="<c:url value="/resources/js/adminPanel/mainController.js"/>"></script>
 </head>

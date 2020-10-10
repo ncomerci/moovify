@@ -77,6 +77,12 @@ public class PostServiceImpl implements PostService {
 
     @Transactional(readOnly = true)
     @Override
+    public Optional<Post> findDeletedPostById(long id) {
+        return postDao.findDeletedPostById(id);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public PaginatedCollection<Post> findPostsByMovie(Movie movie, int pageNumber, int pageSize) {
         return postDao.findPostsByMovie(movie, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
