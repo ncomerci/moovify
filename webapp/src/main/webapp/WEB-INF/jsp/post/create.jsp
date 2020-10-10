@@ -10,7 +10,6 @@
 
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp"/>
     <jsp:include page="/WEB-INF/jsp/dependencies/mdEditor.jsp"/>
-    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
     <script src="<c:url value="/resources/js/post/create.js" />"></script>
 </head>
 <body>

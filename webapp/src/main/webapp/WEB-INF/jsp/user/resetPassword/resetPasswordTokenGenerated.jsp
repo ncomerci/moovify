@@ -6,7 +6,6 @@
 <head>
     <title><spring:message code="user.resetPasswordTokenGenerated.title" /></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
-    <link rel="stylesheet" href="<c:url value="/resources/css/extraStyle.css"/>"/>
 </head>
 <body>
     <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
