@@ -6,6 +6,27 @@
     color: red;
 }
 
+.m-text-primary {
+    color: #fa8a32 !important;
+}
+
+.m-text-red {
+    color: #EA5455 !important;
+}
+
+.m-bg-primary-lighter-5 {
+    /*background-color: #262B35;*/
+    background-color: rgba(38, 43, 53,0.5);
+}
+
+.m-opacity-5 {
+    opacity: 50%;
+}
+
+.m-rounded-bottom-10 {
+    border-radius: 0 0 10px 10px;
+}
+
 .hidden {
     display: none;
 }

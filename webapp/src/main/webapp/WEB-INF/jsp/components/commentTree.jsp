@@ -46,8 +46,7 @@
                                                     <a href="#delete-comment-modal"
                                                        data-id="<c:out value="${comment.id}"/>"
                                                        class="uk-link-muted delete-comment-button uk-position-small uk-hidden-hover"
-                                                       uk-toggle
-                                                    >
+                                                       uk-toggle>
                                                         <spring:message code="comment.delete.button"/>
                                                     </a>
                                                 </c:if>
@@ -115,11 +114,11 @@
                             <c:when test="${comment.enabled}">
                                 <span class="pre-line"><c:out value="${comment.body}"/></span>
                             </c:when>
+                            <c:when test="${not empty loggedUser and loggedUser.admin}">
+                                <div class="uk-text-italic"><c:out value="[${comment.user.username}: ${comment.body}]"/></div>
+                            </c:when>
                             <c:otherwise>
                                 <div class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></div>
-                                <c:if test="${not empty loggedUser and loggedUser.admin}">
-                                <div class="uk-text-italic"><c:out value="[${comment.user.username}: ${comment.body}]"/></div>
-                                </c:if>
                             </c:otherwise>
                         </c:choose>
                     </div>

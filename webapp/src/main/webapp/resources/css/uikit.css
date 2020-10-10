@@ -3584,7 +3584,9 @@ select.uk-form-width-xsmall {
   z-index: 1020;
   /* 3 */
   box-sizing: border-box;
-  width: 300px;
+
+  /*Modify by Moovify*/
+  width: 400px;
 }
 /* Show */
 .uk-drop.uk-open {

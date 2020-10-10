@@ -16,8 +16,7 @@
                 <c:if test="${not empty loggedUser and loggedUser.admin and !comment.enabled}">
                     <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
                             data-id="${comment.id}"
-                            type="button"
-                    >
+                            type="button">
                         <spring:message code="adminPanel.restore"/>
                     </button>
                 </c:if>
@@ -37,12 +36,7 @@
                             </c:otherwise>
                         </c:choose>
                         <spring:message code="commentDisplay.meta.description" arguments="${comment.user.name}, ${comment.likes}"/>
-                        <c:if test="${comment.likes  >= 0}">
-                            <span uk-icon="icon: chevron-up; ratio: 0.8"></span>
-                        </c:if>
-                        <c:if test="${comment.likes < 0 }">
-                            <span uk-icon="icon: chevron-down; ratio: 0.8"></span>
-                        </c:if>
+                        <span uk-icon="icon: ${comment.likes >= 0 ? 'chevron-up' : 'chevron-down'}; ratio: 0.8"></span>
                     </p>
                 </div>
                 <div class="uk-width-auto">
