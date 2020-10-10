@@ -47,7 +47,7 @@ public class AdminController {
 
         LOGGER.info("Accessed /admin/deleted/posts with query = {}; pageSize = {} and pageNumber = {}", query, pageSize, pageNumber);
 
-        ModelAndView mv = new ModelAndView("adminPanel/deleted/posts");
+        final ModelAndView mv = new ModelAndView("adminPanel/deleted/posts");
 
         mv.addObject("query", query);
         mv.addObject("posts", searchService.searchDeletedPosts(query, pageNumber, pageSize)
@@ -63,7 +63,7 @@ public class AdminController {
 
         LOGGER.info("Accessed /admin/deleted/comments with query = {}; pageSize = {} and pageNumber = {}", query, pageSize, pageNumber);
 
-        ModelAndView mv = new ModelAndView("adminPanel/deleted/comments");
+        final ModelAndView mv = new ModelAndView("adminPanel/deleted/comments");
 
         mv.addObject("query", query);
         mv.addObject("comments", searchService.searchDeletedComments(query, pageNumber, pageSize)
@@ -79,7 +79,7 @@ public class AdminController {
 
         LOGGER.info("Accessed /admin/deleted/users with query = {}; pageSize = {} and pageNumber = {}", query, pageSize, pageNumber);
 
-        ModelAndView mv = new ModelAndView("adminPanel/deleted/users");
+        final ModelAndView mv = new ModelAndView("adminPanel/deleted/users");
 
         mv.addObject("query", query);
         mv.addObject("users", searchService.searchDeletedUsers(query, pageNumber, pageSize)

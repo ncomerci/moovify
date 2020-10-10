@@ -139,7 +139,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
 
         deleteVerificationToken(user);
 
-        HashMap<String, Object> map = new HashMap<>();
+        final HashMap<String, Object> map = new HashMap<>();
 
         map.put("token", token);
         map.put("expiry", expiryDate);

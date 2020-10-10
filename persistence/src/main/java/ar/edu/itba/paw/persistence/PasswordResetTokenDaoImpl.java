@@ -137,7 +137,7 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
 
         deletePasswordResetToken(user);
 
-        HashMap<String, Object> map = new HashMap<>();
+        final HashMap<String, Object> map = new HashMap<>();
 
         map.put("token", token);
         map.put("expiry", expiryDate);
@@ -145,7 +145,7 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
 
         final long tokenId = jdbcTokenInsert.executeAndReturnKey(map).longValue();
 
-        PasswordResetToken passwordResetToken = new PasswordResetToken(tokenId, token, expiryDate, user);
+        final PasswordResetToken passwordResetToken = new PasswordResetToken(tokenId, token, expiryDate, user);
 
         LOGGER.info("Created PasswordResetToken {}", passwordResetToken.getTokenId());
         LOGGER.debug("Created PasswordResetToken {}", passwordResetToken);

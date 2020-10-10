@@ -88,8 +88,8 @@ public class CommentController {
 
         LOGGER.info("Accessed /comment/like");
 
-        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-        Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
 
         commentService.likeComment(comment, user, value);
 

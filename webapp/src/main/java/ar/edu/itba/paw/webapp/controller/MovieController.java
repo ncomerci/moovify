@@ -34,7 +34,7 @@ public class MovieController {
 
         LOGGER.info("Accessed /movie/create");
 
-        ModelAndView mv = new ModelAndView("movie/create");
+        final ModelAndView mv = new ModelAndView("movie/create");
 
         mv.addObject("categories", movieService.getAvailableCategories());
 
