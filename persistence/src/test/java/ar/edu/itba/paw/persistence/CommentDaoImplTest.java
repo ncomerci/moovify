@@ -35,6 +35,7 @@ public class CommentDaoImplTest {
     private static final User USER = Mockito.when(Mockito.mock(User.class).getId()).thenReturn(USER_ID).getMock();
     private static final long COMMENT_ID = 1L;
     private static final Comment COMMENT = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(COMMENT_ID).getMock();
+    private static final long PARENT_ID = 2L;
     private static final String BODY = "testing";
     private static final CommentDao.SortCriteria NEWEST = CommentDao.SortCriteria.NEWEST;
     private static final int PAGE_NUMBER = 0;
@@ -197,11 +198,8 @@ public class CommentDaoImplTest {
     @Test
     public void testFindCommentDescendantsByNewest() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
-                "user_id = ? AND post_id = ?", USER_ID, POST_ID);
-
-        long parentId = 2L;
-        COMMENT_ROW.put("parent_id", parentId);
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), "parent_id = ?", PARENT_ID);
+        COMMENT_ROW.put("parent_id", PARENT_ID);
         final int cant = PAGE_SIZE*2;
         StringBuilder whereClause = new StringBuilder();
         Long[] ids = new Long[cant];
@@ -212,7 +210,7 @@ public class CommentDaoImplTest {
             whereClause.append("comment_id = ").append(ids[i]).append(" OR ");
         }
         whereClause.setLength(whereClause.length() - " OR ".length());
-        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(parentId).getMock();
+        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(PARENT_ID).getMock();
 
 //        2. ejercitar
         final PaginatedCollection<Comment> commentDescendants1 = commentDao.findCommentDescendants(comment, NEWEST, PAGE_NUMBER, PAGE_SIZE);
@@ -257,14 +255,9 @@ public class CommentDaoImplTest {
     @Test
     public void testFindCommentDescendantsByHottest() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
-                "user_id = ? AND post_id = ?", USER_ID, POST_ID);
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS_LIKES.getTableName(),
-                "user_id = ?", USER_ID);
-
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), "parent_id = ?", PARENT_ID);
         final int cant = PAGE_SIZE*2;
-        long parentId = 2L;
-        COMMENT_ROW.put("parent_id", parentId);
+        COMMENT_ROW.put("parent_id", PARENT_ID);
 
         StringBuilder whereClause = new StringBuilder();
         Long[] ids = new Long[cant];
@@ -274,7 +267,7 @@ public class CommentDaoImplTest {
 
         int i, j;
         for(i = 0 ; i < cant ; i++) {
-            COMMENT_ROW.put("creation_date", Timestamp.valueOf(LocalDateTime.of(2020, 10, 10, i, 0)));
+            COMMENT_ROW.put("creation_date", Timestamp.valueOf(LocalDateTime.now()));
             ids[i] = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
             userIds[i] = insertUser(Timestamp.valueOf(LocalDateTime.now()), String.valueOf(i), "", "", String.valueOf(i), "", true);
             for(j = 0; j <= i ; j++) {
@@ -285,7 +278,7 @@ public class CommentDaoImplTest {
             whereClause.append("comment_id = ").append(ids[i]).append(" OR ");
         }
         whereClause.setLength(whereClause.length() - " OR ".length());
-        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(parentId).getMock();
+        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(PARENT_ID).getMock();
 
 //        2. ejercitar
         final PaginatedCollection<Comment> commentDescendants1 = commentDao.findCommentDescendants(comment, CommentDao.SortCriteria.HOTTEST, PAGE_NUMBER, PAGE_SIZE);
