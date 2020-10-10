@@ -16,6 +16,3 @@
 <script src="<c:url value="/resources/js/components/navBar.js" />"></script>
 <link rel="stylesheet" href="<c:url value="/resources/css/navBar.css" />" />
 
-<%--Comments tree view--%>
-<link rel="stylesheet" href="<c:url value="/resources/css/treeView.css" />" />
-

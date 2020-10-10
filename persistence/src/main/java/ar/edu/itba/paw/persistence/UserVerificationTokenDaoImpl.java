@@ -113,7 +113,6 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
             token.getUser().getRoles().add(
                     new Role(rs.getLong("r_role_id"), rs.getString("r_role"))
             );
-
         }
 
         return token;

@@ -5,6 +5,8 @@
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
+<jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+
 <html>
 <head>
     <title><spring:message code="adminPanel.title"/></title>
@@ -31,7 +33,8 @@
                 <c:forEach items="${users.results}" var="user">
                     <div class="uk-width-1-1 uk-margin-small-bottom">
                         <div class="uk-flex">
-                            <sec:authorize access="hasRole('ADMIN')">
+
+                            <c:if test="${loggedUser.admin}">
                                 <c:if test="${!user.enabled}">
                                     <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
                                             data-id="${user.id}"
@@ -40,7 +43,7 @@
                                         <spring:message code="adminPanel.restore"/>
                                     </button>
                                 </c:if>
-                            </sec:authorize>
+                            </c:if>
                             <div class="uk-width-expand uk-margin-auto-vertical">
                                 <a href="<c:url value="/user/${user.id}"/>" <c:out value="${user.admin ? 'class=uk-text-primary uk-text-middle': ''}"/>>
                                     <c:out value="${user.username}"/>

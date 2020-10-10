@@ -2,24 +2,25 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <jsp:useBean id="comments" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection<ar.edu.itba.paw.models.Comment>"/>
+
+<sec:authorize access="isAuthenticated()">
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+</sec:authorize>
 
 <div class="uk-flex uk-flex-wrap">
     <c:forEach items="${comments.results}" var="comment">
         <div class="uk-width-1-1">
             <div class="uk-flex">
-                <sec:authorize access="hasRole('ADMIN')">
-                    <c:if test="${!comment.enabled}">
-                        <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
-                                data-id="${comment.id}"
-                                type="button"
-                        >
-                            <spring:message code="adminPanel.restore"/>
-                        </button>
-                    </c:if>
-                </sec:authorize>
+                <c:if test="${not empty loggedUser and loggedUser.admin and !comment.enabled}">
+                    <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
+                            data-id="${comment.id}"
+                            type="button"
+                    >
+                        <spring:message code="adminPanel.restore"/>
+                    </button>
+                </c:if>
                 <div class="uk-width-expand uk-margin-small-top">
                     <a href="<c:url value="/comment/${comment.id}"/>">
                         <c:set var="maxLength" value="${80}"/>

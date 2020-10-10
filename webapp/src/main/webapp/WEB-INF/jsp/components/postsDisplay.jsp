@@ -4,20 +4,22 @@
 
 <jsp:useBean id="posts" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection<ar.edu.itba.paw.models.Post>"/>
 
+<sec:authorize access="isAuthenticated()">
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+</sec:authorize>
+
 <div class="uk-flex uk-flex-wrap">
     <c:forEach items="${posts.results}" var="post">
         <div class="uk-width-1-1">
             <div class="uk-flex">
-                <sec:authorize access="hasRole('ADMIN')">
-                    <c:if test="${!post.enabled}">
-                        <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
-                                data-id="${post.id}"
-                                type="button"
-                        >
-                            <spring:message code="adminPanel.restore"/>
-                        </button>
-                    </c:if>
-                </sec:authorize>
+                <c:if test="${not empty loggedUser and loggedUser.admin and !post.enabled}">
+                    <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
+                            data-id="${post.id}"
+                            type="button"
+                    >
+                        <spring:message code="adminPanel.restore"/>
+                    </button>
+                </c:if>
                 <div class="uk-width-expand uk-margin-small-top">
                     <a href="<c:url value="/post/${post.id}"/>">
                         <c:out value="${post.title}"/>

@@ -28,15 +28,15 @@
                 </li>
                 <sec:authorize access="isAuthenticated()">
                     <li class="uk-navbar-item">
-                        <sec:authorize access="hasRole('NOT_VALIDATED')">
+                        <c:if test="${!loggedUser.validated}">
                             <!-- This is a button toggling the modal -->
                             <a class="uk-padding-remove" href="#" uk-toggle="target: #confirm-email-modal">
                                 <spring:message code="navbar.createPost"/>
                             </a>
-                        </sec:authorize>
-                        <sec:authorize access="!hasRole('NOT_VALIDATED')">
+                        </c:if>
+                        <c:if test="${loggedUser.validated}">
                             <a class="uk-padding-remove" href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a>
-                        </sec:authorize>
+                        </c:if>
                     </li>
                     <li>
                         <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" href="<c:out value="/user/profile"/>">
@@ -54,13 +54,13 @@
                                         <button class="uk-button uk-button-default uk-border-rounded user-profile-button extended-button" type="button"><spring:message code="user.profile"/></button>
                                     </a>
                                 </li>
-                                <sec:authorize access="hasRole('ADMIN')">
+                                <c:if test="${loggedUser.admin}">
                                 <li>
                                     <a class="uk-text-center" href="<c:url value="/admin/deleted/posts"/>">
                                         <button class="uk-button uk-button-default uk-border-rounded extended-button" type="button"><spring:message code="adminPanel.btn"/></button>
                                     </a>
                                 </li>
-                                </sec:authorize>
+                                </c:if>
                                 <li>
                                     <a class="uk-text-center" href="<c:url value="/logout"/>">
                                         <button class="uk-button uk-button-default uk-border-rounded logout-button extended-button" type="button"><spring:message code="user.logout"/></button>
@@ -85,7 +85,7 @@
     </nav>
 </header>
 
-<sec:authorize access="hasRole('NOT_VALIDATED')">
+<c:if test="${not empty loggedUser and !loggedUser.validated}">
 <!-- Confirm email modal -->
 <div id="confirm-email-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
@@ -97,4 +97,4 @@
         </p>
     </div>
 </div>
-</sec:authorize>
+</c:if>
