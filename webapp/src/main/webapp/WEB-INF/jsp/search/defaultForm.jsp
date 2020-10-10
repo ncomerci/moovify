@@ -6,10 +6,15 @@
 <jsp:useBean id="currentSearch" scope="request" type="java.lang.String"/>
 <jsp:useBean id="query" scope="request" type="java.lang.String"/>
 
-<div class="uk-search uk-search-large">
-    <span uk-search-icon></span>
-    <spring:message code="navbar.searchDots" var="queryPlaceholder" />
-    <form:input path="query" class="uk-search-input search-query-input" type="search" placeholder="${queryPlaceholder}"/>
+<div class="uk-flex uk-flex-middle">
+    <div class="uk-search uk-search-large uk-width-expand">
+        <span uk-search-icon></span>
+        <spring:message code="navbar.searchDots" var="queryPlaceholder" />
+        <form:input path="query" class="uk-search-input search-query-input" type="search" placeholder="${queryPlaceholder}"/>
+    </div>
+    <div class="uk-width-small">
+        <button class="uk-button uk-button-default uk-border-rounded search-button extended-button" type="submit"><spring:message code="navbar.search"/></button>
+    </div>
 </div>
 <p class="uk-text-meta">
     <spring:message code="search.searchResults"/>

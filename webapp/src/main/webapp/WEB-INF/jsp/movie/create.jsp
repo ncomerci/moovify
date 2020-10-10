@@ -22,7 +22,7 @@
     <input type="text" name="runtime" class="uk-input uk-form-width-large" placeholder="Runtime" required />
     <input type="text" name="voteAverage" class="uk-input uk-form-width-large" placeholder="Vote Average" required />
     <input type="date" name="releaseDate" class="uk-input uk-form-width-large" placeholder="Release Date" required />
-
+    <br>
     <c:forEach items="${categories}" var="category">
         <input type="checkbox" id="${category.name}" name="categories" value="${category.tmdb_id}">
         <label for="${category.name}"><c:out value="${category.name}"/></label><br>

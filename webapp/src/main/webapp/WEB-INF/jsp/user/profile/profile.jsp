@@ -96,13 +96,13 @@
             <ul class="uk-child-width-expand uk-tab">
                 <li class="${currentState == 0 ? 'uk-active' : ''}">
                     <c:url value="${'/user/profile/posts'}" var="postsURL"/>
-                    <a href="${currentState != 0 ? postsURL : '#'}">
+                    <a href="${currentState != 0 ? postsURL : ''}">
                         <spring:message code="user.profile.yourPosts"/>
                     </a>
                 </li>
                 <li class="${currentState == 1 ? 'uk-active' : ''}">
                     <c:url value="${'/user/profile/comments'}" var="commentsURL"/>
-                    <a href="${currentState != 1 ? commentsURL : '#'}">
+                    <a href="${currentState != 1 ? commentsURL : ''}">
                         <spring:message code="user.profile.yourComments"/>
                     </a>
                 </li>

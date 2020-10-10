@@ -17,8 +17,7 @@
                 <c:if test="${not empty loggedUser and loggedUser.admin and !post.enabled}">
                     <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
                             data-id="${post.id}"
-                            type="button"
-                    >
+                            type="button">
                         <spring:message code="adminPanel.restore"/>
                     </button>
                 </c:if>
