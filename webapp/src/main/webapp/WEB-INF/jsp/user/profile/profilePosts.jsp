@@ -24,20 +24,22 @@
     <jsp:include page="profile.jsp"/>
 
     <div class="uk-container">
-        <c:if test="${empty posts}">
-            <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.profile.PostsNotFound"/> </h2>
-        </c:if>
+        <c:if test="${loggedUsed.validated}">
+            <c:if test="${empty posts.results}">
+                <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.profile.PostsNotFound"/> </h2>
+            </c:if>
 
-        <c:set var="posts" value="${posts}" scope="request"/>
-        <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
+            <c:set var="posts" value="${posts}" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
 
-        <c:if test="${not empty posts.results}">
-            <c:set var="collection" value="${posts}" scope="request"/>
-            <c:url var="baseURL" value="/user/profile/posts" scope="request"/>
-            <c:set var="numberOfInputs" value="${2}" scope="request"/>
-            <form action="${baseURL}" method="get">
-                <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
-            </form>
+            <c:if test="${not empty posts.results}">
+                <c:set var="collection" value="${posts}" scope="request"/>
+                <c:url var="baseURL" value="/user/profile/posts" scope="request"/>
+                <c:set var="numberOfInputs" value="${2}" scope="request"/>
+                <form action="${baseURL}" method="get">
+                    <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
+                </form>
+            </c:if>
         </c:if>
     </div>
 

@@ -17,9 +17,10 @@
 
     <div class="uk-container">
 
-        <c:if test="${empty posts}">
+        <c:if test="${empty posts.results}">
             <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.view.postNotFound"/> </h2>
         </c:if>
+
 
         <c:set var="posts" value="${posts}" scope="request"/>
         <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
