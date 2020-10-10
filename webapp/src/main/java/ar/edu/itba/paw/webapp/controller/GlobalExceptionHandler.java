@@ -27,7 +27,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(PostNotFoundException.class)
     public ModelAndView handlePostNotFound() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.postNotFoundException",null, LocaleContextHolder.getLocale()) );
         mv.addObject("code", "404" );
@@ -40,7 +41,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(MovieNotFoundException.class)
     public ModelAndView handleMovieNotFound() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.movieNotFoundException",null, LocaleContextHolder.getLocale()) );
         mv.addObject("code", "404" );
@@ -53,7 +55,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(CommentNotFoundException.class)
     public ModelAndView handleCommentNotFound() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.commentNotFoundException",null, LocaleContextHolder.getLocale()) );
         mv.addObject("code", "404" );
@@ -66,7 +69,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UserNotFoundException.class)
     public ModelAndView handleUserNotFound() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.userNotFoundException",null, LocaleContextHolder.getLocale()) );
         mv.addObject("code", "404" );
@@ -85,7 +89,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
     public ModelAndView handleError404() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.noHandlerFoundException",null, LocaleContextHolder.getLocale()) );
         mv.addObject("code", "404" );
@@ -98,7 +103,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidPostCategoryException.class)
     public ModelAndView handleInvalidPostCategory() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.invalidPostCategoryException",null, LocaleContextHolder.getLocale()));
         mv.addObject("code", "400" );
@@ -111,7 +117,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidMovieIdException.class)
     public ModelAndView handleInvalidMovieId() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.invalidMovieIdException",null, LocaleContextHolder.getLocale()));
         mv.addObject("code", "400" );
@@ -132,7 +139,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NonExistingSearchCriteriaException.class)
     public ModelAndView handleNonExistingSearchCriteria() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.nonExistingSearchCriteriaException",null, LocaleContextHolder.getLocale()));
         mv.addObject("code", "400" );
@@ -145,7 +153,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidSearchArgumentsException.class)
     public ModelAndView handleInvalidSearchArguments() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.invalidSearchArgumentsException",null, LocaleContextHolder.getLocale()) );
         mv.addObject("code", "400" );
@@ -158,7 +167,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidPaginationArgumentException.class)
     public ModelAndView handleInvalidPaginationArgument() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.invalidPaginationArgumentException",null, LocaleContextHolder.getLocale()) );
         mv.addObject("code", "400" );
@@ -172,7 +182,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ModelAndView handleNonReachableState() {
-        ModelAndView mv = new ModelAndView("errorView");
+
+        final ModelAndView mv = new ModelAndView("errorView");
 
         mv.addObject("message", messageSource.getMessage("error.defaultMessage",null, LocaleContextHolder.getLocale()) );
         mv.addObject("code", "500" );

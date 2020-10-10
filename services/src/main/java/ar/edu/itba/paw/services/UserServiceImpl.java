@@ -142,7 +142,7 @@ public class UserServiceImpl implements UserService {
 
         userVerificationTokenDao.createVerificationToken(token, UserVerificationToken.calculateExpiryDate(), user);
 
-        Map<String, Object> emailVariables = new HashMap<>();
+        final Map<String, Object> emailVariables = new HashMap<>();
 
         emailVariables.put("token", token);
 
@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
 
         passwordResetTokenDao.createPasswordResetToken(token, PasswordResetToken.calculateExpiryDate(), user);
 
-        Map<String, Object> emailVariables = new HashMap<>();
+        final Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("token", token);
 
         mailService.sendEmail(user.getEmail(), "Moovify - Password Reset", passwordResetMailTemplate, emailVariables);
@@ -171,7 +171,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> confirmRegistration(String token) {
 
-        Optional<UserVerificationToken> optToken = userVerificationTokenDao.getVerificationToken(token);
+        final Optional<UserVerificationToken> optToken = userVerificationTokenDao.getVerificationToken(token);
 
         if(!optToken.isPresent() || !optToken.get().isValid()) {
             LOGGER.warn("A user tried to confirm their email, but it's token {} was invalid", token);
@@ -208,7 +208,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> updatePassword(String password, String token) {
 
-        Optional<PasswordResetToken> optToken = passwordResetTokenDao.getResetPasswordToken(token);
+        final Optional<PasswordResetToken> optToken = passwordResetTokenDao.getResetPasswordToken(token);
 
         if(!optToken.isPresent() || !optToken.get().isValid()) {
             LOGGER.warn("A user tried to update their password, but it's token {} was invalid", token);

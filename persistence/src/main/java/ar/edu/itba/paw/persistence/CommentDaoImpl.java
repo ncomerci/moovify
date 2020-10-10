@@ -360,7 +360,7 @@ public class CommentDaoImpl implements CommentDao {
     private static final EnumMap<CommentDao.SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQuery();
 
     private static EnumMap<CommentDao.SortCriteria, String> initializeSortCriteriaQuery() {
-        EnumMap<CommentDao.SortCriteria, String> sortCriteriaQuery = new EnumMap<>(CommentDao.SortCriteria.class);
+        final EnumMap<CommentDao.SortCriteria, String> sortCriteriaQuery = new EnumMap<>(CommentDao.SortCriteria.class);
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, COMMENTS + ".creation_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, COMMENTS + ".creation_date");
@@ -568,7 +568,7 @@ public class CommentDaoImpl implements CommentDao {
 
         final Collection<Comment> results = executeQuery(select, from, newWhere, orderBy, args, false);
 
-        PaginatedCollection<Comment> paginatedCollectionResult = new PaginatedCollection<>(results, pageNumber, pageSize, totalCommentCount);
+        final PaginatedCollection<Comment> paginatedCollectionResult = new PaginatedCollection<>(results, pageNumber, pageSize, totalCommentCount);
 
         LOGGER.debug("Paginated query without descendants executed in CommentDaoImpl with result {}", paginatedCollectionResult);
 

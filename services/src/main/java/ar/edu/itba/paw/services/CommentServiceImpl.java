@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
                         .replaceAll("(\r\n)+", "\n")
                         .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), user, true);
 
-        Map<String, Object> map = new HashMap<>();
+        final Map<String, Object> map = new HashMap<>();
 
         map.put("post", post);
         map.put("comment", comment);

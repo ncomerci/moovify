@@ -164,7 +164,7 @@ public class PostDaoImpl implements PostDao {
 
     private static EnumMap<SortCriteria, String> initializeSortCriteriaQuery() {
 
-        EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
+        final EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, POSTS + ".creation_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, POSTS + ".creation_date");
@@ -203,7 +203,7 @@ public class PostDaoImpl implements PostDao {
         Objects.requireNonNull(user);
         Objects.requireNonNull(movies);
 
-        LocalDateTime creationDate = LocalDateTime.now();
+        final LocalDateTime creationDate = LocalDateTime.now();
 
         HashMap<String, Object> map = new HashMap<>();
 

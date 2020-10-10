@@ -119,7 +119,7 @@ public class MovieDaoImpl implements MovieDao {
 
     private static EnumMap<SortCriteria, String> initializeSortCriteriaQuery() {
 
-        EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
+        final EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, MOVIES + ".release_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, MOVIES + ".release_date");
@@ -214,7 +214,7 @@ public class MovieDaoImpl implements MovieDao {
 
         final String from = buildFromStatement();
 
-        Collection<Movie> result = executeQuery(select, from, customWhereStatement, "", args);
+        final Collection<Movie> result = executeQuery(select, from, customWhereStatement, "", args);
 
         LOGGER.debug("Not paginated query executed for {} in MovieDaoImpl with result {}", customWhereStatement, result);
 
@@ -248,7 +248,7 @@ public class MovieDaoImpl implements MovieDao {
 
         final Collection<Movie> results = executeQuery(select, from, newWhere, orderBy, args);
 
-        PaginatedCollection<Movie> moviePaginatedCollection = new PaginatedCollection<>(results, pageNumber, pageSize, totalMovieCount);
+        final PaginatedCollection<Movie> moviePaginatedCollection = new PaginatedCollection<>(results, pageNumber, pageSize, totalMovieCount);
 
         LOGGER.debug("Paginated query executed in MovieDaoImpl with result {}", moviePaginatedCollection);
 

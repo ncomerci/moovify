@@ -197,7 +197,7 @@ public class UserController {
             return editProfile(nameEditForm, usernameEditForm, descriptionEditForm);
         }
 
-        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateName(user, nameEditForm.getName());
 
@@ -210,14 +210,14 @@ public class UserController {
     public ModelAndView usernameEdit(@Valid @ModelAttribute("usernameEditForm") final UsernameEditForm usernameEditForm, final BindingResult bindingResult,
                                      @ModelAttribute("nameEditForm") final NameEditForm nameEditForm,
                                      @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm,
-                                     HttpServletRequest request, Principal principal) {
+                                     final HttpServletRequest request, final Principal principal) {
 
         if(bindingResult.hasErrors()) {
             LOGGER.warn("Errors were found in the form usernameEditForm editing username in /user/edit/username");
             return editProfile(nameEditForm, usernameEditForm, descriptionEditForm);
         }
 
-        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         try {
             userService.updateUsername(user, usernameEditForm.getUsername());
@@ -246,7 +246,7 @@ public class UserController {
             return editProfile(nameEditForm, usernameEditForm, descriptionEditForm);
         }
 
-        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateDescription(user, descriptionEditForm.getDescription());
 
@@ -270,7 +270,7 @@ public class UserController {
             return changePassword(changePasswordForm);
         }
 
-        User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updatePassword(user, changePasswordForm.getPassword());
 
@@ -395,7 +395,7 @@ public class UserController {
 
         LOGGER.info("Accessed /user/updatePassword/token");
 
-        boolean validToken = userService.validatePasswordResetToken(token);
+        final boolean validToken = userService.validatePasswordResetToken(token);
 
         if(validToken){
             redirectAttributes.addFlashAttribute("token", token);

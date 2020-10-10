@@ -148,10 +148,10 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User register(String username, String password, String name, String email, String description, Collection<String> roleNames, Long avatarId, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException {
 
-        LocalDateTime creationDate = LocalDateTime.now();
+        final LocalDateTime creationDate = LocalDateTime.now();
 
         // TODO: Se puede evitar esta query. Importante! Requiere un insert mas complejo.
-        Collection<Role> roles = roleDao.findRolesByName(roleNames);
+        final Collection<Role> roles = roleDao.findRolesByName(roleNames);
 
         if(roles == null || roles.isEmpty()) {
             LOGGER.error("Tried to create User {} without valid roles (roles used: {})", username, roles);
@@ -269,7 +269,7 @@ public class UserDaoImpl implements UserDao {
     // TODO: can be done in a single query. Important!
     @Override
     public Collection<Role> addRoles(User user, Collection<String> roleNames) {
-        Collection<Role> roles = roleDao.findRolesByName(roleNames);
+        final Collection<Role> roles = roleDao.findRolesByName(roleNames);
 
         HashMap<String, Object> map;
 

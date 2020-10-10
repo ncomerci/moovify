@@ -62,7 +62,7 @@ public class SearchServiceImpl implements SearchService {
     private final static Map<String, String> userRoleOptionsMap = getUserRoleOptionsMap();
 
     private static Map<String, PostDao.SortCriteria> getPostSortCriteriaMap() {
-        Map<String, PostDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
+        final Map<String, PostDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
 
         sortCriteriaMap.put("newest", PostDao.SortCriteria.NEWEST);
         sortCriteriaMap.put("oldest", PostDao.SortCriteria.OLDEST);
@@ -72,7 +72,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private static Map<String, LocalDateTime> getPostPeriodOptionsMap() {
-        Map<String, LocalDateTime> periodOptions = new LinkedHashMap<>();
+        final Map<String, LocalDateTime> periodOptions = new LinkedHashMap<>();
 
         periodOptions.put("pastYear", LocalDateTime.now().minusYears(1));
         periodOptions.put("pastMonth", LocalDateTime.now().minusMonths(1));
@@ -83,7 +83,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private static Map<String, MovieDao.SortCriteria> getMovieSortCriteriaMap() {
-        Map<String, MovieDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
+        final Map<String, MovieDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
 
         sortCriteriaMap.put("title", MovieDao.SortCriteria.TITLE);
         sortCriteriaMap.put("newest", MovieDao.SortCriteria.NEWEST);
@@ -94,7 +94,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private static Map<String, LocalDate> getMovieDecadeMap() {
-        Map<String, LocalDate> decadeMap = new LinkedHashMap<>();
+        final Map<String, LocalDate> decadeMap = new LinkedHashMap<>();
 
         decadeMap.put("1920s", LocalDate.ofYearDay(1920, 1));
         decadeMap.put("1930s", LocalDate.ofYearDay(1930, 1));
@@ -111,7 +111,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private static Map<String, UserDao.SortCriteria> getUserSortCriteriaMap() {
-        Map<String, UserDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
+        final Map<String, UserDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
 
         sortCriteriaMap.put("name", UserDao.SortCriteria.NAME);
         sortCriteriaMap.put("newest", UserDao.SortCriteria.NEWEST);
@@ -122,7 +122,7 @@ public class SearchServiceImpl implements SearchService {
     }
 
     private static Map<String, String> getUserRoleOptionsMap() {
-        Map<String, String> roleOptions = new LinkedHashMap<>();
+        final Map<String, String> roleOptions = new LinkedHashMap<>();
 
         roleOptions.put("user", Role.USER_ROLE);
         roleOptions.put("admin", Role.ADMIN_ROLE);
@@ -203,6 +203,7 @@ public class SearchServiceImpl implements SearchService {
 
         if (sortCriteria != null && movieSortCriteriaMap.containsKey(sortCriteria))
             sc = movieSortCriteriaMap.get(sortCriteria);
+
         else
             sc = DEFAULT_MOVIE_SORT_CRITERIA;
 
