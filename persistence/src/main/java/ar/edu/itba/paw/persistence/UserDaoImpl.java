@@ -314,7 +314,7 @@ public class UserDaoImpl implements UserDao {
 
     private Collection<User> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
 
-        final String query = select + " " + from + " " + where + " " + orderBy;
+        final String query = String.format("%s %s %s %s", select, from, where, orderBy);
 
         LOGGER.debug("Query executed in UserDaoImpl : {}. Args: {}", query, args);
 
@@ -344,24 +344,26 @@ public class UserDaoImpl implements UserDao {
 
         final String from = buildFromStatement();
 
+        final String totalUserCountQuery = String.format(
+                "SELECT COUNT(DISTINCT " + USERS + ".user_id) %s %s", from, customWhereStatement);
+
         // Execute original query to count total posts in the query
         final int totalUserCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT " + USERS + ".user_id) " + from + " " + customWhereStatement, args, Integer.class);
+                totalUserCountQuery, args, Integer.class);
 
         final String orderBy = buildOrderByStatement(sortCriteria);
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
-        final String newWhere = "WHERE " + USERS + ".user_id IN ( " +
-                "SELECT AUX.user_id " +
-                "FROM (" +
-                    "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + USERS + ".user_id " +
-                    from + " " +
-                    customWhereStatement +
-                " ) AUX " +
-                "GROUP BY AUX.user_id " +
-                "ORDER BY MIN(AUX.row_num) " +
-                pagination + ")";
+        final String newWhere = String.format(
+                "WHERE " + USERS + ".user_id IN ( " +
+                        "SELECT AUX.user_id " +
+                        "FROM (" +
+                            "SELECT ROW_NUMBER() OVER( %s ) row_num, " + USERS + ".user_id " +
+                            "%s %s ) AUX " +
+                        "GROUP BY AUX.user_id " +
+                        "ORDER BY MIN(AUX.row_num) " +
+                        " %s )", orderBy, from, customWhereStatement, pagination);
 
         final Collection<User> results = executeQuery(select, from, newWhere, orderBy, args);
 
@@ -397,7 +399,7 @@ public class UserDaoImpl implements UserDao {
             throw new InvalidPaginationArgumentException();
         }
 
-        return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
+        return String.format("LIMIT %d OFFSET %d", pageSize, pageNumber * pageSize);
     }
 
     private static final String ENABLED_FILTER = USERS + ".enabled = true";

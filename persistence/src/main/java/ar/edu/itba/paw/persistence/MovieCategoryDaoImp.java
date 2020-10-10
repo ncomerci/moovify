@@ -26,7 +26,6 @@ public class MovieCategoryDaoImp implements MovieCategoryDao {
             rs.getString("name")
     );
 
-
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired

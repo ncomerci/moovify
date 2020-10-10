@@ -197,11 +197,11 @@ public class PostDaoImpl implements PostDao {
     @Override
     public Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Long> movies, boolean enabled) {
 
-        Objects.requireNonNull(title, "PostDao: register: title can't be null");
+        Objects.requireNonNull(title);
         Objects.requireNonNull(body);
-        Objects.requireNonNull(movies);
         Objects.requireNonNull(category);
         Objects.requireNonNull(user);
+        Objects.requireNonNull(movies);
 
         LocalDateTime creationDate = LocalDateTime.now();
 
@@ -291,7 +291,7 @@ public class PostDaoImpl implements PostDao {
 
     private Collection<Post> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
 
-        final String query = select + " " + from + " " + where + " " + orderBy;
+        final String query = String.format("%s %s %s %s", select, from, where, orderBy);
 
         LOGGER.debug("Query executed in PostDaoImpl : {}. Args: {}", query, args);
 
@@ -322,24 +322,26 @@ public class PostDaoImpl implements PostDao {
 
         final String from = buildFromStatement();
 
+        final String totalPostCountQuery = String.format(
+                "SELECT COUNT(DISTINCT " + POSTS + ".post_id) %s %s", from, customWhereStatement);
+
         // Execute original query to count total posts in the query
-        final int totalPostCount = jdbcTemplate.queryForObject(
-                "SELECT COUNT(DISTINCT " + POSTS + ".post_id) " + from + " " + customWhereStatement, args, Integer.class);
+        final int totalPostCount = jdbcTemplate.queryForObject(totalPostCountQuery, args, Integer.class);
 
         final String orderBy = buildOrderByStatement(sortCriteria);
 
         final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
 
-        final String newWhere = "WHERE " + POSTS + ".post_id IN ( " +
-                "SELECT AUX.post_id " +
-                "FROM (" +
-                "SELECT ROW_NUMBER() OVER(" + orderBy + ") row_num, " + POSTS + ".post_id " +
-                from + " " +
-                customWhereStatement +
-                " ) AUX " +
-                "GROUP BY AUX.post_id " +
-                "ORDER BY MIN(AUX.row_num) " +
-                pagination + ")";
+        final String newWhere = String.format(
+                "WHERE " + POSTS + ".post_id IN ( " +
+                        "SELECT AUX.post_id " +
+                        "FROM ( " +
+                            "SELECT ROW_NUMBER() OVER( %s ) row_num, " + POSTS + ".post_id " +
+                            "%s %s ) AUX " +
+                        "GROUP BY AUX.post_id " +
+                        "ORDER BY MIN(AUX.row_num) " +
+                        "%s )",
+                orderBy, from, customWhereStatement, pagination);
 
         final Collection<Post> results = executeQuery(select, from, newWhere, orderBy, args);
 
@@ -351,7 +353,7 @@ public class PostDaoImpl implements PostDao {
     }
 
     private String buildSelectStatement() {
-        return BASE_POST_SELECT + ", " + LIKES_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
+       return BASE_POST_SELECT + ", " + LIKES_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
     }
 
     private String buildFromStatement() {
@@ -375,7 +377,7 @@ public class PostDaoImpl implements PostDao {
             throw new InvalidPaginationArgumentException();
         }
 
-        return "LIMIT " + pageSize + " OFFSET " + (pageNumber * pageSize);
+        return String.format("LIMIT %d OFFSET %d", pageSize, pageNumber * pageSize);
     }
 
     private static final String ENABLED_FILTER = POSTS + ".enabled = true";
@@ -457,8 +459,8 @@ public class PostDaoImpl implements PostDao {
 
         LOGGER.info("Search Deleted Posts By Post Title, Tags and Movie {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
-                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
-                        " AND " + POSTS + ".enabled = false",
+                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                                    " AND " + POSTS + ".enabled = false",
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
     }
 
