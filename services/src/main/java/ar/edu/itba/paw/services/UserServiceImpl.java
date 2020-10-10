@@ -224,14 +224,19 @@ public class UserServiceImpl implements UserService {
 
         final User user = optToken.get().getUser();
 
-        userDao.updatePassword(user, passwordEncoder.encode(password));
+        final String encodedPassword = passwordEncoder.encode(password);
+        userDao.updatePassword(user, encodedPassword);
 
         // Delete Token. It is not needed anymore
         passwordResetTokenDao.deletePasswordResetToken(user);
 
         LOGGER.info("User {} has updated their password successfully", user.getId());
 
-        return Optional.of(user);
+        final User newUser = new User(user.getId(), user.getCreationDate(), user.getUsername(),
+                encodedPassword, user.getName(), user.getEmail(), user.getDescription(),
+                user.getAvatarId(), user.getTotalLikes(), user.getRoles(), user.isEnabled());
+
+        return Optional.of(newUser);
     }
 
     @Transactional(readOnly = true)
