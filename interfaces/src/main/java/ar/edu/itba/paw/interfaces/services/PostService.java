@@ -18,6 +18,8 @@ public interface PostService {
 
     Optional<Post> findPostById(long id);
 
+    Optional<Post> findDeletedPostById(long id);
+
     PaginatedCollection<Post> findPostsByMovie(Movie movie, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> findPostsByUser(User user, int pageNumber, int pageSize);

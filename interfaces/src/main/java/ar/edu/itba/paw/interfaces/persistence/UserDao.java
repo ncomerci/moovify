@@ -40,6 +40,8 @@ public interface UserDao {
 
     Optional<User> findUserById(long id);
 
+    Optional<User> findDeletedUserById(long id);
+
     Optional<User> findUserByUsername(String username);
 
     Optional<User> findUserByEmail(String email);

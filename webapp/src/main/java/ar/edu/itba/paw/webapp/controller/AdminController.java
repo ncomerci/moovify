@@ -130,7 +130,7 @@ public class AdminController {
 
         LOGGER.info("Accessed /post/restore/{} to restore post. Redirecting to /post/{}", postId, postId);
 
-        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+        final Post post = postService.findDeletedPostById(postId).orElseThrow(PostNotFoundException::new);
 
         postService.restorePost(post);
 
@@ -173,7 +173,7 @@ public class AdminController {
 
         LOGGER.info("Accessed /user/restore/{} to restore user. Redirecting to /user/{}", userId, userId);
 
-        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findDeletedUserById(userId).orElseThrow(UserNotFoundException::new);
 
         userService.restoreUser(user);
 
