@@ -7,6 +7,7 @@
 <head>
     <title><spring:message code="email.emailConfirmation"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+    <script src="<c:url value="/resources/js/components/countdownRedirect.js"/>"></script>
 
     <sec:authorize access="isAuthenticated()">
         <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
