@@ -79,13 +79,13 @@
         <ul class="uk-child-width-expand uk-tab">
             <li class="${currentState == 0 ? 'uk-active' : ''}">
                 <c:url value="${'/user/'}${user.id}${'/posts'}" var="postsURL"/>
-                <a href="${currentState != 0 ? postsURL : '#'}">
+                <a href="${currentState != 0 ? postsURL : ''}">
                     <spring:message code="user.view.Posts" arguments="${user.username}"/>
                 </a>
             </li>
             <li class="${currentState == 1 ? 'uk-active' : ''}">
                 <c:url value="${'/user/'}${user.id}${'/comments'}" var="commentsURL"/>
-                <a href="${currentState != 1 ? commentsURL : '#'}">
+                <a href="${currentState != 1 ? commentsURL : ''}">
                     <spring:message code="user.view.Comments" arguments="${user.username}"/>
                 </a>
             </li>
