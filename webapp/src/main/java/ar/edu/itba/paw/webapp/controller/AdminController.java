@@ -7,10 +7,7 @@ import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
-import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,6 +145,9 @@ public class AdminController {
         LOGGER.info("Accessed /user/promote/{} to promote user to admin. Redirecting to /user/{}", userId, userId);
 
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
+
+        if(user.isAdmin() || !user.isValidated())
+            throw new InvalidRoleException();
 
         userService.promoteUserToAdmin(user);
 

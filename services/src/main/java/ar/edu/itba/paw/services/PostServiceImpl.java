@@ -32,6 +32,12 @@ public class PostServiceImpl implements PostService {
 
         Objects.requireNonNull(body);
 
+        Objects.requireNonNull(title, "PostDao: register: title can't be null");
+        Objects.requireNonNull(body);
+        Objects.requireNonNull(movies);
+        Objects.requireNonNull(category);
+        Objects.requireNonNull(user);
+
         final Post post = postDao.register(title, body.trim(),
                 body.split("\\s+").length, category, user, tags, movies, true);
 

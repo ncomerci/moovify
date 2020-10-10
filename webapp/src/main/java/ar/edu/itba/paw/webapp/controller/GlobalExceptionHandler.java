@@ -113,6 +113,18 @@ public class GlobalExceptionHandler {
 
         return mv;
     }
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidRoleException.class)
+    public ModelAndView handleInvalidRole() {
+        ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.invalidRoleException",null, LocaleContextHolder.getLocale()));
+        mv.addObject("code", "400" );
+
+        LOGGER.error("InvalidRoleException was thrown. Responding with Http Status 400");
+
+        return mv;
+    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidMovieIdException.class)

@@ -33,7 +33,7 @@
             <div class="uk-grid-medium uk-flex-middle" uk-grid>
                 <c:if test="${comment.enabled}">
                     <div class="uk-width-auto">
-                        <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/resources/images/avatar.jpg"/>" width="80" height="80" alt="">
+                        <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/user/avatar/${comment.user.avatarId}"/>" width="80" height="80" alt="">
                     </div>
                 </c:if>
                 <div class="uk-width-expand" >
@@ -68,7 +68,7 @@
                     <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
                         <div class="uk-text-center uk-padding-remove uk-margin-remove">
                             <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
-                                <spring:message code="post.view.likes" arguments="${comment.likes}"/>
+                                <spring:message code="post.view.votes" arguments="${comment.likes}"/>
                             </p>
                         </div>
                     </sec:authorize>

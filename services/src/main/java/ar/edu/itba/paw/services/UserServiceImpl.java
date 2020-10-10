@@ -90,6 +90,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateAvatar(User user, byte[] newAvatar) {
 
+        Objects.requireNonNull(user);
+
         final long newAvatarId = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
 
         userDao.updateAvatarId(user, newAvatarId);
@@ -127,8 +129,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void promoteUserToAdmin(User user) {
 
-        userDao.addRoles(user, Collections.singletonList(Role.ADMIN_ROLE));
+        Objects.requireNonNull(user);
 
+        userDao.addRoles(user, Collections.singletonList(Role.ADMIN_ROLE));
         user.getRoles().add(new Role(Role.ADMIN_ROLE));
 
         LOGGER.info("Promoted User {} to Admin", user.getId());
@@ -137,6 +140,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void createConfirmationEmail(User user, String confirmationMailTemplate) {
+
+        Objects.requireNonNull(user);
 
         final String token = UUID.randomUUID().toString();
 
@@ -154,6 +159,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void createPasswordResetEmail(User user, String passwordResetMailTemplate) {
+
+        Objects.requireNonNull(user);
         
         final String token = UUID.randomUUID().toString();
 
