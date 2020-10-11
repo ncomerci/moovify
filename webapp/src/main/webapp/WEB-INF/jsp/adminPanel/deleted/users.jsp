@@ -17,13 +17,17 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp"/>
 <main class="uk-container-small uk-margin-auto uk-padding-small">
-        <form action="<c:url value="/admin/deleted/users"/>" method="get">
-            <section id="controllers">
+    <form action="<c:url value="/admin/deleted/users"/>" method="get">
+        <section id="controllers">
             <c:set var="query" value="${query}" scope="request"/>
             <c:set var="currentSelection" value="2" scope="request"/>
-                <c:set var="selectedView" scope="request"><spring:message code="admin.deleted.users"/></c:set>
+            <c:set var="selectedView" scope="request"><spring:message code="admin.deleted.users"/></c:set>
             <jsp:include page="/WEB-INF/jsp/adminPanel/deleted/mainController.jsp"/>
-            </section>
+        </section>
+        <section id="search-results" class="uk-margin-top">
+            <c:if test="${empty users.results}">
+                <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.usersNotFound"/></h1>
+            </c:if>
 
             <div class="uk-flex uk-flex-wrap">
                 <c:forEach items="${users.results}" var="user">
@@ -35,7 +39,7 @@
                                         type="button"
                                 >
                                     <spring:message code="adminPanel.restore"/>
-                            </button>
+                                </button>
                             </c:if>
                             <div class="uk-width-expand uk-margin-small-top">
                                 <p class="uk-margin-remove ${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
@@ -65,16 +69,17 @@
                     </div>
                 </c:forEach>
             </div>
+        </section>
 
-            <c:if test="${not empty users.results}">
-                <c:set var="collection" value="${users}" scope="request"/>
-                <c:url var="baseURL" value="/admin/deleted/users" scope="request">
-                    <c:param name="query" value="${query}"/>
-                </c:url>
-                <c:set var="numberOfInputs" value="${2}" scope="request"/>
-                <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
-            </c:if>
-        </form>
+        <c:if test="${not empty users.results}">
+            <c:set var="collection" value="${users}" scope="request"/>
+            <c:url var="baseURL" value="/admin/deleted/users" scope="request">
+                <c:param name="query" value="${query}"/>
+            </c:url>
+            <c:set var="numberOfInputs" value="${2}" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
+        </c:if>
+    </form>
 
     <form id="restore-form" method="post" action="<c:url value="/user/restore"/>">
     </form>

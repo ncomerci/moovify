@@ -22,9 +22,10 @@
             <jsp:include page="/WEB-INF/jsp/adminPanel/deleted/mainController.jsp"/>
         </section>
 
-        <section id="search-results" class="uk-flex uk-flex-wrap">
+        <section id="search-results" class="uk-margin-top">
+
             <c:if test="${empty comments.results}">
-                <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.notFound" arguments="comments"/> </h1>
+                <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.commentsNotFound"/> </h1>
             </c:if>
 
             <c:set var="comments" value="${comments}" scope="request"/>
