@@ -367,7 +367,7 @@ public class UserDaoTest {
         long user3 = insertUser("username3", "yname", CREATION_DATE.plusHours(8), "email3", ENABLE);
         long user4 = insertUser("username4", "zname", CREATION_DATE.plusHours(20), "email4", ENABLE);
 
-        PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.NAME, PAGE_SECOND, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.USERNAME, PAGE_SECOND, PAGE_SIZE);
         Assert.assertEquals(4, users.getTotalCount());
         Assert.assertArrayEquals(new String[]{"yname", "zname"}, users.getResults().stream().map(User::getName).toArray());
     }
@@ -402,13 +402,13 @@ public class UserDaoTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate ,USERS);
 
         insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-        insertUser(USERNAME2, NAME2, CREATION_DATE, "email2", ENABLE);
-        insertUser("username3", "test", CREATION_DATE.plusHours(8), "email3", ENABLE);
+        insertUser("usuario", NAME2, CREATION_DATE, "email2", ENABLE);
+        insertUser("ussssername3", "test", CREATION_DATE.plusHours(8), "email3", ENABLE);
         insertUser("username4", "test", CREATION_DATE.plusHours(20), "email4", ENABLE);
 
-        PaginatedCollection<User> users = userDao.searchUsers(NAME, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.searchUsers(USERNAME, UserDao.SortCriteria.USERNAME, PAGE_FIRST, PAGE_SIZE);
         Assert.assertEquals(2, users.getTotalCount());
-        Assert.assertArrayEquals(new String[]{NAME, NAME2}, users.getResults().stream().map(User::getName).toArray());
+        Assert.assertArrayEquals(new String[]{USERNAME, "username4"}, users.getResults().stream().map(User::getUsername).toArray());
     }
 
     @Rollback
@@ -419,10 +419,10 @@ public class UserDaoTest {
         insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
         insertUser(USERNAME2, NAME, CREATION_DATE, "email2", ENABLE);
 
-        PaginatedCollection<User> users = userDao.searchUsersByRole(NAME, Role.ADMIN_ROLE, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.searchUsersByRole(USERNAME, Role.ADMIN_ROLE, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
         Assert.assertEquals(0, users.getTotalCount());
 
-        PaginatedCollection<User> users2 = userDao.searchUsersByRole(NAME, Role.USER_ROLE, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+        PaginatedCollection<User> users2 = userDao.searchUsersByRole(USERNAME, Role.USER_ROLE, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
         Assert.assertEquals(2, users2.getTotalCount());
     }
 
@@ -430,13 +430,13 @@ public class UserDaoTest {
     public void searchDeletedUsers() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate ,USERS);
 
-        insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-        insertUser(USERNAME2, NAME, CREATION_DATE, "email2", ENABLE);
-        insertUser("username3", NAME, CREATION_DATE, "email3", DISABLE);
-        insertUser("username4", NAME, CREATION_DATE, "email4", DISABLE);
+        insertUser(USERNAME, "NAME", CREATION_DATE, EMAIL, ENABLE);
+        insertUser(USERNAME, "NOmbre", CREATION_DATE, "email2", ENABLE);
+        insertUser(USERNAME, NAME, CREATION_DATE, "email3", DISABLE);
+        insertUser("USUARIO", "Nein", CREATION_DATE, "email4", DISABLE);
 
-        PaginatedCollection<User> users = userDao.searchDeletedUsers(NAME, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
-        Assert.assertEquals(2, users.getTotalCount());
+        PaginatedCollection<User> users = userDao.searchDeletedUsers(USERNAME, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+        Assert.assertEquals(1, users.getTotalCount());
 
     }
 

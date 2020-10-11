@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
+
 
 @Controller
 public class AdminController {
@@ -166,7 +168,7 @@ public class AdminController {
     }
 
     @RequestMapping(path = "/user/delete/{userId}", method = RequestMethod.POST)
-    public ModelAndView deleteUser(@PathVariable long userId) {
+    public ModelAndView deleteUser(@PathVariable long userId, final Principal principal) {
 
         LOGGER.info("Accessed /user/delete/{} to delete user. Redirecting to /", userId);
 
@@ -177,7 +179,11 @@ public class AdminController {
 
         userService.deleteUser(user);
 
-        return new ModelAndView("redirect:/");
+        if(user.getUsername().equals(principal.getName()))
+            return new ModelAndView("redirect:/logout");
+
+        else
+            return new ModelAndView("redirect:/");
     }
 
     @RequestMapping(path = "/user/restore/{userId}", method = RequestMethod.POST)

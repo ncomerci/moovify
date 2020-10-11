@@ -48,7 +48,7 @@ public class SearchServiceImpl implements SearchService {
 
     private static final PostDao.SortCriteria DEFAULT_POST_SORT_CRITERIA = PostDao.SortCriteria.NEWEST;
     private static final MovieDao.SortCriteria DEFAULT_MOVIE_SORT_CRITERIA = MovieDao.SortCriteria.TITLE;
-    private static final UserDao.SortCriteria DEFAULT_USER_SORT_CRITERIA = UserDao.SortCriteria.NAME;
+    private static final UserDao.SortCriteria DEFAULT_USER_SORT_CRITERIA = UserDao.SortCriteria.USERNAME;
 
     private final List<String> postCategoriesOptions;
     private final static Map<String, PostDao.SortCriteria> postSortCriteriaMap = getPostSortCriteriaMap();
@@ -113,7 +113,7 @@ public class SearchServiceImpl implements SearchService {
     private static Map<String, UserDao.SortCriteria> getUserSortCriteriaMap() {
         final Map<String, UserDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
 
-        sortCriteriaMap.put("name", UserDao.SortCriteria.NAME);
+        sortCriteriaMap.put("name", UserDao.SortCriteria.USERNAME);
         sortCriteriaMap.put("newest", UserDao.SortCriteria.NEWEST);
 //        sortCriteriaMap.put("oldest", UserDao.SortCriteria.OLDEST);
         sortCriteriaMap.put("likes", UserDao.SortCriteria.LIKES);

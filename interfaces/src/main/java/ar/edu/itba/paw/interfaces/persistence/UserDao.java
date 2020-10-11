@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface UserDao {
 
     enum SortCriteria {
-        NEWEST, OLDEST, LIKES, NAME
+        NEWEST, OLDEST, LIKES, USERNAME
     }
 
     User register(String username, String password, String name, String email, String description, Collection<String> roleNames,  Long avatarId, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException;

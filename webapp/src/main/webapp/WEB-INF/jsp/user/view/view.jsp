@@ -55,7 +55,7 @@
                 </c:if>
             </ul>
             <c:if test="${not empty loggedUser and loggedUser.admin}">
-                <c:if test="${!user.admin}">
+                <c:if test="${!user.admin and user.validated}">
                     <span>
                         <button class="uk-button uk-button-primary uk-border-rounded" type="button" uk-toggle="target: #modal-admin-promote">
                             <spring:message code="user.profile.adminBtn"/>
