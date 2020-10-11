@@ -8,7 +8,7 @@ ALTER TABLE USERS ADD COLUMN avatar_id INTEGER DEFAULT NULL;
 ALTER TABLE USERS ADD CONSTRAINT fk_user_avatar FOREIGN KEY (avatar_id) REFERENCES IMAGES (image_id);
 
 --feature/description
-ALTER TABLE USERS ADD COLUMN description VARCHAR(400) DEFAULT NULL;
+ALTER TABLE USERS ADD COLUMN description VARCHAR(400) NOT NULL DEFAULT '';
 
 --feature/likes-dislikes
 ALTER TABLE posts_likes ADD COLUMN value INT NOT NULL default 1;
@@ -34,3 +34,5 @@ update movie_categories set name = 'tvMovie' where tmdb_category_id = 10770;
 update movie_categories set name = 'thriller' where tmdb_category_id = 53;
 update movie_categories set name = 'war' where tmdb_category_id = 10752;
 update movie_categories set name = 'western' where tmdb_category_id = 37;
+
+-- Description is now NOT NULL

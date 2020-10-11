@@ -9,11 +9,7 @@ window.addEventListener('load', () => {
 }, false);
 
 function redirectCountdownInterval(countdownElem) {
-    console.log('hola');
     let currentSec = parseInt(countdownElem.innerText);
-
-    console.log(currentSec);
-    console.log(countdownElem.innerText)
 
     if(currentSec === 0) {
         clearInterval(countdownInteval);

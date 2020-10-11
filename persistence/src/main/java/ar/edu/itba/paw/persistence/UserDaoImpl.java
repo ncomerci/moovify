@@ -148,6 +148,13 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User register(String username, String password, String name, String email, String description, Collection<String> roleNames, Long avatarId, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException {
 
+        Objects.requireNonNull(username);
+        Objects.requireNonNull(password);
+        Objects.requireNonNull(name);
+        Objects.requireNonNull(email);
+        Objects.requireNonNull(description);
+        Objects.requireNonNull(roleNames);
+
         final LocalDateTime creationDate = LocalDateTime.now();
 
         // TODO: Se puede evitar esta query. Importante! Requiere un insert mas complejo.
