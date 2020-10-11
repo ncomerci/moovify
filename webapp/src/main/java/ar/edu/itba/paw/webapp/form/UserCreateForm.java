@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@PasswordsEqualConstraint(message= "Passwords must match")
+@PasswordsEqualConstraint()
 public class UserCreateForm {
 
     @Size(min = 6, max = 50)

@@ -32,7 +32,7 @@
                 <div class="uk-width-1-4">
                     <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.currentName" arguments="${loggedUser.name}"/></h3>
                 </div>
-                <div class="uk-width-1-2">
+                <div class="uk-width-1-3">
                     <c:set var="nameError"><form:errors path="name"/></c:set>
                     <div class="uk-inline">
                         <form:label path="name">
@@ -51,7 +51,7 @@
                     </div>
                     <form:errors path="name" element="p" cssClass="error"/>
                 </div>
-                <div class="uk-width-1-6">
+                <div class="uk-width-1-4">
                     <div class="uk-text-center">
                         <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.profile.edit.name"/>" />
                     </div>
@@ -64,7 +64,7 @@
                 <div class="uk-width-1-4">
                     <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.currentUsername" arguments="${loggedUser.username}"/></h3>
                 </div>
-                <div class="uk-width-1-2">
+                <div class="uk-width-1-3">
                     <c:set var="userError"><form:errors path="username"/></c:set>
                     <div class="uk-inline">
                         <form:label path="username">
@@ -83,7 +83,7 @@
                     </div>
                     <form:errors path="username" element="p" cssClass="error"/>
                 </div>
-                <div class="uk-width-1-6">
+                <div class="uk-width-1-4">
                     <div class="uk-text-center">
                         <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.profile.edit.username"/>" />
                     </div>
@@ -96,7 +96,7 @@
                 <div class="uk-width-1-4">
                     <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.newDescription" /></h3>
                 </div>
-                <div class="uk-width-1-2">
+                <div class="uk-width-1-3">
                     <c:set var="descriptionError"><form:errors path="description"/></c:set>
                     <div class="uk-inline">
                         <form:label path="description">
@@ -115,7 +115,7 @@
                     </div>
                     <form:errors path="description" element="p" cssClass="error"/>
                 </div>
-                <div class="uk-width-1-6">
+                <div class="uk-width-1-4">
                     <div class="uk-text-center">
                         <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.profile.edit.description"/>" />
                     </div>
@@ -125,7 +125,7 @@
 
         <div class="uk-margin-large">
             <div class="uk-grid-small uk-flex uk-flex-wrap  uk-flex-row uk-flex-center" uk-grid>
-                <div class="uk-width-1-4">
+                <div class="uk-width-1-3">
                     <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.wantChangePassword"/></h3>
                 </div>
                 <div class="uk-width-1-2">

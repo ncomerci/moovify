@@ -17,7 +17,7 @@
 
     <div class="uk-container">
 
-        <c:if test="${empty comments}">
+        <c:if test="${empty comments.results}">
             <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.view.CommentsNotFound"/> </h2>
         </c:if>
 

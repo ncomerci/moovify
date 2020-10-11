@@ -33,7 +33,7 @@
             <div class="uk-width-1-3">
                 <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.changePassword" /></h3>
             </div>
-            <div class="uk-width-2-3">
+            <div class="uk-width-1-2">
                 <c:set var="passError"><form:errors path="password"/></c:set>
                 <div class="uk-inline">
                     <form:label path="password">
@@ -58,7 +58,7 @@
             <div class="uk-width-1-3">
                 <h3 class="uk-margin-bottom uk-text-left"><spring:message code="user.profile.edit.newRepeatPassword" /></h3>
             </div>
-            <div class="uk-width-2-3">
+            <div class="uk-width-1-2">
                 <c:set var="repPassError"><form:errors path="repeatPassword"/></c:set>
                 <div class="uk-inline">
                     <form:label path="repeatPassword">

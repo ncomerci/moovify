@@ -226,6 +226,8 @@ public class UserController {
             bindingResult.rejectValue("username", "validation.user.UniqueUsername");
 
             LOGGER.warn("User {} tried to update it's username to a one which already existed, {}", user.getId(), usernameEditForm.getUsername());
+
+            return editProfile(nameEditForm, usernameEditForm, descriptionEditForm);
         }
 
         manualLogin(request, usernameEditForm.getUsername(), user.getPassword(), user.getRoles());
