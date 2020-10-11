@@ -50,7 +50,7 @@
     </h1>
     <p class="uk-text-bold uk-text-lead">
         <spring:message code="mail.errorResendEmail.body"/>
-        <a href="<c:url value="/user/resendConfirmation"/>">
+        <a href="<c:url value="/user/profile"/>">
             <spring:message code="mail.errorResendEmail.resendEmail"/>
         </a>
     </p>

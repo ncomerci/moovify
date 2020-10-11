@@ -68,7 +68,7 @@
     <c:if test="${not empty paginatedComments.results}">
 
         <c:set var="collection" value="${paginatedComments}" scope="request"/>
-        <c:url var="baseURL" value="${empty parentId ? '/post/' : '/comment/'}${empty parentId ? postId : parentId}" scope="request"/>
+        <c:url var="baseURL" value="${empty parentId ? '/post/' : '/comment/'}${empty parentId ? postId : parentId}" context="/" scope="request"/>
         <c:set var="numberOfInputs" value="${2}" scope="request"/>
         <form action="${baseURL}" method="get">
             <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />

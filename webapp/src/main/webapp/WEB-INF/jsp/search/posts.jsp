@@ -69,7 +69,7 @@
 
         <c:if test="${not empty posts.results}">
             <c:set var="collection" value="${posts}" scope="request"/>
-            <c:url var="baseURL" value="/search/posts" scope="request">
+            <c:url var="baseURL" value="/search/posts" context="/" scope="request">
                 <c:param name="query" value="${searchPostsForm.query}"/>
                 <c:param name="postAge" value="${searchPostsForm.postAge}"/>
                 <c:param name="postCategory" value="${searchPostsForm.postCategory}"/>

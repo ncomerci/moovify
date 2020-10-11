@@ -81,7 +81,7 @@
 
         <c:if test="${not empty posts.results}">
             <c:set var="collection" value="${posts}" scope="request"/>
-            <c:url var="baseURL" value="/admin/deleted/posts" scope="request">
+            <c:url var="baseURL" value="/admin/deleted/posts" context="/" scope="request">
                 <c:param name="query" value="${query}"/>
             </c:url>
             <c:set var="numberOfInputs" value="${2}" scope="request"/>
