@@ -45,8 +45,20 @@
         </div>
     </c:if>
     <c:if test="${not empty loggedUser and !loggedUser.validated}">
-        <div class="uk-text-bold uk-text-italic uk-text-secondary uk-text-center"><spring:message code="comment.create.not_validated"/></div>
+        <div class="uk-text-bold uk-text-italic uk-text-secondary uk-text-center">
+            <spring:message code="comment.create.not_validated"/>
+        </div>
     </c:if>
+    <sec:authorize access="isAnonymous()">
+        <div class="uk-text-bold uk-text-italic uk-text-secondary uk-text-center">
+            <p class="uk-text-lead">
+                <spring:message code="comment.create.noAccount.message"/>
+                <a href="<c:url value="/user/create"/>">
+                    <spring:message code="comment.create.noAccount.createAccount"/>
+                </a>
+            </p>
+        </div>
+    </sec:authorize>
     <div class="uk-margin-large-top">
         <hr>
         <c:set var="paginatedComments" value="${comments}" scope="request"/>
