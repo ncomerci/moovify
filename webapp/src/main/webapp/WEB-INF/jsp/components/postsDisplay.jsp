@@ -27,7 +27,8 @@
                                 <c:set var="name"><spring:message code="user.notEnabled.name"/></c:set>
                             </c:otherwise>
                         </c:choose>
-                        <spring:message code="postDisplay.meta.description" arguments="${post.category.name}, ${name}"/>
+                        <spring:message code="${post.category.name}" var="category"/>
+                        <spring:message code="postDisplay.meta.description" arguments="${category}, ${name}"/>
                         <c:if test="${post.user.admin && post.user.enabled}">
                             <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
                         </c:if>

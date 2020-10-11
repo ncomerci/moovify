@@ -5,7 +5,7 @@
 
 <html>
 <head>
-    <title><spring:message code="search.users.pageTitle"/></title>
+    <title><spring:message code="search.users.pageTitle" arguments="${query}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp"/>
     <script src="<c:url value="/resources/js/search/user.js"/>"></script>
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>

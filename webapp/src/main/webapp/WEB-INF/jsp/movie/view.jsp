@@ -4,7 +4,7 @@
 
 <html>
 <head>
-    <title><c:out value="${movie.title}"/></title>
+    <title><spring:message code="movie.view.title" arguments="${movie.title}" /></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
 </head>

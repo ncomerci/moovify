@@ -6,7 +6,7 @@
 
 <html>
 <head>
-    <title><spring:message code="user.login"/></title>
+    <title><spring:message code="user.login.title"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body>

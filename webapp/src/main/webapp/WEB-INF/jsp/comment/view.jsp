@@ -7,7 +7,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title><c:out value="Comment"/></title>
+    <title><spring:message code="comment.title"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
     <link rel="stylesheet" href="<c:url value="/resources/css/postView.css"/>"/>
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
@@ -40,7 +40,7 @@
                 <div class="uk-grid-medium uk-flex-middle" uk-grid>
                     <c:if test="${comment.enabled}">
                         <div class="uk-width-auto">
-                            <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/user/avatar/${comment.user.avatarId}"/>" width="80" height="80" alt="">
+                            <img class="circle-comment uk-comment-avatar" src="<c:url value="/user/avatar/${comment.user.avatarId}"/>" width="80" height="80" alt="">
                         </div>
                     </c:if>
                     <div class="uk-width-expand" >

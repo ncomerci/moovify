@@ -6,7 +6,7 @@
 
 <html>
 <head>
-    <title><spring:message code="search.movies.pageTitle"/></title>
+    <title><spring:message code="search.movies.pageTitle" arguments="${query}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp"/>
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
     <script src="<c:url value="/resources/js/search/movies.js"/>"></script>
