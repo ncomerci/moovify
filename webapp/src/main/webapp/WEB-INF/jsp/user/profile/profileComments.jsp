@@ -6,12 +6,7 @@
 <html>
 <head>
     <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
-    <title>
-        <spring:message code="user.profile.Profile" arguments="${loggedUser.username}"/>
-        <c:if test="${loggedUser.admin}">
-            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
-        </c:if>
-    </title>
+    <title><spring:message code="user.profile.Profile" arguments="${loggedUser.username}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
     <script src="<c:url value="/resources/js/user/profile.js" />"></script>

@@ -39,7 +39,7 @@
                         </c:if>
                     </li>
                     <li>
-                        <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" href="<c:out value="/user/profile"/>">
+                        <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" href="<c:url value="/user/profile"/>">
 <%--                            <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>--%>
                             <img src="<c:url value="/user/avatar/${loggedUser.avatarId}" />" class="uk-comment-avatar circle-navbar" width="45" height="45" alt="User Avatar">
                             <span class="uk-text-bold uk-margin-small-left">${loggedUser.username}</span>
