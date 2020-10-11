@@ -128,7 +128,7 @@
                     class="uk-button uk-button-default logout-button uk-border-rounded delete-comment-button"
                     data-id="<c:out value="${comment.id}"/>"
                     type="button"
-                    uk-toggle="target: #delete-modal">
+                    uk-toggle="target: #delete-comment-modal">
                 <spring:message code="comment.delete.button"/>
             </button>
         </div>
