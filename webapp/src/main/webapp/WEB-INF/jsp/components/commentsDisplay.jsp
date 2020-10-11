@@ -21,10 +21,10 @@
                     </button>
                 </c:if>
                 <div class="uk-width-expand uk-margin-small-top">
-                    <a href="<c:url value="/comment/${comment.id}"/>">
+                    <a class="uk-text-italic" href="<c:url value="/comment/${comment.id}"/>">
                         <c:set var="maxLength" value="${80}"/>
                         <c:set var="length" value="${fn:length(comment.body)}"/>
-                        <c:out value="${fn:substring(comment.body, 0, maxLength)}${length > maxLength ? '...':''}"/>
+                        <c:out value="\"${fn:substring(comment.body, 0, maxLength)}${length > maxLength ? '[...]':''}\""/>
                     </a>
                     <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
                         <c:choose>
