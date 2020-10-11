@@ -38,7 +38,7 @@
         </div>
         <p class="uk-text-bold">
             <spring:message code="mail.registrationConfirm.countdown"/>
-            <span id="countdown"  data-redirect-url="<c:url value="/"/>">10</span>
+            <span id="countdown" data-redirect-url="<c:url value="/"/>">10</span>
         </p>
     </div>
 </c:if>
