@@ -51,7 +51,7 @@
                     <li class="userTitle"><spring:message code="user.view.notDescription"/> </li>
                 </c:if>
                 <c:if test="${fn:length(user.description) != 0}">
-                    <li class="userTitle"><spring:message code="user.profile.Description" arguments="${user.description}"/></li>
+                    <li class="userTitle m-long-text"><spring:message code="user.profile.Description" arguments="${user.description}"/></li>
                 </c:if>
             </ul>
             <c:if test="${not empty loggedUser and loggedUser.admin}">
