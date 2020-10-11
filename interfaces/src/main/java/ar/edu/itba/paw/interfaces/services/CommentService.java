@@ -1,24 +1,31 @@
 package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.User;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface CommentService {
 
-    long register(long postId, Long parentId, String body, long userId);
+    Comment register(Post post, Comment parent, String body, User user, String mailTemplate);
 
-    Optional<Comment> findCommentByIdWithChildren(long id);
+    void likeComment(Comment comment, User user, int value);
 
-    Optional<Comment> findCommentByIdWithoutChildren(long id);
+    void deleteComment(Comment comment);
 
-    Collection<Comment> findCommentsByPostIdWithChildren(long post_id);
+    void restoreComment(Comment comment);
 
-    Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id);
+    Optional<Comment> findCommentById(long id);
 
-    Collection<Comment> findCommentsByUserIdWithChildren(long user_id);
+    PaginatedCollection<Comment> findCommentChildren(Comment comment, int pageNumber, int pageSize);
 
-    Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id);
+    PaginatedCollection<Comment> findCommentDescendants(Comment comment, int pageNumber, int pageSize);
 
+    PaginatedCollection<Comment> findPostCommentDescendants(Post post, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> findCommentsByPost(Post post, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> findCommentsByUser(User user, int pageNumber, int pageSize);
 }

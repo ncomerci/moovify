@@ -4,6 +4,8 @@ import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,8 @@ import java.util.Collection;
 @Controller
 public class MovieController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieController.class);
+
     @Autowired
     private MovieService movieService;
 
@@ -27,8 +31,13 @@ public class MovieController {
 
     @RequestMapping(path = "/movie/create",  method = RequestMethod.GET)
     public ModelAndView create(){
-        ModelAndView mv = new ModelAndView("movie/create");
+
+        LOGGER.info("Accessed /movie/create");
+
+        final ModelAndView mv = new ModelAndView("movie/create");
+
         mv.addObject("categories", movieService.getAvailableCategories());
+
         return mv;
     }
 
@@ -48,15 +57,26 @@ public class MovieController {
 
         final Movie movie = movieService.register(title, originalTitle,  tmdbId,  imdbId,  originalLanguage,
                 overview,  popularity,  runtime,  voteAverage,  releaseDate,  categories);
+
+        LOGGER.info("Accessed /movie/create to create Movie. Redirecting to /movie/{}", movie.getId());
+
         return new ModelAndView("redirect:/movie/" + movie.getId());
     }
 
-    @RequestMapping(path = "/movie/{id}", method = RequestMethod.GET)
-    public ModelAndView view(@PathVariable final long id) {
+    @RequestMapping(path = "/movie/{movieId}", method = RequestMethod.GET)
+    public ModelAndView view(@PathVariable final long movieId,
+                             @RequestParam(defaultValue = "5") final int pageSize,
+                             @RequestParam(defaultValue = "0") final int pageNumber) {
+
+        LOGGER.info("Accessed /movie/{}", movieId);
 
         final ModelAndView mv = new ModelAndView("movie/view");
-        mv.addObject("movie", movieService.findById(id).orElseThrow(MovieNotFoundException::new));
-        mv.addObject("posts", postService.findPostsByMovieId(id));
+
+        final Movie movie = movieService.findMovieById(movieId).orElseThrow(MovieNotFoundException::new);
+
+        mv.addObject("movie", movie);
+        mv.addObject("posts", postService.findPostsByMovie(movie, pageNumber, pageSize));
+
         return mv;
     }
 }

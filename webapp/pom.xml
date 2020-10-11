@@ -22,17 +22,19 @@
 
   <name>webapp</name>
 
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>http://pawserver.it.itba.edu.ar/paw-2020b-3/</url>
 
   <build>
     <finalName>webapp</finalName>
 
     <plugins>
-      <plugin>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-maven-plugin</artifactId>
-      </plugin>
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-war-plugin</artifactId>-->
+<!--        <configuration>-->
+<!--          <packagingExcludes>**/logback-test.xml</packagingExcludes>-->
+<!--        </configuration>-->
+<!--      </plugin>-->
     </plugins>
   </build>
 
@@ -87,8 +89,8 @@
       <artifactId>postgresql</artifactId>
     </dependency>
 
-    <dependency
-    ><groupId>org.slf4j</groupId>
+    <dependency>
+      <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
@@ -110,6 +112,11 @@
     <dependency>
       <groupId>org.logback-extensions</groupId>
       <artifactId>logback-ext-spring</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
     </dependency>
 
     <dependency>

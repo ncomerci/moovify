@@ -1,16 +1,10 @@
 package ar.edu.itba.paw.webapp.form;
 
-import javax.validation.constraints.NotNull;
-
 public class SearchPostsForm {
 
-    @NotNull
     private String query;
-
     private String sortCriteria;
-
     private String postCategory;
-
     private String postAge;
 
     public String getQuery() {

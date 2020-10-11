@@ -2018,8 +2018,8 @@ select.uk-form-width-xsmall {
 .uk-button-default:active,
 .uk-button-default.uk-active {
   background-color: transparent;
-  color: #333;
-  border-color: #999999;
+  color: #fa8a32;
+  border-color: #fa8a32;
 }
 /*
  * Primary
@@ -3584,7 +3584,9 @@ select.uk-form-width-xsmall {
   z-index: 1020;
   /* 3 */
   box-sizing: border-box;
-  width: 300px;
+
+  /*Modify by Moovify*/
+  width: 400px;
 }
 /* Show */
 .uk-drop.uk-open {
@@ -4336,8 +4338,12 @@ select.uk-form-width-xsmall {
   content: '.';
 }
 :root {
+}
+
+:root {
   --uk-leader-fill-content: .;
 }
+
 /* ========================================================================
    Component: Notification
  ========================================================================== */
@@ -5135,6 +5141,7 @@ ul.uk-nav-sub {
   display: flex;
   /* 1 */
   position: relative;
+  box-shadow: 0 1em 1em -1em rgba(0, 0, 0, .25);
 }
 /* Container
  ========================================================================== */
@@ -5700,6 +5707,7 @@ ul.uk-nav-sub {
   flex-wrap: wrap;
   /* 2 */
   margin-left: -20px;
+  align-items: baseline;
   /* 3 */
   padding: 0;
   list-style: none;
@@ -8420,6 +8428,9 @@ iframe.uk-cover {
 .uk-flex-middle {
   align-items: center;
 }
+.uk-flex-baseline{
+  align-items: baseline;
+}
 .uk-flex-bottom {
   align-items: flex-end;
 }
@@ -8784,6 +8795,10 @@ iframe.uk-cover {
 .uk-margin-remove-vertical {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+}
+.uk-margin-remove-horizontal {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 .uk-margin-remove-adjacent + *,
 .uk-margin-remove-first-child > :first-child {
@@ -12380,7 +12395,7 @@ iframe.uk-cover {
 .uk-card-secondary > :not([class*='uk-card-media']) .uk-text-primary,
 .uk-overlay-primary .uk-text-primary,
 .uk-offcanvas-bar .uk-text-primary {
-  color: #fff !important;
+  /*color: #fff !important;*/
 }
 .uk-light .uk-text-secondary,
 .uk-section-primary:not(.uk-preserve-color) .uk-text-secondary,
@@ -12545,6 +12560,10 @@ iframe.uk-cover {
 
 /*========================= CUSTOM ADDED =========================*/
 
+.main-page {
+  box-shadow: 0 -1em 1em -1em rgba(0, 0, 0, .25);
+}
+
 .uk-badge.disabled {
   color: #fff;
 }
@@ -12556,6 +12575,22 @@ iframe.uk-cover {
 .iconify {
   width: 32px;
   height: 32px;
+}
+
+.admin-badge {
+  width: 18px;
+  height: 18px;
+}
+
+.admin-button {
+  border: 1px solid #F3F3F3;
+  color: #F3F3F3;
+}
+
+.admin-button:hover,
+.admin-button:focus {
+  border: 1px solid #D1D1D1;
+  color: #D1D1D1;
 }
 
 .nav-user {
@@ -12593,8 +12628,6 @@ iframe.uk-cover {
 }
 
 .logout-button {
-  padding-left: 42px !important;
-  padding-right: 42px !important;
   border: 1px solid #cf1b1b;
   color: #cf1b1b;
 }
@@ -12609,7 +12642,17 @@ iframe.uk-cover {
   color: #f0506e;
 }
 
-.signup-login-button {
+.extended-button {
   width: 100% !important;
+}
+
+.delete-comment-button {
+  color: #cf1b1b !important;
+  font-size: 16px;
+}
+
+.delete-comment-button:hover,
+.delete-comment-button:focus {
+  color: #900d0d !important;
 }
 

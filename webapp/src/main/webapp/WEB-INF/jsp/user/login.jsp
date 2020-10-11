@@ -6,7 +6,7 @@
 
 <html>
 <head>
-    <title><spring:message code="user.login"/></title>
+    <title><spring:message code="user.login.title"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body>
@@ -21,11 +21,11 @@
                         <c:choose>
                             <c:when test="${param.error != null}">
                                 <span class="uk-form-icon icon-error"  uk-icon="icon: user"></span>
-                                <input class="uk-input uk-form-danger" name="username" type="text" placeholder="<spring:message code="user.create.Username"/>"/>
+                                <input class="uk-input uk-form-danger" name="username" type="text" placeholder="<spring:message code="user.login.Username"/>"/>
                             </c:when>
                             <c:otherwise>
                                 <span class="uk-form-icon" uk-icon="icon: user"></span>
-                                <input class="uk-input" name="username" type="text" placeholder="<spring:message code="user.create.Username"/>"/>
+                                <input class="uk-input" name="username" type="text" placeholder="<spring:message code="user.login.Username"/>"/>
                             </c:otherwise>
                         </c:choose>
                     </label>
@@ -37,11 +37,11 @@
                         <c:choose>
                             <c:when test="${param.error != null}">
                         <span class="uk-form-icon icon-error"  uk-icon="icon: lock"></span>
-                        <input class="uk-input uk-form-danger" name="password" type="password" placeholder="<spring:message code="user.create.Password"/>" />
+                        <input class="uk-input uk-form-danger" name="password" type="password" placeholder="<spring:message code="user.login.Password"/>" />
                             </c:when>
                             <c:otherwise>
                                 <span class="uk-form-icon" uk-icon="icon: lock"></span>
-                                <input class="uk-input" name="password" type="password" placeholder="<spring:message code="user.create.Password"/>" />
+                                <input class="uk-input" name="password" type="password" placeholder="<spring:message code="user.login.Password"/>" />
                             </c:otherwise>
                         </c:choose>
                     </label>
@@ -61,7 +61,7 @@
                 </label>
             </div>
             <div class="uk-text-center">
-                <input class="uk-button uk-button-primary uk-border-rounded signup-login-button" type="submit" value="<spring:message code="user.login.loginTitle"/>" />
+                <input class="uk-button uk-button-primary uk-border-rounded extended-button" type="submit" value="<spring:message code="user.login.loginTitle"/>" />
             </div>
             <div class="uk-text-center uk-text-bold uk-text-muted uk-margin"><spring:message code="user.login.noAccount"/> <a href="<c:url value="/user/create"/>"><spring:message code="user.create.signUpTitle"/></a></div>
         </fieldset>
@@ -70,7 +70,6 @@
     <div class="uk-text-center">
         <a href="<c:url value="/user/resetPassword" /> "><spring:message code="user.login.resetPassword"/></a>
     </div>
-
 </div>
 
 </body>

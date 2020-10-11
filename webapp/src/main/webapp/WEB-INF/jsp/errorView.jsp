@@ -2,16 +2,17 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<jsp:useBean id="message" scope="request" type="java.lang.String"/>
+<jsp:useBean id="code" scope="request" type="java.lang.String"/>
+
 <html>
 <head>
-    <title><spring:message code="error.moovifyNotFound"/></title>
+    <title><spring:message code="error.moovifyErrorTitle" arguments="${code}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
 </head>
 <body>
-<jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
-
-<jsp:useBean id="message" scope="request" type="java.lang.String"/>
-<jsp:useBean id="code" scope="request" type="java.lang.String"/>
+<%-- La saco porque explota cuando hay errores. De ultima hay que hacer una especial que no pueda fallar, que sea estatica --%>
+<%--<jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />--%>
 
 <main class="uk-container uk-container-large">
     <div class="uk-margin-auto">
@@ -20,22 +21,14 @@
             <c:out value="${message}"/>
     </div>
     <br>
-    <div class="uk-margin-auto">
-        <button class="uk-button uk-button-primary uk-border-rounded uk-margin-auto uk-align-center"
-                type="button"
-                onclick="goBack()"
-        >
+    <div class="uk-margin-auto m-width-max-content">
+        <a class="uk-button uk-button-primary uk-border-rounded uk-margin-auto uk-align-center m-width-max-content"
+                href="<c:url value="/"/>">
             <spring:message code="error.goBack"/>
-        </button>
+        </a>
     </div>
 
 </main>
 
 </body>
 </html>
-
-<script>
-    function goBack() {
-        window.history.back();
-    }
-</script>

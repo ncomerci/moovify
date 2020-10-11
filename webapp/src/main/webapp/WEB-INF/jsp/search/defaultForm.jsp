@@ -6,9 +6,15 @@
 <jsp:useBean id="currentSearch" scope="request" type="java.lang.String"/>
 <jsp:useBean id="query" scope="request" type="java.lang.String"/>
 
-<div class="uk-search uk-search-large">
-    <span uk-search-icon></span>
-    <form:input path="query" class="uk-search-input" type="search"/>
+<div class="uk-flex uk-flex-middle">
+    <div class="uk-search uk-search-large uk-width-expand">
+        <span uk-search-icon></span>
+        <spring:message code="navbar.searchDots" var="queryPlaceholder" />
+        <form:input path="query" class="uk-search-input search-query-input" type="search" placeholder="${queryPlaceholder}"/>
+    </div>
+    <div class="uk-width-small">
+        <button class="uk-button uk-button-default uk-border-rounded search-button extended-button" type="submit"><spring:message code="navbar.search"/></button>
+    </div>
 </div>
 <p class="uk-text-meta">
     <spring:message code="search.searchResults"/>
@@ -16,34 +22,22 @@
 <div class="uk-margin-medium-top">
     <ul class="uk-child-width-expand uk-tab">
         <li class="${currentSearch == 0 ? 'uk-active' : ''}">
-            <c:choose>
-                <c:when test="${currentSearch == 0}">
-                    <a href="#"><spring:message code="search.posts"/></a>
-                </c:when>
-                <c:otherwise>
-                    <a href="<c:url value="${'/search/posts/?query='}${query}"/>"><spring:message code="search.posts"/></a>
-                </c:otherwise>
-            </c:choose>
+            <c:url value="/search/posts" var="postsURL">
+                <c:param name="query" value="${query}"/>
+            </c:url>
+            <a href="${currentSearch == 0 ? '' : postsURL}"><spring:message code="search.posts"/></a>
         </li>
         <li class="${currentSearch == 1 ? 'uk-active' : ''}">
-            <c:choose>
-                <c:when test="${currentSearch == 1}">
-                    <a href="#"><spring:message code="search.movies"/></a>
-                </c:when>
-                <c:otherwise>
-                    <a href="<c:url value="${'/search/movies/?query='}${query}"/>"><spring:message code="search.movies"/></a>
-                </c:otherwise>
-            </c:choose>
+            <c:url value="/search/movies" var="moviesURL">
+                <c:param name="query" value="${query}"/>
+            </c:url>
+            <a href="${currentSearch == 1 ? '' : moviesURL}"><spring:message code="search.movies"/></a>
         </li>
         <li class="${currentSearch == 2 ? 'uk-active' : ''}">
-            <c:choose>
-                <c:when test="${currentSearch == 2}">
-                    <a href="#"><spring:message code="search.users"/></a>
-                </c:when>
-                <c:otherwise>
-                    <a href="<c:url value="${'/search/users/?query='}${query}"/>"><spring:message code="search.users"/></a>
-                </c:otherwise>
-            </c:choose>
+            <c:url value="/search/users" var="usersURL">
+                <c:param name="query" value="${query}"/>
+            </c:url>
+            <a href="${currentSearch == 2 ? '' : usersURL}"><spring:message code="search.users"/></a>
         </li>
     </ul>
 </div>

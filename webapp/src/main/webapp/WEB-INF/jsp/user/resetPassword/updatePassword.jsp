@@ -10,39 +10,32 @@
 </head>
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
-<div>
-    <h1 class="uk-margin-left"><spring:message code="user.updatePassword.success"/></h1>
-</div>
+
 <c:url value="/user/updatePassword" var="action"/>
 <form:form modelAttribute="updatePasswordForm" action="${action}" method="post">
-
-    <form:errors path="password" element="p" cssClass="error" cssStyle="color:red;"/>
-    <div class="uk-grid-small uk-margin-auto" uk-grid>
-        <div class="uk-width-1-2@s">
-            <c:set var="passwordError"><form:errors path="password"/></c:set>
-            <div class="uk-inline">
-                <form:label path="password">
-                    <spring:message code="user.updatePassword.password" var="password"/>
-                    <c:choose>
-                        <c:when test="${not empty passwordError}">
-                            <span class="uk-form-icon icon-error" uk-icon="icon: info"></span>
-                            <form:password class="uk-input uk-form-danger" path="password" placeholder="${password}" />
-                        </c:when>
-                        <c:otherwise>
-                            <span class="uk-form-icon" uk-icon="icon: info"></span>
-                            <form:password class="uk-input" path="password" placeholder="${password}" />
-                        </c:otherwise>
-                    </c:choose>
-                </form:label>
+    <div class="uk-container-xsmall uk-margin-auto">
+        <h1 class="uk-h1">
+            <spring:message code="user.updatePassword.success.title"/>
+        </h1>
+        <p class="uk-text-light">
+            <spring:message code="user.updatePassword.success.body" arguments="${loggedUser.email}"/>
+        </p>
+        <form:errors path="password" element="p" cssClass="error uk-margin-remove-bottom"/>
+        <c:set var="passwordError"><form:errors path="password"/></c:set>
+        <div class="uk-inline">
+            <form:label path="password">
+                <spring:message code="user.updatePassword.password" var="password"/>
+            </form:label>
+            <span class="uk-form-icon ${not empty passwordError ? 'icon-error' : ''}" uk-icon="icon: info"></span>
+            <form:password class="uk-input ${not empty passwordError ? 'uk-form-danger' : ''}" path="password" placeholder="${password}" />
+        </div>
+        <div class="uk-margin-top uk-flex">
+            <div class="uk-margin-auto">
+                <input class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="user.updatePassword.send"/>" />
             </div>
         </div>
     </div>
     <form:hidden path="token" />
-
-    <div class="uk-margin-top uk-margin-left">
-        <input class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="user.updatePassword.send"/>" />
-    </div>
-
 </form:form>
 
 </body>

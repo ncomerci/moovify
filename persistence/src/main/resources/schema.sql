@@ -1,3 +1,10 @@
+CREATE TABLE IF NOT EXISTS IMAGES
+(
+    image_id        SERIAL          PRIMARY KEY,
+    image           BYTEA           NOT NULL,
+    security_tag    VARCHAR(100)    NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS USERS
 (
     user_id         SERIAL       PRIMARY KEY,
@@ -5,7 +12,12 @@ CREATE TABLE IF NOT EXISTS USERS
     username        VARCHAR(50)  UNIQUE NOT NULL,
     password        VARCHAR(200) NOT NULL,
     name            VARCHAR(50)  NOT NULL,
-    email           VARCHAR(200) UNIQUE NOT NULL
+    email           VARCHAR(200) UNIQUE NOT NULL,
+    avatar_id       INTEGER,
+    description     VARCHAR(400) NOT NULL,
+    enabled         BOOLEAN      NOT NULL,
+
+    FOREIGN KEY (avatar_id) REFERENCES IMAGES (image_id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS USER_VERIFICATION_TOKEN
@@ -15,7 +27,7 @@ CREATE TABLE IF NOT EXISTS USER_VERIFICATION_TOKEN
     token       TEXT         UNIQUE NOT NULL,
     expiry      TIMESTAMP    NOT NULL,
 
-    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS PASSWORD_RESET_TOKEN
@@ -25,7 +37,7 @@ CREATE TABLE IF NOT EXISTS PASSWORD_RESET_TOKEN
     token       TEXT         UNIQUE NOT NULL,
     expiry      TIMESTAMP    NOT NULL,
 
-    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS ROLES
@@ -39,8 +51,8 @@ CREATE TABLE IF NOT EXISTS USER_ROLE
     user_id    INTEGER     NOT NULL,
     role_id    INTEGER     NOT NULL,
     PRIMARY KEY (user_id, role_id),
-    FOREIGN KEY (user_id) REFERENCES USERS (user_id),
-    FOREIGN KEY (role_id) REFERENCES ROLES (role_id)
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES ROLES (role_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS POST_CATEGORY
@@ -59,9 +71,20 @@ CREATE TABLE IF NOT EXISTS POSTS
     category_id   INTEGER      NOT NULL,
     word_count    INTEGER      NOT NULL,
     body          TEXT         NOT NULL,
+    enabled       BOOLEAN      NOT NULL,
 
-    FOREIGN KEY (category_id) REFERENCES POST_CATEGORY (category_id),
-    FOREIGN KEY (user_id)     REFERENCES USERS (user_id)
+    FOREIGN KEY (category_id) REFERENCES POST_CATEGORY (category_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id)     REFERENCES USERS (user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS POSTS_LIKES
+(
+    post_id     INTEGER     NOT NULL,
+    user_id     INTEGER     NOT NULL,
+    value       INTEGER     NOT NULL,
+    PRIMARY KEY (post_id, user_id),
+    FOREIGN KEY (post_id) REFERENCES POSTS (post_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS TAGS
@@ -69,7 +92,7 @@ CREATE TABLE IF NOT EXISTS TAGS
     post_id INTEGER     NOT NULL,
     tag     VARCHAR(50) NOT NULL,
     PRIMARY KEY (post_id, tag),
-    FOREIGN KEY (post_id) REFERENCES POSTS (post_id)
+    FOREIGN KEY (post_id) REFERENCES POSTS (post_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS MOVIE_CATEGORIES
@@ -98,11 +121,11 @@ CREATE TABLE IF NOT EXISTS MOVIES
 
 CREATE TABLE IF NOT EXISTS MOVIE_TO_MOVIE_CATEGORY
 (
-    tmdb_category_id     INTEGER    NOT NULL,
-    tmdb_id         INTEGER    NOT NULL,
+    tmdb_category_id    INTEGER    NOT NULL,
+    tmdb_id             INTEGER    NOT NULL,
     PRIMARY KEY (tmdb_category_id, tmdb_id),
-    FOREIGN KEY (tmdb_category_id) REFERENCES MOVIE_CATEGORIES(tmdb_category_id),
-    FOREIGN KEY (tmdb_id) REFERENCES MOVIES (tmdb_id)
+    FOREIGN KEY (tmdb_category_id) REFERENCES MOVIE_CATEGORIES(tmdb_category_id) ON DELETE CASCADE,
+    FOREIGN KEY (tmdb_id) REFERENCES MOVIES (tmdb_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS POST_MOVIE
@@ -110,8 +133,8 @@ CREATE TABLE IF NOT EXISTS POST_MOVIE
     post_id         INTEGER    NOT NULL,
     movie_id        INTEGER    NOT NULL,
     PRIMARY KEY (post_id, movie_id),
-    FOREIGN KEY (post_id) REFERENCES POSTS (post_id),
-    FOREIGN KEY (movie_id) REFERENCES MOVIES (movie_id)
+    FOREIGN KEY (post_id) REFERENCES POSTS (post_id) ON DELETE CASCADE,
+    FOREIGN KEY (movie_id) REFERENCES MOVIES (movie_id) ON DELETE CASCADE
 );
 
 
@@ -123,9 +146,20 @@ CREATE TABLE IF NOT EXISTS COMMENTS
     user_id       INTEGER      NOT NULL,
     creation_date TIMESTAMP    NOT NULL,
     body          TEXT         NOT NULL,
+    enabled       BOOLEAN      NOT NULL,
 
     FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
-    FOREIGN KEY (post_id) REFERENCES POSTS (post_id),
-    FOREIGN KEY (user_id) REFERENCES USERS (user_id)
+    FOREIGN KEY (post_id) REFERENCES POSTS (post_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS COMMENTS_LIKES
+(
+    comment_id     INTEGER     NOT NULL,
+    user_id        INTEGER     NOT NULL,
+    value          INTEGER     NOT NULL,
+    PRIMARY KEY (comment_id, user_id),
+    FOREIGN KEY (comment_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
 );
 

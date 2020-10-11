@@ -1,36 +1,54 @@
 package ar.edu.itba.paw.interfaces.services;
 
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface UserService {
 
-    User register(String username, String password, String name, String email);
+    User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) throws DuplicateUsernameException, DuplicateEmailException;
+
+    void updateName(User user, String name);
+
+    void updateUsername(User user, String username) throws DuplicateUsernameException;
+
+    void updateDescription(User user, String description);
+
+    void updatePassword(User user, String password);
+
+    void deleteUser(User user);
+
+    void restoreUser(User user);
+
+    void promoteUserToAdmin(User user);
 
     Optional<User> confirmRegistration(String token);
 
-    String createVerificationToken(long userId);
+    void createConfirmationEmail(User user, String confirmationMailTemplate);
 
-    String createPasswordResetToken(long userId);
+    void createPasswordResetEmail(User user, String passwordResetMailTemplate);
 
     boolean validatePasswordResetToken(String token);
 
+    int hasUserLikedPost(User user, Post post);
+
     Optional<User> updatePassword(String password, String token);
 
-    boolean emailExistsAndIsValidated(String email);
+    Optional<byte[]> getAvatar(long avatarId);
 
-    Optional<User> findById(long id);
+    void updateAvatar(User user, byte[] newAvatar);
 
-    Optional<User> findByUsername(String username);
+    Optional<User> findUserById(long id);
 
-    Optional<User> findByEmail(String email);
+    Optional<User> findDeletedUserById(long id);
 
-    Collection<Post> findPostsByUserId(long user_id);
+    Optional<User> findUserByUsername(String username);
 
-    Collection<Post> getAllUsers(long user_id);
+    Optional<User> findUserByEmail(String email);
 
-    Collection<User> getAllUsers();
+    PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize);
 }

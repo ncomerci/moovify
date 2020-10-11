@@ -6,6 +6,9 @@
     <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
 </sec:authorize>
 
+<%-- Added to prevent a bug in Firefox which starts loading page before finishing loading the stylesheets, cause a Flash Of Unstyled Content --%>
+<%--<script>0</script>--%>
+
 <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
     <nav class="uk-navbar-container" uk-navbar>
         <a class="uk-logo" href="<c:url value="/" />"><img id="nav-logo" src="<c:url value="/resources/images/logo.png"/>" alt="Moovify"></a>
@@ -16,7 +19,7 @@
                         <span uk-icon="icon: search; ratio: 1.7"></span>
                     </a>
                     <div class="uk-drop" data-uk-drop="mode: click; pos: right-center; offset: 0; boundary: #navbar">
-                        <form action="<c:url value="/search/posts/"/>" class="uk-search uk-search-navbar uk-width-1-1">
+                        <form action="<c:url value="/search/posts"/>" class="uk-search uk-search-navbar uk-width-1-1">
                             <label for="nav-search"></label>
                             <input autofocus id="nav-search" name="query" class="uk-search-input" type="search" placeholder="<spring:message code="navbar.searchDots"/>" >
                             <button id="submit-navbar-search-button" class="uk-button uk-button-default uk-border-rounded search-button" type="submit"><spring:message code="navbar.search"/></button>
@@ -25,31 +28,42 @@
                 </li>
                 <sec:authorize access="isAuthenticated()">
                     <li class="uk-navbar-item">
-                        <sec:authorize access="hasRole('NOT_VALIDATED')">
+                        <c:if test="${!loggedUser.validated}">
                             <!-- This is a button toggling the modal -->
                             <a class="uk-padding-remove" href="#" uk-toggle="target: #confirm-email-modal">
                                 <spring:message code="navbar.createPost"/>
                             </a>
-                        </sec:authorize>
-                        <sec:authorize access="!hasRole('NOT_VALIDATED')">
+                        </c:if>
+                        <c:if test="${loggedUser.validated}">
                             <a class="uk-padding-remove" href="<c:url value="/post/create" />"><spring:message code="navbar.createPost"/></a>
-                        </sec:authorize>
+                        </c:if>
                     </li>
                     <li>
-                        <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left">
-                            <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
+                        <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" href="<c:out value="/user/profile"/>">
+<%--                            <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>--%>
+                            <img src="<c:url value="/user/avatar/${loggedUser.avatarId}" />" class="uk-comment-avatar circle-navbar" width="45" height="45" alt="User Avatar">
                             <span class="uk-text-bold uk-margin-small-left">${loggedUser.username}</span>
+                            <c:if test="${loggedUser.admin}">
+                                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                            </c:if>
                         </a>
-                        <div class="uk-navbar-dropdown">
+                        <div class="uk-navbar-dropdown m-bg-primary-lighter-5 m-rounded-bottom-10">
                             <ul class="uk-nav uk-navbar-dropdown-nav">
                                 <li>
-                                    <a class="uk-text-center" href="<c:url value="/user/profile"/>">
-                                        <button class="uk-button uk-button-default uk-border-rounded user-profile-button" type="button"><spring:message code="user.profile"/></button>
+                                    <a class="uk-text-normal uk-text-center m-text-primary" href="<c:url value="/user/profile"/>">
+                                        <spring:message code="user.profile"/>
                                     </a>
                                 </li>
+                                <c:if test="${loggedUser.admin}">
                                 <li>
-                                    <a class="uk-text-center" href="<c:url value="/logout"/>">
-                                        <button class="uk-button uk-button-default uk-border-rounded logout-button" type="button"><spring:message code="user.logout"/></button>
+                                    <a class="uk-text-normal uk-text-center m-text-primary" href="<c:url value="/admin/deleted/posts"/>">
+                                        <spring:message code="adminPanel.btn"/>
+                                    </a>
+                                </li>
+                                </c:if>
+                                <li>
+                                    <a class="uk-text-normal uk-text-center m-text-red" href="<c:url value="/logout"/>">
+                                        <spring:message code="user.logout"/>
                                     </a>
                                 </li>
                             </ul>
@@ -62,7 +76,7 @@
                     </li>
                     <li>
                         <a class="uk-text-center" href="<c:url value="/user/create"/>">
-                            <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder" style="color: #30475e" type="button"><spring:message code="user.signup"/></button>
+                            <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-text-primary" type="button"><spring:message code="user.signup"/></button>
                         </a>
                     </li>
                 </sec:authorize>
@@ -71,6 +85,7 @@
     </nav>
 </header>
 
+<c:if test="${not empty loggedUser and !loggedUser.validated}">
 <!-- Confirm email modal -->
 <div id="confirm-email-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
@@ -82,3 +97,4 @@
         </p>
     </div>
 </div>
+</c:if>

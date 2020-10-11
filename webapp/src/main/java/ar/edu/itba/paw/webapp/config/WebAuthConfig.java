@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -41,7 +42,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     }
 
     // Spring Security Unresolved Issues
-    // TODO: Make a redirect, change browser url
     @Override
     protected void configure(HttpSecurity http) throws Exception {
             http
@@ -52,14 +52,26 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
                     // Home Controller
                         // "/"
+                        // "/403"
 
                     // User Controller
                         // "/user/{userId:[\d]+}
+                        // "/user/{userId:[\d]+}/posts
+                        // "/user/{userId:[\d]+}/comments
+                        // /user/avatar/{avatarId:[\d]+}
+                        // /user/registrationConfirm
                     .antMatchers("/login", "/user/create").anonymous()
-                    .antMatchers("/user/profile").authenticated()
-                    .antMatchers(
-                            "/user/registrationConfirm",
-                            "/user/resendConfirmation").hasRole("NOT_VALIDATED")
+                    .antMatchers("/user/profile",
+                                            "/user/profile/posts",
+                                            "/user/profile/comments",
+                                            "/user/profile/edit",
+                                            "/user/changePassword").authenticated()
+                    .antMatchers(HttpMethod.POST,
+                             "/user/edit/name",
+                                        "/user/edit/username",
+                                        "/user/edit/description",
+                                        "/user/profile/avatar").authenticated()
+                    .antMatchers("/user/resendConfirmation").hasRole("NOT_VALIDATED")
                     .antMatchers(
                             "/user/resetPassword",
                             "/user/updatePassword/token",
@@ -68,19 +80,31 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Post Controller
                         // "/post/{postId}"
                     .antMatchers("/post/create").hasRole("USER")
+                    .antMatchers(HttpMethod.POST, "/post/like").hasRole("USER")
 
                     // Movie Controller
                         // "/movies/{movieId}
-                    .antMatchers("/movie/create", "/movie/register").hasRole("ADMIN")
+                    .antMatchers("/movie/create").hasRole("ADMIN")
 
                     // Comment Controller
-                    .antMatchers("/comment/create").hasRole("USER")
-                    .antMatchers("/comment/{commentId:[\\d]+}").hasRole("ADMIN")
+                        // "/comment/{commentId:[\\d]+}"
+                    .antMatchers(HttpMethod.POST, "/comment/create").hasRole("USER")
+                    .antMatchers(HttpMethod.POST, "/comment/like").hasRole("USER")
 
                     // Search Controller
                         // "/search/posts"
                         // "/search/movies"
                         // "/search/users"
+
+                    // Admin Controller
+                    .antMatchers("/admin/**").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/comment/delete/{commentId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/comment/restore/{commentId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/post/delete/{postId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/post/restore/{postId:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/user/promote/{id:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST,"/user/delete/{id:[\\d]+}").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST, "/user/restore/{id:[\\d]+}").hasRole("ADMIN")
 
                     // Default
                     .antMatchers("/**").permitAll()
@@ -92,6 +116,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .defaultSuccessUrl("/", false)
 
                 .and().rememberMe()
+                    .userDetailsService(userDetails)
                     .rememberMeParameter("remember-me")
                     .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
                     .key(FileCopyUtils.copyToString(new InputStreamReader(rememberMeKeyResource.getInputStream())))
@@ -101,7 +126,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .logoutSuccessUrl("/")
 
                 .and().exceptionHandling()
-                    .accessDeniedPage("/")
+                    .accessDeniedPage("/403")
 
                 .and().csrf().disable();
     }

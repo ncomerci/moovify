@@ -2,43 +2,139 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
 
 <jsp:useBean id="comments" scope="request" type="java.util.Collection"/>
-<ul class="uk-comment-list">
+<sec:authorize access="isAuthenticated()">
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+</sec:authorize>
+
+<ul class="uk-comment-list" id="comment-section">
     <c:forEach items="${comments}" var="comment" >
 
-        <li>
+        <li class="uk-margin-remove">
             <div id="${comment.id}">
                 <article class="uk-comment uk-visible-toggle" tabindex="-1">
-                    <header class="uk-comment-header uk-position-relative">
-                        <div class="uk-grid-medium uk-flex-middle" uk-grid>
-                            <div class="uk-width-auto">
-                                <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/resources/images/avatar.jpg"/>" width="80" height="80" alt="">
+                    <header class="uk-comment-header uk-position-relative <c:out value="${comment.enabled ? '':'uk-margin-remove'}"/>">
+                        <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
+                            <div class="uk-width-2-3">
+                                <div class="uk-grid-medium uk-flex-middle" uk-grid>
+                                    <c:if test="${comment.enabled}">
+                                        <div class="uk-width-auto">
+                                            <c:choose>
+                                                <c:when test="${comment.user.enabled}">
+                                                    <c:set var="avatarUrl"><c:url value="/user/avatar/${comment.user.avatarId}"/></c:set>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="avatarUrl"><c:url value="/resources/images/avatar.jpg"/></c:set>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <img class="circle-comment uk-comment-avatar" src="${avatarUrl}" alt="">
+                                        </div>
+                                    </c:if>
+                                    <div class="uk-width-expand">
+                                        <c:if test="${comment.enabled}">
+                                            <h4 class="uk-comment-title uk-margin-remove">
+                                                <c:choose>
+                                                    <c:when test="${comment.user.enabled}">
+                                                        <a class="comment-user-name <c:out value="${comment.user.admin ? 'uk-text-primary':''}"/>" href = "<c:url value="/user/${comment.user.id}" />">
+                                                            <c:out value="${comment.user.name}"/>
+                                                            <c:if test="${comment.user.admin}">
+                                                                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                                            </c:if>
+                                                        </a>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="comment-user-name uk-text-italic">
+                                                            <spring:message code="user.notEnabled.name"/>
+                                                        </span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:if test="${not empty loggedUser and loggedUser.admin}">
+                                                    <a href="#delete-comment-modal"
+                                                       data-id="<c:out value="${comment.id}"/>"
+                                                       class="uk-link-muted delete-comment-button uk-position-small uk-hidden-hover"
+                                                       uk-toggle>
+                                                        <spring:message code="comment.delete.button"/>
+                                                    </a>
+                                                </c:if>
+                                            </h4>
+                                        </c:if>
+                                        <c:if test="${!comment.enabled}">
+                                            <br><br>
+                                        </c:if>
+                                        <p class="uk-comment-meta uk-margin-remove-top">
+                                            <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                                            <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="uk-width-expand">
-                                <h4 class="uk-comment-title uk-margin-remove">
-                                    <a href = "<c:url value="/user/${comment.user.id}" />"><c:out value="${comment.user.name}" /> </a>
-                                </h4>
-                                <p class="uk-comment-meta uk-margin-remove-top">
-                                    <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
-                                    <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
-                                </p>
+                            <c:if test="${comment.enabled}">
+                            <div class="uk-width-1-3 uk-text-center uk-padding-remove uk-margin-remove ">
+                                <div class="uk-position-top-right">
+                                    <div class="uk-flex">
+                                        <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-top" uk-grid>
+                                            <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
+                                                <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover">
+                                                    <spring:message code="comment.create.reply"/>
+                                                </a>
+                                            </div>
+                                            <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
+                                                <a class="uk-link-muted reply-button uk-position-small uk-hidden-hover" href="<c:url value="/comment/${comment.id}"/>">
+                                                    <spring:message code="comment.viewComment"/>
+                                                </a>
+                                            </div>
+                                            <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
+                                                <div class="uk-text-center uk-padding-remove uk-margin-remove">
+                                                    <p class="uk-text-center uk-align-center uk-text-lead">
+                                                        <spring:message code="comment.view.votes" arguments="${comment.likes}"/>
+                                                    </p>
+                                                </div>
+                                            </sec:authorize>
+                                            <c:if test="${not empty loggedUser and loggedUser.validated}">
+                                                <c:set var="hasUserVoted" value="${ customTag:hasUserVotedComment(comment, loggedUser.id) }" />
+                                                <c:set var="likeValue" value="${ hasUserVoted and customTag:hasUserLikedComment(comment,loggedUser.id) }" />
+                                                <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right ">
+                                                    <a class="like-comment-button" data-id="${comment.id}" data-value="${ likeValue ? 0 : 1 }">
+                                                        <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
+                                                    </a>
+                                                </div>
+                                                <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
+                                                    <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
+                                                        <c:out value="${comment.likes}"/>
+                                                    </p>
+                                                </div>
+                                                <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
+                                                    <a class=" like-comment-button" data-id="${comment.id}"  data-value="${ !hasUserVoted or likeValue ? -1 : 0 }">
+                                                        <span class="iconify" data-icon="<c:out value="${ !hasUserVoted or likeValue ? 'cil:chevron-bottom' : 'el:chevron-down'}" />" data-inline="true"></span>
+                                                    </a>
+                                                </div>
+                                            </c:if>
+                                        </div>
+                                    </div>
+                                </div>
+                                </c:if>
                             </div>
-                        </div>
-                        <sec:authorize access="hasAnyRole('USER', 'ADMIN')">
-                            <div class="uk-position-top-right uk-position-small uk-hidden-hover">
-                                <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button"><spring:message code="comment.create.reply"/></a>
-                            </div>
-                        </sec:authorize>
                     </header>
                     <div class="uk-comment-body">
-                        <span style="white-space: pre-line"><c:out value="${comment.body}"/></span>
+                        <c:choose>
+                            <c:when test="${comment.enabled}">
+                                <span class="pre-line"><c:out value="${comment.body}"/></span>
+                            </c:when>
+                            <c:when test="${not empty loggedUser and loggedUser.admin}">
+                                <div class="uk-text-italic"><c:out value="[${comment.user.username}: ${comment.body}]"/></div>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                 </article>
                 <hr>
             </div>
-            <div class="replies-show" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${comment.descendantCount}">
-                <a class="uk-link-muted"><spring:message code="comment.replies.show"/> (${comment.descendantCount}) ...</a>
+            <div class="replies-show uk-margin-bottom" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${comment.descendantCount}">
+                <a class="uk-link-muted"><spring:message code="comment.replies.show" arguments="${comment.descendantCount}"/></a>
             </div>
             <ul id="${comment.id}-children" class="li uk-hidden">
                     <%--  Recursive Call  --%>

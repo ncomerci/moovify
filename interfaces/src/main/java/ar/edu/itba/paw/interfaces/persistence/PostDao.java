@@ -1,38 +1,46 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
-import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.*;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
 public interface PostDao {
 
-    enum FetchRelation {
-        MOVIES, COMMENTS
-    }
-
     enum SortCriteria {
         NEWEST, OLDEST, HOTTEST
     }
 
-    long register(String title, String body, int wordCount, long category, long user, Set<String> tags, Set<Long> movies);
+    Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Long> movies, boolean enabled);
 
-    Optional<Post> findPostById(long id, EnumSet<FetchRelation> includedRelations);
+    void deletePost(Post post);
 
-    Collection<Post> getAllPosts(EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    void restorePost(Post post);
 
-    Collection<Post> findPostsByMovieId(long movie_id, EnumSet<FetchRelation> includedRelations);
+    void likePost(Post post, User user, int value);
 
-    Collection<Post> findPostsByUserId(long user_id, EnumSet<FetchRelation> includedRelations);
+    void removeLike(Post post, User user);
 
-    Collection<Post> searchPosts(String query, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Optional<Post> findPostById(long id);
 
-    Collection<Post> searchPostsByCategory(String query, String category, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    Optional<Post> findDeletedPostById(long id);
 
-    Collection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria);
+    PaginatedCollection<Post> findPostsByMovie(Movie movie, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> findPostsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> getDeletedPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> searchDeletedPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> searchPostsByCategory(String query, String category, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize);
 }

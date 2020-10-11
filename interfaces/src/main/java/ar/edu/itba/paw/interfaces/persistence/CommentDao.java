@@ -1,23 +1,41 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.User;
 
-import java.util.Collection;
 import java.util.Optional;
 
 public interface CommentDao {
 
-    long register(long postId, Long parentId, String body, long userId);
+    enum SortCriteria {
+        NEWEST, OLDEST, HOTTEST
+    }
 
-    Optional<Comment> findCommentByIdWithChildren(long id);
+    Comment register(Post post, Comment parent, String body, User user, boolean enabled);
 
-    Optional<Comment> findCommentByIdWithoutChildren(long id);
+    void likeComment(Comment comment, User user, int value);
 
-    Collection<Comment> findCommentsByPostIdWithChildren(long post_id);
+    void removeLike(Comment comment, User user);
 
-    Collection<Comment> findCommentsByPostIdWithoutChildren(long post_id);
+    void deleteComment(Comment comment);
 
-    Collection<Comment> findCommentsByUserIdWithChildren(long user_id);
+    void restoreComment(Comment comment);
 
-    Collection<Comment> findCommentsByUserIdWithoutChildren(long user_id);
+    Optional<Comment> findCommentById(long id);
+
+    PaginatedCollection<Comment> findCommentChildren(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> findCommentDescendants(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> findPostCommentDescendants(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> findCommentsByPost(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> findCommentsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 }
