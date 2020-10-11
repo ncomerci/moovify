@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.form.Annotations;
 
-import ar.edu.itba.paw.webapp.form.Constraints.PasswordsEqualConstraintValidator;
 import ar.edu.itba.paw.webapp.form.Constraints.PasswordsUpdateEqualConstraintValidator;
 
 import javax.validation.Constraint;
@@ -13,7 +12,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = PasswordsUpdateEqualConstraintValidator.class)
 public @interface PasswordsUpdateEqualConstraint {
 
-    String message() ;
+    String message() default "{javax.validation.constraints.PasswordsUpdateEqualConstraintValidator.message}";
 
     Class<?>[] groups() default {};
 

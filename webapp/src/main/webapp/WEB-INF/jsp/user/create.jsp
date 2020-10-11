@@ -86,17 +86,18 @@
             <div class="uk-width-1-2 uk-text-right">
                 <c:set var="addAvatarError"><form:errors path="avatar"/></c:set>
                 <div class="uk-inline">
-                    <form:label path="avatar">
-                        <div uk-form-custom>
-                            <form:input path="avatar" type="file" accept="image/*" />
-                            <button class="uk-button uk-button-primary uk-border-rounded extended-button" type="button" tabindex="-1">
-                                <spring:message code="user.create.selectFile"/>
-                            </button>
-<%--                        TODO: Nacho todo tuyo para dejarlo lindo :) - Tobi    --%>
-                            <p id="avatar-not-uploaded" ><spring:message code="user.create.noAvatarSelected" /></p>
-                            <p id="avatar-uploaded" class="hidden"><spring:message code="user.create.avatarSelected" /><span id="file-name"></span></p>
-                        </div>
-                    </form:label>
+                    <div uk-form-custom>
+                        <form:label path="avatar">
+                        <form:input path="avatar" type="file" accept="image/*"/>
+                        <button class="uk-button uk-button-primary uk-border-rounded extended-button" type="button" tabindex="-1">
+                            <spring:message code="user.create.selectFile"/>
+                        </button>
+                        </form:label>
+                    </div>
+                    <p id="avatar-not-uploaded" ><spring:message code="user.create.noAvatarSelected"/></p>
+                    <p id="avatar-uploaded" class="hidden"><spring:message code="user.create.avatarSelected"/>
+                        <span id="file-name"></span>
+                    </p>
                 </div>
                 <form:errors path="avatar" element="p" cssClass="error uk-margin-remove-top"/>
             </div>

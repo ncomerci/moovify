@@ -21,8 +21,8 @@
             <c:out value="${message}"/>
     </div>
     <br>
-    <div class="uk-margin-auto uk-width-small">
-        <a class="uk-button uk-button-primary uk-border-rounded uk-margin-auto uk-align-center"
+    <div class="uk-margin-auto m-width-max-content">
+        <a class="uk-button uk-button-primary uk-border-rounded uk-margin-auto uk-align-center m-width-max-content"
                 href="<c:url value="/"/>">
             <spring:message code="error.goBack"/>
         </a>
@@ -32,9 +32,3 @@
 
 </body>
 </html>
-
-<script>
-    function goBack() {
-        window.history.back();
-    }
-</script>
