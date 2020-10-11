@@ -3,7 +3,7 @@ package ar.edu.itba.paw.webapp.form.editProfile;
 import ar.edu.itba.paw.webapp.form.Annotations.PasswordsUpdateEqualConstraint;
 import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
 
-@PasswordsUpdateEqualConstraint(message= "Passwords must match")
+@PasswordsUpdateEqualConstraint()
 public class ChangePasswordForm {
 
     @ValidPassword
