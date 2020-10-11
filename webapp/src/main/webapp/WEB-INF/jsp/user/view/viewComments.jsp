@@ -28,7 +28,7 @@
             <c:set var="collection" value="${comments}" scope="request"/>
             <c:url var="baseURL" value="/user/${userId}/comments" context="/" scope="request"/>
             <c:set var="numberOfInputs" value="${2}" scope="request"/>
-            <form action="${baseURL}" method="get">
+            <form action="<c:url value="${baseURL}"/>" method="get">
                 <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
             </form>
         </c:if>
