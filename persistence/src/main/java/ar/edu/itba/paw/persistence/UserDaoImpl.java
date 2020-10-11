@@ -121,7 +121,7 @@ public class UserDaoImpl implements UserDao {
         sortCriteriaQuery.put(SortCriteria.NEWEST, USERS + ".creation_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, USERS + ".creation_date");
         sortCriteriaQuery.put(SortCriteria.LIKES, "TOTAL_LIKES.total_likes desc");
-        sortCriteriaQuery.put(SortCriteria.NAME, USERS + ".name");
+        sortCriteriaQuery.put(SortCriteria.USERNAME, USERS + ".username");
 
         return sortCriteriaQuery;
     }

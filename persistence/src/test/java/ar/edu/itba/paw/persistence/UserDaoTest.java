@@ -367,7 +367,7 @@ public class UserDaoTest {
         long user3 = insertUser("username3", "yname", CREATION_DATE.plusHours(8), "email3", ENABLE);
         long user4 = insertUser("username4", "zname", CREATION_DATE.plusHours(20), "email4", ENABLE);
 
-        PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.NAME, PAGE_SECOND, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.USERNAME, PAGE_SECOND, PAGE_SIZE);
         Assert.assertEquals(4, users.getTotalCount());
         Assert.assertArrayEquals(new String[]{"yname", "zname"}, users.getResults().stream().map(User::getName).toArray());
     }
