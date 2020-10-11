@@ -21,7 +21,7 @@
                                 <div class="uk-grid-medium uk-flex-middle" uk-grid>
                                     <c:if test="${comment.enabled}">
                                         <div class="uk-width-auto">
-                                            <img class="uk-border-circle uk-comment-avatar" src="<c:url value="/user/avatar/${comment.user.avatarId}"/>" width="80" height="80" alt="">
+                                            <img class="circle-comment uk-comment-avatar" src="<c:url value="/user/avatar/${comment.user.avatarId}"/>" alt="">
                                         </div>
                                     </c:if>
                                     <div class="uk-width-expand">

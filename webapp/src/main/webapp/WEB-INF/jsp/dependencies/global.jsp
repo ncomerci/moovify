@@ -7,6 +7,7 @@
 <%--UIkit CSS--%>
 <link rel="stylesheet" href="<c:url value="/resources/css/uikit.css" />" />
 
+
 <%--UIkit JS--%>
 <script src="<c:url value="/resources/js/uikit/uikit.js" />"></script>
 <script src="<c:url value="/resources/js/uikit/uikit-icons.js" />"></script>

@@ -22,7 +22,7 @@
             <%--@elvariable id="avatarEditForm" type="ar.edu.itba.paw.webapp.form.editProfile.AvatarEditForm"--%>
             <form:form modelAttribute="avatarEditForm" action="${action}" method="post" enctype="multipart/form-data">
                 <div class="uk-inline-clip uk-transition-toggle" tabindex="0">
-                    <img class="uk-border-circle" alt="user-avatar" height="200" width="200" data-src="<c:url value="/user/avatar/${loggedUser.avatarId}"/>" uk-img>
+                    <img class="circle uk-background-cover" alt="user-avatar" data-src="<c:url value="/user/avatar/${loggedUser.avatarId}"/>" uk-img>
                     <div class="uk-position-center uk-text-right">
                         <form:label path="avatar">
                             <div uk-form-custom>
