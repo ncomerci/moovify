@@ -58,13 +58,13 @@
             <c:if test="${not empty loggedUser and loggedUser.admin}">
                 <c:if test="${!user.admin}">
                     <span>
-                        <button class="uk-button uk-button-default uk-border-rounded admin-button" type="button" uk-toggle="target: #modal-admin-promote">
+                        <button class="uk-button uk-button-primary uk-border-rounded" type="button" uk-toggle="target: #modal-admin-promote">
                             <spring:message code="user.profile.adminBtn"/>
                         </button>
                     </span>
                 </c:if>
                 <span>
-                    <button class="uk-button uk-button-default uk-border-rounded logout-button" type="button" uk-toggle="target: #modal-admin-delete">
+                    <button class="uk-button uk-button-primary uk-border-rounded red-button" type="button" uk-toggle="target: #modal-admin-delete">
                         <spring:message code="user.profile.deleteBtn"/>
                     </button>
                 </span>

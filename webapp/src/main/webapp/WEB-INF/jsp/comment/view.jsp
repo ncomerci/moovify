@@ -20,9 +20,17 @@
 <body>
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
-    <a class="uk-text-bold uk-h1" href="<c:url value="/post/${comment.post.id}"/>">
-        <c:out value="${comment.post.title}"/>
-    </a>
+    <c:if test="${comment.post.enabled}">
+        <c:url value="/post/${comment.post.id}" var="postURL"/>
+        <a class="uk-text-bold uk-h1" href="${postURL}">
+            <c:out value="${comment.post.title}"/>
+        </a>
+    </c:if>
+    <c:if test="${!comment.post.enabled}">
+        <p class="uk-text-bold uk-h1">
+            <spring:message code="comment.view.post.removed"/>
+        </p>
+    </c:if>
 
     <div id="${comment.id}">
         <div id="main-comment" class="uk-comment uk-visible-toggle uk-margin-medium-bottom uk-margin-medium-top">
@@ -64,14 +72,15 @@
                     </div>
                     <div class="uk-width-1-6 uk-text-center uk-padding-remove uk-margin-top">
                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
-                        <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
+                        <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')" var="notAbleToLike"/>
+                        <c:if test="${notAbleToLike or not comment.enabled}">
                             <div class="uk-text-center uk-padding-remove uk-margin-remove">
                                 <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
                                     <spring:message code="comment.view.votes" arguments="${comment.likes}"/>
                                 </p>
                             </div>
-                        </sec:authorize>
-                        <c:if test="${loggedUser.validated}">
+                        </c:if>
+                        <c:if test="${loggedUser.validated and comment.enabled}">
                             <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
                                 <c:set var="hasUserVoted" value="${ customTag:hasUserVotedComment(comment, loggedUser.id) }" />
                                 <c:set var="likeValue" value="${ hasUserVoted and customTag:hasUserLikedComment(comment,loggedUser.id) }" />
