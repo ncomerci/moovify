@@ -90,3 +90,7 @@
     -webkit-border-radius: 99em;
     -moz-border-radius: 99em;
 }
+
+.m-long-text {
+    word-break: break-all;
+}

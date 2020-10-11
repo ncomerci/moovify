@@ -98,10 +98,10 @@
     </div>
     <hr>
     <article id="post-body">
-        <noscript id="unparsedBody">
+        <noscript id="unparsedBody" class="m-long-text">
             <c:out value="${post.body}"/>
         </noscript>
-        <div id="parsedBody"></div>
+        <div id="parsedBody" class="m-long-text"></div>
     </article>
     <hr>
     <section id="post-movies">

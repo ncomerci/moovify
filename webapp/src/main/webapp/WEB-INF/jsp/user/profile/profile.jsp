@@ -63,7 +63,7 @@
                     <li class="userTitle"><spring:message code="user.profile.notDescription"/> </li>
                 </c:if>
                 <c:if test="${fn:length(loggedUser.description) != 0}">
-                    <li class="userTitle"><spring:message code="user.profile.Description" arguments="${loggedUser.description}"/></li>
+                    <li class="userTitle m-long-text"><spring:message code="user.profile.Description" arguments="${loggedUser.description}"/></li>
                 </c:if>
             </ul>
             <c:if test="${loggedUser.validated}">
