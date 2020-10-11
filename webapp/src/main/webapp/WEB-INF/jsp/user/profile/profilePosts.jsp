@@ -24,8 +24,10 @@
     <jsp:include page="profile.jsp"/>
 
     <div class="uk-container">
-        <c:if test="${loggedUser.validated and empty posts.results}">
-            <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.profile.PostsNotFound"/> </h2>
+        <c:if test="${loggedUser.validated}">
+            <c:if test="${empty posts.results}">
+                <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.profile.PostsNotFound"/> </h2>
+            </c:if>
             <c:set var="posts" value="${posts}" scope="request"/>
             <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
 
