@@ -59,6 +59,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         // "/user/{userId:[\d]+}/posts
                         // "/user/{userId:[\d]+}/comments
                         // /user/avatar/{avatarId:[\d]+}
+                        // /user/registrationConfirm
                     .antMatchers("/login", "/user/create").anonymous()
                     .antMatchers("/user/profile",
                                             "/user/profile/posts",
@@ -70,9 +71,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                                         "/user/edit/username",
                                         "/user/edit/description",
                                         "/user/profile/avatar").authenticated()
-                    .antMatchers(
-                            "/user/registrationConfirm",
-                                        "/user/resendConfirmation").hasRole("NOT_VALIDATED")
+                    .antMatchers("/user/resendConfirmation").hasRole("NOT_VALIDATED")
                     .antMatchers(
                             "/user/resetPassword",
                             "/user/updatePassword/token",
