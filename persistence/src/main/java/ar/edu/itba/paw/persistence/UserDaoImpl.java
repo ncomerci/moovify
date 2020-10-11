@@ -445,9 +445,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     // Search Query Statements
-    private static final String SEARCH_BY_NAME = USERS + ".name ILIKE '%' || ? || '%'";
-
-    private static final String SEARCH_BY_USERNAME = USERS + ".name ILIKE '%' || ? || '%'";
+    private static final String SEARCH_BY_USERNAME = USERS + ".username ILIKE '%' || ? || '%'";
 
     private static final String SEARCH_BY_ROLE = USERS + ".user_id IN ( " +
             "SELECT " + USER_ROLE + ".user_id " +
@@ -460,7 +458,7 @@ public class UserDaoImpl implements UserDao {
 
         LOGGER.info("Search Users By Name {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
         return buildAndExecutePaginatedQuery(
-                "WHERE " + SEARCH_BY_NAME +
+                "WHERE " + SEARCH_BY_USERNAME +
                                     " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query });
     }
@@ -476,7 +474,7 @@ public class UserDaoImpl implements UserDao {
     public PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Search Users By Name {} And Role {} Order By {}. Page number {}, Page Size {}", query, role, sortCriteria, pageNumber, pageSize);
-        return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_NAME +
+        return buildAndExecutePaginatedQuery("WHERE " + SEARCH_BY_USERNAME +
                                                                 " AND " + SEARCH_BY_ROLE +
                                                                 " AND " + ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ query, role });

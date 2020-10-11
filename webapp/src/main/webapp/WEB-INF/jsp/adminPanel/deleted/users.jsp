@@ -25,36 +25,46 @@
             <jsp:include page="/WEB-INF/jsp/adminPanel/deleted/mainController.jsp"/>
             </section>
 
-            <section id="search-results" class="uk-flex uk-flex-wrap">
-                <c:if test="${empty users.results}">
-                    <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.notFound" arguments="users"/> </h1>
-                </c:if>
+            <div class="uk-flex uk-flex-wrap">
                 <c:forEach items="${users.results}" var="user">
-                    <div class="uk-width-1-1 uk-margin-small-bottom">
+                    <div class="uk-width-1-1">
                         <div class="uk-flex">
-
-                            <c:if test="${loggedUser.admin}">
-                                <c:if test="${!user.enabled}">
-                                    <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
-                                            data-id="${user.id}"
-                                            type="button"
-                                    >
-                                        <spring:message code="adminPanel.restore"/>
-                                    </button>
-                                </c:if>
+                            <c:if test="${loggedUser.admin and !user.enabled}">
+                                <button class="uk-button uk-button-default uk-border-rounded uk-margin-auto-vertical uk-margin-right restore-btn"
+                                        data-id="${user.id}"
+                                        type="button"
+                                >
+                                    <spring:message code="adminPanel.restore"/>
+                            </button>
                             </c:if>
-                            <div class="uk-width-expand uk-margin-auto-vertical">
-                                <a href="<c:url value="/user/${user.id}"/>" <c:out value="${user.admin ? 'class=uk-text-primary uk-text-middle': ''}"/>>
+                            <div class="uk-width-expand uk-margin-small-top">
+                                <p class="uk-margin-remove ${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
                                     <c:out value="${user.username}"/>
                                     <c:if test="${user.admin}">
                                         <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
                                     </c:if>
-                                </a>
+                                </p>
+                                <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
+                                    <spring:message code="userDisplay.meta.description" arguments="${user.name}, ${user.totalLikes}"/>
+                                </p>
+                            </div>
+                            <div class="uk-width-auto">
+                                <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
+                                    <c:if test="${user.daysSinceCreation > 0}">
+                                        <spring:message code="postDisplay.meta.age.days" arguments="${user.daysSinceCreation}"/>
+                                    </c:if>
+                                    <c:if test="${user.daysSinceCreation == 0 && user.hoursSinceCreation > 0}">
+                                        <spring:message code="postDisplay.meta.age.hours" arguments="${user.hoursSinceCreation}"/>
+                                    </c:if>
+                                    <c:if test="${user.daysSinceCreation == 0 && user.hoursSinceCreation == 0}">
+                                        <spring:message code="postDisplay.meta.age.minutes" arguments="${user.minutesSinceCreation}"/>
+                                    </c:if>
+                                </p>
                             </div>
                         </div>
                     </div>
                 </c:forEach>
-            </section>
+            </div>
 
             <c:if test="${not empty users.results}">
                 <c:set var="collection" value="${users}" scope="request"/>
