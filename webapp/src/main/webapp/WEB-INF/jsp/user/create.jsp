@@ -94,7 +94,6 @@
                         </button>
                         </form:label>
                     </div>
-<%--                        TODO: Nacho todo tuyo para dejarlo lindo :) - Tobi    --%>
                     <p id="avatar-not-uploaded" ><spring:message code="user.create.noAvatarSelected"/></p>
                     <p id="avatar-uploaded" class="hidden"><spring:message code="user.create.avatarSelected"/>
                         <span id="file-name"></span>

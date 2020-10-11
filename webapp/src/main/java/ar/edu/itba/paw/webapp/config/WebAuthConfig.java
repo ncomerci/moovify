@@ -42,7 +42,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     }
 
     // Spring Security Unresolved Issues
-    // TODO: Cambiar URL cuando sucede un redirect por autenticacion
     @Override
     protected void configure(HttpSecurity http) throws Exception {
             http
