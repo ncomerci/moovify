@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.MovieDao;
-import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Movie;
+import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +19,6 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,7 +30,13 @@ import java.util.*;
 public class MovieDaoImplTest {
     private static final Map<String, Object> MOVIE_ROW = new HashMap<>();
     private static final Map<String, Object> MOVIE_TO_MOVIE_CATEGORY_ROW = new HashMap<>();
-    
+    private static final MovieDao.SortCriteria DEFAULT_SORT_CRITERIA = MovieDao.SortCriteria.NEWEST;
+    private static final int INVALID_PAGE_NUMBER = -1;
+    private static final int INVALID_PAGE_SIZE = -1;
+
+    private static final int ACTION_ID = 28;
+    private static final String ACTION_NAME = "action";
+
     @Autowired
     private MovieDao movieDao;
     
@@ -41,6 +46,7 @@ public class MovieDaoImplTest {
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert movieJdbcInsert;
     private SimpleJdbcInsert movieToMovieInsert;
+    private SimpleJdbcInsert postMovieInsert;
 
     private void mapInitializer() {
         MOVIE_ROW.put("creation_date", Timestamp.valueOf(LocalDateTime.now()));
@@ -68,6 +74,9 @@ public class MovieDaoImplTest {
         this.movieToMovieInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(TableNames.MOVIE_TO_MOVIE_CATEGORY.getTableName());
         mapInitializer();
+
+        this.postMovieInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(TableNames.POST_MOVIE.getTableName());
     }
 
     @Rollback
@@ -119,6 +128,35 @@ public class MovieDaoImplTest {
 
     @Rollback
     @Test
+    public void testFindMovieByPost() {
+
+        //Requires users with ID 1, 2 and 3.
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+
+        long movieId1 = insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(123, 12);
+        insertPostMovie(1, movieId1);
+        insertPostMovie(2, movieId1);
+
+        long movieId2 = insertMovie("MOVIE",124,"imdb124", LocalDate.of(2002,8,6));
+        insertMovieToMovieCategory(124, 12);
+        insertPostMovie(1, movieId2);
+
+        long movieId3 = insertMovie("PELICULA",125,"imdb125", LocalDate.of(2003,8,6));
+        insertMovieToMovieCategory(125, 12);
+
+        long movieId4 = insertMovie("titulo DE PELICULA",126,"imdb126", LocalDate.of(2005,8,6));
+        insertMovieToMovieCategory(126, 12);
+        insertPostMovie(2, movieId4);
+        insertPostMovie(3, movieId4);
+
+        final Collection<Movie> movies = movieDao.findMoviesByPost(Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(1L).getMock());
+
+        Assert.assertEquals(2, movies.size());
+    }
+
+    @Rollback
+    @Test
     public void testGetAllMoviesNotPaginated() {
 //        1. precondiciones
         JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
@@ -147,5 +185,295 @@ public class MovieDaoImplTest {
         Assert.assertEquals(4,
                 JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), whereClause)
         );
+    }
+
+    @Rollback
+    @Test
+    public void testGetAllMoviesNewest() {
+
+        // Requires users with ID 1, 2 and 3.
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+
+        insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(123, 12);
+        insertMovie("MOVIE",124,"imdb124", LocalDate.of(2002,8,6));
+        insertMovieToMovieCategory(124, 12);
+        insertMovie("PELICULA",125,"imdb125", LocalDate.of(2003,8,6));
+        insertMovieToMovieCategory(125, 12);
+        insertMovie("titulo DE PELICULA",126,"imdb126", LocalDate.of(2005,8,6));
+        insertMovieToMovieCategory(126, 12);
+
+        final PaginatedCollection<Movie> movies = movieDao.getAllMovies(MovieDao.SortCriteria.NEWEST, 1, 2);
+
+        Assert.assertEquals(4, movies.getTotalCount());
+        Assert.assertArrayEquals(new Long[]{124L, 123L}, movies.getResults().stream().map(Movie::getTmdbId).toArray());
+    }
+
+    @Rollback
+    @Test
+    public void testGetAllMoviesOldest() {
+
+        //Requires users with ID 1, 2 and 3.
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+
+        insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(123, 12);
+        insertMovie("MOVIE",124,"imdb124", LocalDate.of(2002,8,6));
+        insertMovieToMovieCategory(124, 12);
+        insertMovie("PELICULA",125,"imdb125", LocalDate.of(2003,8,6));
+        insertMovieToMovieCategory(125, 12);
+        insertMovie("titulo DE PELICULA",126,"imdb126", LocalDate.of(2005,8,6));
+        insertMovieToMovieCategory(126, 12);
+
+        final PaginatedCollection<Movie> movies = movieDao.getAllMovies(MovieDao.SortCriteria.OLDEST, 1, 2);
+
+        Assert.assertEquals(4, movies.getTotalCount());
+        Assert.assertArrayEquals(new Long[]{125L, 126L}, movies.getResults().stream().map(Movie::getTmdbId).toArray());
+    }
+
+    @Rollback
+    @Test
+    public void testGetAllMoviesTitle() {
+
+        //Requires users with ID 1, 2 and 3.
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+
+        insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(123, 12);
+        insertMovie("MOVIE",124,"imdb124", LocalDate.of(2002,8,6));
+        insertMovieToMovieCategory(124, 12);
+        insertMovie("ACE VENTURA",125,"imdb125", LocalDate.of(2003,8,6));
+        insertMovieToMovieCategory(125, 12);
+        insertMovie("ZORG",126,"imdb126", LocalDate.of(2005,8,6));
+        insertMovieToMovieCategory(126, 12);
+
+        final PaginatedCollection<Movie> movies = movieDao.getAllMovies(MovieDao.SortCriteria.TITLE, 1, 2);
+
+        Assert.assertEquals(4, movies.getTotalCount());
+        Assert.assertArrayEquals(new Long[]{123L, 126L}, movies.getResults().stream().map(Movie::getTmdbId).toArray());
+    }
+
+    @Rollback
+    @Test
+    public void testGetAllMoviesPostCount() {
+
+        //Requires users with ID 1, 2 and 3.
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+
+        long movieId1 = insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(123, 12);
+        insertPostMovie(1, movieId1);
+        insertPostMovie(2, movieId1);
+
+        long movieId2 = insertMovie("MOVIE",124,"imdb124", LocalDate.of(2002,8,6));
+        insertMovieToMovieCategory(124, 12);
+        insertPostMovie(1, movieId2);
+
+        long movieId3 = insertMovie("PELICULA",125,"imdb125", LocalDate.of(2003,8,6));
+        insertMovieToMovieCategory(125, 12);
+
+        long movieId4 = insertMovie("titulo DE PELICULA",126,"imdb126", LocalDate.of(2005,8,6));
+        insertMovieToMovieCategory(126, 12);
+        insertPostMovie(1, movieId4);
+        insertPostMovie(2, movieId4);
+        insertPostMovie(3, movieId4);
+
+        final PaginatedCollection<Movie> movies = movieDao.getAllMovies(MovieDao.SortCriteria.POST_COUNT, 1, 2);
+
+        Assert.assertEquals(4, movies.getTotalCount());
+        Assert.assertArrayEquals(new Long[]{124L, 125L}, movies.getResults().stream().map(Movie::getTmdbId).toArray());
+    }
+
+    @Rollback
+    @Test
+    public void testGetAllMoviesEmptyPage() {
+
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+
+        insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(123, 12);
+        insertMovie("MOVIE",124,"imdb124", LocalDate.of(2002,8,6));
+        insertMovieToMovieCategory(124, 12);
+        insertMovie("PELICULA",125,"imdb125", LocalDate.of(2003,8,6));
+        insertMovieToMovieCategory(125, 12);
+        insertMovie("titulo DE PELICULA",126,"imdb126", LocalDate.of(2005,8,6));
+        insertMovieToMovieCategory(126, 12);
+
+        final PaginatedCollection<Movie> movies = movieDao.getAllMovies(MovieDao.SortCriteria.NEWEST, 10, 10);
+
+        Assert.assertEquals(4, movies.getTotalCount());
+        Assert.assertEquals(0, movies.getResults().size());
+    }
+
+    @Rollback
+    @Test(expected = RuntimeException.class)
+    public void testGetAllMoviesInvalidArgs() {
+
+        movieDao.getAllMovies(null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
+    }
+
+
+    @Rollback
+    @Test
+    public void testSearchMovies() {
+
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+
+        insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(123, 12);
+        insertMovie("MOVIE",124,"imdb124", LocalDate.of(2002,8,6));
+        insertMovieToMovieCategory(124, 12);
+        insertMovie("PELICULA",125,"imdb125", LocalDate.of(2003,8,6));
+        insertMovieToMovieCategory(125, 12);
+        insertMovie("titulo DE PELICULA",126,"imdb126", LocalDate.of(2005,8,6));
+        insertMovieToMovieCategory(126, 12);
+
+        final PaginatedCollection<Movie> movies = movieDao.searchMovies("Tit", DEFAULT_SORT_CRITERIA, 0, 2);
+
+        Assert.assertEquals(2, movies.getTotalCount());
+    }
+
+    @Rollback
+    @Test(expected = RuntimeException.class)
+    public void testSearchmoviesInvalidArgs() {
+
+        movieDao.searchMovies(null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
+    }
+
+    @Rollback
+    @Test
+    public void testSearchMoviesByCategory() {
+
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+
+        insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(123, 12);
+        insertMovieToMovieCategory(123, ACTION_ID);
+        insertMovie("MOVIE",124,"imdb124", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(124, 12);
+        insertMovieToMovieCategory(124, 14);
+        insertMovie("PELICULA",125,"imdb125", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(125, 12);
+        insertMovieToMovieCategory(125, ACTION_ID);
+        insertMovie("titulo DE PELICULA",126,"imdb126", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(126, 12);
+        insertMovieToMovieCategory(126, 27);
+
+        final PaginatedCollection<Movie> movies = movieDao.searchMoviesByCategory("Tit", ACTION_NAME, DEFAULT_SORT_CRITERIA, 0, 2);
+
+        Assert.assertEquals(1, movies.getTotalCount());
+    }
+
+    @Rollback
+    @Test(expected = RuntimeException.class)
+    public void testSearchMoviesByCategoryInvalidArgs() {
+
+        movieDao.searchMoviesByCategory(null, null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
+    }
+
+    @Rollback
+    @Test
+    public void testSearchMoviesByReleaseDate() {
+
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+
+        insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(123, 12);
+        insertMovie("MOVIE",124,"imdb124", LocalDate.of(2000,8,6));
+        insertMovieToMovieCategory(124, 12);
+        insertMovie("PELICULA",125,"imdb125", LocalDate.of(2002,8,6));
+        insertMovieToMovieCategory(125, 12);
+        insertMovie("titulo DE PELICULA",126,"imdb126", LocalDate.of(2004,8,6));
+        insertMovieToMovieCategory(126, 12);
+
+        final PaginatedCollection<Movie> movies = movieDao.searchMoviesByReleaseDate("Tit",
+                LocalDate.ofYearDay(2000, 1),
+                LocalDate.ofYearDay(2010, 1),
+                DEFAULT_SORT_CRITERIA, 0, 2);
+
+        Assert.assertEquals(1, movies.getTotalCount());
+    }
+
+    @Rollback
+    @Test(expected = RuntimeException.class)
+    public void testSearchMoviesByReleaseDateInvalidArgs() {
+
+        movieDao.searchMoviesByReleaseDate(null, null, null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
+    }
+
+    @Rollback
+    @Test
+    public void testSearchMoviesByCategoryAndReleaseDate() {
+
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+
+        insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+        insertMovieToMovieCategory(123, 12);
+        insertMovieToMovieCategory(123, ACTION_ID);
+        insertMovie("MOVIE",124,"imdb124", LocalDate.of(2000,8,6));
+        insertMovieToMovieCategory(124, 12);
+        insertMovieToMovieCategory(124, 14);
+        insertMovie("PELICULA",125,"imdb125", LocalDate.of(2002,8,6));
+        insertMovieToMovieCategory(125, 12);
+        insertMovieToMovieCategory(125, ACTION_ID);
+        insertMovie("titulo DE PELICULA",126,"imdb126",LocalDate.of(2004,8,6));
+        insertMovieToMovieCategory(126, 12);
+        insertMovieToMovieCategory(126, 27);
+        insertMovie("TITULO DE MOVIE",127,"imdb127", LocalDate.of(2006,8,6));
+        insertMovieToMovieCategory(127, 12);
+        insertMovieToMovieCategory(127, ACTION_ID);
+
+        final PaginatedCollection<Movie> movies = movieDao.searchMoviesByCategoryAndReleaseDate("Tit", ACTION_NAME,
+                LocalDate.of(2000,8,6),
+                LocalDate.of(2010,8,6),
+                DEFAULT_SORT_CRITERIA, 0, 2);
+
+        Assert.assertEquals(1, movies.getTotalCount());
+    }
+
+    @Rollback
+    @Test(expected = RuntimeException.class)
+    public void testSearchMoviesByCategoryAndReleaseDateInvalidArgs() {
+
+        movieDao.searchMoviesByCategoryAndReleaseDate(null, null,null,
+                null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
+    }
+
+    private long insertMovie(String title, long tmdbId, String imdbId, LocalDate releaseDate) {
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("creation_date", Timestamp.valueOf(LocalDateTime.of(2020,8,6,12,16)));
+        map.put("release_date", releaseDate);
+        map.put("title", title);
+        map.put("original_title", "");
+        map.put("tmdb_id", tmdbId);
+        map.put("imdb_id", imdbId);
+        map.put("original_language", "");
+        map.put("overview", "");
+        map.put("popularity", 5.2);
+        map.put("runtime", 5.2);
+        map.put("vote_average", 5.2);
+
+        return movieJdbcInsert.executeAndReturnKey(map).longValue();
+    }
+
+    private void insertMovieToMovieCategory(int movie_id, int category_id) {
+
+        Map<String, Object> map = new HashMap<>();
+
+        map.put("tmdb_category_id", category_id);
+        map.put("tmdb_id", movie_id);
+
+        movieToMovieInsert.execute(map);
+    }
+
+    private void insertPostMovie(long postId, long movieId) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("post_id", postId);
+        map.put("movie_id", movieId);
+
+        postMovieInsert.execute(map);
     }
 }
