@@ -65,7 +65,7 @@ public class MovieController {
 
     @RequestMapping(path = "/movie/{movieId}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long movieId,
-                             @RequestParam(defaultValue = "5") final int pageSize,
+                             @RequestParam(defaultValue = "10") final int pageSize,
                              @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /movie/{}", movieId);

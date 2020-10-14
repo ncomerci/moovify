@@ -109,7 +109,7 @@ public class UserController {
     @RequestMapping(path = {"/user/{userId}", "/user/{userId}/posts"} , method = RequestMethod.GET)
     public ModelAndView viewPosts(HttpServletRequest request,
                                   @PathVariable final long userId,
-                                  @RequestParam(defaultValue = "5") final int pageSize,
+                                  @RequestParam(defaultValue = "10") final int pageSize,
                                   @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /user/{}/posts", userId);
@@ -128,7 +128,7 @@ public class UserController {
     @RequestMapping(path = "/user/{userId}/comments", method = RequestMethod.GET)
     public ModelAndView viewComments(HttpServletRequest request,
                                      @PathVariable final long userId,
-                                     @RequestParam(defaultValue = "5") final int pageSize,
+                                     @RequestParam(defaultValue = "10") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /user/{}/comments", userId);
@@ -147,7 +147,7 @@ public class UserController {
     @RequestMapping(path = {"/user/profile", "/user/profile/posts"}, method = RequestMethod.GET)
     public ModelAndView profilePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
                                      final HttpServletRequest request, final Principal principal,
-                                     @RequestParam(defaultValue = "5") final int pageSize,
+                                     @RequestParam(defaultValue = "10") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /user/profile/posts");
@@ -164,7 +164,7 @@ public class UserController {
 
     @RequestMapping(path = "/user/profile/comments", method = RequestMethod.GET)
     public ModelAndView profileComments(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, Principal principal,
-                                        @RequestParam(defaultValue = "5") final int pageSize,
+                                        @RequestParam(defaultValue = "10") final int pageSize,
                                         @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /user/profile/comments");

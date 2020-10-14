@@ -41,7 +41,7 @@ public class AdminController {
 
     @RequestMapping(path = "/admin/deleted/posts", method = RequestMethod.GET)
     public ModelAndView deletedPosts(@RequestParam(defaultValue = "") final String query,
-                                     @RequestParam(defaultValue = "5") final int pageSize,
+                                     @RequestParam(defaultValue = "10") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /admin/deleted/posts with query = {}; pageSize = {} and pageNumber = {}", query, pageSize, pageNumber);
@@ -57,7 +57,7 @@ public class AdminController {
 
     @RequestMapping(path = "/admin/deleted/comments", method = RequestMethod.GET)
     public ModelAndView deletedComments(@RequestParam(defaultValue = "") final String query,
-                                        @RequestParam(defaultValue = "5") final int pageSize,
+                                        @RequestParam(defaultValue = "10") final int pageSize,
                                         @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /admin/deleted/comments with query = {}; pageSize = {} and pageNumber = {}", query, pageSize, pageNumber);
@@ -73,7 +73,7 @@ public class AdminController {
 
     @RequestMapping(path = "/admin/deleted/users", method = RequestMethod.GET)
     public ModelAndView deletedUsers(@RequestParam(defaultValue = "") final String query,
-                                     @RequestParam(defaultValue = "5") final int pageSize,
+                                     @RequestParam(defaultValue = "10") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /admin/deleted/users with query = {}; pageSize = {} and pageNumber = {}", query, pageSize, pageNumber);
