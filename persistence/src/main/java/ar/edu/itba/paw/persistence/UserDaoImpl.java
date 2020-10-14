@@ -366,11 +366,14 @@ public class UserDaoImpl implements UserDao {
                 "WHERE " + USERS + ".user_id IN ( " +
                         "SELECT AUX.user_id " +
                         "FROM (" +
-                            "SELECT ROW_NUMBER() OVER( %s ) row_num, " + USERS + ".user_id " +
-                            "%s %s ) AUX " +
+                            "SELECT ROW_NUMBER() OVER() row_num, INNER_AUX.user_id " +
+                            "FROM ( " +
+                                "SELECT " + USERS + ".user_id " +
+                                "%s %s %s ) INNER_AUX " +
+                            ") AUX " +
                         "GROUP BY AUX.user_id " +
                         "ORDER BY MIN(AUX.row_num) " +
-                        " %s )", orderBy, from, customWhereStatement, pagination);
+                        " %s )", from, customWhereStatement, orderBy, pagination);
 
         final Collection<User> results = executeQuery(select, from, newWhere, orderBy, args);
 
@@ -452,13 +455,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     // Search Query Statements
-    private static final String SEARCH_BY_USERNAME = USERS + ".username ILIKE '%' || ? || '%'";
+    private static final String SEARCH_BY_USERNAME = "LOWER(" + USERS + ".username) LIKE '%' || LOWER(?) || '%'";
 
     private static final String SEARCH_BY_ROLE = USERS + ".user_id IN ( " +
             "SELECT " + USER_ROLE + ".user_id " +
             "FROM " + ROLES + " " +
                 "INNER JOIN " + USER_ROLE + " ON " + ROLES + ".role_id = " + USER_ROLE + ".role_id " +
-            "WHERE " + ROLES + ".role = ?)";
+            "WHERE LOWER(" + ROLES + ".role) = LOWER(?))";
 
     @Override
     public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {

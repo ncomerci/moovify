@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidMovieIdException;
 import ar.edu.itba.paw.models.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,6 +8,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.Rollback;
@@ -99,8 +99,9 @@ public class PostDaoImplTest {
 
     }
 
+    // The InvalidMovieIdException can only be detected in Postgresql environment
     @Rollback
-    @Test(expected = InvalidMovieIdException.class)
+    @Test(expected = DataIntegrityViolationException.class)
     public void testRegisterInvalidMovies() {
 
         Set<Long> movies = new HashSet<>(MOVIES);

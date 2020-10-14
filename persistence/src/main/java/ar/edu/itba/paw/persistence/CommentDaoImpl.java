@@ -513,11 +513,14 @@ public class CommentDaoImpl implements CommentDao {
                 "WHERE " + COMMENTS + ".comment_id IN ( " +
                         "SELECT AUX.comment_id " +
                         "FROM (" +
-                            "SELECT ROW_NUMBER() OVER( %s ) row_num, " + COMMENTS + ".comment_id " +
-                            " %s %s ) AUX " +
+                            "SELECT ROW_NUMBER() OVER() row_num, INNER_AUX.comment_id " +
+                            "FROM ( " +
+                                "SELECT " + COMMENTS + ".comment_id " +
+                                " %s %s %s ) INNER_AUX " +
+                            ") AUX " +
                         "GROUP BY AUX.comment_id " +
                         "ORDER BY MIN(AUX.row_num) " +
-                        " %s )", orderBy, from, firstLevelCommentsWhere, pagination);
+                        " %s )", from, firstLevelCommentsWhere, orderBy, pagination);
 
         final String recursiveQuery = String.format(
                         PAGINATION_RECURSIVE_QUERY_UPPER +
@@ -560,11 +563,14 @@ public class CommentDaoImpl implements CommentDao {
                 "WHERE " + COMMENTS + ".comment_id IN ( " +
                         "SELECT AUX.comment_id " +
                         "FROM (" +
-                        "SELECT ROW_NUMBER() OVER( %s ) row_num, " + COMMENTS + ".comment_id " +
-                        " %s %s ) AUX " +
+                            "SELECT ROW_NUMBER() OVER() row_num, INNER_AUX.comment_id " +
+                            "FROM ( " +
+                                "SELECT " + COMMENTS + ".comment_id " +
+                                " %s %s %s ) INNER_AUX " +
+                            ") AUX " +
                         "GROUP BY AUX.comment_id " +
                         "ORDER BY MIN(AUX.row_num) " +
-                        " %s )", orderBy, from, customWhereStatement, pagination);
+                        " %s )", from, customWhereStatement, orderBy, pagination);
 
         final Collection<Comment> results = executeQuery(select, from, newWhere, orderBy, args, false);
 
@@ -672,7 +678,7 @@ public class CommentDaoImpl implements CommentDao {
     public PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Search Deleted Comments by Body {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
-        return buildAndExecutePaginatedQuery("WHERE " + COMMENTS + ".body ILIKE '%' || ? || '%' AND " + COMMENTS + ".enabled = false",
+        return buildAndExecutePaginatedQuery("WHERE LOWER(" + COMMENTS + ".body) LIKE '%' || LOWER(?) || '%' AND " + COMMENTS + ".enabled = false",
                 sortCriteria, pageNumber, pageSize, new Object[]{ query });
     }
 }
