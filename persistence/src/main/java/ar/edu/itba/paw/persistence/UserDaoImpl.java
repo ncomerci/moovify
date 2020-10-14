@@ -311,10 +311,9 @@ public class UserDaoImpl implements UserDao {
 
         jdbcTemplate.update("UPDATE " + USER_ROLE +
                 " SET role_id = (SELECT role_id FROM " + ROLES + " WHERE role = ?)" +
-                "FROM " + ROLES +
                 " WHERE " + USER_ROLE + ".user_id = ?" +
-                "  AND " + ROLES + ".role_id = " + USER_ROLE + ".role_id" +
-                "  AND " + ROLES + ".role = ?", newRole, user.getId(), oldRole);
+                "  AND " + USER_ROLE + ".role_id = " +
+                "(SELECT role_id FROM " + ROLES + " WHERE role = ?)", newRole, user.getId(), oldRole);
 
         LOGGER.info("Replaced User {} Role from {} to {}", user.getId(), oldRole, newRole);
     }
