@@ -96,9 +96,9 @@ public class Post {
                 "id=" + id +
                 ", creationDate=" + creationDate +
                 ", title='" + title + '\'' +
-                ", body='" + body + '\'' +
+//                ", body='" + body + '\'' +
                 ", wordCount=" + wordCount +
-                ", user=" + user +
+                ", user=" + user.getId() +
                 ", category=" + category +
                 ", tags=" + tags +
                 ", likes=" + likes +

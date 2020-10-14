@@ -19,7 +19,7 @@
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <maxHistory>5</maxHistory>
-            <fileNamePattern>logs/paw.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>logs/paw-3.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
 
         <encoder>
