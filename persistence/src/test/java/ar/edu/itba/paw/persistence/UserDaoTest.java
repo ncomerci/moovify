@@ -179,6 +179,7 @@ public class UserDaoTest {
         Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
     }
 
+    @Rollback
     @Test
     public void testReplaceUserRole() {
         long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
