@@ -27,15 +27,15 @@
   <build>
     <finalName>webapp</finalName>
 
-<!--    <plugins>-->
-<!--      <plugin>-->
-<!--        <groupId>org.apache.maven.plugins</groupId>-->
-<!--        <artifactId>maven-war-plugin</artifactId>-->
-<!--        <configuration>-->
-<!--          <packagingExcludes>**/logback-test.xml</packagingExcludes>-->
-<!--        </configuration>-->
-<!--      </plugin>-->
-<!--    </plugins>-->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <packagingExcludes>**/logback-test.xml</packagingExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
   <dependencies>

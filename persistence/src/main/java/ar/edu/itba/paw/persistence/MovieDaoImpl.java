@@ -240,11 +240,14 @@ public class MovieDaoImpl implements MovieDao {
                 "WHERE " + MOVIES + ".movie_id IN ( " +
                         "SELECT AUX.movie_id " +
                         "FROM (" +
-                            "SELECT ROW_NUMBER() OVER( %s ) row_num, " + MOVIES + ".movie_id " +
-                            " %s %s ) AUX " +
+                            "SELECT ROW_NUMBER() OVER() row_num, INNER_AUX.movie_id " +
+                            "FROM ( " +
+                                "SELECT " + MOVIES + ".movie_id " +
+                                " %s %s %s ) INNER_AUX " +
+                            ") AUX " +
                         "GROUP BY AUX.movie_id " +
                         "ORDER BY MIN(AUX.row_num) " +
-                        "%s )", orderBy, from, customWhereStatement, pagination);
+                        "%s )", from, customWhereStatement, orderBy, pagination);
 
         final Collection<Movie> results = executeQuery(select, from, newWhere, orderBy, args);
 
@@ -315,7 +318,7 @@ public class MovieDaoImpl implements MovieDao {
         return buildAndExecuteQuery("", null);
     }
 
-    private static final String SEARCH_BY_MOVIE_TITLE = MOVIES + ".title ILIKE '%' || ? || '%'";
+    private static final String SEARCH_BY_MOVIE_TITLE = "LOWER(" + MOVIES + ".title) LIKE '%' || LOWER(?) || '%'";
 
     private static final String SEARCH_BY_CATEGORY = MOVIES + ".tmdb_id IN (" +
             " SELECT " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_id" +
@@ -323,7 +326,7 @@ public class MovieDaoImpl implements MovieDao {
             " WHERE tmdb_category_id IN ( " +
                 " SELECT tmdb_category_id " +
                 " FROM " + MOVIE_CATEGORIES +
-                " WHERE name ILIKE ?))";
+                " WHERE LOWER(name) LIKE LOWER(?)))";
 
     private static final String SEARCH_BY_RELEASE_DATE = MOVIES + ".release_date BETWEEN ? AND ?";
 

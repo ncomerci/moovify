@@ -30,8 +30,8 @@ public class TestConfig {
     @Autowired
     private Environment env;
 
-    @Value("classpath:clean-up.sql")
-    private Resource cleanUp;
+//    @Value("classpath:clean-up.sql")
+//    private Resource cleanUp;
 
     @Value("classpath:hsqldb.sql")
     private Resource hsqldbSql;

@@ -343,7 +343,7 @@ public class CommentDaoImpl implements CommentDao {
                     "1 iteration";
 
     private static final String PAGINATION_RECURSIVE_QUERY_LOWER =
-                "UNION " +
+                " UNION " +
                 "SELECT " +
                     COMMENTS + ".comment_id, " +
                     COMMENTS + ".parent_id, " +

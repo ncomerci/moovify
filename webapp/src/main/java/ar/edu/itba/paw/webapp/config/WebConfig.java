@@ -44,8 +44,8 @@ import java.util.Properties;
         "ar.edu.itba.paw.persistence",
     })
 @Configuration
-@PropertySource({ "classpath:/config/web-config-develop.properties" })
-//@PropertySource({ "classpath:/config/web-config-production.properties" })
+//@PropertySource({ "classpath:/config/web-config-develop.properties" })
+@PropertySource({ "classpath:/config/web-config-production.properties" })
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
