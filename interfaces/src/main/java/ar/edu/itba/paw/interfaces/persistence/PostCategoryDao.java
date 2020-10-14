@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface PostCategoryDao {
 
-    Optional<PostCategory> findById(long id);
+    Optional<PostCategory> findPostCategoryById(long id);
 
     Collection<PostCategory> getAllPostCategories();
 }

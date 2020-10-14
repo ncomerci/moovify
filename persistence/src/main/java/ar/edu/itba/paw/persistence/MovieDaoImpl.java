@@ -2,8 +2,13 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.MovieCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.MovieDao;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
+import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -19,13 +24,15 @@ import java.util.*;
 @Repository
 public class MovieDaoImpl implements MovieDao {
 
-    private static final String POSTS = TableNames.POSTS.getTableName();
+    private static final Logger LOGGER = LoggerFactory.getLogger(MovieDaoImpl.class);
+
     private static final String MOVIES = TableNames.MOVIES.getTableName();
     private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
+    private static final String POSTS = TableNames.POSTS.getTableName();
     private static final String MOVIE_TO_MOVIE_CATEGORY = TableNames.MOVIE_TO_MOVIE_CATEGORY.getTableName();
     private static final String MOVIE_CATEGORIES = TableNames.MOVIE_CATEGORIES.getTableName();
 
-    private static final String MOVIE_SELECT = "SELECT " +
+    private static final String BASE_MOVIE_SELECT = "SELECT " +
             // Movie Table Columns - Alias: m_column_name
             MOVIES + ".movie_id m_movie_id, " +
             MOVIES + ".creation_date m_creation_date, " +
@@ -40,23 +47,34 @@ public class MovieDaoImpl implements MovieDao {
             MOVIES + ".runtime m_runtime, " +
             MOVIES + ".vote_average m_vote_average";
 
+    private static final String POST_COUNT_SELECT = "coalesce(POST_COUNT.post_count, 0) m_post_count";
+
     private static final String MOVIE_CATEGORY_SELECT =
             // Movie Table Columns - Alias: mc_column_name
             MOVIE_CATEGORIES + ".category_id mc_category_id, " +
             MOVIE_CATEGORIES + ".tmdb_category_id mc_tmdb_category_id, " +
             MOVIE_CATEGORIES + ".name mc_name";
 
-    private static final String BASE_POST_FROM = "FROM " + MOVIES;
+    private static final String BASE_MOVIE_FROM = "FROM " + MOVIES;
+
+    private static final String POST_COUNT_FROM =
+            "LEFT OUTER JOIN ( " +
+                    "SELECT " + POST_MOVIE + ".movie_id, COUNT(" + POSTS + ".post_id) post_count " +
+                    "FROM " + POST_MOVIE +
+                        " INNER JOIN " + POSTS + " ON " + POSTS + ".post_id = " + POST_MOVIE + ".post_id " +
+                    "WHERE " + POSTS + ".enabled = true " +
+                    "GROUP BY " + POST_MOVIE + ".movie_id " +
+            ") POST_COUNT ON POST_COUNT.movie_id = " + MOVIES + ".movie_id";
 
     private static final String CATEGORY_FROM =
             " INNER JOIN " + MOVIE_TO_MOVIE_CATEGORY + " ON " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_id = " + MOVIES + ".tmdb_id" +
             " INNER JOIN " + MOVIE_CATEGORIES + " ON " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_category_id = " + MOVIE_CATEGORIES + ".tmdb_category_id";
 
 
-    private static final ResultSetExtractor<Collection<Movie>> MOVIE_RESULT_SET_EXTRACTOR = (rs) -> {
+    private static final ResultSetExtractor<Collection<Movie>> MOVIE_ROW_MAPPER = (rs) -> {
 
-            // Important use of LinkedHashMap to maintain Post insertion order
-            final Map<Long, Movie> idToMovieMap = new HashMap<>();
+            // Important use of LinkedHashMap to maintain Movie insertion order
+            final Map<Long, Movie> idToMovieMap = new LinkedHashMap<>();
             final Map<Long, MovieCategory> idToMovieCategoryMap = new HashMap<>();
 
             while(rs.next()) {
@@ -78,8 +96,9 @@ public class MovieDaoImpl implements MovieDao {
                                     rs.getFloat("m_runtime"),
                                     rs.getFloat("m_vote_average"),
                                     rs.getObject("m_release_date", LocalDate.class),
+                                    rs.getLong("m_post_count"),
                                     // categories
-                                    new LinkedHashSet<>())
+                                    new HashSet<>())
                     );
                 }
 
@@ -95,6 +114,20 @@ public class MovieDaoImpl implements MovieDao {
 
             return idToMovieMap.values();
     };
+
+    private static final EnumMap<SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQuery();
+
+    private static EnumMap<SortCriteria, String> initializeSortCriteriaQuery() {
+
+        final EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
+
+        sortCriteriaQuery.put(SortCriteria.NEWEST, MOVIES + ".release_date desc");
+        sortCriteriaQuery.put(SortCriteria.OLDEST, MOVIES + ".release_date");
+        sortCriteriaQuery.put(SortCriteria.POST_COUNT, "coalesce(POST_COUNT.post_count, 0) desc");
+        sortCriteriaQuery.put(SortCriteria.TITLE, MOVIES + ".title");
+
+        return sortCriteriaQuery;
+    }
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert movieJdbcInsert;
@@ -115,27 +148,6 @@ public class MovieDaoImpl implements MovieDao {
                 .withTableName(MOVIE_TO_MOVIE_CATEGORY);
     }
 
-    private Collection<Movie> buildAndExecuteQuery(String customWhereStatement, String customOrderByStatement, Object[] args){
-
-        final String select = MOVIE_SELECT + ", " + MOVIE_CATEGORY_SELECT;
-
-        final String from = BASE_POST_FROM + CATEGORY_FROM;
-
-        final String query = select + " " + from + " " + customWhereStatement + " " + customOrderByStatement;
-
-        if(args != null)
-            return jdbcTemplate.query(query, args, MOVIE_RESULT_SET_EXTRACTOR);
-
-        else
-            return jdbcTemplate.query(query, MOVIE_RESULT_SET_EXTRACTOR);
-    }
-
-    @Override
-    public Optional<Movie> findById(long id) {
-        return buildAndExecuteQuery(" WHERE " + MOVIES + ".movie_id = ?","",
-                new Object[]{ id }).stream().findFirst();
-    }
-
     @Override
     public Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage,
                           String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<Long> categories) {
@@ -153,6 +165,7 @@ public class MovieDaoImpl implements MovieDao {
         Collection<MovieCategory> categoryCollection = movieCategoryDao.findCategoriesByTmdbId(categories);
 
         HashMap<String, Object> map = new HashMap<>();
+
         map.put("creation_date", Timestamp.valueOf(creationDate));
         map.put("title", title);
         map.put("original_title", originalTitle);
@@ -174,25 +187,193 @@ public class MovieDaoImpl implements MovieDao {
             movieToMovieCategoryJdbcInsert.execute(map);
         }
 
-        return new Movie(id, creationDate, title,originalTitle,tmdbId,imdbId,originalLanguage,overview,popularity,runtime,voteAverage,releaseDate, categoryCollection);
+        final Movie movie = new Movie(id, creationDate, title, originalTitle, tmdbId, imdbId,
+                originalLanguage, overview, popularity, runtime, voteAverage, releaseDate, 0, categoryCollection);
+
+        LOGGER.debug("Created Movie {}", movie);
+
+        return movie;
+    }
+
+    private Collection<Movie> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
+
+        final String query = String.format("%s %s %s %s", select, from, where, orderBy);
+
+        LOGGER.debug("Query executed in MovieDaoImpl : {}. Args: {}", query, args);
+
+        if(args != null)
+            return jdbcTemplate.query(query, args, MOVIE_ROW_MAPPER);
+
+        else
+            return jdbcTemplate.query(query, MOVIE_ROW_MAPPER);
+    }
+
+    private Collection<Movie> buildAndExecuteQuery(String customWhereStatement, Object[] args){
+
+        final String select = buildSelectStatement();
+
+        final String from = buildFromStatement();
+
+        final Collection<Movie> result = executeQuery(select, from, customWhereStatement, "", args);
+
+        LOGGER.debug("Not paginated query executed for {} in MovieDaoImpl with result {}", customWhereStatement, result);
+
+        return result;
+    }
+
+    private PaginatedCollection<Movie> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
+
+        final String select = buildSelectStatement();
+
+        final String from = buildFromStatement();
+
+        final String totalMovieCountQuery = String.format("SELECT COUNT(DISTINCT " + MOVIES + ".movie_id) %s %s", from, customWhereStatement);
+
+        // Execute original query to count total posts in the query
+        final int totalMovieCount = jdbcTemplate.queryForObject(totalMovieCountQuery, args, Integer.class);
+
+        final String orderBy = buildOrderByStatement(sortCriteria);
+
+        final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
+
+        final String newWhere = String.format(
+                "WHERE " + MOVIES + ".movie_id IN ( " +
+                        "SELECT AUX.movie_id " +
+                        "FROM (" +
+                            "SELECT ROW_NUMBER() OVER() row_num, INNER_AUX.movie_id " +
+                            "FROM ( " +
+                                "SELECT " + MOVIES + ".movie_id " +
+                                " %s %s %s ) INNER_AUX " +
+                            ") AUX " +
+                        "GROUP BY AUX.movie_id " +
+                        "ORDER BY MIN(AUX.row_num) " +
+                        "%s )", from, customWhereStatement, orderBy, pagination);
+
+        final Collection<Movie> results = executeQuery(select, from, newWhere, orderBy, args);
+
+        final PaginatedCollection<Movie> moviePaginatedCollection = new PaginatedCollection<>(results, pageNumber, pageSize, totalMovieCount);
+
+        LOGGER.debug("Paginated query executed in MovieDaoImpl with result {}", moviePaginatedCollection);
+
+        return moviePaginatedCollection;
+    }
+
+    private String buildSelectStatement() {
+        return BASE_MOVIE_SELECT + ", " + POST_COUNT_SELECT + ", " + MOVIE_CATEGORY_SELECT;
+    }
+
+    private String buildFromStatement() {
+        return BASE_MOVIE_FROM + " " + POST_COUNT_FROM + " " + CATEGORY_FROM;
+    }
+
+    private String buildOrderByStatement(SortCriteria sortCriteria) {
+
+        if(!sortCriteriaQueryMap.containsKey(sortCriteria)) {
+            LOGGER.error("SortCriteria implementation not found for {} in MovieDaoImpl", sortCriteria);
+            throw new IllegalArgumentException();
+        }
+
+        return "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria);
+    }
+
+    private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
+
+        if(pageNumber < 0 || pageSize <= 0) {
+
+            LOGGER.error("Invalid pagination argument found in MovieDaoImpl. pageSize: {}, pageNumber: {}", pageSize, pageNumber);
+            throw new InvalidPaginationArgumentException();
+        }
+
+        return String.format("LIMIT %d OFFSET %d", pageSize, pageNumber * pageSize);
     }
 
     @Override
-    public Collection<Movie> findMoviesByPostId(long postId) {
+    public Optional<Movie> findMovieById(long movie_id) {
 
+        LOGGER.info("Find Movie By Id: {}", movie_id);
+        return buildAndExecuteQuery(" WHERE " + MOVIES + ".movie_id = ?", new Object[]{ movie_id })
+                .stream().findFirst();
+    }
+
+    @Override
+    public Collection<Movie> findMoviesByPost(Post post) {
+
+        LOGGER.info("Find Movies By Post: {}", post.getId());
         return buildAndExecuteQuery(" WHERE " + MOVIES + ".movie_id IN (" +
                         "SELECT " + POST_MOVIE + ".movie_id FROM " + POST_MOVIE + " WHERE " + POST_MOVIE + ".post_id = ?)",
-                " ", new Object[]{ postId });
+                 new Object[]{ post.getId() });
     }
 
     @Override
-    public Collection<Movie> getAllMovies(){
-        return buildAndExecuteQuery(" "," ", null);
+    public PaginatedCollection<Movie> getAllMovies(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get All Movies Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery("", sortCriteria, pageNumber, pageSize, null);
     }
 
     @Override
-    public Collection<Movie> searchMovies(String query) {
-        return buildAndExecuteQuery(" WHERE " + MOVIES + ".title ILIKE '%' || ? || '%'",
-                " ", new Object[]{ query });
+    public Collection<Movie> getAllMoviesNotPaginated() {
+
+        LOGGER.info("Get All Movies Not Paginated");
+        return buildAndExecuteQuery("", null);
+    }
+
+    private static final String SEARCH_BY_MOVIE_TITLE = "LOWER(" + MOVIES + ".title) LIKE '%' || LOWER(?) || '%'";
+
+    private static final String SEARCH_BY_CATEGORY = MOVIES + ".tmdb_id IN (" +
+            " SELECT " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_id" +
+            " FROM " + MOVIE_TO_MOVIE_CATEGORY +
+            " WHERE tmdb_category_id IN ( " +
+                " SELECT tmdb_category_id " +
+                " FROM " + MOVIE_CATEGORIES +
+                " WHERE LOWER(name) LIKE LOWER(?)))";
+
+    private static final String SEARCH_BY_RELEASE_DATE = MOVIES + ".release_date BETWEEN ? AND ?";
+
+    @Override
+    public PaginatedCollection<Movie> searchMovies(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Movies By Movie Title {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
+
+        final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE;
+
+        return buildAndExecutePaginatedQuery(whereStatement,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query });
+    }
+
+    @Override
+    public PaginatedCollection<Movie> searchMoviesByCategory(String query, String category, SortCriteria sortCriteria,
+                                                              int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Movies By Movie Title {} And Category {} Order By {}. Page number {}, Page Size {}", query, category, sortCriteria, pageNumber, pageSize);
+
+        final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY;
+
+        return buildAndExecutePaginatedQuery(whereStatement,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, category });
+    }
+
+    @Override
+    public PaginatedCollection<Movie> searchMoviesByReleaseDate(String query, LocalDate since, LocalDate upTo,
+                                                                 SortCriteria sortCriteria, int pageNumber ,int pageSize) {
+
+        LOGGER.info("Search Movies By Movie Title {} And Release Date {} - {} Order By {}. Page number {}, Page Size {}", query, since, upTo, sortCriteria, pageNumber, pageSize);
+
+        final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_RELEASE_DATE;
+
+        return buildAndExecutePaginatedQuery(whereStatement,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, since, upTo });
+    }
+
+    @Override
+    public PaginatedCollection<Movie> searchMoviesByCategoryAndReleaseDate(String query, String category, LocalDate since,
+                                                                            LocalDate upTo, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Movies By Movie Title {}, Category {} And Release Date {} - {} Order By {}. Page number {}, Page Size {}", query, category, since, upTo, sortCriteria, pageNumber, pageSize);
+
+        final String whereStatement = " WHERE " + SEARCH_BY_MOVIE_TITLE + " AND " + SEARCH_BY_CATEGORY + " AND " + SEARCH_BY_RELEASE_DATE;
+
+        return buildAndExecutePaginatedQuery(whereStatement,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, category, since, upTo });
     }
 }

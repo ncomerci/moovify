@@ -1,8 +1,13 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidMovieIdException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
 import ar.edu.itba.paw.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -10,7 +15,6 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -18,205 +22,30 @@ import java.util.*;
 @Repository
 public class PostDaoImpl implements PostDao {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostDaoImpl.class);
+
     // Constants with Table Names
     private static final String POSTS = TableNames.POSTS.getTableName();
     private static final String MOVIES = TableNames.MOVIES.getTableName();
     private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
+    private static final String POSTS_LIKES = TableNames.POSTS_LIKES.getTableName();
     private static final String TAGS = TableNames.TAGS.getTableName();
-    private static final String COMMENTS = TableNames.COMMENTS.getTableName();
     private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
     private static final String USERS = TableNames.USERS.getTableName();
-    private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
     private static final String ROLES = TableNames.ROLES.getTableName();
-    private static final String MOVIE_TO_MOVIE_CATEGORY = TableNames.MOVIE_TO_MOVIE_CATEGORY.getTableName();
-    private static final String MOVIE_CATEGORIES = TableNames.MOVIE_CATEGORIES.getTableName();
+    private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
 
-    /*
-    *
-    * Each SELECT, FROM and MAPPER static variable depend on each other.
-    * If one is changed it is necessary to change the others as well to match the design decisions.
-    * It is important that they are design only assuming the pre-existence and execution of
-    * the BASE_POST static variables (the one Model linked with this Dao). That way, any other
-    * can be made optional (currently the case of MOVIES and COMMENTS).
-    * All functionality involving this constants is encapsulated in the FetchRelationSelector.
-    * Use this enum to access Select, From and Mapper for each desired relation. In this enum the
-    * relations are also categorized as required and not required.
-    *
-    * Additional requirements of each segment are made explicit below:
-    *
-    * - ALL:
-    *   - All segments must abide to the aliases defined in BASE_POST_SELECT to access Post properties.
-    *         Currently p_column_name.
-    *
-    *   - In BASE_POST_ROW_MAPPER a post_id to Post Map must be maintained for others to use.
-    *
-    *   - The use of LinkedHashSet, LinkedHashMap and List collections is of importance to maintain query order.
-    *
-    * - USER:
-    *   - In BASE_POST_ROW_MAPPER, the roles Collection from User must be a Set to guaranty uniqueness.
-    *
-    * - TAGS:
-    *   - In BASE_POST_ROW_MAPPER, the tags Collection must be a Set to guaranty uniqueness.
-    *
-    * - MOVIES:
-    *   - In BASE_POST_ROW_MAPPER, the movies Collection must be a Set to guaranty uniqueness.
-    *
-    * - COMMENTS:
-    *   - Users to whom the comments belong are brought without their roles.
-    *
-    */
 
-    private enum FetchRelationSelector {
-        POST(BASE_POST_SELECT, BASE_POST_FROM, true, null),
-        CATEGORY(CATEGORY_SELECT, CATEGORY_FROM, true, null),
-        USER(USER_SELECT, USER_FROM, true, null),
-        TAGS(TAGS_SELECT, TAGS_FROM, true, null),
-        MOVIES(MOVIES_SELECT, MOVIES_FROM, false, FetchRelation.MOVIES),
-        COMMENTS(COMMENTS_SELECT, COMMENTS_FROM, false, FetchRelation.COMMENTS);
-
-        private static final Map<EnumSet<FetchRelation>, ResultSetExtractor<Collection<Post>>>
-                relationsToRSEMap = initializeRelationsToRSEMap();
-
-        private final String select;
-        private final String from;
-        private final boolean required;
-        private final FetchRelation relation;
-
-        FetchRelationSelector(String select, String from, boolean required, FetchRelation relation) {
-            this.select = select;
-            this.from = from;
-            this.required = required;
-            this.relation = relation;
-        }
-
-        public static EnumSet<FetchRelationSelector> getSelectorsFromFetchRelations(EnumSet<FetchRelation> fetchRelations) {
-            EnumSet<FetchRelationSelector> result = EnumSet.noneOf(FetchRelationSelector.class);
-
-            for(FetchRelationSelector selector : FetchRelationSelector.values()) {
-                if(selector.isRequired() || fetchRelations.contains(selector.getRelation()))
-                    result.add(selector);
-            }
-
-            return result;
-        }
-
-        public static ResultSetExtractor<Collection<Post>> getMapper(EnumSet<FetchRelation> fetchRelations) {
-            return relationsToRSEMap.get(fetchRelations);
-        }
-
-        public String getSelect() {
-            return select;
-        }
-
-        public String getFrom() {
-            return from;
-        }
-
-        public boolean isRequired() {
-            return required;
-        }
-
-        private FetchRelation getRelation() {
-            return relation;
-        }
-
-        private static Map<EnumSet<FetchRelation>, ResultSetExtractor<Collection<Post>>> initializeRelationsToRSEMap() {
-            Map<EnumSet<FetchRelation>, ResultSetExtractor<Collection<Post>>> relationsToRSEMap = new HashMap<>();
-            Set<EnumSet<FetchRelation>> relationsCombinations = new HashSet<>();
-
-            // Add all FetchRelation combinations. TODO: Better way?
-            relationsCombinations.add(EnumSet.noneOf(FetchRelation.class));
-            relationsCombinations.add(EnumSet.of(FetchRelation.MOVIES));
-            relationsCombinations.add(EnumSet.of(FetchRelation.COMMENTS));
-            relationsCombinations.add(EnumSet.allOf(FetchRelation.class));
-
-            for(EnumSet<FetchRelation> relationSet : relationsCombinations)
-                relationsToRSEMap.put(relationSet, buildResultSetExtractor(relationSet));
-
-            return relationsToRSEMap;
-        }
-
-        private static ResultSetExtractor<Collection<Post>> buildResultSetExtractor(EnumSet<FetchRelation> fetchRelations) {
-            return (rs) -> {
-
-                // Important use of LinkedHashMap to maintain Post insertion order
-                final Map<Long, Post> idToPostMap = new LinkedHashMap<>();
-                final Map<Long, Role> idToUserRoleMap = new HashMap<>();
-                final Map<Long, Movie> idToMovieMap = new HashMap<>();
-                final Map<Long, Comment> idToCommentMap = new HashMap<>();
-                final Map<Long, MovieCategory> idToMovieCategoryMap = new HashMap<>();
-                final Map<Long, Collection<Comment>> childrenWithoutParentMap = new HashMap<>();
-
-                while(rs.next()) {
-
-                    // Base Mapper Required
-                    BASE_POST_ROW_MAPPER.accept(rs, idToPostMap);
-
-                    // User Mapper Required - All posts belong to a User. This User has many Roles
-                    USER_ROW_MAPPER.accept(rs, idToPostMap, idToUserRoleMap);
-
-                    // Tags Mapper Required - Business decision
-                    TAGS_ROW_MAPPER.accept(rs, idToPostMap);
-
-                    if (fetchRelations.contains(FetchRelation.MOVIES))
-                        MOVIES_ROW_MAPPER.accept(rs, idToPostMap, idToMovieMap, idToMovieCategoryMap);
-
-                    if (fetchRelations.contains(FetchRelation.COMMENTS))
-                        COMMENTS_ROW_MAPPER.accept(rs, idToPostMap, idToCommentMap, childrenWithoutParentMap);
-                }
-
-                return idToPostMap.values();
-            };
-        }
-    }
-
-    private enum FilterCriteria {
-        BY_POST_TITLE_MOVIE_TITLE_AND_TAGS(
-                "( " +
-                        POSTS + ".title ILIKE '%' || ? || '%'" +
-                        " OR " + POSTS + ".post_id IN (" +
-                            " SELECT " + TAGS + ".post_id FROM " + TAGS +
-                            " WHERE " +  TAGS + ".tag ILIKE '%' || ? || '%' )" +
-                        " OR " + POSTS + ".post_id IN ( " +
-                            "SELECT " + POST_MOVIE + ".post_id " +
-                            " FROM " + POST_MOVIE +
-                            " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
-                            " WHERE " + MOVIES + ".title ILIKE '%' || ? || '%')" +
-                        " )"
-        ),
-
-        POSTS_OLDER_THAN(
-                POSTS + ".creation_date >= ?"
-        ),
-
-        BY_POST_CATEGORY(
-                POST_CATEGORY + ".name ILIKE ?"
-        );
-
-        final String filterQuery;
-
-        FilterCriteria(String filterQuery) {
-            this.filterQuery = filterQuery;
-        }
-    }
-
-    private static final EnumMap<SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQuery();
-
-    private static EnumMap<SortCriteria, String> initializeSortCriteriaQuery() {
-        EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
-        sortCriteriaQuery.put(SortCriteria.NEWEST, POSTS + ".creation_date desc");
-        sortCriteriaQuery.put(SortCriteria.OLDEST, POSTS + ".creation_date");
-        return sortCriteriaQuery;
-    }
-
-    // Mapper and Select for simple post retrieval.
     private static final String BASE_POST_SELECT = "SELECT " +
             // Posts Table Columns - Alias: p_column_name
             POSTS + ".post_id p_post_id, " +
             POSTS + ".creation_date p_creation_date, " +
             POSTS + ".title p_title, " +
-            POSTS + ".body p_body, " + POSTS +
-            ".word_count p_word_count";
+            POSTS + ".body p_body, " +
+            POSTS + ".word_count p_word_count, " +
+            POSTS + ".enabled p_enabled";
+
+    private static final String LIKES_SELECT = POSTS_LIKES + ".likes p_likes";
 
     private static final String CATEGORY_SELECT =
             POST_CATEGORY + ".category_id pc_category_id, " +
@@ -230,247 +59,119 @@ public class PostDaoImpl implements PostDao {
             USERS + ".password u_password, " +
             USERS + ".name u_name, " +
             USERS + ".email u_email, " +
-            USERS + ".role_id r_role_id, " +
-            USERS + ".role r_role ";
+            USERS + ".description u_description, " +
+            USERS + ".avatar_id u_avatar_id, " +
+            USERS + ".enabled u_enabled, " +
+            USERS + ".role_id u_role_id, " +
+            USERS + ".role u_role";
 
     private static final String TAGS_SELECT = TAGS + ".tag p_tag";
 
-    private static final String MOVIES_SELECT =
-            MOVIES + ".movie_id m_movie_id, " +
-            MOVIES + ".creation_date m_creation_date, " +
-            MOVIES + ".release_date m_release_date, " +
-            MOVIES + ".title m_title, " +
-            MOVIES + ".original_title m_original_title, " +
-            MOVIES + ".tmdb_id m_tmdb_id, " +
-            MOVIES + ".imdb_id m_imdb_id, " +
-            MOVIES + ".original_language m_original_language, " +
-            MOVIES + ".overview m_overview, " +
-            MOVIES + ".popularity m_popularity, " +
-            MOVIES + ".runtime m_runtime, " +
-            MOVIES + ".vote_average m_vote_average, " +
-            MOVIES + ".category_id mc_category_id, " +
-            MOVIES + ".tmdb_category_id mc_tmdb_category_id, " +
-            MOVIES + ".name mc_name";
-
-    private static final String COMMENTS_SELECT =
-            COMMENTS + ".comment_id c_comment_id, " +
-            "coalesce(" + COMMENTS + ".parent_id, 0) c_parent_id, " +
-            COMMENTS + ".post_id c_post_id, " +
-            COMMENTS + ".creation_date c_creation_date, " +
-            COMMENTS + ".body c_body, " +
-
-            // Users in Post Comments Come without roles
-            COMMENTS + ".cu_user_id, " +
-            COMMENTS + ".cu_creation_date, " +
-            COMMENTS + ".cu_username, " +
-            COMMENTS + ".cu_password, " +
-            COMMENTS + ".cu_name, " +
-            COMMENTS + ".cu_email";
-
     private static final String BASE_POST_FROM = "FROM " + POSTS;
+
+    private static final String LIKES_FROM =
+            "INNER JOIN " +
+                    "(SELECT " + POSTS + ".post_id, COALESCE(SUM( " + POSTS_LIKES + ".value ), 0) likes " +
+                    "FROM " + POSTS + " LEFT OUTER JOIN " + POSTS_LIKES + " on " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id" +
+                    " GROUP BY " + POSTS + ".post_id ) " + POSTS_LIKES + " ON " + POSTS + ".post_id = " + POSTS_LIKES + ".post_id";
 
     private static final String CATEGORY_FROM =
             "INNER JOIN " + POST_CATEGORY + " ON " + POSTS + ".category_id = " + POST_CATEGORY + ".category_id";
 
     private static final String USER_FROM =
-            "INNER JOIN ( " +
+            "INNER JOIN (" +
                     "SELECT " +
-                    USERS + ".user_id, " +
-                    USERS + ".creation_date, " +
-                    USERS + ".username, " +
-                    USERS + ".password, " +
-                    USERS + ".name, " +
-                    USERS + ".email, " +
-                    ROLES + ".role_id, " +
-                    ROLES + ".role " +
+                        USERS + ".user_id, " +
+                        USERS + ".creation_date, " +
+                        USERS + ".username, " +
+                        USERS + ".password, " +
+                        USERS + ".name, " +
+                        USERS + ".email, " +
+                        USERS + ".description, " +
+                        USERS + ".avatar_id, " +
+                        USERS + ".enabled, " +
+                        ROLES + ".role_id, " +
+                        ROLES + ".role " +
                     "FROM " + USERS +
                     " INNER JOIN " + USER_ROLE + " ON " + USERS + ".user_id = " + USER_ROLE + ".user_id " +
                     "INNER JOIN " + ROLES + " ON " + USER_ROLE + ".role_id = " + ROLES + ".role_id " +
+
             ") " + USERS + " ON " + USERS + ".user_id = " + POSTS + ".user_id";
 
     private static final String TAGS_FROM =
             "LEFT OUTER JOIN " + TAGS + " ON " + POSTS + ".post_id = " + TAGS + ".post_id";
 
-    private static final String MOVIES_FROM =
-            "LEFT OUTER JOIN (" + " SELECT " +
-                    MOVIES + ".movie_id, " +
-                    MOVIES + ".creation_date, " +
-                    MOVIES + ".release_date, " +
-                    MOVIES + ".title, " +
-                    MOVIES + ".original_title, " +
-                    MOVIES + ".tmdb_id, " +
-                    MOVIES + ".imdb_id, " +
-                    MOVIES + ".original_language, " +
-                    MOVIES + ".overview, " +
-                    MOVIES + ".popularity, " +
-                    MOVIES + ".runtime, " +
-                    MOVIES + ".vote_average, " +
-                    MOVIE_CATEGORIES + ".category_id, " +
-                    MOVIE_CATEGORIES + ".tmdb_category_id, " +
-                    MOVIE_CATEGORIES + ".name, " +
-                    "post_id" +
-                    " FROM "+ POST_MOVIE +
-                    " INNER JOIN " + MOVIES + " ON " + POST_MOVIE+ ".movie_id = " + MOVIES + ".movie_id" +
-                    " INNER JOIN " + MOVIE_TO_MOVIE_CATEGORY + " ON " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_id = " + MOVIES + ".tmdb_id" +
-                    " INNER JOIN " + MOVIE_CATEGORIES + " ON " + MOVIE_TO_MOVIE_CATEGORY + ".tmdb_category_id = " + MOVIE_CATEGORIES + ".tmdb_category_id" +
-                    ") " + MOVIES + " on " + MOVIES + ".post_id = " + POSTS + ".post_id";
 
-    private static final String COMMENTS_FROM =
-            "LEFT OUTER JOIN ( " +
-                    "SELECT " +
-                    COMMENTS + ".comment_id, " +
-                    "coalesce(" + COMMENTS + ".parent_id, 0) parent_id, " +
-                    COMMENTS + ".post_id, " +
-                    COMMENTS + ".creation_date, " +
-                    COMMENTS + ".body, " +
-                    USERS + ".user_id cu_user_id, " +
-                    USERS + ".creation_date cu_creation_date, " +
-                    USERS + ".username cu_username, " +
-                    USERS + ".password cu_password, " +
-                    USERS + ".name cu_name, " +
-                    USERS + ".email cu_email " +
-                    "FROM " + USERS +
-                    " INNER JOIN " + COMMENTS + " ON " + USERS + ".user_id = " + COMMENTS + ".user_id " +
-            ") " + COMMENTS + " ON " + POSTS + ".post_id = " + COMMENTS + ".post_id";
+    private static final ResultSetExtractor<Collection<Post>> POST_ROW_MAPPER = (rs) -> {
 
+        final Map<Long, Post> idToPostMap = new LinkedHashMap<>();
+        final Map<Long, Role> idToRoleMap = new HashMap<>();
 
-    public static final ResultSetMonoConsumer<Map<Long, Post>> BASE_POST_ROW_MAPPER = (rs, idToPostMap) -> {
-        final long post_id = rs.getLong("p_post_id");
+        long post_id;
+        String tag;
+        long role_id;
 
-        if (!idToPostMap.containsKey(post_id)) {
-            idToPostMap.put(post_id,
-                    new Post(
-                            post_id, rs.getObject("p_creation_date", LocalDateTime.class),
-                            rs.getString("p_title"), rs.getString("p_body"),
-                            rs.getInt("p_word_count"),
+        while(rs.next()) {
 
-                            new PostCategory(rs.getLong("pc_category_id"),
-                                    rs.getObject("pc_creation_date", LocalDateTime.class),
-                                    rs.getString("pc_name")),
+            post_id = rs.getLong("p_post_id");
 
-                            new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
-                                    rs.getString("u_username"), rs.getString("u_password"),
-                                    rs.getString("u_name"), rs.getString("u_email"),
-                                    new HashSet<>()),
+            if (!idToPostMap.containsKey(post_id)) {
+                idToPostMap.put(post_id,
+                        new Post(
+                                post_id, rs.getObject("p_creation_date", LocalDateTime.class),
+                                rs.getString("p_title"), rs.getString("p_body"),
+                                rs.getInt("p_word_count"),
 
-                            // tags, movies, comments
-                            new LinkedHashSet<>(), new LinkedHashSet<>(), new ArrayList<>()
-                    )
-            );
-        }
-    };
+                                new PostCategory(rs.getLong("pc_category_id"),
+                                        rs.getObject("pc_creation_date", LocalDateTime.class),
+                                        rs.getString("pc_name")),
 
-    private static final ResultSetBiConsumer<Map<Long, Post>, Map<Long, Role>> USER_ROW_MAPPER = (rs, idToPostMap, idToUserRoleMap) -> {
-        final long post_id = rs.getLong("p_post_id");
-        final long role_id = rs.getLong("r_role_id");
+                                new User(rs.getLong("u_user_id"), rs.getObject("u_creation_date", LocalDateTime.class),
+                                        rs.getString("u_username"), rs.getString("u_password"),
+                                        rs.getString("u_name"), rs.getString("u_email"),  rs.getString("u_description"),
+                                        rs.getLong("u_avatar_id"), 0,
+                                        new HashSet<>(), rs.getBoolean("u_enabled")),
 
-        if(!idToUserRoleMap.containsKey(role_id))
-            idToUserRoleMap.put(role_id, new Role(role_id, rs.getString("r_role")));
+                                // tags
+                                new HashSet<>()
 
-        idToPostMap.get(post_id).getUser().getRoles().add(idToUserRoleMap.get(role_id));
-    };
+                                , rs.getBoolean("p_enabled"),
 
-    private static final ResultSetMonoConsumer<Map<Long, Post>> TAGS_ROW_MAPPER = (rs, idToPostMap) -> {
-        final long post_id = rs.getLong("p_post_id");
-        final String tag = rs.getString("p_tag");
-
-        if (tag != null)
-            idToPostMap.get(post_id).getTags().add(tag);
-    };
-
-    private static final ResultSetTriConsumer<Map<Long, Post>, Map<Long, Movie>, Map<Long, MovieCategory>> MOVIES_ROW_MAPPER =
-            (rs, idToPostMap, idToMovieMap, idToMovieCategory) -> {
-
-        final long post_id = rs.getLong("p_post_id");
-        final long movie_id = rs.getLong("m_movie_id");
-        final long movie_category_tmdb_id = rs.getLong("mc_tmdb_category_id");
-
-        // If movies is not null. (rs.getLong returns 0 on null)
-        if(movie_id != 0) {
-
-            if(!idToMovieMap.containsKey(movie_id)) {
-                idToMovieMap.put(movie_id,
-                        new Movie(
-                                movie_id, rs.getObject("m_creation_date", LocalDateTime.class),
-                                rs.getString("m_title"),
-                                rs.getString("m_original_title"),
-                                rs.getLong("m_tmdb_id"),
-                                rs.getString("m_imdb_id"),
-                                rs.getString("m_original_language"),
-                                rs.getString("m_overview"),
-                                rs.getFloat("m_popularity"),
-                                rs.getFloat("m_runtime"),
-                                rs.getFloat("m_vote_average"),
-                                rs.getObject("m_release_date", LocalDate.class),
-                                // categories
-                                new LinkedHashSet<>())
+                                //likes
+                                rs.getLong("p_likes")
+                        )
                 );
             }
 
-            if(!idToMovieCategory.containsKey(movie_category_tmdb_id)) {
-                idToMovieCategory.put(movie_category_tmdb_id, new MovieCategory(
-                        rs.getLong("mc_category_id"),
-                        rs.getLong("mc_tmdb_category_id"),
-                        rs.getString("mc_name")));
-            }
+            tag = rs.getString("p_tag");
 
-            idToMovieMap.get(movie_id).getCategories().add(idToMovieCategory.get(movie_category_tmdb_id));
+            if (tag != null)
+                idToPostMap.get(post_id).getTags().add(tag);
 
-            // If the Post already had the Movie, it won't get added because the Collection is a Set
-            idToPostMap.get(post_id).getMovies().add(idToMovieMap.get(movie_id));
+            role_id = rs.getLong("u_role_id");
+
+            if(role_id > 0 && !idToRoleMap.containsKey(role_id))
+                idToRoleMap.put(role_id, new Role(role_id, rs.getString("u_role")));
+
+            idToPostMap.get(post_id).getUser().getRoles().add(idToRoleMap.get(role_id));
         }
+
+        return idToPostMap.values();
     };
 
-    private static final ResultSetTriConsumer<Map<Long, Post>, Map<Long, Comment>, Map<Long, Collection<Comment>>> COMMENTS_ROW_MAPPER =
-            (rs, idToPostMap, idToCommentMap, childrenWithoutParentMap) -> {
 
-        final long comment_id = rs.getLong("c_comment_id");
-        Comment newComment;
+    private static final EnumMap<SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQuery();
 
-        // Returns 0 on null
-        if(comment_id != 0 && !idToCommentMap.containsKey(comment_id)) {
+    private static EnumMap<SortCriteria, String> initializeSortCriteriaQuery() {
 
-            newComment = new Comment(comment_id,
-                    rs.getObject("c_creation_date", LocalDateTime.class),
-                    rs.getLong("c_post_id"), rs.getLong("c_parent_id"), new ArrayList<>(),
-                    rs.getString("c_body"),
-                    new User(rs.getLong("cu_user_id"), rs.getObject("cu_creation_date", LocalDateTime.class),
-                            rs.getString("cu_username"), rs.getString("cu_password"),
-                            rs.getString("cu_name"), rs.getString("cu_email"),
-                            Collections.emptyList()));
+        final EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
 
-            idToCommentMap.put(comment_id, newComment);
+        sortCriteriaQuery.put(SortCriteria.NEWEST, POSTS + ".creation_date desc");
+        sortCriteriaQuery.put(SortCriteria.OLDEST, POSTS + ".creation_date");
+        sortCriteriaQuery.put(SortCriteria.HOTTEST, POSTS_LIKES + ".likes desc");
 
-            // Incorporate all children that appeared before currentComment
-            if(childrenWithoutParentMap.containsKey(comment_id)) {
-                newComment.getChildren().addAll(childrenWithoutParentMap.get(comment_id));
-
-                // Mapping is no longer necessary
-                childrenWithoutParentMap.remove(comment_id);
-            }
-
-            // Comment is root
-            if (newComment.getParentId() == 0)
-                idToPostMap.get(newComment.getPostId()).getComments().add(newComment);
-
-            else {
-                // If parent doesn't exist yet
-                if(!idToCommentMap.containsKey(newComment.getParentId())) {
-
-                    // Initialize Collection inside Map if necessary
-                    if(!childrenWithoutParentMap.containsKey(newComment.getParentId()))
-                        childrenWithoutParentMap.put(newComment.getParentId(), new ArrayList<>());
-
-                    // Add children to Parent Children Buffer
-                    childrenWithoutParentMap.get(newComment.getParentId()).add(newComment);
-                }
-
-                // Parent exists -> Add to parent
-                else
-                    idToCommentMap.get(newComment.getParentId()).getChildren().add(newComment);
-            }
-        }
-    };
+        return sortCriteriaQuery;
+    }
 
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert postInsert;
@@ -494,198 +195,317 @@ public class PostDaoImpl implements PostDao {
     }
     
     @Override
-    public long register(String title, String body, int wordCount, long categoryId, long userId, Set<String> tags, Set<Long> movies) {
+    public Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Long> movies, boolean enabled) {
 
         Objects.requireNonNull(title);
         Objects.requireNonNull(body);
+        Objects.requireNonNull(category);
+        Objects.requireNonNull(user);
         Objects.requireNonNull(movies);
 
-        LocalDateTime creationDate = LocalDateTime.now();
+        final LocalDateTime creationDate = LocalDateTime.now();
 
         HashMap<String, Object> map = new HashMap<>();
+
         map.put("title", title);
         map.put("creation_date", Timestamp.valueOf(creationDate));
         map.put("word_count", wordCount);
         map.put("body", body);
-        map.put("category_id", categoryId);
-        map.put("user_id", userId);
+        map.put("category_id", category.getId());
+        map.put("user_id", user.getId());
+        map.put("enabled", enabled);
 
         final long postId = postInsert.executeAndReturnKey(map).longValue();
 
         for(Long movie_id: movies){
             map = new HashMap<>();
+
             map.put("movie_id", movie_id);
             map.put("post_id", postId);
-            postMoviesInsert.execute(map);
+
+            try {
+                postMoviesInsert.execute(map);
+            }
+            catch(DataIntegrityViolationException e) {
+
+                if(e.getMessage().contains("post_movie_movie_id_fkey")) {
+                    LOGGER.warn("Invalid Movie Id {} Found While Registering Post {}", movie_id, postId);
+                    throw new InvalidMovieIdException();
+                }
+
+                throw e;
+            }
         }
 
         if(tags != null) {
             for (String tag : tags) {
                 map = new HashMap<>();
+
                 map.put("tag", tag);
                 map.put("post_id", postId);
+
                 tagsInsert.execute(map);
             }
         }
 
-        return postId;
+        final Post post = new Post(postId, creationDate, title, body, wordCount, category, user, tags, enabled, 0);
+
+        LOGGER.debug("Created Post {} with Movies {}", post, movies);
+
+        return post;
     }
 
-    // This method abstract the logic needed to perform select queries with or without movies.
-    private Collection<Post> buildAndExecuteQuery(String customWhereStatement, String customOrderByStatement, Object[] args, EnumSet<FetchRelation> includedRelations){
+    @Override
+    public void deletePost(Post post) {
 
-        EnumSet<FetchRelationSelector> selectorSet = FetchRelationSelector.getSelectorsFromFetchRelations(includedRelations);
+        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = false WHERE post_id = ?", post.getId());
 
-        final String select = selectorSet.stream()
-                .reduce("", (ac, selector) -> ac + ", " + selector.getSelect(), String::concat)
-                .substring(1); // Remove first ','
+        LOGGER.info("Post {} was disabled", post.getId());
+    }
 
-        final String from = selectorSet.stream()
-                .reduce("", (ac, selector) -> ac + " " + selector.getFrom(), String::concat);
+    @Override
+    public void restorePost(Post post) {
 
-        final String query = select + " " + from + " " + customWhereStatement + " " + customOrderByStatement;
+        jdbcTemplate.update("UPDATE " + POSTS + " SET enabled = true WHERE post_id = ?", post.getId());
 
-        final ResultSetExtractor<Collection<Post>> rowMapper = FetchRelationSelector.getMapper(includedRelations);
+        LOGGER.info("Post {} was restored", post.getId());
+    }
+
+    @Override
+    public void likePost(Post post, User user, int value) {
+
+        jdbcTemplate.update(
+                "INSERT INTO " + POSTS_LIKES + " (post_id, user_id, value) VALUES (?, ?, ?) " +
+                        "ON CONFLICT (post_id, user_id) DO UPDATE SET value = ? ", post.getId(), user.getId(), value, value);
+
+        LOGGER.info("User {} liked Post {} with Value {}", user.getId(), post.getId(), value);
+    }
+
+    @Override
+    public void removeLike(Post post, User user) {
+
+        jdbcTemplate.update( "DELETE FROM " + POSTS_LIKES + " WHERE " + POSTS_LIKES + ".post_id = ? " + " AND "+ POSTS_LIKES + ".user_id = ?", post.getId(), user.getId());
+
+        LOGGER.info("User {} removed like from Post {}", user.getId(), post.getId());
+    }
+
+    private Collection<Post> executeQuery(String select, String from, String where, String orderBy, Object[] args) {
+
+        final String query = String.format("%s %s %s %s", select, from, where, orderBy);
+
+        LOGGER.debug("Query executed in PostDaoImpl : {}. Args: {}", query, args);
 
         if(args != null)
-            return jdbcTemplate.query(query, args, rowMapper);
+            return jdbcTemplate.query(query, args, POST_ROW_MAPPER);
 
         else
-            return jdbcTemplate.query(query, rowMapper);
-    }
-    
-    private Collection<Post> buildAndExecuteQuery(String customWhereStatement, SortCriteria sortCriteria, Object[] args, EnumSet<FetchRelation> includedRelations){
-        
-        if(!sortCriteriaQueryMap.containsKey(sortCriteria))
-            throw new IllegalArgumentException("SortCriteria implementation not found for " + sortCriteria + " in PostDaoImpl.");
-        
-        return buildAndExecuteQuery(customWhereStatement, buildOrderByStatement(new String[] {sortCriteriaQueryMap.get(sortCriteria)}), args, includedRelations);
+            return jdbcTemplate.query(query, POST_ROW_MAPPER);
     }
 
-    private Collection<Post> searchPostsByIntersectingFilterCriteria(FilterCriteria[] filterCriteria, Object[] args, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria){
+    // For queries where pagination is not necessary (also no order)
+    private Collection<Post> buildAndExecuteQuery(String customWhereStatement, Object[] args) {
 
-        String customWhereStatement = buildWhereStatement(filterCriteria," AND ");
+        final String select = buildSelectStatement();
 
-        return buildAndExecuteQuery(customWhereStatement, sortCriteria, args , includedRelations);
+        final String from = buildFromStatement();
+
+        final Collection<Post> result = executeQuery(select, from, customWhereStatement, "", args);
+
+        LOGGER.debug("Not paginated query executed for {} in PostDaoImpl with result {}", customWhereStatement, result);
+
+        return result;
     }
 
-    private String buildWhereStatement(FilterCriteria[] filters, String criteria) {
-        return buildQueryStatement("WHERE", criteria,
-                Arrays.stream(filters).map(f -> f.filterQuery).toArray(String[]::new));
+    private PaginatedCollection<Post> buildAndExecutePaginatedQuery(String customWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] args) {
+
+        final String select = buildSelectStatement();
+
+        final String from = buildFromStatement();
+
+        final String totalPostCountQuery = String.format(
+                "SELECT COUNT(DISTINCT " + POSTS + ".post_id) %s %s", from, customWhereStatement);
+
+        // Execute original query to count total posts in the query
+        final int totalPostCount = jdbcTemplate.queryForObject(totalPostCountQuery, args, Integer.class);
+
+        final String orderBy = buildOrderByStatement(sortCriteria);
+
+        final String pagination = buildLimitAndOffsetStatement(pageNumber, pageSize);
+
+        final String newWhere = String.format(
+                "WHERE " + POSTS + ".post_id IN ( " +
+                        "SELECT AUX.post_id " +
+                        "FROM ( " +
+                            "SELECT ROW_NUMBER() OVER() row_num, INNER_AUX.post_id " +
+                            "FROM ( " +
+                                "SELECT " + POSTS + ".post_id " +
+                                "%s %s %s ) INNER_AUX " +
+                            ") AUX " +
+                        "GROUP BY AUX.post_id " +
+                        "ORDER BY MIN(AUX.row_num) " +
+                        "%s )",
+                from, customWhereStatement, orderBy, pagination);
+
+        final Collection<Post> results = executeQuery(select, from, newWhere, orderBy, args);
+
+        final PaginatedCollection<Post> postPaginatedCollection = new PaginatedCollection<>(results, pageNumber, pageSize, totalPostCount);
+
+        LOGGER.debug("Paginated query executed in PostDaoImpl with result {}", postPaginatedCollection);
+
+        return postPaginatedCollection;
     }
 
-    private String buildOrderByStatement(String[] columns) {
-        return buildQueryStatement("ORDER BY", ", ", columns);
+    private String buildSelectStatement() {
+       return BASE_POST_SELECT + ", " + LIKES_SELECT + ", " + CATEGORY_SELECT + ", " + USER_SELECT + ", " + TAGS_SELECT;
     }
 
-    // Separator needs to come with white spaces included
-    private String buildQueryStatement(String queryStart, String separator, String[] modifiers) {
-        if(modifiers == null || modifiers.length == 0)
-            return "";
+    private String buildFromStatement() {
+        return BASE_POST_FROM + " " + LIKES_FROM + " " + CATEGORY_FROM + " " + USER_FROM + " " + TAGS_FROM;
+    }
 
-        StringBuilder queryBuilder = new StringBuilder();
+    private String buildOrderByStatement(SortCriteria sortCriteria) {
 
-        queryBuilder.append(queryStart).append(' ');
-
-        for(String modifier : modifiers){
-
-            queryBuilder.append(modifier);
-            queryBuilder.append(separator);
+        if(!sortCriteriaQueryMap.containsKey(sortCriteria)) {
+            LOGGER.error("SortCriteria implementation not found for {} in PostDaoImpl", sortCriteria);
+            throw new IllegalArgumentException();
         }
 
-        //Delete last separator
-        return queryBuilder.substring(0, queryBuilder.length() - separator.length());
+        return "ORDER BY " + sortCriteriaQueryMap.get(sortCriteria);
     }
 
-//    TODO: descablear el order by de los comentarios
+    private String buildLimitAndOffsetStatement(int pageNumber, int pageSize) {
+
+        if (pageNumber < 0 || pageSize <= 0) {
+            LOGGER.error("Invalid pagination argument found in PostDaoImpl. pageSize: {}, pageNumber: {}", pageSize, pageNumber);
+            throw new InvalidPaginationArgumentException();
+        }
+
+        return String.format("LIMIT %d OFFSET %d", pageSize, pageNumber * pageSize);
+    }
+
+    private static final String ENABLED_FILTER = POSTS + ".enabled = true";
+
     @Override
-    public Optional<Post> findPostById(long id, EnumSet<FetchRelation> includedRelations){
-        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ?", "ORDER BY " + COMMENTS + ".creation_date",
-                new Object[]{ id }, includedRelations).stream().findFirst();
+    public Optional<Post> findPostById(long id){
+
+        LOGGER.info("Find Post By Id {}", id);
+        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ? AND " + ENABLED_FILTER, new Object[]{ id })
+                .stream().findFirst();
     }
 
     @Override
-    public Collection<Post> findPostsByMovieId(long movie_id, EnumSet<FetchRelation> includedRelations) {
-        return buildAndExecuteQuery("WHERE " +
+    public Optional<Post> findDeletedPostById(long id){
+
+        LOGGER.info("Find Deleted Post By Id {}", id);
+        return buildAndExecuteQuery("WHERE " + POSTS + ".post_id = ? AND " + POSTS + ".enabled = false",
+                new Object[]{ id }).stream().findFirst();
+    }
+
+    @Override
+    public PaginatedCollection<Post> findPostsByMovie(Movie movie, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Find Posts By Movie {} Order By {}. Page number {}, Page Size {}", movie.getId(), sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery("WHERE " +
                         POSTS + ".post_id IN ( " +
                         "SELECT " + POST_MOVIE + ".post_id " +
                         "FROM " + POST_MOVIE +
-                        " WHERE " + POST_MOVIE + ".movie_id = ?)",
-                SortCriteria.NEWEST, new Object[] { movie_id }, includedRelations);
+                        " WHERE " + POST_MOVIE + ".movie_id = ?) AND " + ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ movie.getId() });
     }
 
     @Override
-    public Collection<Post> findPostsByUserId(long user_id, EnumSet<FetchRelation> includedRelations) {
-        return buildAndExecuteQuery("WHERE " + POSTS + ".user_id = ?",  SortCriteria.NEWEST,
-                new Object[]{ user_id }, includedRelations);
+    public PaginatedCollection<Post> findPostsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Find Posts By User {} Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery("WHERE " + POSTS + ".user_id = ? AND " + ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override
-    public Collection<Post> getAllPosts(EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
-        return buildAndExecuteQuery("", sortCriteria, null, includedRelations);
-    }
-    
-    @Override
-    public Collection<Post> searchPosts(String query, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
+    public PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
-        FilterCriteria[] filterCriteria = new FilterCriteria[]{
-                FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS
-        };
-
-        Object[] args = new Object[]{
-                query, query, query,
-        };
-
-        return searchPostsByIntersectingFilterCriteria(filterCriteria, args, includedRelations, sortCriteria);
+        LOGGER.info("Get All Posts Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery("WHERE " + ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
 
     @Override
-    public Collection<Post> searchPostsByCategory(String query, String category, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
+    public PaginatedCollection<Post> getDeletedPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
-        FilterCriteria[] filterCriteria = new FilterCriteria[]{
-                FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
-                FilterCriteria.BY_POST_CATEGORY
-        };
+        LOGGER.info("Get Deleted Posts Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery("WHERE " + POSTS + ".enabled = false", sortCriteria, pageNumber, pageSize, null);
+    }
 
-        Object[] args = new Object[]{
-                query, query, query,
-                category
-        };
+    // Search Query Statements
+    private static final String SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS = "( " +
+                    "LOWER(" + POSTS + ".title) LIKE '%' || LOWER(?) || '%'" +
 
-        return searchPostsByIntersectingFilterCriteria(filterCriteria, args, includedRelations, sortCriteria);
+                    " OR " + POSTS + ".post_id IN ( " +
+                        "SELECT " + TAGS + ".post_id FROM " + TAGS +
+                        " WHERE LOWER(" +  TAGS + ".tag) LIKE '%' || LOWER(?) || '%' )" +
+
+                    " OR " + POSTS + ".post_id IN ( " +
+                        "SELECT " + POST_MOVIE + ".post_id " +
+                        " FROM " + POST_MOVIE +
+                            " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
+                        " WHERE LOWER(" + MOVIES + ".title) LIKE '%' || LOWER(?) || '%')" +
+                    " )";
+
+    private static final String SEARCH_POSTS_OLDER_THAN = POSTS + ".creation_date >= ?";
+
+    private static final String SEARCH_BY_POST_CATEGORY = "LOWER(" + POST_CATEGORY + ".name) LIKE LOWER(?)";
+
+
+    @Override
+    public PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Posts By Post Title, Tags and Movie {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                                    " AND " + ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
     }
 
     @Override
-    public Collection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
+    public PaginatedCollection<Post> searchDeletedPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
-        FilterCriteria[] filterCriteria = new FilterCriteria[]{
-                FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
-                FilterCriteria.POSTS_OLDER_THAN
-        };
-
-        Object[] args = new Object[]{
-                query, query, query,
-                Timestamp.valueOf(fromDate)
-        };
-
-        return searchPostsByIntersectingFilterCriteria(filterCriteria, args, includedRelations, sortCriteria);
+        LOGGER.info("Search Deleted Posts By Post Title, Tags and Movie {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery(
+                 "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                                    " AND " + POSTS + ".enabled = false",
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
     }
 
     @Override
-    public Collection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, EnumSet<FetchRelation> includedRelations, SortCriteria sortCriteria) {
+    public PaginatedCollection<Post> searchPostsByCategory(String query, String category, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
-        FilterCriteria[] filterCriteria = new FilterCriteria[]{
-                FilterCriteria.BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
-                FilterCriteria.BY_POST_CATEGORY,
-                FilterCriteria.POSTS_OLDER_THAN
-        };
+        LOGGER.info("Search Posts By Post Title, Tags, Movie {} And Category {} Order By {}. Page number {}, Page Size {}", query, category, sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                                    " AND " + SEARCH_BY_POST_CATEGORY +
+                                    " AND " + ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, category });
+    }
 
-        Object[] args = new Object[]{
-                query, query, query,
-                category,
-                Timestamp.valueOf(fromDate)
-        };
+    @Override
+    public PaginatedCollection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
-        return searchPostsByIntersectingFilterCriteria(filterCriteria, args, includedRelations, sortCriteria);
+        LOGGER.info("Search Posts By Post Title, Tags, Movie {} And Min Age {} Order By {}. Page number {}, Page Size {}", query, fromDate, sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                                    " AND " + SEARCH_POSTS_OLDER_THAN +
+                                    " AND " + ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, Timestamp.valueOf(fromDate) });
+    }
+
+    @Override
+    public PaginatedCollection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Posts By Post Title, Tags, Movie {}, Category {} And Min Age {} Order By {}. Page number {}, Page Size {}", query, category, fromDate, sortCriteria, pageNumber, pageSize);
+        return buildAndExecutePaginatedQuery(
+                "WHERE " + SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
+                                    " AND " + SEARCH_BY_POST_CATEGORY +
+                                    " AND " + SEARCH_POSTS_OLDER_THAN +
+                                    " AND " + ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, category, Timestamp.valueOf(fromDate) });
     }
 }

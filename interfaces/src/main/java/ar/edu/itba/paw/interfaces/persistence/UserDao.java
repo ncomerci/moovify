@@ -1,5 +1,9 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
@@ -8,25 +12,45 @@ import java.util.Optional;
 
 public interface UserDao {
 
-    User register(String username, String password, String name, String email, Collection<String> roleNames);
+    enum SortCriteria {
+        NEWEST, OLDEST, LIKES, USERNAME
+    }
 
-    void replaceUserRole(final long userId, final String newRole, final String oldRole);
+    User register(String username, String password, String name, String email, String description, Collection<String> roleNames,  Long avatarId, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException;
 
-    boolean userHasRole(long userId, String role);
+    void updateName(User user, String name);
 
-    boolean userHasRole(String email, String role);
+    void updateUsername(User user, String username) throws DuplicateUsernameException;
 
-    Collection<Role> addRoles(long userId, Collection<String> roleNames);
+    void updateDescription(User user, String description);
 
-    void updatePassword(long userId, String password);
+    void deleteUser(User user);
 
-    Optional<User> findById(long id);
+    void restoreUser(User user);
 
-    Optional<User> findByUsername(String username);
+    void replaceUserRole(final User user, final String newRole, final String oldRole);
 
-    Optional<User> findByEmail(String email);
+    int hasUserLiked(User user, Post post);
 
-    Collection<User> searchUsers(String query);
+    Collection<Role> addRoles(User user, Collection<String> roleNames);
 
-    Collection<User> getAllUsers();
+    void updatePassword(User user, String password);
+
+    void updateAvatarId(User user, long avatarId);
+
+    Optional<User> findUserById(long id);
+
+    Optional<User> findDeletedUserById(long id);
+
+    Optional<User> findUserByUsername(String username);
+
+    Optional<User> findUserByEmail(String email);
+
+    PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 }

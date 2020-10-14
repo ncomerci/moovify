@@ -230,7 +230,7 @@ function updateTagsEnabledStatus(formElem, inputElem) {
 function updateMoviesEnabledStatus(formElem, inputElem) {
     let moviesCount = formElem.querySelectorAll("input[name ^= 'movies']").length;
 
-    inputElem.disabled = moviesCount >= 20;
+    inputElem.disabled = moviesCount >= 19;
 }
 
 function validateModal(formElem, movieErrorElem) {

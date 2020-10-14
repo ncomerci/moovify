@@ -3,18 +3,22 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.services.PostService;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.PostCategory;
+import ar.edu.itba.paw.models.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
-import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class PostServiceImpl implements PostService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostServiceImpl.class);
 
     @Autowired
     private PostDao postDao;
@@ -22,38 +26,100 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostCategoryDao categoryDao;
 
+    @Transactional
     @Override
-    public long register(String title, String body, long category, long user, Set<String> tags, Set<Long> movies){
-        return postDao.register(title, body.trim(), body.split("\\s+").length, category, user, tags, movies);
+    public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> movies) {
+
+        Objects.requireNonNull(body);
+
+        Objects.requireNonNull(title, "PostDao: register: title can't be null");
+        Objects.requireNonNull(body);
+        Objects.requireNonNull(movies);
+        Objects.requireNonNull(category);
+        Objects.requireNonNull(user);
+
+        final Post post = postDao.register(title, body.trim(),
+                body.split("\\s+").length, category, user, tags, movies, true);
+
+        LOGGER.info("Created Post {}", post.getId());
+
+        return post;
     }
 
+    @Transactional
+    @Override
+    public void deletePost(Post post) {
+        postDao.deletePost(post);
+    }
+
+    @Transactional
+    @Override
+    public void restorePost(Post post) {
+        postDao.restorePost(post);
+    }
+
+    @Transactional
+    @Override
+    public void likePost(Post post, User user, int value) {
+
+        if(value == 0)
+            postDao.removeLike(post, user);
+
+        else if(value == -1 || value == 1)
+            postDao.likePost(post, user, value);
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public Optional<Post> findPostById(long id) {
-        return postDao.findPostById(id, EnumSet.allOf(PostDao.FetchRelation.class));
+        return postDao.findPostById(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Collection<Post> findPostsByMovieId(long movie_id) {
-        return postDao.findPostsByMovieId(movie_id, EnumSet.noneOf(PostDao.FetchRelation.class));
+    public Optional<Post> findDeletedPostById(long id) {
+        return postDao.findDeletedPostById(id);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Collection<Post> findPostsByUserId(long user_id) {
-        return postDao.findPostsByUserId(user_id, EnumSet.noneOf(PostDao.FetchRelation.class));
+    public PaginatedCollection<Post> findPostsByMovie(Movie movie, int pageNumber, int pageSize) {
+        return postDao.findPostsByMovie(movie, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Collection<Post> getAllPostsOrderByNewest() {
-        return postDao.getAllPosts(EnumSet.noneOf(PostDao.FetchRelation.class), PostDao.SortCriteria.NEWEST);
+    public PaginatedCollection<Post> findPostsByUser(User user, int pageNumber, int pageSize) {
+        return postDao.findPostsByUser(user, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Collection<Post> getAllPostsOrderByOldest() {
-        return postDao.getAllPosts(EnumSet.noneOf(PostDao.FetchRelation.class), PostDao.SortCriteria.OLDEST);
+    public PaginatedCollection<Post> getAllPostsOrderByNewest(int pageNumber, int pageSize) {
+        return postDao.getAllPosts(PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedCollection<Post> getAllPostsOrderByOldest(int pageNumber, int pageSize) {
+        return postDao.getAllPosts(PostDao.SortCriteria.OLDEST, pageNumber, pageSize);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize) {
+        return postDao.getAllPosts(PostDao.SortCriteria.HOTTEST, pageNumber, pageSize);
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public Collection<PostCategory> getAllPostCategories() {
         return categoryDao.getAllPostCategories();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<PostCategory> findCategoryById(long categoryId) {
+        return categoryDao.findPostCategoryById(categoryId);
     }
 }

@@ -1,18 +1,28 @@
 package ar.edu.itba.paw.webapp.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -24,6 +34,9 @@ import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
+@EnableScheduling
+@EnableAsync
+@EnableTransactionManagement
 @EnableWebMvc
 @ComponentScan({
         "ar.edu.itba.paw.webapp.controller",
@@ -31,8 +44,12 @@ import java.util.Properties;
         "ar.edu.itba.paw.persistence",
     })
 @Configuration
-// TODO: Set Up @PropertySource
+//@PropertySource({ "classpath:/config/web-config-develop.properties" })
+@PropertySource({ "classpath:/config/web-config-production.properties" })
 public class WebConfig extends WebMvcConfigurerAdapter {
+
+    @Autowired
+    private Environment env;
 
     @Value("classpath:schema.sql")
     private Resource schemaSql;
@@ -41,7 +58,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     private Resource dataSql;
 
     @Bean
-    public ViewResolver viewResolver(){
+    public ViewResolver viewResolver() {
         final InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 
         viewResolver.setViewClass(JstlView.class); // Es el default, pero lo aclaramos
@@ -51,6 +68,12 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return viewResolver;
     }
 
+    @Bean(name = "applicationBasePath")
+    public String applicationBasePath() {
+
+        return env.getProperty("app.base_path");
+    }
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**")
@@ -58,19 +81,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public DataSource dataSource(){
+    public DataSource dataSource() {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
         ds.setDriverClass(org.postgresql.Driver.class);
-//        ds.setUrl("jdbc:postgresql://localhost/moovify");
-//        ds.setUsername("admin");
-//        ds.setPassword("papanata");
-
-        // FOR DEPLOYMENT
-
-        ds.setUrl("jdbc:postgresql://10.16.1.110/paw-2020b-3");
-        ds.setUsername("paw-2020b-3");
-        ds.setPassword("ce3Xh7mfS");
+        ds.setUrl(env.getProperty("db.url"));
+        ds.setUsername(env.getProperty("db.username"));
+        ds.setPassword(env.getProperty("db.password"));
 
         return ds;
     }
@@ -85,6 +102,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return dsi;
     }
 
+    @Bean
+    public PlatformTransactionManager transactionManager(final DataSource ds) {
+        return new DataSourceTransactionManager(ds);
+    }
+
     private DatabasePopulator databasePopulator() {
         final ResourceDatabasePopulator dbp = new ResourceDatabasePopulator();
 
@@ -94,7 +116,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public MessageSource messageSource(){
+    public MessageSource messageSource() {
         final ReloadableResourceBundleMessageSource msgSource = new ReloadableResourceBundleMessageSource();
 
         msgSource.setBasename("classpath:i18n/messages");
@@ -105,21 +127,24 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     }
 
     @Bean
+    public MultipartResolver multipartResolver() {
+        final CommonsMultipartResolver cmr = new CommonsMultipartResolver();
+
+        cmr.setMaxUploadSize(10485760);
+        cmr.setMaxUploadSizePerFile(10485760);
+
+        return cmr;
+    }
+
+    @Bean
     public JavaMailSender mailSender() {
 
         final JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
-        // Deploy Mail Server
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587);
-        mailSender.setUsername("MoovifyCo@gmail.com");
-        mailSender.setPassword("#Papanata");
-
-        // Development Mail Server
-//        mailSender.setHost("smtp.mailtrap.io");
-//        mailSender.setPort(587);
-//        mailSender.setUsername("e6c828d95e9959");
-//        mailSender.setPassword("bbfccd607177ac");
+        mailSender.setHost(env.getProperty("mail.host"));
+        mailSender.setPort(env.getProperty("mail.port", Integer.class));
+        mailSender.setUsername(env.getProperty("mail.username"));
+        mailSender.setPassword(env.getProperty("mail.password"));
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");

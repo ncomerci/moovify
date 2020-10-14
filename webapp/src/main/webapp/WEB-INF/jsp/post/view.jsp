@@ -4,23 +4,70 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
+<sec:authorize access="isAuthenticated()">
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
+</sec:authorize>
+
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <html>
 <head>
-    <title><c:out value="${post.title}"/></title>
+    <title><spring:message code="post.view.title" arguments="${post.title}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+    <link rel="stylesheet" href="<c:url value="/resources/css/postView.css" />" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.1/marked.min.js"></script>
-    <script src="<c:url value="/resources/js/post/read.js" />"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.1.1/purify.min.js"
+            integrity="sha512-MyuIiR29IQaNvgQIvGVvOwtphjY82+ZoeopFcOyXrdsFbIiU6Sc3MRvpXRzOYtihMs83vT/rz8ArCM53l5Onqg=="
+            crossorigin="anonymous"></script>
+
+    <script src="<c:url value="/resources/js/components/createAndViewComments.js"/>"></script>
+    <script src="<c:url value="/resources/js/post/view.js"/>"></script>
+    <c:if test="${not empty loggedUser and loggedUser.admin}">
+        <script src="<c:url value="/resources/js/post/delete.js"/>"></script>
+    </c:if>
+    <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
 </head>
 <body data-post-body="<c:out value="${post.body}"/>">
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
-    <section id="post-metadata">
-        <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
+    <div id="post-metadata" >
+        <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
+            <div class="uk-width-5-6">
+                <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
+            </div>
+            <div class="uk-width-1-6 uk-margin-top">
+                <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
+                    <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
+                        <div class="uk-text-center uk-padding-remove uk-margin-remove">
+                            <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
+                                <spring:message code="post.view.votes" arguments="${post.likes}"/>
+                            </p>
+                        </div>
+                    </sec:authorize>
+                    <c:if test="${not empty loggedUser and loggedUser.validated}">
+                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
+                            <a class="like-post-button" data-value="${ likeCurrentValue == 1 ? 0 : 1 }">
+                                <span class="iconify" data-icon="<c:out value="${ likeCurrentValue == 1 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
+                            </a>
+                        </div>
+
+                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
+                            <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
+                                <c:out value="${post.likes}"/>
+                            </p>
+                        </div>
+
+                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
+                            <a class=" like-post-button"  data-value="${ likeCurrentValue != -1 ? -1 : 0 }">
+                                <span class="iconify" data-icon="<c:out value="${ likeCurrentValue == -1 ?  'el:chevron-down': 'cil:chevron-bottom' }" />" data-inline="true"></span>
+                            </a>
+                        </div>
+                    </c:if>
+                </div>
+            </div>
+        </div>
         <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
-<%--                TODO: Is there a better way to handle LocalDateTime formatting?    --%>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
                 <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                 <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
@@ -31,22 +78,35 @@
             </span>
         <span id="post-author" class="uk-article-meta uk-align-right uk-margin-remove-bottom">
             <spring:message code="post.view.writtenBy"/>
-            <a href="<c:url value="/user/${post.user.id}"/>">
-                <c:out value="${post.user.name}"/>
-            </a>
+
+            <c:choose>
+                <c:when test="${post.user.enabled}">
+                    <a href="<c:url value="/user/${post.user.id}"/>">
+                        <c:out value="${post.user.name}"/>
+                        <c:if test="${post.user.admin}">
+                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                        </c:if>
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <span class="uk-text-italic">
+                        <spring:message code="user.notEnabled.name"/>
+                    </span>
+                </c:otherwise>
+            </c:choose>
         </span>
-    </section>
+    </div>
     <hr>
     <article id="post-body">
-        <noscript id="unparsedBody">
+        <noscript id="unparsedBody" class="m-long-text">
             <c:out value="${post.body}"/>
         </noscript>
-        <div id="parsedBody"></div>
+        <div id="parsedBody" class="m-long-text"></div>
     </article>
     <hr>
     <section id="post-movies">
         <h1 class="uk-text-meta"><spring:message code="post.view.movies"/></h1>
-        <c:forEach items="${post.movies}" var="movie" >
+        <c:forEach items="${movies}" var="movie" >
             <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
                href="<c:url value="/movie/${movie.id}"/>">
                 <c:out value="${movie.title}"/>
@@ -56,7 +116,9 @@
     <section id="post-tags">
         <h1 class="uk-text-meta"><spring:message code="post.view.tags"/></h1>
         <c:forEach items="${post.tags}" var="tag" >
-            <c:url var="tagLink" value="/search/posts/?query=${tag}"/>
+            <c:url var="tagLink" value="/search/posts">
+                <c:param name="query" value="${tag}"/>
+            </c:url>
             <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
                href="${tagLink}">
                 <c:out value="${tag}"/>
@@ -64,54 +126,49 @@
         </c:forEach>
     </section>
     <hr>
-    <section class="uk-container uk-container-small">
-        <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${post.totalCommentCount}"/></h1>
-        <sec:authorize access="hasAnyRole('USER', 'ADMIN')">
-            <div style="padding-bottom: 25px">
-                <c:url value="/comment/create" var="action"/>
-                    <%--@elvariable id="CommentCreateForm" type=""--%>
-                <form:form id="spring-form" modelAttribute="CommentCreateForm" action="${action}" method="post">
-                    <c:set var="parentId" value="${null}" scope="request" />
-                    <c:set var="placeholder"><spring:message code="comment.create.writeCommentPlaceholder"/></c:set>
-                    <div class="uk-margin">
-                        <form:label path="postId">
-                            <form:hidden path="postId" value="${post.id}"/>
-                        </form:label>
-                        <form:label path="parentId">
-                            <form:hidden path="parentId" value="${parentId}"/>
-                        </form:label>
-                        <form:label path="commentBody">
-                            <form:textarea class="uk-textarea" rows="5" path="commentBody" placeholder="${placeholder}" />
-                        </form:label>
-                    </div>
-                    <div class="uk-margin-large-bottom uk-align-right">
-                        <input class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
-                    </div>
-                </form:form>
-            </div>
-        </sec:authorize>
-        <sec:authorize access="hasRole('NOT_VALIDATED')">
-            <div class="uk-text-bold uk-text-italic uk-text-secondary uk-text-center"><spring:message code="comment.create.not_validated"/></div>
-        </sec:authorize>
-        <div class="uk-margin-large-top">
-            <hr>
-            <c:set var="comments" value="${post.comments}" scope="request" />
-            <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp" />
+    <c:if test="${not empty loggedUser and loggedUser.admin}">
+        <div class="uk-flex uk-flex-right">
+            <button id="post-delete-btn"
+                    class="uk-button uk-button-default logout-button uk-border-rounded"
+                    data-id="${post.id}"
+                    type="button"
+                    uk-toggle="target: #delete-post-modal"
+            >
+                <spring:message code="post.delete.button"/>
+            </button>
         </div>
-
-        <%-- Comment reply textarea --%>
-        <form id="reply-form" class="uk-hidden">
-            <fieldset class="uk-fieldset">
-                <div class="uk-margin">
-                    <textarea id="textarea" class="uk-textarea" rows="5" placeholder="<spring:message code="comment.create.replyPlaceholder"/>"></textarea>
-                </div>
-                <div class="uk-align-right">
-                    <button id="send-bt" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.create.replyBtn"/></button>
-                </div>
-            </fieldset>
-        </form>
-    </section>
+    </c:if>
+    <c:set var="comments" value="${comments}" scope="request"/>
+    <c:set var="postId" value="${post.id}" scope="request"/>
+    <c:set var="parentId" value="${0}" scope="request"/>
+    <c:set var="enableReplies" value="${true}" scope="request"/>
+    <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
 </main>
 </body>
 </html>
 
+<%-- Post like form --%>
+<form class="uk-margin-remove" action="<c:url value="/post/like"/>" method="post" id="post-like-form">
+    <label>
+        <input hidden name="postId" type="number" value="${postId}"/>
+    </label>
+    <label>
+        <input hidden name="value" id="post-like-value" type="number"/>
+    </label>
+</form>
+
+<c:if test="${not empty loggedUser and loggedUser.admin}">
+    <%--  Delete form  --%>
+    <form method="post" action="<c:url value="/"/>" id="delete-post-form"></form>
+
+    <!-- delete confirmation modal -->
+    <div id="delete-post-modal" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body">
+            <h2 class="uk-modal-title"><spring:message code="post.delete.modalTitle"/></h2>
+            <p class="uk-text-right">
+                <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="comment.delete.cancelButton"/></button>
+                <button id="modal-post-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.delete.confirmButton"/></button>
+            </p>
+        </div>
+    </div>
+</c:if>

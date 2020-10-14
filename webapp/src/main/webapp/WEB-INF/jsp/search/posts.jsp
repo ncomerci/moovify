@@ -5,74 +5,80 @@
 
 <html>
 <head>
-    <title><spring:message code="search.pageTitle" arguments="${query}"/></title>
+    <title><spring:message code="search.posts.pageTitle" arguments="${query}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
     <script src="<c:url value="/resources/js/search/posts.js"/>"></script>
+    <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
 </head>
 <body>
+
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <main class="uk-container-small uk-margin-auto uk-padding-small">
-    <section id="search-controllers">
-        <c:url value="/search/posts/" var="action"/>
-        <form:form modelAttribute="searchPostsForm" method="get" action="${action}">
-
+    <c:url value="/search/posts" var="action"/>
+    <form:form modelAttribute="searchPostsForm" method="get" action="${action}">
+        <section id="search-controllers">
             <c:set var="query" scope="request"><c:out value="${query}"/></c:set>
             <c:set var="currentSearch" value="0" scope="request" />
-            <div>
+            <jsp:include page="defaultForm.jsp"/>
 
-                <jsp:include page="defaultForm.jsp"/>
-            </div>
-            <div class="uk-form-horizontal uk-grid-small" uk-grid>
-                <div class="uk-width-1-3">
-                    <div class="uk-margin">
-                        <form:label path="postCategory" class="uk-form-label" for="post-category" style="width: auto"><spring:message code="search.posts.categories.label"/></form:label>
-                        <div class="uk-form-controls" style="margin-left: 100px">
-                            <form:select path="postCategory" class="uk-select uk-form-blank">
-                                <form:option value="all"><spring:message code="search.posts.categories.all"/></form:option>
-                                <form:option value="critique"><spring:message code="search.posts.categories.critique"/></form:option>
-                                <form:option value="watchlist"><spring:message code="search.posts.categories.watchlist"/></form:option>
-                                <form:option value="news"><spring:message code="search.posts.categories.news"/></form:option>
-                                <form:option value="debate"><spring:message code="search.posts.categories.debate"/></form:option>
-                            </form:select>
-                        </div>
-                    </div>
+            <div class="uk-flex uk-margin-small-top">
+                <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+                    <form:label path="postCategory" class="uk-padding-small-left uk-form-label uk-margin-small-right uk-width-auto" for="post-category">
+                        <spring:message code="search.posts.categories.label"/>
+                    </form:label>
+                    <form:select path="postCategory" class="uk-select uk-form-blank uk-width-expand">
+                        <form:option value="all"><spring:message code="search.posts.categories.all"/></form:option>
+                        <c:forEach items="${categories}" var="category" >
+                            <form:option value="${category}"><spring:message code="${category}"/></form:option>
+                        </c:forEach>
+                    </form:select>
                 </div>
-                <div class="uk-width-1-3">
-                    <div class="uk-margin">
-                        <form:label path="postAge" class="uk-form-label" for="post-age" style="width: auto"><spring:message code="search.posts.postAge.label"/></form:label>
-                        <div class="uk-form-controls" style="margin-left: 100px">
-                            <form:select path="postAge" class="uk-select uk-form-blank">
-                                <form:option value="all-time"><spring:message code="search.posts.postAge.allTime"/></form:option>
-                                <form:option value="past-year"><spring:message code="search.posts.postAge.pastYear"/></form:option>
-                                <form:option value="past-month"><spring:message code="search.posts.postAge.pastMonth"/></form:option>
-                                <form:option value="past-day"><spring:message code="search.posts.postAge.pastDay"/></form:option>
-                            </form:select>
-                        </div>
-                    </div>
+                <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+                    <form:label path="postAge" class="uk-padding-small-left uk-form-label uk-margin-small-right uk-width-auto" for="post-age">
+                        <spring:message code="search.posts.postAge.label"/>
+                    </form:label>
+                    <form:select path="postAge" class="uk-select uk-form-blank uk-width-expand">
+                        <form:option value="allTime"><spring:message code="search.posts.postAge.allTime"/></form:option>
+                        <c:forEach items="${periodOptions}" var="period" >
+                            <form:option value="${period}"><spring:message code="search.posts.postAge.${period}"/></form:option>
+                        </c:forEach>
+                    </form:select>
                 </div>
-                <div class="uk-width-1-3">
-                    <div class="uk-margin">
-                        <form:label path="sortCriteria" class="uk-form-label" for="sort-criteria" style="width: auto"><spring:message code="search.posts.sortCriteria.label"/></form:label>
-                        <div class="uk-form-controls" style="margin-left: 100px">
-                            <form:select path="sortCriteria" class="uk-select uk-form-blank">
-                                <form:option value="newest"><spring:message code="search.posts.sortCriteria.newest"/></form:option>
-                                <form:option value="hottest"><spring:message code="search.posts.sortCriteria.hottest"/></form:option>
-                                <form:option value="oldest"><spring:message code="search.posts.sortCriteria.oldest"/></form:option>
-                            </form:select>
-                        </div>
-                    </div>
+                <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+                    <form:label path="sortCriteria" class="uk-padding-small-left uk-form-label uk-margin-small-right uk-width-auto" for="sort-criteria">
+                        <spring:message code="search.posts.sortCriteria.label"/>
+                    </form:label>
+                    <form:select path="sortCriteria" class="uk-select uk-form-blank uk-width-expand">
+                        <c:forEach items="${sortCriteria}" var="criteria" >
+                            <form:option value="${criteria}"><spring:message code="search.posts.sortCriteria.${criteria}"/></form:option>
+                        </c:forEach>
+                    </form:select>
                 </div>
             </div>
-        </form:form>
-    </section>
-    <section id="search-results" class="uk-margin-top">
-        <c:if test="${empty posts}">
-            <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.posts.postsNotFound"/> </h1>
+        </section>
+
+        <section id="search-results" class="uk-margin-top">
+            <c:if test="${empty posts.results}">
+                <h1 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="search.posts.postsNotFound"/> </h1>
+            </c:if>
+
+            <c:set var="posts" value="${posts}" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
+        </section>
+
+        <c:if test="${not empty posts.results}">
+            <c:set var="collection" value="${posts}" scope="request"/>
+            <c:url var="baseURL" value="/search/posts" context="/" scope="request">
+                <c:param name="query" value="${searchPostsForm.query}"/>
+                <c:param name="postAge" value="${searchPostsForm.postAge}"/>
+                <c:param name="postCategory" value="${searchPostsForm.postCategory}"/>
+                <c:param name="sortCriteria" value="${searchPostsForm.sortCriteria}"/>
+            </c:url>
+            <c:set var="numberOfInputs" value="${2}" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
         </c:if>
-        <c:set var="posts" value="${posts}" scope="request"/>
-        <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
-    </section>
+    </form:form>
 </main>
 </body>
 </html>

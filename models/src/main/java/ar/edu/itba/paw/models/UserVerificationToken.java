@@ -37,4 +37,14 @@ public class UserVerificationToken {
     public boolean isValid() {
         return expiryDate.compareTo(LocalDateTime.now()) >= 0;
     }
+
+    @Override
+    public String toString() {
+        return "UserVerificationToken{" +
+                "id=" + id +
+                ", token='" + token + '\'' +
+                ", user=" + user +
+                ", expiryDate=" + expiryDate +
+                '}';
+    }
 }

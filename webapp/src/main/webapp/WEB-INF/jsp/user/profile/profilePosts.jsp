@@ -5,10 +5,13 @@
 
 <html>
 <head>
+    <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
     <title><spring:message code="user.profile.Profile" arguments="${loggedUser.username}"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
+    <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
+    <script src="<c:url value="/resources/js/user/profile.js" />"></script>
 </head>
-<body style="min-height: 1000px">
+<body class="min-height-1000">
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <div>
@@ -16,13 +19,22 @@
     <jsp:include page="profile.jsp"/>
 
     <div class="uk-container">
-        <sec:authorize access="hasAnyRole('ADMIN','USER')">
-            <c:if test="${empty posts}">
-                <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.profile.postsNotFound"/> </h2>
+        <c:if test="${loggedUser.validated}">
+            <c:if test="${empty posts.results}">
+                <h2 class="uk-text-meta uk-text-center uk-text-bold"><spring:message code="user.profile.PostsNotFound"/> </h2>
             </c:if>
             <c:set var="posts" value="${posts}" scope="request"/>
             <jsp:include page="/WEB-INF/jsp/components/postsDisplay.jsp"/>
-        </sec:authorize>
+
+            <c:if test="${not empty posts.results}">
+                <c:set var="collection" value="${posts}" scope="request"/>
+                <c:url var="baseURL" value="/user/profile/posts" context="/" scope="request"/>
+                <c:set var="numberOfInputs" value="${2}" scope="request"/>
+                <form action="<c:url value="${baseURL}"/>" method="get">
+                    <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
+                </form>
+            </c:if>
+        </c:if>
     </div>
 
 </body>

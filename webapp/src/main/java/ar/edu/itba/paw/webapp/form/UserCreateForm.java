@@ -1,26 +1,24 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.form.Annotations.Avatar;
 import ar.edu.itba.paw.webapp.form.Annotations.PasswordsEqualConstraint;
-import ar.edu.itba.paw.webapp.form.Annotations.UniqueEmail;
-import ar.edu.itba.paw.webapp.form.Annotations.UniqueUsername;
 import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@PasswordsEqualConstraint(message= "Passwords must match")
+@PasswordsEqualConstraint()
 public class UserCreateForm {
 
     @Size(min = 6, max = 50)
-    @UniqueUsername
     @Pattern(regexp = "[a-zA-Z0-9#_]+")
     private String username;
 
     @ValidPassword
     private String password;
-
 
     private String repeatPassword;
 
@@ -29,8 +27,13 @@ public class UserCreateForm {
 
     @Email
     @NotEmpty
-    @UniqueEmail
     private String email;
+
+    @Size(max=400)
+    private String description;
+
+    @Avatar
+    private MultipartFile avatar;
 
     public String getUsername() {
         return username;
@@ -70,5 +73,21 @@ public class UserCreateForm {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public MultipartFile getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(MultipartFile avatar) {
+        this.avatar = avatar;
     }
 }
