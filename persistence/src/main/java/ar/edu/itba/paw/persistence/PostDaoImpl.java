@@ -336,12 +336,15 @@ public class PostDaoImpl implements PostDao {
                 "WHERE " + POSTS + ".post_id IN ( " +
                         "SELECT AUX.post_id " +
                         "FROM ( " +
-                            "SELECT ROW_NUMBER() OVER( %s ) row_num, " + POSTS + ".post_id " +
-                            "%s %s ) AUX " +
+                            "SELECT ROW_NUMBER() OVER() row_num, INNER_AUX.post_id " +
+                            "FROM ( " +
+                                "SELECT " + POSTS + ".post_id " +
+                                "%s %s %s ) INNER_AUX " +
+                            ") AUX " +
                         "GROUP BY AUX.post_id " +
                         "ORDER BY MIN(AUX.row_num) " +
                         "%s )",
-                orderBy, from, customWhereStatement, pagination);
+                from, customWhereStatement, orderBy, pagination);
 
         final Collection<Post> results = executeQuery(select, from, newWhere, orderBy, args);
 
@@ -434,22 +437,22 @@ public class PostDaoImpl implements PostDao {
 
     // Search Query Statements
     private static final String SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS = "( " +
-                    POSTS + ".title ILIKE '%' || ? || '%'" +
+                    "LOWER(" + POSTS + ".title) LIKE '%' || LOWER(?) || '%'" +
 
                     " OR " + POSTS + ".post_id IN ( " +
                         "SELECT " + TAGS + ".post_id FROM " + TAGS +
-                        " WHERE " +  TAGS + ".tag ILIKE '%' || ? || '%' )" +
+                        " WHERE LOWER(" +  TAGS + ".tag) LIKE '%' || LOWER(?) || '%' )" +
 
                     " OR " + POSTS + ".post_id IN ( " +
                         "SELECT " + POST_MOVIE + ".post_id " +
                         " FROM " + POST_MOVIE +
                             " INNER JOIN " + MOVIES + " ON " + POST_MOVIE + ".movie_id = " + MOVIES + ".movie_id " +
-                        " WHERE " + MOVIES + ".title ILIKE '%' || ? || '%')" +
+                        " WHERE LOWER(" + MOVIES + ".title) LIKE '%' || LOWER(?) || '%')" +
                     " )";
 
     private static final String SEARCH_POSTS_OLDER_THAN = POSTS + ".creation_date >= ?";
 
-    private static final String SEARCH_BY_POST_CATEGORY = POST_CATEGORY + ".name ILIKE ?";
+    private static final String SEARCH_BY_POST_CATEGORY = "LOWER(" + POST_CATEGORY + ".name) LIKE LOWER(?)";
 
 
     @Override

@@ -52,7 +52,7 @@ public class PostController {
 
     @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long postId,
-                             @RequestParam(defaultValue = "5") final int pageSize,
+                             @RequestParam(defaultValue = "10") final int pageSize,
                              @RequestParam(defaultValue = "0") final int pageNumber,
                              @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm,
                              final HttpServletRequest request) {

@@ -111,7 +111,7 @@ public class User {
                 "id=" + id +
                 ", creationDate=" + creationDate +
                 ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
+//                ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", description='" + description + '\'' +

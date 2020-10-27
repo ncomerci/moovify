@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
+import org.hsqldb.jdbc.JDBCDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,8 +30,11 @@ public class TestConfig {
     @Autowired
     private Environment env;
 
-    @Value("classpath:clean-up.sql")
-    private Resource cleanUp;
+//    @Value("classpath:clean-up.sql")
+//    private Resource cleanUp;
+
+    @Value("classpath:hsqldb.sql")
+    private Resource hsqldbSql;
 
     @Value("classpath:schema.sql")
     private Resource schemaSql;
@@ -42,10 +46,10 @@ public class TestConfig {
     public DataSource dataSource(){
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
 
-        ds.setDriverClass(org.postgresql.Driver.class);
-        ds.setUrl(env.getProperty("db.url"));
-        ds.setUsername(env.getProperty("db.username"));
-        ds.setPassword(env.getProperty("db.password"));
+        ds.setDriverClass(JDBCDriver.class);
+        ds.setUrl("jdbc:hsqldb:mem:moovify-test");
+        ds.setUsername("test");
+        ds.setPassword("");
 
         return ds;
     }
@@ -57,17 +61,17 @@ public class TestConfig {
 
         dsi.setDataSource(ds);
         dsi.setDatabasePopulator(databasePopulator());
-        dsi.setDatabaseCleaner(databaseCleaner());
+//        dsi.setDatabaseCleaner(databaseCleaner());
 
         return dsi;
     }
 
-    private DatabasePopulator databaseCleaner() {
-
-        final ResourceDatabasePopulator dbp = new ResourceDatabasePopulator();
-        dbp.addScripts(cleanUp);
-        return dbp;
-    }
+//    private DatabasePopulator databaseCleaner() {
+//
+//        final ResourceDatabasePopulator dbp = new ResourceDatabasePopulator();
+//        dbp.addScripts(cleanUp);
+//        return dbp;
+//    }
 
     @Bean
     public PlatformTransactionManager transactionManager(final DataSource ds) {
@@ -78,7 +82,7 @@ public class TestConfig {
     private DatabasePopulator databasePopulator() {
 
         final ResourceDatabasePopulator dbp = new ResourceDatabasePopulator();
-        dbp.addScripts(schemaSql, testInserts);
+        dbp.addScripts(hsqldbSql, schemaSql, testInserts);
         return dbp;
     }
 }

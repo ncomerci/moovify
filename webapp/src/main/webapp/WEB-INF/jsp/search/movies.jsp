@@ -84,7 +84,7 @@
         </section>
         <c:if test="${not empty movies.results}">
             <c:set var="collection" value="${movies}" scope="request"/>
-            <c:url var="baseURL" value="/search/movies" scope="request">
+            <c:url var="baseURL" value="/search/movies" context="/" scope="request">
                 <c:param name="query" value="${searchMoviesForm.query}"/>
                 <c:param name="decade" value="${searchMoviesForm.decade}"/>
                 <c:param name="sortCriteria" value="${searchMoviesForm.sortCriteria}"/>

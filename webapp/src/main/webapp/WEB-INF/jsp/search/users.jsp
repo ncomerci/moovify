@@ -57,7 +57,7 @@
 
         <c:if test="${not empty users.results}">
             <c:set var="collection" value="${users}" scope="request"/>
-            <c:url var="baseURL" value="/search/users" scope="request">
+            <c:url var="baseURL" value="/search/users" context="/" scope="request">
                 <c:param name="query" value="${searchUsersForm.query}"/>
                 <c:param name="role" value="${searchUsersForm.role}"/>
                 <c:param name="sortCriteria" value="${searchUsersForm.sortCriteria}"/>

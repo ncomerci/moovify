@@ -68,7 +68,7 @@ public class CommentController {
 
     @RequestMapping(path = "/comment/{id}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable final long id,
-                             @RequestParam(defaultValue = "5") final int pageSize,
+                             @RequestParam(defaultValue = "10") final int pageSize,
                              @RequestParam(defaultValue = "0") final int pageNumber,
                              @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm) {
 

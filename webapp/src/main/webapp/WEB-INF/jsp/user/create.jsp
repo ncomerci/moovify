@@ -4,7 +4,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title><spring:message code="user.create.signUpTitle"/></title>
+    <title><spring:message code="user.create.signUp.title"/></title>
     <jsp:include page="/WEB-INF/jsp/dependencies/global.jsp" />
     <script src="<c:url value="/resources/js/user/create.js" />" ></script>
 </head>
@@ -14,7 +14,7 @@
 <div class="uk-container uk-container-xsmall uk-margin-medium-top">
     <c:url value="/user/create" var="action"/>
 
-    <legend class="uk-legend uk-text-uppercase uk-text-center uk-text-bold uk-text-large uk-text-primary"><spring:message code="user.create.signUpTitle"/></legend>
+    <legend class="uk-legend uk-text-uppercase uk-text-center uk-text-bold uk-text-large uk-text-primary"><spring:message code="user.create.signUp"/></legend>
     <p class="uk-text-center uk-text-normal uk-text-italic uk-text-bold"><spring:message code="user.create.signUpDesc"/></p>
     <form:form modelAttribute="userCreateForm" action="${action}" method="post" enctype="multipart/form-data">
 

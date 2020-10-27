@@ -26,7 +26,7 @@ public class SearchController {
 
     @RequestMapping(path = "/search/posts", method = RequestMethod.GET)
     public ModelAndView searchPosts(@ModelAttribute("searchPostsForm") final SearchPostsForm searchPostsForm,
-                                    @RequestParam(defaultValue = "5") final int pageSize,
+                                    @RequestParam(defaultValue = "10") final int pageSize,
                                     @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /search/posts");
@@ -47,7 +47,7 @@ public class SearchController {
 
     @RequestMapping(path = "/search/movies", method = RequestMethod.GET)
     public ModelAndView searchMovies(@ModelAttribute("searchMoviesForm") final SearchMoviesForm searchMoviesForm,
-                                     @RequestParam(defaultValue = "5") final int pageSize,
+                                     @RequestParam(defaultValue = "10") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /search/movies");
@@ -68,7 +68,7 @@ public class SearchController {
 
     @RequestMapping(path = "/search/users", method = RequestMethod.GET)
     public ModelAndView searchUsers(@ModelAttribute("searchUsersForm") final SearchUsersForm searchUsersForm,
-                                    @RequestParam(defaultValue = "5") final int pageSize,
+                                    @RequestParam(defaultValue = "10") final int pageSize,
                                     @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /search/users");

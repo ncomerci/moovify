@@ -6,3 +6,12 @@
 - Comerci, Nicolas
 - Pannunzio, Faustino
 - Sagues, Ignacio
+
+## Credenciales de acceso
+- username: notValidatedUser
+- username: validatedUser1
+- username: adminUser
+
+en todos los casos la contraseña es: Paw123456789
+
+

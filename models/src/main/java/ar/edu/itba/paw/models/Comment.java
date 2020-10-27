@@ -115,11 +115,11 @@ public class Comment {
         return "Comment{" +
                 "id=" + id +
                 ", creationDate=" + creationDate +
-                ", post=" + post +
+                ", post=" + post.getId() +
                 ", parentId=" + parentId +
                 ", children=" + children +
-                ", body='" + body + '\'' +
-                ", user=" + user +
+//                ", body='" + body + '\'' +
+                ", user=" + user.getId() +
                 ", likes=" + likes +
                 ", votedBy=" + votedBy +
                 ", enabled=" + enabled +
