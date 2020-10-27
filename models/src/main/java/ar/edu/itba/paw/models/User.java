@@ -1,23 +1,60 @@
 package ar.edu.itba.paw.models;
 
+import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+@Entity
 public class User {
 
     public static final long DEFAULT_AVATAR_ID = 0;
 
-    private final long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_user_id_seq")
+    @SequenceGenerator(sequenceName = "users_user_id_seq", name = "users_user_id_seq", allocationSize = 1)
+    private final Long id;
+
+    @Column(name = "creation_date", nullable = false)
     private final LocalDateTime creationDate;
+
+    @Column(nullable = false, unique = true, length = 50)
     private final String username;
+
+    @Column(nullable = false, length = 200)
     private final String password;
+
+    @Column(nullable = false, length = 50)
     private final String name;
+
+    @Column(nullable = false, unique = true, length = 200)
     private final String email;
+
+    @Column(nullable = false, length = 400)
     private final String description;
+
+    @ManyToOne //Entidad Imagen??
     private final long avatarId;
+
+    // Propiedad Computada
     private final long totalLikes;
+
+    @ElementCollection(targetClass = Role.class)
+    @CollectionTable(name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "role_name", nullable = false)
+    @Enumerated(EnumType.STRING)
     private final Collection<Role> roles;
+    /*
+        CREATE TABLE IF NOT EXISTS USER_ROLE
+        (
+            user_id    INTEGER     NOT NULL,
+            role_name  varchar(50) NOT NULL,
+            PRIMARY KEY (user_id, role_name),
+            FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE,
+        );
+     */
+
     private final boolean enabled;
 
 
@@ -33,6 +70,10 @@ public class User {
         this.totalLikes = totalLikes;
         this.roles = roles;
         this.enabled = enabled;
+    }
+
+    public User() {
+
     }
 
     public long getId() {
