@@ -36,3 +36,15 @@ update movie_categories set name = 'war' where tmdb_category_id = 10752;
 update movie_categories set name = 'western' where tmdb_category_id = 37;
 
 -- Description is now NOT NULL
+
+-- hibernateMigration
+alter table user_role drop constraint user_role_role_id_fkey;
+alter table user_role drop constraint user_role_pkey;
+alter table user_role add column role_name varchar(100);
+update user_role ur set role_name = (select role_name from roles r where r.role_id = ur.role_id);
+alter table user_role alter column role_name set not null;
+alter table user_role drop column role_id;
+alter table user_role add constraint user_role_pkey primary key (user_id, role_name);
+drop table roles;
+
+

@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     public static final long DEFAULT_AVATAR_ID = 0;
@@ -13,67 +14,70 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_user_id_seq")
     @SequenceGenerator(sequenceName = "users_user_id_seq", name = "users_user_id_seq", allocationSize = 1)
-    private final Long id;
+    private Long id;
 
+    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
-    private final LocalDateTime creationDate;
+    private LocalDateTime creationDate;
 
+    @Basic(optional = false)
     @Column(nullable = false, unique = true, length = 50)
-    private final String username;
+    private String username;
 
+    @Basic(optional = false)
     @Column(nullable = false, length = 200)
-    private final String password;
+    private String password;
 
+    @Basic(optional = false)
     @Column(nullable = false, length = 50)
-    private final String name;
+    private String name;
 
+    @Basic(optional = false)
     @Column(nullable = false, unique = true, length = 200)
-    private final String email;
+    private String email;
 
+    @Basic(optional = false)
     @Column(nullable = false, length = 400)
-    private final String description;
+    private String description;
 
-    @ManyToOne //Entidad Imagen??
-    private final long avatarId;
+    @OneToOne(optional = true, fetch = FetchType.EAGER)
+    @JoinColumn(name = "avatar_id")
+    private Image avatar;
 
-    // Propiedad Computada
-    private final long totalLikes;
+    // TODO esperamos a Post y Comments
+    private long totalLikes;
 
     @ElementCollection(targetClass = Role.class)
     @CollectionTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role_name", nullable = false)
     @Enumerated(EnumType.STRING)
-    private final Collection<Role> roles;
-    /*
-        CREATE TABLE IF NOT EXISTS USER_ROLE
-        (
-            user_id    INTEGER     NOT NULL,
-            role_name  varchar(50) NOT NULL,
-            PRIMARY KEY (user_id, role_name),
-            FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE,
-        );
-     */
+    @Basic(optional = false)
+    private Collection<Role> roles;
 
-    private final boolean enabled;
+    @Column(nullable = false)
+    private boolean enabled;
 
-
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Long avatarId, long totalLikes, Collection<Role> roles, boolean enabled) {
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, long totalLikes, Collection<Role> roles, boolean enabled) {
+        this(creationDate, username, password, name, email, description, avatar, totalLikes, roles, enabled);
         this.id = id;
+    }
+
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, long totalLikes, Collection<Role> roles, boolean enabled) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
         this.description = description;
-        this.avatarId = (avatarId == null)? DEFAULT_AVATAR_ID : avatarId;
+        this.avatar = avatar;
         this.totalLikes = totalLikes;
         this.roles = roles;
         this.enabled = enabled;
     }
 
-    public User() {
-
+    protected User() {
+        //JPA
     }
 
     public long getId() {
@@ -108,8 +112,8 @@ public class User {
         return roles;
     }
 
-    public boolean hasRole(String role) {
-        return roles.stream().anyMatch(r -> r.getRole().equals(role));
+    public boolean hasRole(Role role) {
+        return roles.stream().anyMatch(r -> r.equals(role));
     }
 
     public Duration getTimeSinceCreation() {
@@ -131,7 +135,10 @@ public class User {
     public boolean isEnabled() { return enabled; }
 
     public long getAvatarId() {
-        return avatarId;
+        if(avatar == null)
+            return DEFAULT_AVATAR_ID;
+
+        return avatar.getId();
     }
 
     public long getTotalLikes() {
@@ -139,11 +146,11 @@ public class User {
     }
 
     public boolean isAdmin() {
-        return roles.stream().anyMatch(role -> role.getRole().equals(Role.ADMIN_ROLE));
+        return hasRole(Role.ADMIN);
     }
 
     public boolean isValidated() {
-        return roles.stream().noneMatch(role -> role.getRole().equals(Role.NOT_VALIDATED_ROLE));
+        return hasRole(Role.USER);
     }
 
     @Override
@@ -156,7 +163,7 @@ public class User {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", description='" + description + '\'' +
-                ", avatarId=" + avatarId +
+                ", avatarId=" + avatar.getId() +
                 ", totalLikes=" + totalLikes +
                 ", roles=" + roles +
                 ", enabled=" + enabled +
