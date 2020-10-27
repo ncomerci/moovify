@@ -60,7 +60,7 @@ public class UserDaoTest {
 
 
     @Autowired
-    private UserDaoImpl userDao;
+    private UserJdbcDaoImpl userDao;
 
     @Autowired
     private DataSource ds;

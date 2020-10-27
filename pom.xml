@@ -46,6 +46,11 @@
     <logback.version>1.1.2</logback.version>
     <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
 
+    <!--Hibernate Dependencies-->
+
+    <org.hibernate.version>5.1.0.Final</org.hibernate.version>
+    <org.hibernate.jpa.version>1.0.0.Final</org.hibernate.jpa.version>
+
 <!--   Dependencies Needed for compatibility with older Apache Versions  -->
     <servlet-api.version>2.5</servlet-api.version>
     <jstl.version>1.2</jstl.version>
@@ -203,6 +208,31 @@
         <artifactId>logback-ext-spring</artifactId>
         <version>${logback-ext-spring.version}</version>
         <scope>runtime</scope>
+      </dependency>
+
+      <!--Hibernate-->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-orm</artifactId>
+        <version>${org.springframework.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${org.hibernate.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>${org.hibernate.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hibernate.javax.persistence</groupId>
+        <artifactId>hibernate-jpa-2.1-api</artifactId>
+        <version>${org.hibernate.jpa.version}</version>
       </dependency>
 
       <!-- This dependencies are needed because we are working with an older version of Apache Tomcat -->

@@ -20,5 +20,12 @@
   <name>models</name>
 
   <url>http://pawserver.it.itba.edu.ar/paw-2020b-3/</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.1-api</artifactId>
+    </dependency>
+  </dependencies>
   
 </project>
