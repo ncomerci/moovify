@@ -50,8 +50,11 @@ public class User {
     @JoinColumn(name = "avatar_id")
     private Image avatar;
 
-    // TODO esperamos a Post y Comments
-    private long totalLikes;
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<PostLikes> postLikes;
+
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<CommentLikes> commentLikes;
 
     @ElementCollection(targetClass = Role.class)
     @CollectionTable(name = "user_role",
@@ -63,12 +66,12 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, long totalLikes, Collection<Role> roles, boolean enabled) {
-        this(creationDate, username, password, name, email, description, avatar, totalLikes, roles, enabled);
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLikes> postLikes, Collection<CommentLikes> commentLikes) {
+        this(creationDate, username, password, name, email, description, avatar, roles, enabled, postLikes, commentLikes);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, long totalLikes, Collection<Role> roles, boolean enabled) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLikes> postLikes, Collection<CommentLikes> commentLikes) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
@@ -76,9 +79,10 @@ public class User {
         this.email = email;
         this.description = description;
         this.avatar = avatar;
-        this.totalLikes = totalLikes;
         this.roles = roles;
         this.enabled = enabled;
+        this.postLikes = postLikes;
+        this.commentLikes = commentLikes;
     }
 
     protected User() {
@@ -146,8 +150,16 @@ public class User {
         return avatar.getId();
     }
 
+    public long getTotalPostLikes() {
+        return postLikes.stream().reduce(0, (acum, postLikes) -> acum += postLikes.getValue(), Integer::sum);
+    }
+
+    public long getTotalCommentLikes() {
+        return commentLikes.stream().reduce(0, (acum, commentLikes) -> acum += commentLikes.getValue(), Integer::sum);
+    }
+
     public long getTotalLikes() {
-        return totalLikes;
+        return getTotalPostLikes() + getTotalPostLikes();
     }
 
     public boolean isAdmin() {
@@ -169,7 +181,6 @@ public class User {
                 ", email='" + email + '\'' +
                 ", description='" + description + '\'' +
                 ", avatarId=" + avatar.getId() +
-                ", totalLikes=" + totalLikes +
                 ", roles=" + roles +
                 ", enabled=" + enabled +
                 '}';

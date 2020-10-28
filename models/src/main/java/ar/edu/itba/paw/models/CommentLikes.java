@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "comments_likes")
-public class CommentsLikes {
+public class CommentLikes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comments_likes_comments_likes_id_seq")
@@ -23,10 +23,17 @@ public class CommentsLikes {
     @Column(nullable = false)
     private int value;
 
-    protected CommentsLikes() {
+    public CommentLikes(User user, Comment comment, int value) {
+        this.user = user;
+        this.comment = comment;
+        this.value = value;
     }
 
-    public Long getId() {
+    protected CommentLikes() {
+        // Hibernate
+    }
+
+    public long getId() {
         return id;
     }
 

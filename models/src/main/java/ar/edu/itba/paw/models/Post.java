@@ -10,7 +10,7 @@ import java.util.Collection;
 @Table(name = "posts")
 public class Post {
 
-    static public int hasUserLiked(Post post, User user){
+    static public int getLikeValueByUser(Post post, User user) {
         return post.getLikes().stream().filter(postLikes -> postLikes.getUser().getId() == user.getId()).map(PostLikes::getValue).findFirst().orElse(0);
     }
 
@@ -46,7 +46,7 @@ public class Post {
     @ElementCollection(targetClass = String.class)
     @CollectionTable(
             name="tags",
-            joinColumns=@JoinColumn(name="post_id", nullable = false)
+            joinColumns = @JoinColumn(name = "post_id", nullable = false)
     )
     @Column(name="tag", nullable = false)
     private Collection<String> tags;
@@ -60,16 +60,8 @@ public class Post {
     private static final int EN_WORDS_PER_MINUTE = 150;
 
     public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLikes> likes) {
+        this(creationDate, title, body, wordCount, category, user, tags, enabled, likes);
         this.id = id;
-        this.creationDate = creationDate;
-        this.title = title;
-        this.body = body;
-        this.wordCount = wordCount;
-        this.user = user;
-        this.category = category;
-        this.tags = tags;
-        this.enabled = enabled;
-        this.likes = likes;
     }
 
     public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLikes> likes) {
@@ -89,7 +81,7 @@ public class Post {
     }
 
     public long getTotalLikes() {
-        return likes.stream().reduce(0, (acum, postLikes) -> acum+=postLikes.getValue(), Integer::sum);
+        return likes.stream().reduce(0, (acum, postLikes) -> acum += postLikes.getValue(), Integer::sum);
     }
 
     public Collection<PostLikes> getLikes(){
@@ -150,6 +142,13 @@ public class Post {
 
     public boolean isEnabled() { return enabled; }
 
+    public int getLikeValue(User user) {
+        return getLikes().stream()
+                .filter(postLikes -> postLikes.getUser().getId() == user.getId())
+                .map(PostLikes::getValue)
+                .findFirst().orElse(0);
+    }
+
     @Override
     public String toString() {
         return "Post{" +
@@ -161,7 +160,6 @@ public class Post {
                 ", user=" + user.getId() +
                 ", category=" + category +
                 ", tags=" + tags +
-                ", likes=" + likes +
                 ", enabled=" + enabled +
                 '}';
     }

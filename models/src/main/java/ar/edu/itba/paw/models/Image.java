@@ -12,11 +12,12 @@ public class Image {
     private Long id;
 
     @Lob
-    @Column(name = "image", columnDefinition = "BLOB") //TODO puede haber error usando BLOB aca
-    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "image", nullable = false, columnDefinition = "BLOB") //TODO puede haber error usando BLOB aca
+    @Basic(fetch = FetchType.LAZY, optional = false)
     private byte[] data;
 
     @Column(name = "security_tag", nullable = false)
+    @Basic(optional = false)
     private String tag;
 
     public Long getId() {
@@ -32,6 +33,7 @@ public class Image {
     }
 
     protected Image() {
+        // Hibernate
     }
 
     public Image(byte[] data, String tag) {
@@ -40,8 +42,7 @@ public class Image {
     }
 
     public Image(Long id, byte[] data, String tag) {
+        this(data, tag);
         this.id = id;
-        this.data = data;
-        this.tag = tag;
     }
 }

@@ -3,8 +3,6 @@ package ar.edu.itba.paw.models;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "posts_likes")
@@ -38,7 +36,7 @@ public class PostLikes {
     protected PostLikes() {
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
