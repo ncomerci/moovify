@@ -12,7 +12,7 @@ public class MovieCategory {
     @Column(name = "category_id")
     private long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(name="tmdb_category_id", nullable = false, unique = true)
     private long tmdbCategoryId;
 
     @Column(nullable = false, length = 50)

@@ -27,10 +27,10 @@ public class Movie {
     @Basic(optional = false)
     private String originalTitle;
 
-    @Column(nullable = false, unique = true)
+    @Column(name="tmdb_id", nullable = false, unique = true)
     private long tmdbId;
 
-    @Column(nullable = false, unique = true, length = 20)
+    @Column(name="imdb_id", nullable = false, unique = true, length = 20)
     @Basic(optional = false)
     private String imdbId;
 
