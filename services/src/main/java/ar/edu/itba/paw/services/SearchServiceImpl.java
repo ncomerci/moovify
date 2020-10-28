@@ -7,17 +7,15 @@ import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
-@DependsOn("dataSourceInitializer")
+//@DependsOn({"PostCategoryDao", "MovieCategoryDao"})
 public class SearchServiceImpl implements SearchService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchServiceImpl.class);
@@ -132,8 +130,10 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     public SearchServiceImpl(PostCategoryDao postCategoryDao, MovieCategoryDao movieCategoryDao) {
-        postCategoriesOptions = postCategoryDao.getAllPostCategories().stream().map(PostCategory::getName).collect(Collectors.toList());
-        movieCategoriesOptions = movieCategoryDao.getAllCategories().stream().map(MovieCategory::getName).collect(Collectors.toList());
+        postCategoriesOptions = Collections.emptyList();
+        movieCategoriesOptions = Collections.emptyList();
+//        postCategoriesOptions = postCategoryDao.getAllPostCategories().stream().map(PostCategory::getName).collect(Collectors.toList());
+//        movieCategoriesOptions = movieCategoryDao.getAllCategories().stream().map(MovieCategory::getName).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

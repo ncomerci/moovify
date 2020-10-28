@@ -472,7 +472,7 @@ public class UserController {
     }
 
     private Collection<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
-        return roles.stream().map((role) -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).collect(Collectors.toList());
+        return roles.stream().map((role) -> new SimpleGrantedAuthority("ROLE_" + role.name())).collect(Collectors.toList());
     }
 
     private User getUserFromFlashParamsOrById(long userId, HttpServletRequest request) {

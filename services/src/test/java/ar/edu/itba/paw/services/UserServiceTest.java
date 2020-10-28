@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.interfaces.persistence.*;
+import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
+import ar.edu.itba.paw.interfaces.persistence.UserDao;
+import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
 import ar.edu.itba.paw.interfaces.services.ImageService;
@@ -15,13 +17,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.junit.Assert.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 
@@ -92,10 +93,10 @@ public class UserServiceTest {
         UserService userServiceMock = Mockito.mock(UserService.class);
 
 
-        Mockito.when(dao.register(Mockito.anyString(),Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyCollection(), Mockito.anyLong(), Mockito.anyBoolean()))
-                .thenReturn(user);
+//        Mockito.when(dao.register(Mockito.anyString(),Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyCollection(), Mockito.anyLong(), Mockito.anyBoolean()))
+//                .thenReturn(user);
         Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
-        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(AVATAR_ID);
+//        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(AVATAR_ID);
         Mockito.doNothing().when(userServiceMock).createConfirmationEmail(Mockito.isA(User.class),Mockito.anyString());
 
 //        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
@@ -142,12 +143,12 @@ public class UserServiceTest {
     @Test
     public void testPromoteUserToAdmin() {
         List<Role> roles = new ArrayList<>();
-        roles.add(new Role(Role.USER_ROLE));
+        roles.add(Role.USER);
 
         User user = Mockito.when(Mockito.mock(User.class).getRoles()).thenReturn(roles).getMock();
         userService.promoteUserToAdmin(user);
 
-        Assert.assertTrue(user.getRoles().stream().anyMatch(role -> role.getRole().equals(Role.ADMIN_ROLE)));
+        Assert.assertTrue(user.getRoles().stream().anyMatch(role -> role.name().equals(Role.ADMIN.name())));
     }
 
     @Test(expected = NullPointerException.class)
@@ -161,7 +162,7 @@ public class UserServiceTest {
 
         UserVerificationToken userVerificationToken = Mockito.mock(UserVerificationToken.class);
         List<Role> roles = new ArrayList<>();
-        roles.add(new Role(Role.NOT_VALIDATED_ROLE));
+        roles.add(Role.NOT_VALIDATED);
         User user = Mockito.when(Mockito.mock(User.class).getRoles()).thenReturn(roles).getMock();
 
         Mockito.when(userVerificationToken.isValid()).thenReturn(true);
@@ -172,7 +173,7 @@ public class UserServiceTest {
         final Optional<User> user1 = userService.confirmRegistration(TOKEN);
 
         Assert.assertTrue(user1.isPresent());
-        Assert.assertTrue(user1.get().getRoles().stream().anyMatch(role -> role.getRole().equals(Role.USER_ROLE)));
+        Assert.assertTrue(user1.get().getRoles().stream().anyMatch(role -> role.name().equals(Role.USER.name())));
     }
 
     @Test

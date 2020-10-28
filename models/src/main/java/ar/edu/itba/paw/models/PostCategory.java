@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 public class PostCategory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_category_category_id_seq")
-    @SequenceGenerator(sequenceName = "posts_category_category_id_seq", name = "posts_category_category_id_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_category_category_id_seq")
+    @SequenceGenerator(sequenceName = "post_category_category_id_seq", name = "post_category_category_id_seq", allocationSize = 1)
     @Column(name = "category_id")
     private long id;
 

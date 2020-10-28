@@ -32,6 +32,6 @@ public class MoovifyUserDetailsService implements UserDetailsService {
     }
 
     private Collection<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
-        return roles.stream().map((role) -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).collect(Collectors.toList());
+        return roles.stream().map((role) -> new SimpleGrantedAuthority("ROLE_" + role.name())).collect(Collectors.toList());
     }
 }

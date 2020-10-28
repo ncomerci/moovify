@@ -46,7 +46,7 @@ public class Comment {
     @JoinColumn(name = "parent_id", nullable = true)
     private Comment parent;
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = false, mappedBy = "parentId")
+    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = false, mappedBy = "parent")
     private Collection<Comment> children;
 
     @Column(nullable = false, length = 1000)

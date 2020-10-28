@@ -137,7 +137,7 @@ public class CommentDaoImplTest {
         Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(COMMENT_ID).getMock();
 
 //        2. ejercitar
-        commentDao.removeLike(comment, USER);
+//        commentDao.removeLike(comment, USER);
 
 //        3. post-condiciones
         final String whereClause = String.format("user_id = %d AND comment_id = %d", USER_ID, COMMENT_ID);
@@ -154,7 +154,7 @@ public class CommentDaoImplTest {
         Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(id).getMock();
 
 //        2. ejercitar
-        commentDao.deleteComment(comment);
+//        commentDao.deleteComment(comment);
 
 //        3. post-condiciones
         final String whereClause = String.format("comment_id = %d AND enabled = false", id);
@@ -171,7 +171,7 @@ public class CommentDaoImplTest {
         Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(id).getMock();
 
 //        2. ejercitar
-        commentDao.restoreComment(comment);
+//        commentDao.restoreComment(comment);
 
 //        3. post-condiciones
         final String whereClause = String.format("comment_id = %d AND enabled = true", id);

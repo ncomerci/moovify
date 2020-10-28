@@ -47,7 +47,6 @@
     <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
 
     <!--Hibernate Dependencies-->
-
     <org.hibernate.version>5.1.0.Final</org.hibernate.version>
     <org.hibernate.jpa.version>1.0.0.Final</org.hibernate.jpa.version>
 
@@ -258,6 +257,12 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${org.hibernate.validator}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>

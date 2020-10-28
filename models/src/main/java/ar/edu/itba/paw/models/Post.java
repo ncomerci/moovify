@@ -73,12 +73,12 @@ public class Post {
 
     private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes) {
-        this(creationDate, title, body, wordCount, category, user, tags, enabled, likes);
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes, Collection<Movie> movies) {
+        this(creationDate, title, body, wordCount, category, user, tags, enabled, likes, movies);
         this.id = id;
     }
 
-    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes) {
+    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes, Collection<Movie> movies) {
         this.creationDate = creationDate;
         this.title = title;
         this.body = body;
@@ -88,6 +88,7 @@ public class Post {
         this.tags = tags;
         this.enabled = enabled;
         this.likes = likes;
+        this.movies = movies;
     }
 
     protected Post() {
