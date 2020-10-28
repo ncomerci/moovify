@@ -1,11 +1,10 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "images")
-public class Image implements Serializable {
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "images_image_id_seq")

@@ -1,12 +1,11 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "post_category")
-public class PostCategory implements Serializable {
+public class PostCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_category_category_id_seq")

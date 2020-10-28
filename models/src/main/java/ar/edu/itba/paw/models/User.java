@@ -1,14 +1,13 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class User {
 
     public static final long DEFAULT_AVATAR_ID = 0;
 

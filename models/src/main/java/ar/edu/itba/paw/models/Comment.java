@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -12,7 +11,7 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "comments")
-public class Comment implements Serializable {
+public class Comment {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Comment.class);
 
