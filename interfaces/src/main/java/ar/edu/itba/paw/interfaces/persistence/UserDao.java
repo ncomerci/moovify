@@ -2,10 +2,7 @@ package ar.edu.itba.paw.interfaces.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.Role;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -16,27 +13,9 @@ public interface UserDao {
         NEWEST, OLDEST, LIKES, USERNAME
     }
 
-    User register(String username, String password, String name, String email, String description, Collection<String> roleNames,  Long avatarId, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException;
-
-    void updateName(User user, String name);
-
-    void updateUsername(User user, String username) throws DuplicateUsernameException;
-
-    void updateDescription(User user, String description);
-
-    void deleteUser(User user);
-
-    void restoreUser(User user);
-
-    void replaceUserRole(final User user, final String newRole, final String oldRole);
+    User register(String username, String password, String name, String email, String description, Collection<Role> roleNames, Image avatar, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException;
 
     int hasUserLiked(User user, Post post);
-
-    Collection<Role> addRoles(User user, Collection<String> roleNames);
-
-    void updatePassword(User user, String password);
-
-    void updateAvatarId(User user, long avatarId);
 
     Optional<User> findUserById(long id);
 
