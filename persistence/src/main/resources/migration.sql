@@ -55,3 +55,4 @@ alter table comments_likes drop constraint comments_likes_pkey;
 alter table comments_likes add column comments_likes_id serial primary key;
 alter table comments_likes add constraint comments_likes_unique unique (comment_id, user_id);
 
+alter table comments_likes add constraint comments_likes_pkey primary key (comments_likes_id);

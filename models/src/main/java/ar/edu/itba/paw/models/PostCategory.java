@@ -17,7 +17,7 @@ public class PostCategory {
     @Basic(optional = false)
     private LocalDateTime creationDate;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     @Basic(optional = false)
     private String name;
 

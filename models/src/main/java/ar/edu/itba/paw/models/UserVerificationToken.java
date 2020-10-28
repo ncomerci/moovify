@@ -15,7 +15,7 @@ public class UserVerificationToken {
     @Column(name = "token_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @Basic(optional = false)
     private String token;
 

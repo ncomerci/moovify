@@ -16,10 +16,10 @@ public class PasswordResetToken {
     private Long tokenId;
 
     @OneToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @Basic(optional = false)
     private String token;
 

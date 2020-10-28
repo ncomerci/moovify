@@ -155,10 +155,11 @@ CREATE TABLE IF NOT EXISTS COMMENTS
 
 CREATE TABLE IF NOT EXISTS COMMENTS_LIKES
 (
-    comment_id     INTEGER     NOT NULL,
-    user_id        INTEGER     NOT NULL,
-    value          INTEGER     NOT NULL,
-    PRIMARY KEY (comment_id, user_id),
+    comments_likes_id   SERIAL PRIMARY KEY,
+    comment_id          INTEGER     NOT NULL,
+    user_id             INTEGER     NOT NULL,
+    value               INTEGER     NOT NULL,
+    UNIQUE (comment_id, user_id),
     FOREIGN KEY (comment_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
 );

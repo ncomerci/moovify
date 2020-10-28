@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "posts_likes")
+@Table(name = "posts_likes", uniqueConstraints = @UniqueConstraint(columnNames = {"post_id", "user_id"}))
 public class PostLike {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostLike.class);
