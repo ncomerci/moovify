@@ -15,14 +15,6 @@ public interface CommentDao {
 
     Comment register(Post post, Comment parent, String body, User user, boolean enabled);
 
-    void likeComment(Comment comment, User user, int value);
-
-    void removeLike(Comment comment, User user);
-
-    void deleteComment(Comment comment);
-
-    void restoreComment(Comment comment);
-
     Optional<Comment> findCommentById(long id);
 
     PaginatedCollection<Comment> findCommentChildren(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize);

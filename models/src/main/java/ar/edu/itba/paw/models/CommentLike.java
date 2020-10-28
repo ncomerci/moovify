@@ -1,19 +1,20 @@
 package ar.edu.itba.paw.models;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "posts_likes")
-public class PostLikes {
+@Table(name = "comments_likes")
+public class CommentLike {
 
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(PostLikes.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentLike.class);
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_likes_post_likes_id_seq")
-    @SequenceGenerator(sequenceName = "posts_likes_post_likes_id_seq", name = "posts_likes_post_likes_id_seq", allocationSize = 1)
-    @Column(name = "post_likes_id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comments_likes_comments_likes_id_seq")
+    @SequenceGenerator(sequenceName = "comments_likes_comments_likes_id_seq", name = "comments_likes_comments_likes_id_seq", allocationSize = 1)
+    @Column(name = "comments_likes_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -21,19 +22,20 @@ public class PostLikes {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name="comment_id", nullable = false)
+    private Comment comment;
 
     @Column(nullable = false)
     private int value;
 
-    public PostLikes(User user, Post post, int value) {
+    public CommentLike(User user, Comment comment, int value) {
         this.user = user;
-        this.post = post;
+        this.comment = comment;
         this.value = value;
     }
 
-    protected PostLikes() {
+    protected CommentLike() {
+        // Hibernate
     }
 
     public long getId() {
@@ -44,8 +46,8 @@ public class PostLikes {
         return user;
     }
 
-    public Post getPost() {
-        return post;
+    public Comment getComment() {
+        return comment;
     }
 
     public int getValue() {
@@ -53,17 +55,20 @@ public class PostLikes {
     }
 
     public void setValue(int value) {
-        if(value == 0)
+        if(value == 0) {
             LOGGER.error("Tried to assign value 0 to {}", this);
+            return;
+        }
+
         this.value = value;
     }
 
     @Override
     public String toString() {
-        return "PostLikes{" +
+        return "CommentLike{" +
                 "id=" + id +
                 ", user=" + user.getId() +
-                ", post=" + post.getId() +
+                ", comment=" + comment.getId() +
                 ", value=" + value +
                 '}';
     }

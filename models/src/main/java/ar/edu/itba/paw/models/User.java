@@ -50,11 +50,11 @@ public class User {
     @JoinColumn(name = "avatar_id")
     private Image avatar;
 
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<PostLikes> postLikes;
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "user")
+    private Collection<PostLike> postLikes;
 
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "user", cascade = CascadeType.ALL)
-    private Collection<CommentLikes> commentLikes;
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "user")
+    private Collection<CommentLike> commentLikes;
 
     @ElementCollection(targetClass = Role.class)
     @CollectionTable(name = "user_role",
@@ -66,12 +66,12 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLikes> postLikes, Collection<CommentLikes> commentLikes) {
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLike> postLikes, Collection<CommentLike> commentLikes) {
         this(creationDate, username, password, name, email, description, avatar, roles, enabled, postLikes, commentLikes);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLikes> postLikes, Collection<CommentLikes> commentLikes) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLike> postLikes, Collection<CommentLike> commentLikes) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
@@ -151,11 +151,11 @@ public class User {
     }
 
     public long getTotalPostLikes() {
-        return postLikes.stream().reduce(0, (acum, postLikes) -> acum += postLikes.getValue(), Integer::sum);
+        return postLikes.stream().reduce(0, (acum, postLike) -> acum += postLike.getValue(), Integer::sum);
     }
 
     public long getTotalCommentLikes() {
-        return commentLikes.stream().reduce(0, (acum, commentLikes) -> acum += commentLikes.getValue(), Integer::sum);
+        return commentLikes.stream().reduce(0, (acum, commentLike) -> acum += commentLike.getValue(), Integer::sum);
     }
 
     public long getTotalLikes() {

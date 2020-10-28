@@ -38,7 +38,6 @@ public class CommentServiceImpl implements CommentService {
                         .replaceAll("^[ \r\n]+|[ \r\n]+$", ""), user, true);
 
         final Map<String, Object> map = new HashMap<>();
-
         map.put("post", post);
         map.put("comment", comment);
 
@@ -55,22 +54,22 @@ public class CommentServiceImpl implements CommentService {
     public void likeComment(Comment comment, User user, int value) {
 
         if(value == 0)
-            commentDao.removeLike(comment, user);
+            comment.removeLike(user);
 
         else if(value == -1 || value == 1)
-            commentDao.likeComment(comment, user, value);
+            comment.like(user, value);
     }
 
     @Transactional
     @Override
     public void deleteComment(Comment comment) {
-        commentDao.deleteComment(comment);
+        comment.setEnabled(false);
     }
 
     @Transactional
     @Override
     public void restoreComment(Comment comment) {
-        commentDao.restoreComment(comment);
+        comment.setEnabled(true);
     }
 
     @Transactional(readOnly = true)

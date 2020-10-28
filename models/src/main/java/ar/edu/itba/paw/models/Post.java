@@ -11,7 +11,7 @@ import java.util.Collection;
 public class Post {
 
     static public int getLikeValueByUser(Post post, User user) {
-        return post.getLikes().stream().filter(postLikes -> postLikes.getUser().getId() == user.getId()).map(PostLikes::getValue).findFirst().orElse(0);
+        return post.getLikes().stream().filter(postLike -> postLike.getUser().getId() == user.getId()).map(PostLike::getValue).findFirst().orElse(0);
     }
 
     @Id
@@ -60,19 +60,19 @@ public class Post {
     private Collection<String> tags;
 
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "post", cascade = CascadeType.ALL)
-    private Collection<PostLikes> likes;
+    private Collection<PostLike> likes;
 
     @Column(nullable = false)
     private boolean enabled;
 
     private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLikes> likes) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes) {
         this(creationDate, title, body, wordCount, category, user, tags, enabled, likes);
         this.id = id;
     }
 
-    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLikes> likes) {
+    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes) {
         this.creationDate = creationDate;
         this.title = title;
         this.body = body;
@@ -89,10 +89,10 @@ public class Post {
     }
 
     public long getTotalLikes() {
-        return likes.stream().reduce(0, (acum, postLikes) -> acum += postLikes.getValue(), Integer::sum);
+        return likes.stream().reduce(0, (acum, postLike) -> acum += postLike.getValue(), Integer::sum);
     }
 
-    public Collection<PostLikes> getLikes(){
+    public Collection<PostLike> getLikes(){
         return likes;
     }
 
@@ -156,8 +156,8 @@ public class Post {
 
     public int getLikeValue(User user) {
         return getLikes().stream()
-                .filter(postLikes -> postLikes.getUser().getId() == user.getId())
-                .map(PostLikes::getValue)
+                .filter(postLike -> postLike.getUser().getId() == user.getId())
+                .map(PostLike::getValue)
                 .findFirst().orElse(0);
     }
 

@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.ImageDao;
 import ar.edu.itba.paw.interfaces.services.ImageService;
+import ar.edu.itba.paw.models.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +26,14 @@ public class ImageServiceImpl implements ImageService {
 
     @Transactional
     @Override
-    public long uploadImage(byte[] image, String securityTag) {
+    public Image uploadImage(byte[] image, String securityTag) {
         return imageDao.uploadImage(image, securityTag);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Optional<byte[]> getImage(long imageId, String securityTag) {
-        return imageDao.getImage(imageId, securityTag);
+        return imageDao.getImage(imageId, securityTag).map(Image::getData);
     }
 
     @Override
