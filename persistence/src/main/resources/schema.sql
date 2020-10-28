@@ -48,11 +48,10 @@ CREATE TABLE IF NOT EXISTS ROLES
 
 CREATE TABLE IF NOT EXISTS USER_ROLE
 (
-    user_id    INTEGER     NOT NULL,
-    role_id    INTEGER     NOT NULL,
-    PRIMARY KEY (user_id, role_id),
+    user_id     INTEGER         NOT NULL,
+    role_name   VARCHAR(100)    NOT NULL,
+    PRIMARY KEY (user_id, role_name),
     FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE,
-    FOREIGN KEY (role_id) REFERENCES ROLES (role_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS POST_CATEGORY
@@ -79,10 +78,11 @@ CREATE TABLE IF NOT EXISTS POSTS
 
 CREATE TABLE IF NOT EXISTS POSTS_LIKES
 (
-    post_id     INTEGER     NOT NULL,
-    user_id     INTEGER     NOT NULL,
-    value       INTEGER     NOT NULL,
-    PRIMARY KEY (post_id, user_id),
+    post_likes_id   SERIAL      PRIMARY KEY,
+    post_id         INTEGER     NOT NULL,
+    user_id         INTEGER     NOT NULL,
+    value           INTEGER     NOT NULL,
+    UNIQUE(post_id, user_id),
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
 );

@@ -48,3 +48,6 @@ alter table user_role add constraint user_role_pkey primary key (user_id, role_n
 drop table roles;
 
 
+alter table posts_likes drop constraint posts_likes_pkey;
+alter table posts_likes add column posts_likes_id serial primary key;
+alter table posts_lik>>es add constraint posts_likes_unique unique (post_id, user_id);
