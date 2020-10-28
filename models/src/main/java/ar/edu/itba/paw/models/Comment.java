@@ -32,6 +32,7 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comments_comment_id_seq")
     @SequenceGenerator(sequenceName = "comments_comment_id_seq", name = "comments_comment_id_seq", allocationSize = 1)
+    @Column(name = "comment_id")
     private Long id;
 
     @Column(name = "creation_date", nullable = false)
