@@ -34,8 +34,6 @@ public interface UserService {
 
     boolean validatePasswordResetToken(String token);
 
-    int hasUserLikedPost(User user, Post post);
-
     Optional<User> updatePassword(String password, String token);
 
     Optional<byte[]> getAvatar(long avatarId);

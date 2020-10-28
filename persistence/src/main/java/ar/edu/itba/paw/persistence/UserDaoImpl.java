@@ -8,10 +8,14 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserDaoImpl implements UserDao {
@@ -22,15 +26,10 @@ public class UserDaoImpl implements UserDao {
 //    TODO: ver como hacer para chequear el unique email y el unique username
     @Override
     public User register(String username, String password, String name, String email, String description, Collection<Role> roleNames, Image avatar, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException {
-        final User user = new User(LocalDateTime.now(), username, password, name, email, description, avatar, roleNames, enabled, null, null);
+        final User user = new User(LocalDateTime.now(), username, password, name, email, description, avatar, roleNames, enabled, Collections.emptyList(), Collections.emptyList());
         em.persist(user);
 
         return user;
-    }
-
-    @Override
-    public int hasUserLiked(User user, Post post) {
-        return 0;
     }
 
     @Override
@@ -55,7 +54,17 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return null;
+        /*Query pagingQuery = em.createNativeQuery("SELECT * FROM users ORDER BY user_id LIMIT "
+                + String.valueOf(pageSize) + " OFFSET " + String.valueOf(pageNumber));
+
+        @SuppressWarnings("unchecked")
+        List<Long> resultList = ((List<Number>) pagingQuery.getResultList()).stream().map(Number::longValue).collect(Collectors.toList());
+
+        TypedQuery<User> query = em.createQuery("select u from User u where u.id IN :idList", User.class)
+                .setParameter("idList", resultList);*/
+        List<User> users = em.createQuery("SELECT u FROM User u ORDER BY u.username", User.class).getResultList();
+
+        return new PaginatedCollection<>(users.subList(pageNumber * pageSize, (pageNumber + 1) * pageSize), pageNumber, pageSize, users.size());
     }
 
     @Override

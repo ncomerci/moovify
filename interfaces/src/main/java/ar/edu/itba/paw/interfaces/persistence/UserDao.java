@@ -15,8 +15,6 @@ public interface UserDao {
 
     User register(String username, String password, String name, String email, String description, Collection<Role> roleNames, Image avatar, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException;
 
-    int hasUserLiked(User user, Post post);
-
     Optional<User> findUserById(long id);
 
     Optional<User> findDeletedUserById(long id);

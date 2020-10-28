@@ -69,7 +69,8 @@ public class PostController {
 
             final User user = userService.findUserByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
 
-            mv.addObject("likeCurrentValue", userService.hasUserLikedPost(user, post));
+            //Deprecated, cambiar a la misma forma que el like de comment
+            //mv.addObject("likeCurrentValue", userService.hasUserLikedPost(user, post));
 
             mv.addObject("loggedUser", user);
 

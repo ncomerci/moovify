@@ -205,12 +205,6 @@ public class UserServiceImpl implements UserService {
                 .orElse(false);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public int hasUserLikedPost(User user, Post post) {
-        return userDao.hasUserLiked(user, post);
-    }
-
     @Transactional
     @Override
     public Optional<User> updatePassword(String password, String token) {
