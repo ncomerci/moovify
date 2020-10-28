@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -28,7 +29,7 @@ public class Post {
 
     @Column(name = "creation_date", nullable = false)
     @Basic(optional = false)
-    private LocalDateTime creationDate;
+    private Timestamp creationDate;
 
     @Column(nullable = false, length = 200)
     @Basic(optional = false)
@@ -85,7 +86,7 @@ public class Post {
     }
 
     public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes, Collection<Movie> movies, Collection<Comment> comments) {
-        this.creationDate = creationDate;
+        this.creationDate = Timestamp.valueOf(creationDate);
         this.title = title;
         this.body = body;
         this.wordCount = wordCount;
@@ -126,7 +127,7 @@ public class Post {
     }
 
     public LocalDateTime getCreationDate() {
-        return creationDate;
+        return creationDate.toLocalDateTime();
     }
 
     public String getTitle() {
@@ -166,7 +167,7 @@ public class Post {
     }
 
     public Duration getTimeSinceCreation() {
-        return Duration.between(creationDate, LocalDateTime.now());
+        return Duration.between(creationDate.toLocalDateTime(), LocalDateTime.now());
     }
 
     public long getDaysSinceCreation() {
