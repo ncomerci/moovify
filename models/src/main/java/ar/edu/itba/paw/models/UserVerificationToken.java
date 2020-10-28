@@ -12,6 +12,7 @@ public class UserVerificationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_verification_token_token_id_seq")
     @SequenceGenerator(sequenceName = "user_verification_token_token_id_seq", name = "user_verification_token_token_id_seq", allocationSize = 1)
+    @Column(name = "token_id")
     private Long id;
 
     @Column(nullable = false)
