@@ -217,7 +217,7 @@ public class SearchServiceImplTest {
 
         Mockito.when(userDao.searchUsersByRole(
                 Mockito.anyString(),
-                Mockito.anyString(),
+                Mockito.mock(Role.class),
                 Mockito.isA(UserDao.SortCriteria.class),
                 Mockito.intThat(e -> e >= 0),
                 Mockito.intThat(e -> e > 0))

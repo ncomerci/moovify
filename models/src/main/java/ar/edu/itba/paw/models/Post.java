@@ -1,14 +1,20 @@
 package ar.edu.itba.paw.models;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Optional;
 
 
 @Entity
 @Table(name = "posts")
 public class Post {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Post.class);
 
     static public int getLikeValueByUser(Post post, User user) {
         return post.getLikes().stream().filter(postLike -> postLike.getUser().getId() == user.getId()).map(PostLike::getValue).findFirst().orElse(0);
@@ -159,6 +165,34 @@ public class Post {
                 .filter(postLike -> postLike.getUser().getId() == user.getId())
                 .map(PostLike::getValue)
                 .findFirst().orElse(0);
+    }
+
+    public void delete() {
+        this.enabled = false;
+    }
+
+    public void restore() {
+        this.enabled = true;
+    }
+
+    public void removeLike(User user) {
+        likes.removeIf(like -> like.getUser().getId() == user.getId());
+    }
+
+    public void like(User user, int value) {
+
+        if(value == 0) {
+            LOGGER.error("Tried to assign value 0 to {} like (invalid value)", this);
+            return;
+        }
+
+        Optional<PostLike> existingLike = likes.stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
+
+        if(existingLike.isPresent())
+            existingLike.get().setValue(value);
+
+        else
+            likes.add(new PostLike(user, this, value));
     }
 
     @Override

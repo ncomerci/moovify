@@ -59,7 +59,7 @@ public class SearchServiceImpl implements SearchService {
     private final static Map<String, LocalDate> movieDecadeMap = getMovieDecadeMap();
 
     private final static Map<String, UserDao.SortCriteria> userSortCriteriaMap = getUserSortCriteriaMap();
-    private final static Map<String, String> userRoleOptionsMap = getUserRoleOptionsMap();
+    private final static Map<String, Role> userRoleOptionsMap = getUserRoleOptionsMap();
 
     private static Map<String, PostDao.SortCriteria> getPostSortCriteriaMap() {
         final Map<String, PostDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
@@ -121,11 +121,11 @@ public class SearchServiceImpl implements SearchService {
         return sortCriteriaMap;
     }
 
-    private static Map<String, String> getUserRoleOptionsMap() {
-        final Map<String, String> roleOptions = new LinkedHashMap<>();
+    private static Map<String, Role> getUserRoleOptionsMap() {
+        final Map<String, Role> roleOptions = new LinkedHashMap<>();
 
-        roleOptions.put("user", Role.USER_ROLE);
-        roleOptions.put("admin", Role.ADMIN_ROLE);
+        roleOptions.put("user", Role.USER);
+        roleOptions.put("admin", Role.ADMIN);
 
         return roleOptions;
     }
