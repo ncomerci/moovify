@@ -34,12 +34,12 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findUserById(long id) {
-        return findByCriteria("user_id", id, true);
+        return findByCriteria("id", id, true);
     }
 
     @Override
     public Optional<User> findDeletedUserById(long id) {
-        return findByCriteria("user_id", id, false);
+        return findByCriteria("id", id, false);
     }
 
     @Override
@@ -83,8 +83,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     private Optional<User> findByCriteria(String field, Object fieldValue, boolean enabled) {
-        TypedQuery<User> query = em.createQuery("FROM User WHERE (:field) = :fieldValue AND enabled = :enabled", User.class)
-                .setParameter("field", field)
+        TypedQuery<User> query = em.createQuery("FROM User u WHERE u." + field + " = :fieldValue AND u.enabled = :enabled", User.class)
                 .setParameter("fieldValue", fieldValue)
                 .setParameter("enabled", enabled);
 
