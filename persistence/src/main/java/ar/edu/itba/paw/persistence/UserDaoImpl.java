@@ -64,7 +64,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public PaginatedCollection<User> searchUsersByRole(String query, String role, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<User> searchUsersByRole(String query, Role role, SortCriteria sortCriteria, int pageNumber, int pageSize) {
         return null;
     }
 
