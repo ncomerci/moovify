@@ -37,8 +37,8 @@ public class Movie {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "movie_to_movie_category",
-            joinColumns = @JoinColumn(name = "tmdb_id", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "tmdb_category_id", nullable = false)
+            joinColumns = @JoinColumn(name = "tmdb_id", nullable = false, referencedColumnName = "tmdb_id"),
+            inverseJoinColumns = @JoinColumn(name = "tmdb_category_id", nullable = false, referencedColumnName = "tmdb_category_id")
     )
     private Collection<MovieCategory> categories;
 

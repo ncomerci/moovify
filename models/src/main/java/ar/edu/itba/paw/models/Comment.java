@@ -44,7 +44,7 @@ public class Comment {
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "parent_id", nullable = true)
+    @JoinColumn(name = "parent_id", nullable = true, referencedColumnName = "comment_id")
     private Comment parent;
 
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = false, mappedBy = "parent")

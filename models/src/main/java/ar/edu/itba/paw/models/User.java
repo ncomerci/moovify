@@ -48,7 +48,7 @@ public class User {
     private String description;
 
     @OneToOne(optional = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "avatar_id")
+    @JoinColumn(name = "avatar_id", referencedColumnName = "image_id")
     private Image avatar;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
