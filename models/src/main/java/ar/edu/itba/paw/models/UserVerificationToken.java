@@ -12,7 +12,7 @@ public class UserVerificationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_verification_token_token_id_seq")
     @SequenceGenerator(sequenceName = "user_verification_token_token_id_seq", name = "user_verification_token_token_id_seq", allocationSize = 1)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     @Basic(optional = false)
@@ -30,8 +30,12 @@ public class UserVerificationToken {
         return LocalDateTime.now().plusDays(VALID_DAYS);
     }
 
-    public UserVerificationToken(Long id, String token, LocalDateTime expiryDate, User user) {
+    public UserVerificationToken(long id, String token, LocalDateTime expiryDate, User user) {
+        this(token, expiryDate, user);
         this.id = id;
+    }
+
+    public UserVerificationToken(String token, LocalDateTime expiryDate, User user) {
         this.token = token;
         this.expiryDate = expiryDate;
         this.user = user;
@@ -41,7 +45,7 @@ public class UserVerificationToken {
         //Hibernate
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

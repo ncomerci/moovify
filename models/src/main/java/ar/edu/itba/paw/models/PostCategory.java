@@ -11,7 +11,7 @@ public class PostCategory {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_category_category_id_seq")
     @SequenceGenerator(sequenceName = "post_category_category_id_seq", name = "post_category_category_id_seq", allocationSize = 1)
     @Column(name = "category_id")
-    private long id;
+    private Long id;
 
     @Column(name = "creation_date", nullable = false)
     @Basic(optional = false)
@@ -22,7 +22,11 @@ public class PostCategory {
     private String name;
 
     public PostCategory(long id, LocalDateTime creationDate, String name) {
+        this(creationDate, name);
         this.id = id;
+    }
+
+    public PostCategory(LocalDateTime creationDate, String name) {
         this.creationDate = creationDate;
         this.name = name;
     }

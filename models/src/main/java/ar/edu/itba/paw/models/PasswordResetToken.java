@@ -12,7 +12,7 @@ public class PasswordResetToken {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "password_reset_token_token_id_seq")
     @SequenceGenerator(sequenceName = "password_reset_token_token_id_seq", name = "password_reset_token_token_id_seq", allocationSize = 1)
-    private long tokenId;
+    private Long tokenId;
 
     @OneToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
@@ -31,7 +31,11 @@ public class PasswordResetToken {
     }
 
     public PasswordResetToken(long tokenId, String token, LocalDateTime expiryDate, User user) {
+        this(token, expiryDate, user);
         this.tokenId = tokenId;
+    }
+
+    public PasswordResetToken(String token, LocalDateTime expiryDate, User user) {
         this.token = token;
         this.expiryDate = expiryDate;
         this.user = user;

@@ -20,7 +20,7 @@ public class Image {
     @Basic(optional = false)
     private String tag;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

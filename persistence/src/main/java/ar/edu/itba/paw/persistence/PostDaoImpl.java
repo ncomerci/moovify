@@ -48,7 +48,7 @@ public class PostDaoImpl implements PostDao {
 
         List<Post> posts = em.createQuery("SELECT p FROM Post p ORDER BY p.title", Post.class).getResultList();
 
-        return new PaginatedCollection<>(posts.subList(pageNumber * pageSize, (pageNumber + 1) * pageSize), pageNumber, pageSize, posts.size());
+        return new PaginatedCollection<>(posts, pageNumber, pageSize, posts.size());
     }
 
     @Override
