@@ -12,6 +12,7 @@ public class PasswordResetToken {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "password_reset_token_token_id_seq")
     @SequenceGenerator(sequenceName = "password_reset_token_token_id_seq", name = "password_reset_token_token_id_seq", allocationSize = 1)
+    @Column(name ="token_id")
     private Long tokenId;
 
     @OneToOne(optional = false, fetch = FetchType.EAGER)
