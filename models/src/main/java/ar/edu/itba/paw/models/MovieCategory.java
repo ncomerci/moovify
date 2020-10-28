@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
-import java.util.Collection;
 
 @Entity
 @Table(name = "movie_categories")
@@ -20,7 +19,7 @@ public class MovieCategory {
     @Basic(optional = false)
     private String name;
 
-    /*@ManyToMany(fetch = FetchType.LAZY, mappedBy = "movieCategories")
+    /*@ManyToMany(fetch = FetchType.LAZY, mappedBy = "categories")
     private Collection<Movie> movies;*/
 
     public MovieCategory(long id, long tmdbCategoryId, String name) {

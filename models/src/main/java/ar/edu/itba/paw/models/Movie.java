@@ -39,7 +39,7 @@ public class Movie {
             joinColumns = @JoinColumn(name = "tmdb_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "tmdb_category_id", nullable = false)
     )
-    private Collection<MovieCategory> movieCategories;
+    private Collection<MovieCategory> categories;
 
     @Column(name = "original_language", nullable = false, length = 10)
     @Basic(optional = false)
@@ -64,9 +64,6 @@ public class Movie {
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "movies")
     private Collection<Post> posts;
-
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "post", cascade = CascadeType.ALL)
-    private Collection<MovieCategory> categories;
 
     public Movie(long id, LocalDateTime creationDate, String title, String originalTitle, long tmdbId,
                  String imdbId, String originalLanguage, String overview, float popularity, float runtime,
@@ -168,13 +165,10 @@ public class Movie {
                 ", tmdbId=" + tmdbId +
                 ", imdbId='" + imdbId + '\'' +
                 ", originalLanguage='" + originalLanguage + '\'' +
-                ", overview='" + overview + '\'' +
                 ", popularity=" + popularity +
                 ", runtime=" + runtime +
                 ", voteAverage=" + voteAverage +
                 ", releaseDate=" + releaseDate +
-                ", posts=" + posts +
-                ", categories=" + categories +
                 '}';
     }
 }
