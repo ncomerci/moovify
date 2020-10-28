@@ -1,15 +1,30 @@
 package ar.edu.itba.paw.models;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "user_verification_token")
 public class UserVerificationToken {
 
     private static final int VALID_DAYS = 1;
 
-    private final long id;
-    private final String token;
-    private final User user;
-    private final LocalDateTime expiryDate;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_verification_token_token_id_seq")
+    @SequenceGenerator(sequenceName = "user_verification_token_token_id_seq", name = "user_verification_token_token_id_seq", allocationSize = 1)
+    private long id;
+
+    @Column(nullable = false)
+    @Basic(optional = false)
+    private String token;
+
+    @OneToOne(optional = false, fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(name = "expiry", nullable = false)
+    @Basic(optional = false)
+    private LocalDateTime expiryDate;
 
     public static LocalDateTime calculateExpiryDate() {
         return LocalDateTime.now().plusDays(VALID_DAYS);
@@ -20,6 +35,10 @@ public class UserVerificationToken {
         this.token = token;
         this.expiryDate = expiryDate;
         this.user = user;
+    }
+
+    public UserVerificationToken() {
+        //Hibernate
     }
 
     public Long getId() {

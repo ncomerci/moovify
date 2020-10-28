@@ -43,6 +43,14 @@ public class Post {
     @JoinColumn(name="category_id", nullable = false)
     private PostCategory category;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "post_movie",
+            joinColumns = @JoinColumn(name = "post_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "movie_id", nullable = false)
+    )
+    private Collection<Movie> movies;
+
     @ElementCollection(targetClass = String.class)
     @CollectionTable(
             name="tags",
@@ -114,6 +122,10 @@ public class Post {
 
     public PostCategory getCategory() {
         return category;
+    }
+
+    public Collection<Movie> getMovies() {
+        return movies;
     }
 
     public Collection<String> getTags() {

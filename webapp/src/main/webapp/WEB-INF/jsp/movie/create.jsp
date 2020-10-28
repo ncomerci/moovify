@@ -25,7 +25,7 @@
     <input type="date" name="releaseDate" class="uk-input uk-form-width-large" placeholder="Release Date" required />
     <br>
     <c:forEach items="${categories}" var="category">
-        <input type="checkbox" id="${category.name}" name="categories" value="${category.tmdb_id}">
+        <input type="checkbox" id="${category.name}" name="categories" value="${category.tmdbCategoryId}">
         <label for="${category.name}"><c:out value="${category.name}"/></label><br>
     </c:forEach>
 
