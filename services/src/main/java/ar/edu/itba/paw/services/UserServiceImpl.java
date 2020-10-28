@@ -12,6 +12,7 @@ import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,10 +51,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) throws DuplicateUsernameException, DuplicateEmailException {
 
-        final Long avatarId = (avatar.length == 0)? null : imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
+        final Image image = imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
 
         final User user = userDao.register(username, passwordEncoder.encode(password),
-                name, email, description, Collections.singletonList(Role.NOT_VALIDATED_ROLE), avatarId, true);
+                name, email, description, Collections.singletonList(Role.NOT_VALIDATED), image, true);
 
         createConfirmationEmail(user, confirmationMailTemplate);
 
@@ -65,25 +66,25 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateName(User user, String name) {
-        userDao.updateName(user, name);
+        user.setName(name);
     }
 
     @Transactional
     @Override
     public void updateUsername(User user, String username) throws DuplicateUsernameException {
-        userDao.updateUsername(user, username);
+        user.setName(username);
     }
 
     @Transactional
     @Override
     public void updateDescription(User user, String description) {
-        userDao.updateDescription(user, description);
+        user.setDescription(description);
     }
 
     @Transactional
     @Override
     public void updatePassword(User user, String password) {
-        userDao.updatePassword(user, passwordEncoder.encode(password));
+        user.setPassword(passwordEncoder.encode(password));
     }
 
     @Transactional
@@ -92,13 +93,13 @@ public class UserServiceImpl implements UserService {
 
         Objects.requireNonNull(user);
 
-        final long newAvatarId = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
+        final Image avatar = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
 
-        userDao.updateAvatarId(user, newAvatarId);
+        user.setAvatar(avatar);
 
         imageService.deleteImage(user.getAvatarId());
 
-        LOGGER.info("User's {} Avatar was Updated to {}", user.getId(), newAvatarId);
+        LOGGER.info("User's {} Avatar was Updated to {}", user.getId(), avatar == null ? 0 : avatar.getId());
     }
 
     @Transactional
@@ -115,14 +116,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteUser(User userId) {
-        userDao.deleteUser(userId);
+    public void deleteUser(User user) {
+        user.setEnabled(false);
     }
 
     @Transactional
     @Override
     public void restoreUser(User user) {
-        userDao.restoreUser(user);
+        user.setEnabled(true);
     }
 
     @Transactional
@@ -131,8 +132,7 @@ public class UserServiceImpl implements UserService {
 
         Objects.requireNonNull(user);
 
-        userDao.addRoles(user, Collections.singletonList(Role.ADMIN_ROLE));
-        user.getRoles().add(new Role(Role.ADMIN_ROLE));
+        user.getRoles().add(Role.ADMIN);
 
         LOGGER.info("Promoted User {} to Admin", user.getId());
     }
@@ -187,7 +187,7 @@ public class UserServiceImpl implements UserService {
 
         final User user = optToken.get().getUser();
 
-        replaceUserRole(user, Role.USER_ROLE, Role.NOT_VALIDATED_ROLE);
+        replaceUserRole(user, Role.USER, Role.NOT_VALIDATED);
 
         // Delete Token. It is not needed anymore
         userVerificationTokenDao.deleteVerificationToken(user);
@@ -225,18 +225,19 @@ public class UserServiceImpl implements UserService {
         final User user = optToken.get().getUser();
 
         final String encodedPassword = passwordEncoder.encode(password);
-        userDao.updatePassword(user, encodedPassword);
+        user.setPassword(encodedPassword);
 
         // Delete Token. It is not needed anymore
         passwordResetTokenDao.deletePasswordResetToken(user);
 
         LOGGER.info("User {} has updated their password successfully", user.getId());
 
-        final User newUser = new User(user.getId(), user.getCreationDate(), user.getUsername(),
+/*        final User newUser = new User(user.getId(), user.getCreationDate(), user.getUsername(),
                 encodedPassword, user.getName(), user.getEmail(), user.getDescription(),
                 user.getAvatarId(), user.getTotalLikes(), user.getRoles(), user.isEnabled());
 
-        return Optional.of(newUser);
+        return Optional.of(newUser);*/
+        return Optional.of(user);
     }
 
     @Transactional(readOnly = true)
@@ -269,12 +270,10 @@ public class UserServiceImpl implements UserService {
         return userDao.getAllUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
-    private void replaceUserRole(User user, String newRole, String oldRole) {
+    private void replaceUserRole(User user, Role newRole, Role oldRole) {
 
-        userDao.replaceUserRole(user, newRole, oldRole);
+        user.getRoles().removeIf(role -> role.equals(oldRole));
 
-        user.getRoles().removeIf(role -> role.getRole().equals(oldRole));
-
-        user.getRoles().add(new Role(newRole));
+        user.getRoles().add(newRole);
     }
 }

@@ -101,13 +101,21 @@ public class User {
         return username;
     }
 
+    public void setUsername(String username) { this.username = username; }
+
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {
         return name;
     }
+
+    public void setName(String name) { this.name = name; }
 
     public String getEmail() {
         return email;
@@ -115,6 +123,10 @@ public class User {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Collection<Role> getRoles() {
@@ -143,11 +155,19 @@ public class User {
 
     public boolean isEnabled() { return enabled; }
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     public long getAvatarId() {
         if(avatar == null)
             return DEFAULT_AVATAR_ID;
 
         return avatar.getId();
+    }
+
+    public void setAvatar(Image avatar) {
+        this.avatar = avatar;
     }
 
     public long getTotalPostLikes() {
