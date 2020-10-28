@@ -167,7 +167,9 @@ public class Comment {
             return;
         }
 
-        Optional<CommentLike> existingLike = likes.stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
+        Optional<CommentLike> existingLike = likes.stream()
+                .filter(like -> like.getUser().getId() == user.getId())
+                .findFirst();
 
         if(existingLike.isPresent())
             existingLike.get().setValue(value);

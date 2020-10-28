@@ -4,57 +4,45 @@ import ar.edu.itba.paw.interfaces.persistence.MovieCategoryDao;
 import ar.edu.itba.paw.models.MovieCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.Collection;
+import java.util.Collections;
 
 @Repository
 public class MovieCategoryDaoImpl implements MovieCategoryDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieCategoryDaoImpl.class);
 
-    private static final String MOVIE_CATEGORIES = TableNames.MOVIE_CATEGORIES.getTableName();
-
-
-    private static final RowMapper<MovieCategory> ROW_MAPPER = (rs, rowNum) -> new MovieCategory(
-            rs.getLong("category_id"),
-            rs.getLong("tmdb_category_id"),
-            rs.getString("name")
-    );
-
-    private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public MovieCategoryDaoImpl(DataSource ds) {
-        this.jdbcTemplate = new JdbcTemplate(ds);
-    }
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public Collection<MovieCategory> findCategoriesByTmdbId(Collection<Long> categories) {
 
-        final StringBuilder whereBuilder = new StringBuilder().append(" WHERE ").append(MOVIE_CATEGORIES).append(".tmdb_category_id IN (");
-        final Object[] categoryArray = categories.toArray();
+        LOGGER.info("Find Movie Categories by Tmdb Ids {}", categories);
 
-        for (int i = 0; i < categoryArray.length - 1; i++)
-            whereBuilder.append("?, ");
+        if(categories.isEmpty())
+            return Collections.emptyList();
 
-        whereBuilder.append("?)");
+        final TypedQuery<MovieCategory> query =
+                em.createQuery("FROM MovieCategory mc WHERE mc.tmdbCategoryId IN :categories", MovieCategory.class);
 
-        LOGGER.info("Find Movie Categories by Tmdb Id {}", categories);
-        LOGGER.debug("Find Movie Categories Where: {}", whereBuilder.toString());
+        query.setParameter("categories", categories);
 
-        return jdbcTemplate.query("SELECT * FROM " + MOVIE_CATEGORIES + whereBuilder.toString(),
-                categoryArray, ROW_MAPPER);
+        return query.getResultList();
     }
 
     @Override
     public Collection<MovieCategory> getAllCategories() {
 
         LOGGER.info("Get All Movie Categories");
-        return jdbcTemplate.query("SELECT * FROM " + MOVIE_CATEGORIES, ROW_MAPPER);
+
+        final TypedQuery<MovieCategory> query = em.createQuery("FROM MovieCategory", MovieCategory.class);
+
+        return query.getResultList();
     }
 }

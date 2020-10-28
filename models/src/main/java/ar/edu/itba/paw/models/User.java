@@ -50,10 +50,10 @@ public class User {
     @JoinColumn(name = "avatar_id")
     private Image avatar;
 
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private Collection<PostLike> postLikes;
 
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private Collection<CommentLike> commentLikes;
 
     @ElementCollection(targetClass = Role.class)
