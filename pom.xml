@@ -228,6 +228,13 @@
         <version>${org.hibernate.version}</version>
       </dependency>
 
+<!--  Java 8 LocalDateTime Support    -->
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-java8</artifactId>
+        <version>${org.hibernate.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>org.hibernate.javax.persistence</groupId>
         <artifactId>hibernate-jpa-2.1-api</artifactId>

@@ -106,7 +106,7 @@
     <hr>
     <section id="post-movies">
         <h1 class="uk-text-meta"><spring:message code="post.view.movies"/></h1>
-        <c:forEach items="${movies}" var="movie" >
+        <c:forEach items="${post.movies}" var="movie" >
             <a class="uk-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
                href="<c:url value="/movie/${movie.id}"/>">
                 <c:out value="${movie.title}"/>
@@ -138,11 +138,14 @@
             </button>
         </div>
     </c:if>
-    <c:set var="comments" value="${comments}" scope="request"/>
-    <c:set var="postId" value="${post.id}" scope="request"/>
-    <c:set var="parentId" value="${0}" scope="request"/>
-    <c:set var="enableReplies" value="${true}" scope="request"/>
-    <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
+    <c:forEach items="${post.comments}" var="comment">
+        <p>${comment.body}</p>
+    </c:forEach>
+<%--    <c:set var="comments" value="${post.comments}" scope="request"/>--%>
+<%--    <c:set var="postId" value="${post.id}" scope="request"/>--%>
+<%--    <c:set var="parentId" value="${0}" scope="request"/>--%>
+<%--    <c:set var="enableReplies" value="${true}" scope="request"/>--%>
+<%--    <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>--%>
 </main>
 </body>
 </html>

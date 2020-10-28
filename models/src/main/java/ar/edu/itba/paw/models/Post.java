@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 @Entity
 @Table(name = "posts")
-public class Post {
+public class Post implements Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Post.class);
 
@@ -57,6 +58,9 @@ public class Post {
     )
     private Collection<Movie> movies;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
+    private Collection<Comment> comments;
+
     @ElementCollection(targetClass = String.class)
     @CollectionTable(
             name="tags",
@@ -73,12 +77,12 @@ public class Post {
 
     private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes, Collection<Movie> movies) {
-        this(creationDate, title, body, wordCount, category, user, tags, enabled, likes, movies);
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes, Collection<Movie> movies, Collection<Comment> comments) {
+        this(creationDate, title, body, wordCount, category, user, tags, enabled, likes, movies, comments);
         this.id = id;
     }
 
-    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes, Collection<Movie> movies) {
+    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes, Collection<Movie> movies, Collection<Comment> comments) {
         this.creationDate = creationDate;
         this.title = title;
         this.body = body;
@@ -89,6 +93,7 @@ public class Post {
         this.enabled = enabled;
         this.likes = likes;
         this.movies = movies;
+        this.comments = comments;
     }
 
     protected Post() {
@@ -133,6 +138,10 @@ public class Post {
 
     public Collection<Movie> getMovies() {
         return movies;
+    }
+
+    public Collection<Comment> getComments() {
+        return comments;
     }
 
     public Collection<String> getTags() {
@@ -204,9 +213,6 @@ public class Post {
                 ", title='" + title + '\'' +
 //                ", body='" + body + '\'' +
                 ", wordCount=" + wordCount +
-                ", user=" + user.getId() +
-                ", category=" + category +
-                ", tags=" + tags +
                 ", enabled=" + enabled +
                 '}';
     }

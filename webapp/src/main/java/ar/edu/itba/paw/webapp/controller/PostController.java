@@ -80,8 +80,8 @@ public class PostController {
             LOGGER.info("Was accessed by Anonymous User.");
 
         mv.addObject("post", post);
-        mv.addObject("movies", movieService.findMoviesByPost(post));
-        mv.addObject("comments", commentService.findPostCommentDescendants(post, pageNumber, pageSize));
+//        mv.addObject("movies", movieService.findMoviesByPost(post));
+//        mv.addObject("comments", commentService.findPostCommentDescendants(post, pageNumber, pageSize));
 
         return mv;
     }

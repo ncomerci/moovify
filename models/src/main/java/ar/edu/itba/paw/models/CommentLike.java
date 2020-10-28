@@ -4,10 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "comments_likes", uniqueConstraints = @UniqueConstraint(columnNames = {"comment_id", "user_id"}))
-public class CommentLike {
+public class CommentLike implements Serializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentLike.class);
 

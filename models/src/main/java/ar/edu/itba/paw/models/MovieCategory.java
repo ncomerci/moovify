@@ -1,10 +1,11 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "movie_categories")
-public class MovieCategory {
+public class MovieCategory implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movie_categories_category_id_seq")

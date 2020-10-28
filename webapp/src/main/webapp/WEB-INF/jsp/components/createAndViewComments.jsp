@@ -6,7 +6,9 @@
 
 <%@ page contentType="text/html;charset=UTF-8"%>
 
-<jsp:useBean id="comments" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection<ar.edu.itba.paw.models.Comment>"/>
+<%--<jsp:useBean id="comments" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection<ar.edu.itba.paw.models.Comment>"/>--%>
+<jsp:useBean id="comments" scope="request" type="java.util.Collection<ar.edu.itba.paw.models.Comment>" />
+
 <jsp:useBean id="postId" scope="request" type="java.lang.Long"/>
 <jsp:useBean id="parentId" scope="request" type="java.lang.Long"/>
 <jsp:useBean id="enableReplies" scope="request" type="java.lang.Boolean"/>
@@ -20,7 +22,7 @@
 </c:if>
 
 <section id="post-comments" class="uk-container uk-container-small">
-    <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${comments.totalCount}"/></h1>
+    <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${5}"/></h1><!--comments.totalCount-->
     <c:if test="${not empty loggedUser and loggedUser.validated and enableReplies}">
         <div class="uk-padding uk-padding-remove-horizontal uk-padding-remove-top">
             <c:url value="/comment/create" var="action"/>
@@ -59,21 +61,21 @@
             </p>
         </div>
     </sec:authorize>
-    <div class="uk-margin-large-top">
-        <hr>
-        <c:set var="paginatedComments" value="${comments}" scope="request"/>
-        <c:set var="comments" value="${comments.results}" scope="request"/>
-        <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp"/>
-    </div>
-    <c:if test="${not empty paginatedComments.results}">
+<%--    <div class="uk-margin-large-top">--%>
+<%--        <hr>--%>
+<%--        <c:set var="paginatedComments" value="${comments}" scope="request"/>--%>
+<%--        <c:set var="comments" value="${comments}" scope="request"/>--%>
+<%--        <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp"/>--%>
+<%--    </div>--%>
+<%--    <c:if test="${not empty paginatedComments}">--%>
 
-        <c:set var="collection" value="${paginatedComments}" scope="request"/>
-        <c:url var="baseURL" value="${empty parentId ? '/post/' : '/comment/'}${empty parentId ? postId : parentId}" context="/" scope="request"/>
-        <c:set var="numberOfInputs" value="${2}" scope="request"/>
-        <form action="<c:url value="${baseURL}"/>" method="get">
-            <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
-        </form>
-    </c:if>
+<%--        <c:set var="collection" value="${paginatedComments}" scope="request"/>--%>
+<%--        <c:url var="baseURL" value="${empty parentId ? '/post/' : '/comment/'}${empty parentId ? postId : parentId}" context="/" scope="request"/>--%>
+<%--        <c:set var="numberOfInputs" value="${2}" scope="request"/>--%>
+<%--        <form action="<c:url value="${baseURL}"/>" method="get">--%>
+<%--            <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />--%>
+<%--        </form>--%>
+<%--    </c:if>--%>
 
     <%-- Comment reply textarea --%>
     <form id="reply-form" class="uk-hidden">

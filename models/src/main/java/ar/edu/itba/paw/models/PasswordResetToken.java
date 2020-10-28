@@ -1,11 +1,12 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "password_reset_token")
-public class PasswordResetToken {
+public class PasswordResetToken implements Serializable {
 
     private static final int VALID_DAYS = 1;
 

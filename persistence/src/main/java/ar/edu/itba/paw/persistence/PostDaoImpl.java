@@ -38,9 +38,12 @@ public class PostDaoImpl implements PostDao {
     }
 
     private Optional<Post> finPostByIdAndEnabled(long id, boolean enabled) {
-        return em.createQuery(
-                "SELECT p FROM Post p WHERE p.id = :id AND p.enabled = :enabled", Post.class)
-                .setParameter("id", id).setParameter("enabled", enabled).getResultList().stream().findFirst();
+
+        return Optional.ofNullable(em.find(Post.class, id));
+
+//        return em.createQuery(
+//                "SELECT p FROM Post p WHERE p.id = :id AND p.enabled = :enabled", Post.class)
+//                .setParameter("id", id).setParameter("enabled", enabled).getResultList().stream().findFirst();
     }
 
     @Override

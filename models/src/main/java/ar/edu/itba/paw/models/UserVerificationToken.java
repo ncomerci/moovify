@@ -1,11 +1,12 @@
 package ar.edu.itba.paw.models;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_verification_token")
-public class UserVerificationToken {
+public class UserVerificationToken implements Serializable {
 
     private static final int VALID_DAYS = 1;
 
