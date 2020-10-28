@@ -61,6 +61,9 @@ public class Comment {
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "comment", cascade = CascadeType.ALL)
     private Collection<CommentLike> likes;
 
+    @Transient
+    private Long totalLikes;
+
     @Column(nullable = false)
     private boolean enabled;
 
@@ -83,6 +86,13 @@ public class Comment {
 
     protected Comment() {
         //Hibernate
+    }
+
+    @PostLoad
+    public void calculateTotalLikes() {
+        if(totalLikes != null)
+            totalLikes = likes.stream()
+                .reduce(0L, (acum, commentLike) -> acum += (long) commentLike.getValue(), Long::sum);
     }
 
     public long getId() {
@@ -119,7 +129,11 @@ public class Comment {
     }
 
     public long getTotalLikes() {
-        return likes.stream().reduce(0, (acum, commentLike) -> acum += commentLike.getValue(), Integer::sum);
+        return totalLikes;
+    }
+
+    public void setTotalLikes(long totalLikes) {
+        this.totalLikes = totalLikes;
     }
 
     /*

@@ -17,31 +17,25 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-
     @Column(name = "creation_date", nullable = false)
     @Basic(optional = false)
     private LocalDateTime creationDate;
-
 
     @Column(nullable = false, unique = true, length = 50)
     @Basic(optional = false)
     private String username;
 
-
     @Column(nullable = false, length = 200)
     @Basic(optional = false)
     private String password;
-
 
     @Column(nullable = false, length = 50)
     @Basic(optional = false)
     private String name;
 
-
     @Column(nullable = false, unique = true, length = 200)
     @Basic(optional = false)
     private String email;
-
 
     @Column(nullable = false, length = 400)
     @Basic(optional = false)
@@ -56,6 +50,9 @@ public class User {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private Collection<CommentLike> commentLikes;
+
+    @Transient
+    private Long totalLikes;
 
     @ElementCollection(targetClass = Role.class)
     @CollectionTable(name = "user_role",
@@ -88,6 +85,19 @@ public class User {
 
     protected User() {
         //JPA
+    }
+
+    @PostLoad
+    public void calculateTotalLikes() {
+        if(totalLikes != null) {
+            final long totalPostLikes = postLikes.stream()
+                    .reduce(0L, (acum, postLike) -> acum += (long) postLike.getValue(), Long::sum);
+
+            final long totalCommentLikes = commentLikes.stream()
+                    .reduce(0L, (acum, commentLike) -> acum += (long) commentLike.getValue(), Long::sum);
+
+            totalLikes = totalPostLikes + totalCommentLikes;
+        }
     }
 
     public long getId() {
@@ -134,6 +144,14 @@ public class User {
         return roles;
     }
 
+    public long getTotalLikes() {
+        return totalLikes;
+    }
+
+    public void setTotalLikes(long totalLikes) {
+        this.totalLikes = totalLikes;
+    }
+
     public boolean hasRole(Role role) {
         return roles.stream().anyMatch(r -> r.equals(role));
     }
@@ -169,18 +187,6 @@ public class User {
 
     public void setAvatar(Image avatar) {
         this.avatar = avatar;
-    }
-
-    public long getTotalPostLikes() {
-        return postLikes.stream().reduce(0, (acum, postLike) -> acum += postLike.getValue(), Integer::sum);
-    }
-
-    public long getTotalCommentLikes() {
-        return commentLikes.stream().reduce(0, (acum, commentLike) -> acum += commentLike.getValue(), Integer::sum);
-    }
-
-    public long getTotalLikes() {
-        return getTotalPostLikes() + getTotalPostLikes();
     }
 
     public boolean isAdmin() {

@@ -71,6 +71,9 @@ public class Post {
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "post", cascade = CascadeType.ALL)
     private Collection<PostLike> likes;
 
+    @Transient
+    private Long totalLikes;
+
     @Column(nullable = false)
     private boolean enabled;
 
@@ -99,8 +102,19 @@ public class Post {
         //Hibernate
     }
 
+    @PostLoad
+    public void calculateTotalLikes() {
+        if(totalLikes != null)
+            totalLikes = likes.stream()
+                    .reduce(0L, (acum, postLike) -> acum += (long) postLike.getValue(), Long::sum);
+    }
+
     public long getTotalLikes() {
-        return likes.stream().reduce(0, (acum, postLike) -> acum += postLike.getValue(), Integer::sum);
+        return totalLikes;
+    }
+
+    public void setTotalLikes(long totalLikes) {
+        this.totalLikes = totalLikes;
     }
 
     public Collection<PostLike> getLikes(){
