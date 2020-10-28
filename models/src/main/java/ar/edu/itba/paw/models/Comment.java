@@ -1,47 +1,87 @@
 package ar.edu.itba.paw.models;
 
+import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
 
+@Entity
+@Table(name = "comments")
 public class Comment {
 
     public static int getTotalComments(Collection<Comment> comments) {
         return comments.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount() + 1, Integer::sum);
     }
 
-    public static boolean hasUserVotedComment(Comment comment, long user_id){
+    /*public static boolean hasUserVotedComment(Comment comment, long user_id){
         return comment.getVotedBy().containsKey(user_id);
     }
 
     public static boolean hasUserLikedComment(Comment comment, long user_id){
         return comment.getVotedBy().get(user_id) > 0;
-    }
+    }*/
 
-    private final long id;
-    private final LocalDateTime creationDate;
-    private final Post post;
-    private final Long parentId;
-    private final Collection<Comment> children;
-    private final String body;
-    private final User user;
-    private final long likes;
-    private final Map<Long, Integer> votedBy;
-    private final boolean enabled;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comments_comment_id_seq")
+    @SequenceGenerator(sequenceName = "comments_comment_id_seq", name = "comments_comment_id_seq", allocationSize = 1)
+    private Long id;
 
+    @Column(name = "creation_date", nullable = false)
+    @Basic(optional = false)
+    private LocalDateTime creationDate;
 
-    public Comment(long id, LocalDateTime creationDate, Post post, Long parentId, Collection<Comment> children, String body, User user, boolean enabled, long likes, Map<Long, Integer> votedBy) {
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "parent_id", nullable = true)
+    private Comment parent;
+
+   @OneToMany(fetch = FetchType.LAZY, orphanRemoval = false, mappedBy = "parentId")
+   private Collection<Comment> children;
+
+    @Column(nullable = false, length = 1000)
+    @Basic(optional = false, fetch = FetchType.LAZY)
+    private String body;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name="user_id", nullable = false)
+    private User user;
+
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "comment", cascade = CascadeType.ALL)
+    private Collection<CommentsLikes> likes;
+
+    @Column(nullable = false)
+    private boolean enabled;
+
+    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Collection<Comment> children, String body, User user, boolean enabled, Collection<CommentsLikes> likes) {
         this.id = id;
         this.creationDate = creationDate;
         this.post = post;
-        this.parentId = parentId;
+        this.parent = parent;
         this.children = children;
         this.body = body;
         this.user = user;
         this.enabled = enabled;
         this.likes = likes;
-        this.votedBy = votedBy;
+    }
+
+    public Comment(LocalDateTime creationDate, Post post, Comment parent, Collection<Comment> children, String body, User user, boolean enabled, Collection<CommentsLikes> likes) {
+        this.creationDate = creationDate;
+        this.post = post;
+        this.parent = parent;
+        this.children = children;
+        this.body = body;
+        this.user = user;
+        this.enabled = enabled;
+        this.likes = likes;
+    }
+
+
+    protected Comment() {
+        //Hibernate
     }
 
     public long getId() {
@@ -74,7 +114,7 @@ public class Comment {
     }
 
     public long getLikes() {
-        return likes;
+        return likes.stream().reduce(0, (acum, commentsLikes) -> acum+=commentsLikes.getValue(), Integer::sum);
     }
 
     public Map<Long, Integer> getVotedBy() {

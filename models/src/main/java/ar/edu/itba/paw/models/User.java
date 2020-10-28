@@ -16,28 +16,34 @@ public class User {
     @SequenceGenerator(sequenceName = "users_user_id_seq", name = "users_user_id_seq", allocationSize = 1)
     private Long id;
 
-    @Basic(optional = false)
+
     @Column(name = "creation_date", nullable = false)
+    @Basic(optional = false)
     private LocalDateTime creationDate;
 
-    @Basic(optional = false)
+
     @Column(nullable = false, unique = true, length = 50)
+    @Basic(optional = false)
     private String username;
 
-    @Basic(optional = false)
+
     @Column(nullable = false, length = 200)
+    @Basic(optional = false)
     private String password;
 
-    @Basic(optional = false)
+
     @Column(nullable = false, length = 50)
+    @Basic(optional = false)
     private String name;
 
-    @Basic(optional = false)
+
     @Column(nullable = false, unique = true, length = 200)
+    @Basic(optional = false)
     private String email;
 
-    @Basic(optional = false)
+
     @Column(nullable = false, length = 400)
+    @Basic(optional = false)
     private String description;
 
     @OneToOne(optional = true, fetch = FetchType.EAGER)
@@ -52,7 +58,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role_name", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Basic(optional = false)
     private Collection<Role> roles;
 
     @Column(nullable = false)

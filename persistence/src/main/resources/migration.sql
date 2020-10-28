@@ -47,7 +47,11 @@ alter table user_role drop column role_id;
 alter table user_role add constraint user_role_pkey primary key (user_id, role_name);
 drop table roles;
 
-
 alter table posts_likes drop constraint posts_likes_pkey;
-alter table posts_likes add column posts_likes_id serial primary key;
-alter table posts_lik>>es add constraint posts_likes_unique unique (post_id, user_id);
+alter table posts_likes add column post_likes_id serial primary key;
+alter table posts_likes add constraint posts_likes_unique unique (post_id, user_id);
+
+alter table comments_likes drop constraint comments_likes_pkey;
+alter table comments_likes add column comments_likes_id serial primary key;
+alter table comments_likes add constraint comments_likes_unique unique (comment_id, user_id);
+

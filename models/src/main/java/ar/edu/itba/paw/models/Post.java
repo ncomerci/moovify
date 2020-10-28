@@ -1,25 +1,65 @@
 package ar.edu.itba.paw.models;
 
+import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
+
+@Entity
+@Table(name = "posts")
 public class Post {
-    
-    private final long id;
-    private final LocalDateTime creationDate;
-    private final String title;
-    private final String body;
-    private final int wordCount;
-    private final User user;
-    private final PostCategory category;
-    private final Collection<String> tags;
-    private final long likes;
-    private final boolean enabled;
+
+    static public int hasUserLiked(Post post, User user){
+        return post.getLikes().stream().filter(postLikes -> postLikes.getUser().getId() == user.getId()).map(PostLikes::getValue).findFirst().orElse(0);
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_post_id_seq")
+    @SequenceGenerator(sequenceName = "posts_post_id_seq", name = "posts_post_id_seq", allocationSize = 1)
+    @Column(name = "post_id")
+    private Long id;
+
+    @Column(name = "creation_date", nullable = false)
+    @Basic(optional = false)
+    private LocalDateTime creationDate;
+
+    @Column(nullable = false, length = 200)
+    @Basic(optional = false)
+    private String title;
+
+    @Column(nullable = false, length = 100000)
+    @Basic(optional = false, fetch = FetchType.LAZY)
+    private String body;
+
+    @Column(name = "word_count", nullable = false)
+    private int wordCount;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name="user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name="category_id", nullable = false)
+    private PostCategory category;
+
+    @ElementCollection(targetClass = String.class)
+    @CollectionTable(
+            name="tags",
+            joinColumns=@JoinColumn(name="post_id", nullable = false)
+    )
+    @Column(name="tag", nullable = false)
+    private Collection<String> tags;
+
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "post", cascade = CascadeType.ALL)
+    private Collection<PostLikes> likes;
+
+    @Column(nullable = false)
+    private boolean enabled;
 
     private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, long likes) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLikes> likes) {
         this.id = id;
         this.creationDate = creationDate;
         this.title = title;
@@ -32,7 +72,27 @@ public class Post {
         this.likes = likes;
     }
 
-    public long getLikes() {
+    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLikes> likes) {
+        this.creationDate = creationDate;
+        this.title = title;
+        this.body = body;
+        this.wordCount = wordCount;
+        this.user = user;
+        this.category = category;
+        this.tags = tags;
+        this.enabled = enabled;
+        this.likes = likes;
+    }
+
+    protected Post() {
+        //Hibernate
+    }
+
+    public long getTotalLikes() {
+        return likes.stream().reduce(0, (acum, postLikes) -> acum+=postLikes.getValue(), Integer::sum);
+    }
+
+    public Collection<PostLikes> getLikes(){
         return likes;
     }
 
