@@ -49,13 +49,13 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public void deletePost(Post post) {
-        postDao.deletePost(post);
+        post.delete();
     }
 
     @Transactional
     @Override
     public void restorePost(Post post) {
-        postDao.restorePost(post);
+        post.restore();
     }
 
     @Transactional
@@ -63,10 +63,10 @@ public class PostServiceImpl implements PostService {
     public void likePost(Post post, User user, int value) {
 
         if(value == 0)
-            postDao.removeLike(post, user);
+            post.removeLike(user);
 
         else if(value == -1 || value == 1)
-            postDao.likePost(post, user, value);
+            post.like(user, value);
     }
 
     @Transactional(readOnly = true)

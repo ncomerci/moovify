@@ -14,14 +14,6 @@ public interface PostDao {
 
     Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Long> movies, boolean enabled);
 
-    void deletePost(Post post);
-
-    void restorePost(Post post);
-
-    void likePost(Post post, User user, int value);
-
-    void removeLike(Post post, User user);
-
     Optional<Post> findPostById(long id);
 
     Optional<Post> findDeletedPostById(long id);
