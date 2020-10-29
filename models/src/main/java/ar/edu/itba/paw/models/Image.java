@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.models;
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,7 +14,9 @@ public class Image {
     @Column(name = "image_id")
     private Long id;
 
+    // TODO: Decide
     @Lob
+    @Type(type = "org.hibernate.type.BinaryType")
     @Column(name = "image", nullable = false, columnDefinition="BLOB") //TODO puede haber error usando BLOB aca
     @Basic(fetch = FetchType.LAZY, optional = false)
     private byte[] data;

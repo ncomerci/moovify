@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class HomeController {
 
     @Autowired
     private MessageSource messageSource;
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(path = "/", method = RequestMethod.GET)
     public ModelAndView helloWorld() {

@@ -66,8 +66,6 @@ public class PostLike {
     public String toString() {
         return "PostLikes{" +
                 "id=" + id +
-                ", user=" + user.getId() +
-                ", post=" + post.getId() +
                 ", value=" + value +
                 '}';
     }

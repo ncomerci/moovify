@@ -11,9 +11,15 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 public class UserDaoImpl implements UserDao {
@@ -89,9 +95,11 @@ public class UserDaoImpl implements UserDao {
 
         TypedQuery<User> query = em.createQuery("select u from User u where u.id IN :idList", User.class)
                 .setParameter("idList", resultList);*/
-        List<User> users = em.createQuery("SELECT u FROM User u ORDER BY u.username", User.class).getResultList();
 
-        return new PaginatedCollection<>(users.subList(pageNumber * pageSize, (pageNumber + 1) * pageSize), pageNumber, pageSize, users.size());
+
+        final Collection<User> users = queryUsers();
+
+        return new PaginatedCollection<>(users, pageNumber, pageSize, users.size());
     }
 
     @Override
@@ -109,11 +117,28 @@ public class UserDaoImpl implements UserDao {
         return null;
     }
 
-    private Optional<User> findByCriteria(String field, Object fieldValue, boolean enabled) {
-        TypedQuery<User> query = em.createQuery("FROM User u WHERE u." + field + " = :fieldValue AND u.enabled = :enabled", User.class)
-                .setParameter("fieldValue", fieldValue)
-                .setParameter("enabled", enabled);
+    private Collection<User> queryUsers() {
+        final Collection<Object[]> queryResult = em.createQuery(
+                "SELECT u, sum(commentLikes.value + postLikes.value) AS totalLikes FROM User u LEFT OUTER JOIN u.commentLikes commentLikes LEFT OUTER JOIN u.postLikes postLikes GROUP BY u ORDER BY totalLikes DESC", Object[].class)
+                .getResultList();
 
-        return query.getResultList().stream().findFirst();
+        return queryResult.stream().map(tuple -> {
+            ((User) tuple[0]).setTotalLikes((long) tuple[1]);
+            return ((User) tuple[0]);
+        }).collect(Collectors.toList());
+    }
+
+    private <T> Optional<User> findByCriteria(String field, T value, boolean enabled) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+
+        CriteriaQuery<User> q = cb.createQuery(User.class);
+
+        Root<User> u = q.from(User.class);
+
+        q.select(u);
+
+        q.where(cb.equal(u.get(field), value), cb.equal(u.get("enabled"), enabled));
+
+        return em.createQuery(q).getResultList().stream().findFirst();
     }
 }

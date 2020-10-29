@@ -67,8 +67,6 @@ public class CommentLike {
     public String toString() {
         return "CommentLike{" +
                 "id=" + id +
-                ", user=" + user.getId() +
-                ", comment=" + comment.getId() +
                 ", value=" + value +
                 '}';
     }
