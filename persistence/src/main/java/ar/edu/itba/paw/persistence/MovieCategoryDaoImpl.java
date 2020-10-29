@@ -21,6 +21,20 @@ public class MovieCategoryDaoImpl implements MovieCategoryDao {
     private EntityManager em;
 
     @Override
+    public Collection<MovieCategory> findCategoriesById(Collection<Long> categoriesId) {
+
+        LOGGER.info("Find Movie Categories by Ids {}", categoriesId);
+
+        if(categoriesId.isEmpty())
+            return Collections.emptyList();
+
+        return em
+                .createQuery("SELECT mc FROM MovieCategory mc WHERE mc.id IN :categoriesId", MovieCategory.class)
+                .setParameter("categoriesId", categoriesId)
+                .getResultList();
+    }
+
+    @Override
     public Collection<MovieCategory> findCategoriesByTmdbId(Collection<Long> categories) {
 
         LOGGER.info("Find Movie Categories by Tmdb Ids {}", categories);

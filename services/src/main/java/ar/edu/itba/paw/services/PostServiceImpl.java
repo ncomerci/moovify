@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.services.PostService;
@@ -26,17 +27,22 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private PostCategoryDao categoryDao;
 
+    @Autowired
+    private MovieDao movieDao;
+
     @Transactional
     @Override
-    public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> movies) {
+    public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> moviesId) {
 
         Objects.requireNonNull(body);
 
         Objects.requireNonNull(title, "PostDao: register: title can't be null");
         Objects.requireNonNull(body);
-        Objects.requireNonNull(movies);
+        Objects.requireNonNull(moviesId);
         Objects.requireNonNull(category);
         Objects.requireNonNull(user);
+
+        final Collection<Movie> movies = movieDao.findMoviesById(moviesId);
 
         final Post post = postDao.register(title, body.trim(),
                 body.split("\\s+").length, category, user, tags, movies, true);

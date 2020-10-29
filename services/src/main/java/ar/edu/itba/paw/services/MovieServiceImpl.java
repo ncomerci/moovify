@@ -6,7 +6,6 @@ import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
 import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,9 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     @Override
     public Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage,
-                          String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<Long> categories) {
+                          String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<Long> categoriesId) {
+
+        final Collection<MovieCategory> categories = movieCategoryDao.findCategoriesById(categoriesId);
 
         final Movie movie = movieDao.register(title, originalTitle,  tmdbId,  imdbId,  originalLanguage,
                  overview,  popularity,  runtime,  voteAverage,  releaseDate,  categories);
@@ -51,12 +52,6 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public PaginatedCollection<Movie> getAllMovies(int pageNumber, int pageSize) {
         return movieDao.getAllMovies(MovieDao.SortCriteria.NEWEST, pageNumber, pageSize);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Collection<Movie> findMoviesByPost(Post post) {
-        return movieDao.findMoviesByPost(post);
     }
 
     @Transactional(readOnly = true)

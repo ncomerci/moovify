@@ -3,7 +3,6 @@ package ar.edu.itba.paw.interfaces.services;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
 import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -19,8 +18,6 @@ public interface MovieService {
     PaginatedCollection<Movie> getAllMovies(int pageNumber, int pageSize);
 
     Collection<Movie> getAllMoviesNotPaginated();
-
-    Collection<Movie> findMoviesByPost(Post post);
 
     Collection<MovieCategory> getAvailableCategories();
 }

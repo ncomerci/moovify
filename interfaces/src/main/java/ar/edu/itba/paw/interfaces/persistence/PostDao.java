@@ -3,6 +3,7 @@ package ar.edu.itba.paw.interfaces.persistence;
 import ar.edu.itba.paw.models.*;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ public interface PostDao {
         NEWEST, OLDEST, HOTTEST
     }
 
-    Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Movie> movies, boolean enabled);
+    Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Collection<Movie> movies, boolean enabled);
 
     Optional<Post> findPostById(long id);
 

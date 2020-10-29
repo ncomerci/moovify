@@ -102,6 +102,20 @@ public class MovieDaoImpl implements MovieDao {
     }
 
     @Override
+    public Collection<Movie> findMoviesById(Collection<Long> moviesId) {
+
+        LOGGER.info("Find Movies By Id: {}", moviesId);
+
+        if(moviesId.isEmpty())
+            return Collections.emptyList();
+
+        return em
+                .createQuery("SELECT m FROM Movie m WHERE m.id in :moviesId", Movie.class)
+                .setParameter("moviesId", moviesId)
+                .getResultList();
+    }
+
+    @Override
     public PaginatedCollection<Movie> getAllMovies(SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Get All Movies Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);

@@ -6,6 +6,8 @@ import java.util.Collection;
 
 public interface MovieCategoryDao {
 
+    Collection<MovieCategory> findCategoriesById(Collection<Long> categoriesId);
+
     Collection<MovieCategory> findCategoriesByTmdbId(Collection<Long> categories);
 
     Collection<MovieCategory> getAllCategories();

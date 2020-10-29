@@ -3,12 +3,10 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -22,7 +20,10 @@ import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -79,26 +80,26 @@ public class MovieDaoImplTest {
                 .withTableName(TableNames.POST_MOVIE.getTableName());
     }
 
-    @Rollback
-    @Test
-    public void testRegister() {
-        //        1. precondiciones
-        final String title = "title";
-        final String originalTitle = "originalTitle";
-        final String originalLanguage = "ES";
-
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), "title = ? AND original_title = ? AND original_language = ?", title, originalTitle, originalLanguage);
-
-//        2. ejercitar
-        Movie movie =  movieDao.register(title, originalTitle, 12, "", originalLanguage, "", 1.5f, 1.5f, 1.5f, LocalDate.now(), Collections.singleton(12L));
-
-//        3. post-condiciones
-        Assert.assertNotNull(movie);
-        final String whereClause = String.format("title = '%s' AND original_title = '%s' AND original_language = '%s'", title, originalTitle, originalLanguage);
-        Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), whereClause)
-        );
-    }
+//    @Rollback
+//    @Test
+//    public void testRegister() {
+//        //        1. precondiciones
+//        final String title = "title";
+//        final String originalTitle = "originalTitle";
+//        final String originalLanguage = "ES";
+//
+//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), "title = ? AND original_title = ? AND original_language = ?", title, originalTitle, originalLanguage);
+//
+////        2. ejercitar
+//        Movie movie =  movieDao.register(title, originalTitle, 12, "", originalLanguage, "", 1.5f, 1.5f, 1.5f, LocalDate.now(), Collections.singleton(12L));
+//
+////        3. post-condiciones
+//        Assert.assertNotNull(movie);
+//        final String whereClause = String.format("title = '%s' AND original_title = '%s' AND original_language = '%s'", title, originalTitle, originalLanguage);
+//        Assert.assertEquals(1,
+//                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), whereClause)
+//        );
+//    }
 
     @Test(expected = NullPointerException.class)
     public void testInvalidRegister() {
@@ -126,34 +127,34 @@ public class MovieDaoImplTest {
         );
     }
 
-    @Rollback
-    @Test
-    public void testFindMovieByPost() {
-
-        //Requires users with ID 1, 2 and 3.
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
-
-        long movieId1 = insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
-        insertMovieToMovieCategory(123, 12);
-        insertPostMovie(1, movieId1);
-        insertPostMovie(2, movieId1);
-
-        long movieId2 = insertMovie("MOVIE",124,"imdb124", LocalDate.of(2002,8,6));
-        insertMovieToMovieCategory(124, 12);
-        insertPostMovie(1, movieId2);
-
-        long movieId3 = insertMovie("PELICULA",125,"imdb125", LocalDate.of(2003,8,6));
-        insertMovieToMovieCategory(125, 12);
-
-        long movieId4 = insertMovie("titulo DE PELICULA",126,"imdb126", LocalDate.of(2005,8,6));
-        insertMovieToMovieCategory(126, 12);
-        insertPostMovie(2, movieId4);
-        insertPostMovie(3, movieId4);
-
-        final Collection<Movie> movies = movieDao.findMoviesByPost(Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(1L).getMock());
-
-        Assert.assertEquals(2, movies.size());
-    }
+//    @Rollback
+//    @Test
+//    public void testFindMovieByPost() {
+//
+//        //Requires users with ID 1, 2 and 3.
+//        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+//
+//        long movieId1 = insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
+//        insertMovieToMovieCategory(123, 12);
+//        insertPostMovie(1, movieId1);
+//        insertPostMovie(2, movieId1);
+//
+//        long movieId2 = insertMovie("MOVIE",124,"imdb124", LocalDate.of(2002,8,6));
+//        insertMovieToMovieCategory(124, 12);
+//        insertPostMovie(1, movieId2);
+//
+//        long movieId3 = insertMovie("PELICULA",125,"imdb125", LocalDate.of(2003,8,6));
+//        insertMovieToMovieCategory(125, 12);
+//
+//        long movieId4 = insertMovie("titulo DE PELICULA",126,"imdb126", LocalDate.of(2005,8,6));
+//        insertMovieToMovieCategory(126, 12);
+//        insertPostMovie(2, movieId4);
+//        insertPostMovie(3, movieId4);
+//
+//        final Collection<Movie> movies = movieDao.findMoviesByPost(Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(1L).getMock());
+//
+//        Assert.assertEquals(2, movies.size());
+//    }
 
     @Rollback
     @Test
