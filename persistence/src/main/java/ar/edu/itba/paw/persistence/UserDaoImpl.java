@@ -52,7 +52,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User register(String username, String password, String name, String email, String description, Collection<Role> roleNames, Image avatar, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException {
 
-        final User user = new User(LocalDateTime.now(), username, password, name, email, description, avatar, roleNames, enabled, Collections.emptyList(), Collections.emptyList());
+        final User user = new User(LocalDateTime.now(), username, password, name, email, description, avatar, roleNames, enabled, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
 
         em.persist(user);
 
@@ -114,6 +114,6 @@ public class UserDaoImpl implements UserDao {
                 .setParameter("fieldValue", fieldValue)
                 .setParameter("enabled", enabled);
 
-        return Optional.of(query.getSingleResult());
+        return query.getResultList().stream().findFirst();
     }
 }

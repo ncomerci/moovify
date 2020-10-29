@@ -15,6 +15,13 @@ public class Comment {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Comment.class);
 
+    static public int getLikeValue(Comment comment, User user) {
+        return comment.getLikes().stream()
+                .filter(commentLike -> commentLike.getUser().getId() == user.getId())
+                .map(CommentLike::getValue)
+                .findFirst().orElse(0);
+    }
+
     /*
     public static int getTotalComments(Collection<Comment> comments) {
         return comments.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount() + 1, Integer::sum);
@@ -163,13 +170,6 @@ public class Comment {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-    }
-
-    public int getLikeValue(User user) {
-        return getLikes().stream()
-                .filter(commentLike -> commentLike.getUser().getId() == user.getId())
-                .map(CommentLike::getValue)
-                .findFirst().orElse(0);
     }
 
     public void removeLike(User user) {

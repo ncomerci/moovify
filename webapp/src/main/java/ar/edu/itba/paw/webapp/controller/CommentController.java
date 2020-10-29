@@ -95,7 +95,7 @@ public class CommentController {
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
         final Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
 
-        if(!comment.isEnabled() || comment.getLikeValue(user) == value)
+        if(!comment.isEnabled() || Comment.getLikeValue(comment, user) == value)
             throw new IllegalCommentLikeException();
 
         commentService.likeComment(comment, user, value);

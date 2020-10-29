@@ -61,15 +61,21 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Collection<Role> roles;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Collection<Post> posts;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Collection<Comment> comments;
+
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLike> postLikes, Collection<CommentLike> commentLikes) {
-        this(creationDate, username, password, name, email, description, avatar, roles, enabled, postLikes, commentLikes);
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLike> postLikes, Collection<CommentLike> commentLikes, Collection<Post> posts, Collection<Comment> comments) {
+        this(creationDate, username, password, name, email, description, avatar, roles, enabled, postLikes, commentLikes, posts, comments);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLike> postLikes, Collection<CommentLike> commentLikes) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLike> postLikes, Collection<CommentLike> commentLikes, Collection<Post> posts, Collection<Comment> comments) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
@@ -81,6 +87,8 @@ public class User {
         this.enabled = enabled;
         this.postLikes = postLikes;
         this.commentLikes = commentLikes;
+        this.posts = posts;
+        this.comments = comments;
     }
 
     protected User() {
@@ -142,6 +150,14 @@ public class User {
 
     public Collection<Role> getRoles() {
         return roles;
+    }
+
+    public Collection<Post> getPosts() {
+        return posts;
+    }
+
+    public Collection<Comment> getComments() {
+        return comments;
     }
 
     public long getTotalLikes() {

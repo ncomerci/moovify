@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -29,18 +30,21 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public Optional<Post> findPostById(long id) {
-        return finPostByIdAndEnabled(id, true);
+        return findPostByIdAndEnabled(id, true);
     }
 
     @Override
     public Optional<Post> findDeletedPostById(long id) {
-        return finPostByIdAndEnabled(id, false);
+        return findPostByIdAndEnabled(id, false);
     }
 
-    private Optional<Post> finPostByIdAndEnabled(long id, boolean enabled) {
+    private Optional<Post> findPostByIdAndEnabled(long id, boolean enabled) {
 
-        return Optional.ofNullable(em.find(Post.class, id));
+        TypedQuery<Post> query = em.createQuery("select p FROM Post p WHERE p.id = :postId AND enabled = :enabled", Post.class)
+                .setParameter("postId", id)
+                .setParameter("enabled", enabled);
 
+        return query.getResultList().stream().findFirst();
 //        return em.createQuery(
 //                "SELECT p FROM Post p WHERE p.id = :id AND p.enabled = :enabled", Post.class)
 //                .setParameter("id", id).setParameter("enabled", enabled).getResultList().stream().findFirst();

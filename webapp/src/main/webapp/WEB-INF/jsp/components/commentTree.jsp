@@ -93,8 +93,7 @@
                                                 </div>
                                             </sec:authorize>
                                             <c:if test="${not empty loggedUser and loggedUser.validated}">
-                                                <c:set var="hasUserVoted" value="${ customTag:hasUserVotedComment(comment, loggedUser.id) }" />
-                                                <c:set var="likeValue" value="${ hasUserVoted and customTag:hasUserLikedComment(comment,loggedUser.id) }" />
+                                                <c:set var="likeValue" value="${ customTag:getCommentLikeValue(comment,loggedUser) }" />
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right ">
                                                     <a class="like-comment-button" data-id="${comment.id}" data-value="${ likeValue ? 0 : 1 }">
                                                         <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
@@ -106,8 +105,8 @@
                                                     </p>
                                                 </div>
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                                                    <a class=" like-comment-button" data-id="${comment.id}"  data-value="${ !hasUserVoted or likeValue ? -1 : 0 }">
-                                                        <span class="iconify" data-icon="<c:out value="${ !hasUserVoted or likeValue ? 'cil:chevron-bottom' : 'el:chevron-down'}" />" data-inline="true"></span>
+                                                    <a class=" like-comment-button" data-id="${comment.id}"  data-value="${ likeValue ? 0 : -1 }">
+                                                        <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
                                                     </a>
                                                 </div>
                                             </c:if>

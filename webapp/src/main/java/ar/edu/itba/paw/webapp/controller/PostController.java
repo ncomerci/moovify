@@ -158,7 +158,6 @@ public class PostController {
             LOGGER.debug("Got Post {} from Flash Params", postId);
             return (Post) flashParams.get("post");
         }
-
         else
             return postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
     }

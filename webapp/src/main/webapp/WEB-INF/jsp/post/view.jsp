@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
 
 <sec:authorize access="isAuthenticated()">
     <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
@@ -41,26 +42,27 @@
                     <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
                         <div class="uk-text-center uk-padding-remove uk-margin-remove">
                             <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
-                                <spring:message code="post.view.votes" arguments="${post.likes}"/>
+                                <spring:message code="post.view.votes" arguments="${post.totalLikes}"/>
                             </p>
                         </div>
                     </sec:authorize>
                     <c:if test="${not empty loggedUser and loggedUser.validated}">
+                        <c:set var="likeValue" value="${ customTag:getPostLikeValue(post, loggedUser) }" />
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                            <a class="like-post-button" data-value="${ likeCurrentValue == 1 ? 0 : 1 }">
-                                <span class="iconify" data-icon="<c:out value="${ likeCurrentValue == 1 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
+                            <a class="like-post-button" data-value="${ likeValue ? 0 : 1 }">
+                                <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
                             </a>
                         </div>
 
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
                             <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
-                                <c:out value="${post.likes}"/>
+                                <c:out value="${post.totalLikes}"/>
                             </p>
                         </div>
 
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                            <a class=" like-post-button"  data-value="${ likeCurrentValue != -1 ? -1 : 0 }">
-                                <span class="iconify" data-icon="<c:out value="${ likeCurrentValue == -1 ?  'el:chevron-down': 'cil:chevron-bottom' }" />" data-inline="true"></span>
+                            <a class=" like-post-button"  data-value="${ likeValue ? 0 : -1 }">
+                                <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
                             </a>
                         </div>
                     </c:if>

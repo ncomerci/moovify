@@ -18,7 +18,10 @@ public class Post {
     private static final Logger LOGGER = LoggerFactory.getLogger(Post.class);
 
     static public int getLikeValueByUser(Post post, User user) {
-        return post.getLikes().stream().filter(postLike -> postLike.getUser().getId() == user.getId()).map(PostLike::getValue).findFirst().orElse(0);
+        return post.getLikes().stream()
+                .filter(postLike -> postLike.getUser().getId() == user.getId())
+                .map(PostLike::getValue)
+                .findFirst().orElse(0);
     }
 
     @Id
@@ -42,7 +45,7 @@ public class Post {
     @Column(name = "word_count", nullable = false)
     private int wordCount;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 

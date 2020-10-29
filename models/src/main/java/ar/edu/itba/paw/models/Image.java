@@ -13,7 +13,7 @@ public class Image {
     private Long id;
 
     @Lob
-    @Column(name = "image", nullable = false, columnDefinition = "BLOB") //TODO puede haber error usando BLOB aca
+    @Column(name = "image", nullable = false, columnDefinition="BLOB") //TODO puede haber error usando BLOB aca
     @Basic(fetch = FetchType.LAZY, optional = false)
     private byte[] data;
 
