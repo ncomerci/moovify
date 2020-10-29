@@ -283,7 +283,7 @@ public class PostDaoImpl implements PostDao {
 
         final String fetchQuery = String.format(
                 "SELECT p, sum(coalesce(likes.value, 0)) AS totalLikes " +
-                        "FROM Post p LEFT OUTER JOIN p.postLikes likes " +
+                        "FROM Post p LEFT OUTER JOIN p.likes likes " +
                         "WHERE p.id IN :postIds " +
                         "GROUP BY p " +
                         "%s", HQLOrderBy);
