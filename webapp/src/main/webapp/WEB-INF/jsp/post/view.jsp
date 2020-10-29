@@ -49,8 +49,8 @@
                     <c:if test="${not empty loggedUser and loggedUser.validated}">
                         <c:set var="likeValue" value="${ customTag:getPostLikeValue(post, loggedUser) }" />
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                            <a class="like-post-button" data-value="${ likeValue ? 0 : 1 }">
-                                <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
+                            <a class="like-post-button" data-value="${ likeValue == 1 ? 0 : 1 }">
+                                <span class="iconify" data-icon="<c:out value="${ likeValue == 1 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
                             </a>
                         </div>
 
@@ -61,8 +61,8 @@
                         </div>
 
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                            <a class=" like-post-button"  data-value="${ likeValue ? 0 : -1 }">
-                                <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
+                            <a class=" like-post-button"  data-value="${ likeValue == -1 ? 0 : -1 }">
+                                <span class="iconify" data-icon="<c:out value="${ likeValue == -1 ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
                             </a>
                         </div>
                     </c:if>
