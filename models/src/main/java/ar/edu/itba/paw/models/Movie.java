@@ -67,6 +67,9 @@ public class Movie implements Serializable {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "movies")
     private Collection<Post> posts;
 
+    @Transient
+    private Integer postCount;
+
     public Movie(long id, LocalDateTime creationDate, String title, String originalTitle, long tmdbId,
                  String imdbId, String originalLanguage, String overview, float popularity, float runtime,
                  float voteAverage, LocalDate releaseDate, Collection<Post> posts, Collection<MovieCategory> categories) {
@@ -96,6 +99,12 @@ public class Movie implements Serializable {
 
     protected Movie() {
         //Hibernate
+    }
+
+    @PostLoad
+    public void calculatePostCount() {
+        if(postCount == null)
+            postCount = posts.size();
     }
 
     public String getOriginalTitle() {
@@ -149,9 +158,14 @@ public class Movie implements Serializable {
     public Collection<Post> getPosts() {
         return posts;
     }
-    /* public long getPostCount() {
-        return posts.size();
-    }*/
+
+    public int getPostCount() {
+        return postCount;
+    }
+
+    public void setPostCount(int postCount) {
+        this.postCount = postCount;
+    }
 
     public Collection<MovieCategory> getCategories() {
         return categories;

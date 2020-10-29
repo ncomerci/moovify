@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
 import ar.edu.itba.paw.models.Movie;
+import ar.edu.itba.paw.models.MovieCategory;
 import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -16,9 +16,7 @@ public interface MovieDao {
 
     Optional<Movie> findMovieById(long movie_id);
 
-    Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage, String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<Long> genres);
-
-    Collection<Movie> findMoviesByPost(Post post);
+    Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage, String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<MovieCategory> genres);
 
     PaginatedCollection<Movie> getAllMovies(SortCriteria sortCriteria, int pageNumber, int pageSize);
 

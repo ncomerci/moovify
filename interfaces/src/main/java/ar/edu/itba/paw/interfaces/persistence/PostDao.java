@@ -12,7 +12,7 @@ public interface PostDao {
         NEWEST, OLDEST, HOTTEST
     }
 
-    Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Long> movies, boolean enabled);
+    Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Movie> movies, boolean enabled);
 
     Optional<Post> findPostById(long id);
 
