@@ -69,7 +69,11 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> findPostsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return null;
+
+        List<Post> posts = em.createQuery("SELECT p FROM Post p WHERE p.user.id = :userId ORDER BY p.title", Post.class)
+                .setParameter("userId", user.getId())
+                .getResultList();
+        return new PaginatedCollection<>(posts, pageNumber, pageSize, posts.size());
     }
 
     @Override
