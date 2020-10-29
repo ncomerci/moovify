@@ -219,11 +219,9 @@ public class User {
                 "id=" + id +
                 ", creationDate=" + creationDate +
                 ", username='" + username + '\'' +
-//                ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", description='" + description + '\'' +
-                ", avatarId=" + avatar.getId() +
                 ", roles=" + roles +
                 ", enabled=" + enabled +
                 '}';

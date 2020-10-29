@@ -228,7 +228,6 @@ public class Post {
                 "id=" + id +
                 ", creationDate=" + creationDate +
                 ", title='" + title + '\'' +
-//                ", body='" + body + '\'' +
                 ", wordCount=" + wordCount +
                 ", enabled=" + enabled +
                 '}';
