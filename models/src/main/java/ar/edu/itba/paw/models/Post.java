@@ -105,7 +105,7 @@ public class Post {
 
     @PostLoad
     public void calculateTotalLikes() {
-        if(totalLikes != null)
+        if(totalLikes == null)
             totalLikes = likes.stream()
                     .reduce(0L, (acum, postLike) -> acum += (long) postLike.getValue(), Long::sum);
     }

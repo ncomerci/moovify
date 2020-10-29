@@ -90,7 +90,7 @@ public class Comment {
 
     @PostLoad
     public void calculateTotalLikes() {
-        if(totalLikes != null)
+        if(totalLikes == null)
             totalLikes = likes.stream()
                 .reduce(0L, (acum, commentLike) -> acum += (long) commentLike.getValue(), Long::sum);
     }

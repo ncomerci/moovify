@@ -13,16 +13,40 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class UserDaoImpl implements UserDao {
 
     @PersistenceContext
     private EntityManager em;
+
+    private static final EnumMap<SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQueryMap();
+    private static final EnumMap<SortCriteria,String> sortCriteriaHQLMap = initializeSortCriteriaHQLMap();
+
+    private static EnumMap<SortCriteria, String> initializeSortCriteriaQueryMap() {
+
+        EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
+
+        sortCriteriaQuery.put(SortCriteria.NEWEST, "USERS.creation_date desc");
+        sortCriteriaQuery.put(SortCriteria.OLDEST, "USERS.creation_date");
+        sortCriteriaQuery.put(SortCriteria.LIKES, "TOTAL_LIKES.total_likes desc");
+        sortCriteriaQuery.put(SortCriteria.USERNAME, "USERS.username");
+
+        return sortCriteriaQuery;
+    }
+
+    private static EnumMap<SortCriteria, String> initializeSortCriteriaHQLMap() {
+
+        EnumMap<SortCriteria, String> sortCriteriaQuery = new EnumMap<>(SortCriteria.class);
+
+        sortCriteriaQuery.put(SortCriteria.NEWEST, "u.creation_date desc");
+        sortCriteriaQuery.put(SortCriteria.OLDEST, "u.creation_date");
+        sortCriteriaQuery.put(SortCriteria.LIKES, "TOTAL_LIKES.total_likes desc");
+        sortCriteriaQuery.put(SortCriteria.USERNAME, "u.username");
+
+        return sortCriteriaQuery;
+    }
 
 //    TODO: ver como hacer para chequear el unique email y el unique username
     @Override
