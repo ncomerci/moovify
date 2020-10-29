@@ -112,7 +112,7 @@ public class PostDaoImpl implements PostDao {
 
         LOGGER.info("Search Posts By Post Title, Tags, Movie {} And Category {} Order By {}. Page number {}, Page Size {}", query, category, sortCriteria, pageNumber, pageSize);
 
-        TypedQuery<Post> posts = em.createQuery("select p FROM Post p inner join p.movies movies inner join p.tags tags where p.category = :category and " +
+        TypedQuery<Post> posts = em.createQuery("select p FROM Post p inner join p.movies movies inner join p.tags tags where p.category.name = :category and " +
                 "(lower(movies.title) like '%'||lower(:query)||'%' or lower(tags) like '%'||lower(:query)||'%' or p.title like '%'||lower(:query)||'%')", Post.class)
                 .setParameter("category", category)
                 .setParameter("query",query);
@@ -134,7 +134,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public PaginatedCollection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
-        TypedQuery<Post> posts = em.createQuery("select p FROM Post p inner join p.movies movies inner join p.tags tags where p.category = :category and p.creationDate > :fromDate and " +
+        TypedQuery<Post> posts = em.createQuery("select p FROM Post p inner join p.movies movies inner join p.tags tags where p.category.name = :category and p.creationDate > :fromDate and " +
                 "(lower(movies.title) like '%'||lower(:query)||'%' or lower(tags) like '%'||lower(:query)||'%' or p.title like '%'||lower(:query)||'%')", Post.class)
                 .setParameter("category", category)
                 .setParameter("fromDate", fromDate)
