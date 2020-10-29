@@ -7,9 +7,9 @@ public class PaginatedCollection<T> {
     private final Collection<T> results;
     private final int pageNumber;
     private final int pageSize;
-    private final int totalCount;
+    private final long totalCount;
 
-    public PaginatedCollection(Collection<T> results, int pageNumber, int pageSize, int totalCount) {
+    public PaginatedCollection(Collection<T> results, int pageNumber, int pageSize, long totalCount) {
         this.results = results;
         this.pageNumber = pageNumber;
         this.pageSize = pageSize;
@@ -28,11 +28,11 @@ public class PaginatedCollection<T> {
         return pageSize;
     }
 
-    public int getTotalCount() {
+    public long getTotalCount() {
         return totalCount;
     }
 
-    public int getLastPageNumber() {
+    public long getLastPageNumber() {
         return (totalCount - 1) / pageSize;
     }
 

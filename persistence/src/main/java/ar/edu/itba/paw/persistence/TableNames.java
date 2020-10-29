@@ -4,7 +4,6 @@ public enum TableNames {
 
     IMAGES("images"),
     USERS("users"),
-    ROLES("roles"),
     USER_ROLE("user_role"),
     POSTS("posts"),
     POSTS_LIKES("posts_likes"),
