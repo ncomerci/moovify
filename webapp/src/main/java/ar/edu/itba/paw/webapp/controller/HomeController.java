@@ -35,10 +35,8 @@ public class HomeController {
 
         final ModelAndView mv = new ModelAndView("index");
 
-//        mv.addObject("newestPosts", postService.getAllPostsOrderByNewest(0, HOME_PAGE_POST_COUNT));
-//        mv.addObject("hottestPosts", postService.getAllPostsOrderByHottest(0, HOME_PAGE_POST_COUNT));
-
-        userService.getAllUsers(0, 30);
+        mv.addObject("newestPosts", postService.getAllPostsOrderByNewest(0, HOME_PAGE_POST_COUNT));
+        mv.addObject("hottestPosts", postService.getAllPostsOrderByHottest(0, HOME_PAGE_POST_COUNT));
 
         return mv;
     }
