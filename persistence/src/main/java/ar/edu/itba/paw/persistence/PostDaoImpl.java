@@ -79,7 +79,12 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-        return null;
+
+        List<Post> posts = em.
+                createQuery(
+                "FROM Post p inner join p.movies movies where :query in movies.title and :query in p.tags and :query = p.title", Post.class)
+                .setParameter("query", query).getResultList();
+        return new PaginatedCollection<>(posts, pageNumber, pageSize, posts.size());
     }
 
     @Override
