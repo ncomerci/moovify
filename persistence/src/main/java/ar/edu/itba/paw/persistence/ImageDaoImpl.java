@@ -31,6 +31,14 @@ public class ImageDaoImpl implements ImageDao {
     }
 
     @Override
+    public Optional<Image> findImageById(long imageId) {
+
+        LOGGER.info("Get Image by Id {}", imageId);
+
+        return Optional.ofNullable(em.find(Image.class, imageId));
+    }
+
+    @Override
     public Optional<Image> getImage(long imageId, String securityTag) {
 
         LOGGER.info("Get Image {} with Security Tag {}", imageId, securityTag);
@@ -46,17 +54,10 @@ public class ImageDaoImpl implements ImageDao {
     }
 
     @Override
-    public void deleteImage(long imageId) {
+    public void deleteImage(Image image) {
 
-        final Image image = em.find(Image.class, imageId);
-
-        if(image == null) {
-            LOGGER.warn("Tried to delete non existing image {}", imageId);
-            return;
-        }
+        LOGGER.info("Image {} Deleted", image.getId());
 
         em.remove(image);
-
-        LOGGER.info("Image {} Deleted", imageId);
     }
 }

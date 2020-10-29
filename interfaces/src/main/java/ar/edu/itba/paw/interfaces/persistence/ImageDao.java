@@ -8,7 +8,9 @@ public interface ImageDao {
 
     Image uploadImage(byte[] data, String securityTag);
 
+    Optional<Image> findImageById(long imageId);
+
     Optional<Image> getImage(long imageId, String securityTag);
 
-    void deleteImage(long imageId);
+    void deleteImage(Image image);
 }

@@ -184,12 +184,14 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
 
-        final User user = optToken.get().getUser();
+        final UserVerificationToken userVerificationToken = optToken.get();
+
+        final User user = userVerificationToken.getUser();
 
         replaceUserRole(user, Role.USER, Role.NOT_VALIDATED);
 
         // Delete Token. It is not needed anymore
-        userVerificationTokenDao.deleteVerificationToken(user);
+        userVerificationTokenDao.deleteVerificationToken(userVerificationToken);
 
         LOGGER.info("User {} has confirmed their email", user.getId());
 
@@ -215,13 +217,15 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         }
 
-        final User user = optToken.get().getUser();
+        final PasswordResetToken passwordResetToken = optToken.get();
+
+        final User user = passwordResetToken.getUser();
 
         final String encodedPassword = passwordEncoder.encode(password);
         user.setPassword(encodedPassword);
 
         // Delete Token. It is not needed anymore
-        passwordResetTokenDao.deletePasswordResetToken(user);
+        passwordResetTokenDao.deletePasswordResetToken(passwordResetToken);
 
         LOGGER.info("User {} has updated their password successfully", user.getId());
 

@@ -58,6 +58,14 @@ public class ImageServiceImpl implements ImageService {
     @Transactional
     @Override
     public void deleteImage(long imageId) {
-        imageDao.deleteImage(imageId);
+
+        final Optional<Image> optImage = imageDao.findImageById(imageId);
+
+        if(!optImage.isPresent()) {
+            LOGGER.warn("Tried to delete non existing image {}", imageId);
+            return;
+        }
+
+        imageDao.deleteImage(optImage.get());
     }
 }
