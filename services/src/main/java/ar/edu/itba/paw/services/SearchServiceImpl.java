@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 //@DependsOn({"PostCategoryDao", "MovieCategoryDao"})
@@ -130,10 +131,10 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     public SearchServiceImpl(PostCategoryDao postCategoryDao, MovieCategoryDao movieCategoryDao) {
-        postCategoriesOptions = Collections.emptyList();
-        movieCategoriesOptions = Collections.emptyList();
-//        postCategoriesOptions = postCategoryDao.getAllPostCategories().stream().map(PostCategory::getName).collect(Collectors.toList());
-//        movieCategoriesOptions = movieCategoryDao.getAllCategories().stream().map(MovieCategory::getName).collect(Collectors.toList());
+        //postCategoriesOptions = Collections.emptyList();
+        //movieCategoriesOptions = Collections.emptyList();
+        postCategoriesOptions = postCategoryDao.getAllPostCategories().stream().map(PostCategory::getName).collect(Collectors.toList());
+        movieCategoriesOptions = movieCategoryDao.getAllCategories().stream().map(MovieCategory::getName).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
