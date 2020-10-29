@@ -155,7 +155,7 @@ public class UserDaoImpl implements UserDao {
                 "WHERE " + NATIVE_SEARCH_BY_USERNAME +
                                     " AND " + NATIVE_SEARCH_BY_ROLE +
                                     " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ query, role });
+                sortCriteria, pageNumber, pageSize, new Object[]{ query, role.name() });
     }
 
     @Override
@@ -240,7 +240,11 @@ public class UserDaoImpl implements UserDao {
                 "%s", HQLOrderBy);
 
         // Calculate Total User Count Disregarding Pagination (To Calculate Pages Later)
-        final long totalUsers = (long) em.createNativeQuery(nativeCountQuery).getSingleResult();
+        final Query totalUsersNativeQuery = em.createNativeQuery(nativeCountQuery);
+
+        addParamsToNativeQuery(totalUsersNativeQuery, params);
+
+        final long totalUsers = ((Number) totalUsersNativeQuery.getSingleResult()).longValue();
 
         // Calculate Which Users To Load And Load Their Ids
         final Query userIdsNativeQuery = em.createNativeQuery(nativeQuery);

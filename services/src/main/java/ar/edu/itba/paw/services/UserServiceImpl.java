@@ -260,9 +260,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize) {
-//        return userDao.getAllUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
-
-        return userDao.getAllUsers(UserDao.SortCriteria.LIKES, 1, 1);
+        return userDao.getAllUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     private void replaceUserRole(User user, Role newRole, Role oldRole) {
