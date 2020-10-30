@@ -11,6 +11,4 @@ public interface ImageDao {
     Optional<Image> findImageById(long imageId);
 
     Optional<Image> getImage(long imageId, String securityTag);
-
-    void deleteImage(Image image);
 }

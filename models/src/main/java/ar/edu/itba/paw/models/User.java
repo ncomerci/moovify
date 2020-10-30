@@ -41,7 +41,7 @@ public class User {
     @Basic(optional = false)
     private String description;
 
-    @OneToOne(optional = true, fetch = FetchType.EAGER)
+    @OneToOne(optional = true, fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "avatar_id", referencedColumnName = "image_id")
     private Image avatar;
 

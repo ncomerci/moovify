@@ -11,6 +11,4 @@ public interface ImageService {
     Optional<byte[]> getImage(long imageId, String securityTag);
 
     byte[] getImage(String imagePath);
-
-    void deleteImage(long imageId);
 }

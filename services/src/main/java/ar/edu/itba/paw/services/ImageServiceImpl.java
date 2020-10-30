@@ -54,18 +54,4 @@ public class ImageServiceImpl implements ImageService {
             throw new RuntimeException("Could not locate image resource");
         }
     }
-
-    @Transactional
-    @Override
-    public void deleteImage(long imageId) {
-
-        final Optional<Image> optImage = imageDao.findImageById(imageId);
-
-        if(!optImage.isPresent()) {
-            LOGGER.warn("Tried to delete non existing image {}", imageId);
-            return;
-        }
-
-        imageDao.deleteImage(optImage.get());
-    }
 }

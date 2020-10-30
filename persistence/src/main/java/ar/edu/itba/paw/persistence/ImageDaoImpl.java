@@ -52,12 +52,4 @@ public class ImageDaoImpl implements ImageDao {
 
         return Optional.ofNullable(image);
     }
-
-    @Override
-    public void deleteImage(Image image) {
-
-        LOGGER.info("Image {} Deleted", image.getId());
-
-        em.remove(image);
-    }
 }

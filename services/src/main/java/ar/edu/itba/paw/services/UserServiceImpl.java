@@ -71,6 +71,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateUsername(User user, String username) throws DuplicateUsernameException {
+        // TODO: Duplicate Useranme Exception
         user.setName(username);
     }
 
@@ -95,8 +96,6 @@ public class UserServiceImpl implements UserService {
         final Image avatar = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
 
         user.setAvatar(avatar);
-
-        imageService.deleteImage(user.getAvatarId());
 
         LOGGER.info("User's {} Avatar was Updated to {}", user.getId(), avatar == null ? 0 : avatar.getId());
     }
