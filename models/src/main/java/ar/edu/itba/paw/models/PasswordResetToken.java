@@ -58,8 +58,12 @@ public class PasswordResetToken {
         return token;
     }
 
-    public LocalDateTime getExpiryDate() {
-        return expiryDate;
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void resetExpiryDate() {
+        expiryDate = calculateExpiryDate();
     }
 
     public boolean isValid() {

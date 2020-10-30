@@ -125,7 +125,7 @@ public class CommentServiceImplTest {
         Collection<Comment> collection = Collections.singleton(comment);
         PaginatedCollection<Comment> pCollection = new PaginatedCollection<>(collection, PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT);
 
-        Mockito.when(dao.findCommentDescendants(Mockito.eq(comment), Mockito.eq(CommentDao.SortCriteria.HOTTEST), Mockito.eq(PAGE_NUMBER), Mockito.eq(PAGE_SIZE)))
+        Mockito.when(dao.findCommentDescendants(Mockito.eq(comment), 5, Mockito.eq(CommentDao.SortCriteria.HOTTEST), Mockito.eq(PAGE_NUMBER), Mockito.eq(PAGE_SIZE)))
                 .thenReturn(pCollection);
 
 //        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
@@ -144,7 +144,7 @@ public class CommentServiceImplTest {
         Collection<Comment> collection = Collections.singleton(comment);
         PaginatedCollection<Comment> pCollection = new PaginatedCollection<>(collection, PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT);
 
-        Mockito.when(dao.findPostCommentDescendants(Mockito.eq(post), Mockito.eq(CommentDao.SortCriteria.HOTTEST), Mockito.eq(PAGE_NUMBER), Mockito.eq(PAGE_SIZE)))
+        Mockito.when(dao.findPostCommentDescendants(Mockito.eq(post), 5, Mockito.eq(CommentDao.SortCriteria.HOTTEST), Mockito.eq(PAGE_NUMBER), Mockito.eq(PAGE_SIZE)))
                 .thenReturn(pCollection);
 
 //        2. Ejercito la class under test -> ÚNICA INVOCACIÓN

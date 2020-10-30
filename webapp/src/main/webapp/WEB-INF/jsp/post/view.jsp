@@ -140,14 +140,12 @@
             </button>
         </div>
     </c:if>
-    <c:forEach items="${post.comments}" var="comment">
-        <p>${comment.body}</p>
-    </c:forEach>
-<%--    <c:set var="comments" value="${post.comments}" scope="request"/>--%>
-<%--    <c:set var="postId" value="${post.id}" scope="request"/>--%>
-<%--    <c:set var="parentId" value="${0}" scope="request"/>--%>
-<%--    <c:set var="enableReplies" value="${true}" scope="request"/>--%>
-<%--    <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>--%>
+    <c:set var="comments" value="${comments}" scope="request"/>
+    <c:set var="postId" value="${post.id}" scope="request"/>
+    <c:set var="parentId" value="${0}" scope="request"/>
+    <c:set var="enableReplies" value="${true}" scope="request"/>
+    <c:set var="maxDepth" value="${maxDepth}" scope="request"/>
+    <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
 </main>
 </body>
 </html>

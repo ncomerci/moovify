@@ -28,4 +28,6 @@ public interface CommentService {
     PaginatedCollection<Comment> findCommentsByPost(Post post, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> findCommentsByUser(User user, int pageNumber, int pageSize);
+
+    int getMaxCommentTreeDepth();
 }

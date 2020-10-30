@@ -43,6 +43,18 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
     }
 
     @Override
+    public Optional<UserVerificationToken> findVerificationTokenByUser(User user) {
+
+        return em
+                .createQuery(
+                        "SELECT uvt FROM UserVerificationToken uvt WHERE uvt.user.id = :id",
+                        UserVerificationToken.class)
+                .setParameter("id", user.getId())
+                .getResultList()
+                .stream().findFirst();
+    }
+
+    @Override
     public void deleteVerificationToken(UserVerificationToken token) {
         em.remove(token);
     }

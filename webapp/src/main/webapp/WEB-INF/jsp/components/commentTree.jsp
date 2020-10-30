@@ -5,11 +5,13 @@
 <%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
 
 <jsp:useBean id="comments" scope="request" type="java.util.Collection"/>
+<%--<jsp:useBean id="maxDepth" scope="request" type="java.lang.Integer"/>--%>
 <sec:authorize access="isAuthenticated()">
     <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
 </sec:authorize>
 
 <ul class="uk-comment-list" id="comment-section">
+    <c:if test="${maxDepth > 0}" >
     <c:forEach items="${comments}" var="comment" >
 
         <li class="uk-margin-remove">
@@ -88,25 +90,25 @@
                                             <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
                                                 <div class="uk-text-center uk-padding-remove uk-margin-remove">
                                                     <p class="uk-text-center uk-align-center uk-text-lead">
-                                                        <spring:message code="comment.view.votes" arguments="${comment.likes}"/>
+                                                        <spring:message code="comment.view.votes" arguments="${comment.totalLikes}"/>
                                                     </p>
                                                 </div>
                                             </sec:authorize>
                                             <c:if test="${not empty loggedUser and loggedUser.validated}">
                                                 <c:set var="likeValue" value="${ customTag:getCommentLikeValue(comment,loggedUser) }" />
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right ">
-                                                    <a class="like-comment-button" data-id="${comment.id}" data-value="${ likeValue ? 0 : 1 }">
-                                                        <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
+                                                    <a class="like-comment-button" data-id="${comment.id}" data-value="${ likeValue > 0 ? 0 : 1 }">
+                                                        <span class="iconify" data-icon="<c:out value="${ likeValue > 0 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
                                                     </a>
                                                 </div>
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
                                                     <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
-                                                        <c:out value="${comment.likes}"/>
+                                                        <c:out value="${ comment.totalLikes }"/>
                                                     </p>
                                                 </div>
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                                                    <a class=" like-comment-button" data-id="${comment.id}"  data-value="${ likeValue ? 0 : -1 }">
-                                                        <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
+                                                    <a class=" like-comment-button" data-id="${comment.id}"  data-value="${ likeValue < 0 ? 0 : -1 }">
+                                                        <span class="iconify" data-icon="<c:out value="${ likeValue < 0 ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
                                                     </a>
                                                 </div>
                                             </c:if>
@@ -132,15 +134,17 @@
                 </article>
                 <hr>
             </div>
-            <div class="replies-show uk-margin-bottom" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${comment.descendantCount}">
-                <a class="uk-link-muted"><spring:message code="comment.replies.show" arguments="${comment.descendantCount}"/></a>
+            <div class="replies-show uk-margin-bottom" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${customTag:descendantCount(comment, maxDepth)}">
+                <a class="uk-link-muted"><spring:message code="comment.replies.show" arguments="${customTag:descendantCount(comment, maxDepth)}"/></a>
             </div>
             <ul id="${comment.id}-children" class="li uk-hidden">
                     <%--  Recursive Call  --%>
-                <c:set var="comments" value="${comment.children}" scope="request"/>
+                <c:set var="comments" value="${comment.children}" scope="request" />
+                <c:set var="maxDepth" value="${maxDepth - 1}" scope="request"/>
                 <jsp:include page="commentTree.jsp" />
             </ul>
         </li>
 
     </c:forEach>
+    </c:if>
 </ul>

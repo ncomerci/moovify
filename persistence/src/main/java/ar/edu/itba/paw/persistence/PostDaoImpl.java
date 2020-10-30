@@ -90,6 +90,8 @@ public class PostDaoImpl implements PostDao {
 
         em.persist(post);
 
+        post.setTotalLikes(0L);
+
         return post;
     }
 
@@ -294,6 +296,9 @@ public class PostDaoImpl implements PostDao {
         addParamsToNativeQuery(totalPostsNativeQuery, params);
 
         final long totalPosts = ((Number) totalPostsNativeQuery.getSingleResult()).longValue();
+
+        if(totalPosts == 0)
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalPosts);
 
         // Calculate Which Posts To Load And Load Their Ids
         final Query postIdsNativeQuery = em.createNativeQuery(nativeQuery);

@@ -91,6 +91,8 @@ public class MovieDaoImpl implements MovieDao {
 
         em.persist(movie);
 
+        movie.setPostCount(0);
+
         return movie;
     }
 
@@ -247,6 +249,9 @@ public class MovieDaoImpl implements MovieDao {
         addParamsToNativeQuery(totalMoviesNativeQuery, params);
 
         final long totalMovies = ((Number) totalMoviesNativeQuery.getSingleResult()).longValue();
+
+        if(totalMovies == 0)
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalMovies);
 
         // Calculate Which Movies To Load And Load Their Ids
         final Query movieIdsNativeQuery = em.createNativeQuery(nativeQuery);

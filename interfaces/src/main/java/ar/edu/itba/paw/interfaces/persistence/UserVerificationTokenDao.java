@@ -12,5 +12,7 @@ public interface UserVerificationTokenDao {
 
     Optional<UserVerificationToken> getVerificationToken(String token);
 
+    Optional<UserVerificationToken> findVerificationTokenByUser(User user);
+
     void deleteVerificationToken(UserVerificationToken token);
 }

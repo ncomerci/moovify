@@ -22,6 +22,9 @@ public class CommentServiceImpl implements CommentService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentServiceImpl.class);
 
+    // Max Depth The Comment Tree Has At Render Time
+    private static final int MAX_COMMENT_TREE_DEPTH = 5;
+
     @Autowired
     private CommentDao commentDao;
 
@@ -87,13 +90,13 @@ public class CommentServiceImpl implements CommentService {
     @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<Comment> findCommentDescendants(Comment comment, int pageNumber, int pageSize) {
-        return commentDao.findCommentDescendants(comment, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
+        return commentDao.findCommentDescendants(comment, MAX_COMMENT_TREE_DEPTH, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<Comment> findPostCommentDescendants(Post post, int pageNumber, int pageSize) {
-        return commentDao.findPostCommentDescendants(post, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
+        return commentDao.findPostCommentDescendants(post, MAX_COMMENT_TREE_DEPTH, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
@@ -106,5 +109,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public PaginatedCollection<Comment> findCommentsByUser(User user, int pageNumber, int pageSize) {
         return commentDao.findCommentsByUser(user, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    }
+
+    @Override
+    public int getMaxCommentTreeDepth() {
+        return MAX_COMMENT_TREE_DEPTH;
     }
 }

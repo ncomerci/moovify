@@ -24,9 +24,16 @@ public class Comment {
 
     /*
     public static int getTotalComments(Collection<Comment> comments) {
-        return comments.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount() + 1, Integer::sum);
+        if(maxDepth <= 1)
+            return 0;
+
+        return comments.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount(maxDepth - 1) + 1, Integer::sum);
     }
     */
+
+    public static int getDescendantCount(Comment comment, int maxDepth) {
+        return comment.getDescendantCount(maxDepth);
+    }
 
     /*public static boolean hasUserVotedComment(Comment comment, long user_id){
         return comment.getVotedBy().containsKey(user_id);
@@ -46,7 +53,7 @@ public class Comment {
     @Basic(optional = false)
     private LocalDateTime creationDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
@@ -143,12 +150,12 @@ public class Comment {
         this.totalLikes = totalLikes;
     }
 
-    /*
-    public int getDescendantCount() {
-        return children.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount() + 1, Integer::sum);
-    }
-     */
+    public int getDescendantCount(int maxDepth) {
+        if(maxDepth <= 3)
+            return 0;
 
+        return children.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount(maxDepth - 1) + 1, Integer::sum);
+    }
 
     public Duration getTimeSinceCreation() {
         return Duration.between(creationDate, LocalDateTime.now());

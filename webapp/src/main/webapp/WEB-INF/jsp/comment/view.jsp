@@ -76,14 +76,14 @@
                         <c:if test="${notAbleToLike or not comment.enabled}">
                             <div class="uk-text-center uk-padding-remove uk-margin-remove">
                                 <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
-                                    <spring:message code="comment.view.votes" arguments="${comment.likes}"/>
+                                    <spring:message code="comment.view.votes" arguments="${comment.totalLikes}"/>
                                 </p>
                             </div>
                         </c:if>
                         <c:if test="${loggedUser.validated and comment.enabled}">
                             <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                                <c:set var="hasUserVoted" value="${ customTag:hasUserVotedComment(comment, loggedUser.id) }" />
-                                <c:set var="likeValue" value="${ hasUserVoted and customTag:hasUserLikedComment(comment,loggedUser.id) }" />
+                                <c:set var="hasUserVoted" value="${ customTag:getCommentLikeValue(comment, loggedUser.id) != 0 }" />
+                                <c:set var="likeValue" value="${ hasUserVoted and customTag:getCommentLikeValue(comment,loggedUser.id) > 0 }" />
                                 <a class="like-comment-button" data-id="${comment.id}" data-value="${ likeValue ? 0 : 1 }">
                                     <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false" ></span>
                                 </a>
@@ -139,6 +139,7 @@
     <c:set var="postId" value="${comment.post.id}" scope="request"/>
     <c:set var="parentId" value="${comment.id}" scope="request"/>
     <c:set var="enableReplies" value="${comment.enabled}" scope="request"/>
+    <c:set var="maxDepth" value="${maxDepth}" scope="request"/>
     <jsp:include page="/WEB-INF/jsp/components/createAndViewComments.jsp"/>
 </main>
 </body>

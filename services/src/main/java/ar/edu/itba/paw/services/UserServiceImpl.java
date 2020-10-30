@@ -102,6 +102,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
+    @Override
     public Optional<byte[]> getAvatar(long avatarId) {
 
         LOGGER.info("Accessing avatar {}. (Default {})", avatarId, avatarId == User.DEFAULT_AVATAR_ID);
@@ -144,7 +145,15 @@ public class UserServiceImpl implements UserService {
 
         final String token = UUID.randomUUID().toString();
 
-        userVerificationTokenDao.createVerificationToken(token, UserVerificationToken.calculateExpiryDate(), user);
+        final Optional<UserVerificationToken> optToken = userVerificationTokenDao.findVerificationTokenByUser(user);
+
+        if(optToken.isPresent()) {
+            optToken.get().setToken(token);
+            optToken.get().resetExpiryDate();
+        }
+
+        else
+            userVerificationTokenDao.createVerificationToken(token, UserVerificationToken.calculateExpiryDate(), user);
 
         final Map<String, Object> emailVariables = new HashMap<>();
 
@@ -163,7 +172,14 @@ public class UserServiceImpl implements UserService {
         
         final String token = UUID.randomUUID().toString();
 
-        passwordResetTokenDao.createPasswordResetToken(token, PasswordResetToken.calculateExpiryDate(), user);
+        final Optional<PasswordResetToken> optToken = passwordResetTokenDao.findPasswordTokenByUser(user);
+
+        if(optToken.isPresent()) {
+            optToken.get().setToken(token);
+            optToken.get().resetExpiryDate();
+        }
+        else
+            passwordResetTokenDao.createPasswordResetToken(token, PasswordResetToken.calculateExpiryDate(), user);
 
         final Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("token", token);
@@ -229,11 +245,6 @@ public class UserServiceImpl implements UserService {
 
         LOGGER.info("User {} has updated their password successfully", user.getId());
 
-/*        final User newUser = new User(user.getId(), user.getCreationDate(), user.getUsername(),
-                encodedPassword, user.getName(), user.getEmail(), user.getDescription(),
-                user.getAvatarId(), user.getTotalLikes(), user.getRoles(), user.isEnabled());
-
-        return Optional.of(newUser);*/
         return Optional.of(user);
     }
 

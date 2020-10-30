@@ -106,6 +106,8 @@ public class UserDaoImpl implements UserDao {
 
         em.persist(user);
 
+        user.setTotalLikes(0L);
+
         return user;
     }
 
@@ -245,6 +247,9 @@ public class UserDaoImpl implements UserDao {
         addParamsToNativeQuery(totalUsersNativeQuery, params);
 
         final long totalUsers = ((Number) totalUsersNativeQuery.getSingleResult()).longValue();
+
+        if(totalUsers == 0)
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalUsers);
 
         // Calculate Which Users To Load And Load Their Ids
         final Query userIdsNativeQuery = em.createNativeQuery(nativeQuery);

@@ -54,12 +54,20 @@ public class UserVerificationToken {
         return token;
     }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public User getUser() {
         return user;
     }
 
     public boolean isValid() {
         return expiryDate.compareTo(LocalDateTime.now()) >= 0;
+    }
+
+    public void resetExpiryDate() {
+        expiryDate = calculateExpiryDate();
     }
 
     @Override

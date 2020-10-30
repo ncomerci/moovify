@@ -80,6 +80,7 @@ public class CommentController {
 
         mv.addObject("comment", comment);
         mv.addObject("children", commentService.findCommentDescendants(comment, pageNumber, pageSize));
+        mv.addObject("maxDepth", commentService.getMaxCommentTreeDepth());
 
         return mv;
     }

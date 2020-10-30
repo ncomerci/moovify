@@ -43,6 +43,18 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
     }
 
     @Override
+    public Optional<PasswordResetToken> findPasswordTokenByUser(User user) {
+
+        return em
+                .createQuery(
+                        "SELECT prt FROM PasswordResetToken prt WHERE prt.user.id = :id",
+                        PasswordResetToken.class)
+                .setParameter("id", user.getId())
+                .getResultList()
+                .stream().findFirst();
+    }
+
+    @Override
     public void deletePasswordResetToken(PasswordResetToken token) {
         em.remove(token);
     }

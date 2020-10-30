@@ -69,9 +69,6 @@ public class PostController {
 
             final User user = userService.findUserByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
 
-            //Deprecated, cambiar a la misma forma que el like de comment
-            //mv.addObject("likeCurrentValue", userService.hasUserLikedPost(user, post));
-
             mv.addObject("loggedUser", user);
 
             LOGGER.info("Was accessed by User {}", user.getId());
@@ -80,8 +77,8 @@ public class PostController {
             LOGGER.info("Was accessed by Anonymous User.");
 
         mv.addObject("post", post);
-//        mv.addObject("movies", movieService.findMoviesByPost(post));
-//        mv.addObject("comments", commentService.findPostCommentDescendants(post, pageNumber, pageSize));
+        mv.addObject("comments", commentService.findPostCommentDescendants(post, pageNumber, pageSize));
+        mv.addObject("maxDepth", commentService.getMaxCommentTreeDepth());
 
         return mv;
     }
