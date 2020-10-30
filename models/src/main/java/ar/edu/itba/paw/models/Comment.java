@@ -151,7 +151,7 @@ public class Comment {
     }
 
     public int getDescendantCount(int maxDepth) {
-        if(maxDepth <= 3)
+        if(maxDepth <= 1)
             return 0;
 
         return children.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount(maxDepth - 1) + 1, Integer::sum);

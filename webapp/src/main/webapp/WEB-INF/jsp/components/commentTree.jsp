@@ -6,6 +6,7 @@
 
 <jsp:useBean id="comments" scope="request" type="java.util.Collection"/>
 <%--<jsp:useBean id="maxDepth" scope="request" type="java.lang.Integer"/>--%>
+<p>${maxDepth}</p>
 <sec:authorize access="isAuthenticated()">
     <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
 </sec:authorize>

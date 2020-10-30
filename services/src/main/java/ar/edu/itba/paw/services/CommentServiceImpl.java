@@ -23,7 +23,7 @@ public class CommentServiceImpl implements CommentService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentServiceImpl.class);
 
     // Max Depth The Comment Tree Has At Render Time
-    private static final int MAX_COMMENT_TREE_DEPTH = 5;
+    private static final int MAX_COMMENT_TREE_DEPTH = 3;
 
     @Autowired
     private CommentDao commentDao;

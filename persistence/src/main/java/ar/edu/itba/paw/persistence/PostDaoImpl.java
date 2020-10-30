@@ -121,7 +121,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
-        return queryPosts("", sortCriteria, pageNumber, pageSize, null);
+        return queryPosts("WHERE " + NATIVE_ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
 
     @Override
