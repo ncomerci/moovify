@@ -35,8 +35,8 @@
                                 <c:set var="name"><spring:message code="user.notEnabled.name"/></c:set>
                             </c:otherwise>
                         </c:choose>
-                        <spring:message code="commentDisplay.meta.description" arguments="${comment.user.name}, ${comment.likes}"/>
-                        <span uk-icon="icon: ${comment.likes >= 0 ? 'chevron-up' : 'chevron-down'}; ratio: 0.8"></span>
+                        <spring:message code="commentDisplay.meta.description" arguments="${comment.user.name}, ${comment.totalLikes}"/>
+                        <span uk-icon="icon: ${comment.totalLikes >= 0 ? 'chevron-up' : 'chevron-down'}; ratio: 0.8"></span>
                     </p>
                 </div>
                 <div class="uk-width-auto">

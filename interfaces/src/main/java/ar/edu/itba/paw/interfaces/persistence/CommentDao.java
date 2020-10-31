@@ -19,9 +19,9 @@ public interface CommentDao {
 
     PaginatedCollection<Comment> findCommentChildren(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentDescendants(Comment comment, int maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentDescendants(Comment comment, long maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findPostCommentDescendants(Post post, int maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findPostCommentDescendants(Post post, long maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> findCommentsByPost(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize);
 

@@ -5,14 +5,13 @@
 <%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
 
 <jsp:useBean id="comments" scope="request" type="java.util.Collection"/>
-<%--<jsp:useBean id="maxDepth" scope="request" type="java.lang.Integer"/>--%>
-<p>${maxDepth}</p>
+<jsp:useBean id="maxDepth" scope="request" type="java.lang.Long"/>
+<jsp:useBean id="maxDepth_unmodified" scope="request" type="java.lang.Long"/>
 <sec:authorize access="isAuthenticated()">
     <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
 </sec:authorize>
 
 <ul class="uk-comment-list" id="comment-section">
-    <c:if test="${maxDepth > 0}" >
     <c:forEach items="${comments}" var="comment" >
 
         <li class="uk-margin-remove">
@@ -78,11 +77,13 @@
                                 <div class="uk-position-top-right">
                                     <div class="uk-flex">
                                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-top" uk-grid>
-                                            <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
-                                                <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover">
-                                                    <spring:message code="comment.create.reply"/>
-                                                </a>
-                                            </div>
+                                            <sec:authorize access="hasRole('USER')">
+                                                <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
+                                                    <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover">
+                                                        <spring:message code="comment.create.reply"/>
+                                                    </a>
+                                                </div>
+                                            </sec:authorize>
                                             <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
                                                 <a class="uk-link-muted reply-button uk-position-small uk-hidden-hover" href="<c:url value="/comment/${comment.id}"/>">
                                                     <spring:message code="comment.viewComment"/>
@@ -135,17 +136,31 @@
                 </article>
                 <hr>
             </div>
-            <div class="replies-show uk-margin-bottom" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${customTag:descendantCount(comment, maxDepth)}">
+            <c:if test="${maxDepth == 0}">
+                <c:set var="descendants" value="${customTag:descendantCount(comment, maxDepth_unmodified)}"/>
+                <c:if test="${descendants > 0}">
+                    <a class="uk-link-muted" href="<c:url value="/comment/${comment.id}"/>">
+                        <spring:message code="comment.replies.show" arguments="${descendants}"/>
+                    </a>
+                </c:if>
+            </c:if>
+<%--            TODO: si este código comentado se borra, hay que sacar el código de javascript también--%>
+<%--            <div class="replies-show uk-margin-bottom" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${customTag:descendantCount(comment, maxDepth)}">
                 <a class="uk-link-muted"><spring:message code="comment.replies.show" arguments="${customTag:descendantCount(comment, maxDepth)}"/></a>
-            </div>
-            <ul id="${comment.id}-children" class="li uk-hidden">
+            </div>--%>
+<%--            class="li uk-hidden"--%>
+            <ul id="${comment.id}-children">
+                <c:if test="${maxDepth > 0}">
                     <%--  Recursive Call  --%>
-                <c:set var="comments" value="${comment.children}" scope="request" />
-                <c:set var="maxDepth" value="${maxDepth - 1}" scope="request"/>
-                <jsp:include page="commentTree.jsp" />
+                    <c:set var="comments" value="${comment.children}" scope="request" />
+                    <c:set var="maxDepth" value="${maxDepth - 1}" scope="request"/>
+                    <jsp:include page="commentTree.jsp" />
+
+                    <%--      Restoring maxDepth value      --%>
+                    <c:set var="maxDepth" value="${maxDepth + 1}" scope="request"/>
+                </c:if>
             </ul>
         </li>
 
     </c:forEach>
-    </c:if>
 </ul>

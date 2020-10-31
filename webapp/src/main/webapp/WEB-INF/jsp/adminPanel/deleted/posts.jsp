@@ -55,9 +55,9 @@
                                     <c:if test="${post.user.admin && post.user.enabled}">
                                         <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
                                     </c:if>
-                                    <spring:message code="postDisplay.meta.votes" arguments="${post.likes}"/>
+                                    <spring:message code="postDisplay.meta.votes" arguments="${post.totalLikes}"/>
 
-                                    <span uk-icon="icon: <c:out value="${post.likes >= 0 ? 'chevron-up':'chevron-down'}"/>; ratio: 0.8"></span>
+                                    <span uk-icon="icon: <c:out value="${post.totalLikes >= 0 ? 'chevron-up':'chevron-down'}"/>; ratio: 0.8"></span>
                                 </p>
                             </div>
                             <div class="uk-width-auto">

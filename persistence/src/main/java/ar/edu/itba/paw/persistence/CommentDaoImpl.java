@@ -116,7 +116,7 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentDescendants(Comment comment, int maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentDescendants(Comment comment, long maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Comment {} Descendants, Order By {}, Max Depth {}, Page number {}, Page Size {}", comment.getId(), sortCriteria, maxDepth, pageNumber, pageSize);
 
@@ -124,7 +124,7 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public PaginatedCollection<Comment> findPostCommentDescendants(Post post, int maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findPostCommentDescendants(Post post, long maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Post {} Descendants, Order By {}, Max Depth {}, Page number {}, Page Size {}", post.getId(), sortCriteria, maxDepth, pageNumber, pageSize);
 
@@ -279,7 +279,7 @@ public class CommentDaoImpl implements CommentDao {
         return new PaginatedCollection<>(comments, pageNumber, pageSize, totalComments);
     }
 
-    private PaginatedCollection<Comment> queryDescendantComments(SortCriteria sortCriteria, int pageNumber, int pageSize, long rootId, boolean isRootPost, int maxDepth) {
+    private PaginatedCollection<Comment> queryDescendantComments(SortCriteria sortCriteria, int pageNumber, int pageSize, long rootId, boolean isRootPost, long maxDepth) {
 
         final String nativeCountSelect = "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id)";
 

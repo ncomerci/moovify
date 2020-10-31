@@ -82,15 +82,15 @@
                         </c:if>
                         <c:if test="${loggedUser.validated and comment.enabled}">
                             <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                                <c:set var="hasUserVoted" value="${ customTag:getCommentLikeValue(comment, loggedUser.id) != 0 }" />
-                                <c:set var="likeValue" value="${ hasUserVoted and customTag:getCommentLikeValue(comment,loggedUser.id) > 0 }" />
+                                <c:set var="hasUserVoted" value="${ customTag:getCommentLikeValue(comment, loggedUser) != 0 }" />
+                                <c:set var="likeValue" value="${ hasUserVoted and customTag:getCommentLikeValue(comment,loggedUser) > 0 }" />
                                 <a class="like-comment-button" data-id="${comment.id}" data-value="${ likeValue ? 0 : 1 }">
                                     <span class="iconify" data-icon="<c:out value="${ likeValue ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false" ></span>
                                 </a>
                             </div>
                             <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
                                 <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
-                                    <c:out value="${comment.likes}"/>
+                                    <c:out value="${comment.totalLikes}"/>
                                 </p>
                             </div>
                             <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">

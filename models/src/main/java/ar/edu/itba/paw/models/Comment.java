@@ -26,7 +26,7 @@ public class Comment {
                 .findFirst().orElse(0);
     }
 
-    public static int getDescendantCount(Comment comment, int maxDepth) {
+    public static int getDescendantCount(Comment comment, long maxDepth) {
         return comment.getDescendantCount(maxDepth);
     }
 
@@ -137,7 +137,7 @@ public class Comment {
         this.totalLikes = totalLikes;
     }
 
-    public int getDescendantCount(int maxDepth) {
+    public int getDescendantCount(long maxDepth) {
         if(maxDepth <= 1)
             return 0;
 

@@ -11,7 +11,7 @@
 <jsp:useBean id="postId" scope="request" type="java.lang.Long"/>
 <jsp:useBean id="parentId" scope="request" type="java.lang.Long"/>
 <jsp:useBean id="enableReplies" scope="request" type="java.lang.Boolean"/>
-<jsp:useBean id="maxDepth" scope="request" type="java.lang.Integer"/>
+<jsp:useBean id="maxDepth" scope="request" type="java.lang.Long"/>
 
 <sec:authorize access="isAuthenticated()">
     <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
@@ -63,9 +63,10 @@
     </sec:authorize>
     <div class="uk-margin-large-top">
         <hr>
-        <c:set var="paginatedComments" value="${comments}" scope="request"/>
+<%--        <c:set var="paginatedComments" value="${comments}" scope="request"/>--%>
         <c:set var="comments" value="${comments.results}" scope="request"/>
         <c:set var="maxDepth" value="${maxDepth}" scope="request"/>
+        <c:set var="maxDepth_unmodified" value="${maxDepth}" scope="request"/>
         <jsp:include page="/WEB-INF/jsp/components/commentTree.jsp"/>
     </div>
     <c:if test="${not empty paginatedComments}">

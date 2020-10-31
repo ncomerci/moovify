@@ -18,7 +18,7 @@
     <function>
         <name>descendantCount</name>
         <function-class>ar.edu.itba.paw.models.Comment</function-class>
-        <function-signature>int getDescendantCount(ar.edu.itba.paw.models.Comment,int)</function-signature>
+        <function-signature>int getDescendantCount(ar.edu.itba.paw.models.Comment,long)</function-signature>
     </function>
 
     <function>
