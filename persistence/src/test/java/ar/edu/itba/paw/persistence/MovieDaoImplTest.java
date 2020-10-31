@@ -3,6 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,14 +71,14 @@ public class MovieDaoImplTest {
     public void setUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.movieJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TableNames.MOVIES.getTableName())
+                .withTableName(Movie.TABLE_NAME)
                 .usingGeneratedKeyColumns("movie_id");
         this.movieToMovieInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TableNames.MOVIE_TO_MOVIE_CATEGORY.getTableName());
+                .withTableName(Movie.MOVIE_TO_MOVIE_CATEGORY_TABLE_NAME);
         mapInitializer();
 
         this.postMovieInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TableNames.POST_MOVIE.getTableName());
+                .withTableName(Post.POST_MOVIE_TABLE_NAME);
     }
 
 //    @Rollback
@@ -88,7 +89,7 @@ public class MovieDaoImplTest {
 //        final String originalTitle = "originalTitle";
 //        final String originalLanguage = "ES";
 //
-//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), "title = ? AND original_title = ? AND original_language = ?", title, originalTitle, originalLanguage);
+//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Movie.TABLE_NAME, "title = ? AND original_title = ? AND original_language = ?", title, originalTitle, originalLanguage);
 //
 ////        2. ejercitar
 //        Movie movie =  movieDao.register(title, originalTitle, 12, "", originalLanguage, "", 1.5f, 1.5f, 1.5f, LocalDate.now(), Collections.singleton(12L));
@@ -97,7 +98,7 @@ public class MovieDaoImplTest {
 //        Assert.assertNotNull(movie);
 //        final String whereClause = String.format("title = '%s' AND original_title = '%s' AND original_language = '%s'", title, originalTitle, originalLanguage);
 //        Assert.assertEquals(1,
-//                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), whereClause)
+//                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Movie.TABLE_NAME, whereClause)
 //        );
 //    }
 
@@ -111,7 +112,7 @@ public class MovieDaoImplTest {
     public void testFindMovieById() {
 //        1. precondiciones
         long id = movieJdbcInsert.executeAndReturnKey(MOVIE_ROW).longValue();
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.MOVIE_TO_MOVIE_CATEGORY.getTableName(),
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Movie.MOVIE_TO_MOVIE_CATEGORY_TABLE_NAME,
                 "tmdb_category_id = ? AND tmdb_id = ?",MOVIE_TO_MOVIE_CATEGORY_ROW.get("tmdb_category_id"),  MOVIE_ROW.get("tmdb_id"));
         movieToMovieInsert.execute(MOVIE_TO_MOVIE_CATEGORY_ROW);
 
@@ -123,7 +124,7 @@ public class MovieDaoImplTest {
         Assert.assertEquals(movie.get().getId(), id);
         final String whereClause = String.format("movie_id = %d AND title = '%s' AND original_title = '%s'", id, MOVIE_ROW.get("title"), MOVIE_ROW.get("original_title"));
         Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Movie.TABLE_NAME, whereClause)
         );
     }
 
@@ -132,7 +133,7 @@ public class MovieDaoImplTest {
 //    public void testFindMovieByPost() {
 //
 //        //Requires users with ID 1, 2 and 3.
-//        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+//        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 //
 //        long movieId1 = insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
 //        insertMovieToMovieCategory(123, 12);
@@ -160,7 +161,7 @@ public class MovieDaoImplTest {
     @Test
     public void testGetAllMoviesNotPaginated() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
         long id = movieJdbcInsert.executeAndReturnKey(MOVIE_ROW).longValue();
         movieToMovieInsert.execute(MOVIE_TO_MOVIE_CATEGORY_ROW);
@@ -184,7 +185,7 @@ public class MovieDaoImplTest {
         Assert.assertEquals(4, moviesNotPaginated.size());
         final String whereClause = String.format("movie_id = %d OR movie_id = %d OR movie_id = %d OR movie_id = %d", id, ids[0], ids[1], ids[2]);
         Assert.assertEquals(4,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.MOVIES.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Movie.TABLE_NAME, whereClause)
         );
     }
 
@@ -193,7 +194,7 @@ public class MovieDaoImplTest {
     public void testGetAllMoviesNewest() {
 
         // Requires users with ID 1, 2 and 3.
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
         insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
         insertMovieToMovieCategory(123, 12);
@@ -215,7 +216,7 @@ public class MovieDaoImplTest {
     public void testGetAllMoviesOldest() {
 
         //Requires users with ID 1, 2 and 3.
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
         insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
         insertMovieToMovieCategory(123, 12);
@@ -237,7 +238,7 @@ public class MovieDaoImplTest {
     public void testGetAllMoviesTitle() {
 
         //Requires users with ID 1, 2 and 3.
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
         insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
         insertMovieToMovieCategory(123, 12);
@@ -259,7 +260,7 @@ public class MovieDaoImplTest {
     public void testGetAllMoviesPostCount() {
 
         //Requires users with ID 1, 2 and 3.
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
         long movieId1 = insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
         insertMovieToMovieCategory(123, 12);
@@ -289,7 +290,7 @@ public class MovieDaoImplTest {
     @Test
     public void testGetAllMoviesEmptyPage() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
         insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
         insertMovieToMovieCategory(123, 12);
@@ -318,7 +319,7 @@ public class MovieDaoImplTest {
     @Test
     public void testSearchMovies() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
         insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
         insertMovieToMovieCategory(123, 12);
@@ -345,7 +346,7 @@ public class MovieDaoImplTest {
     @Test
     public void testSearchMoviesByCategory() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
         insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
         insertMovieToMovieCategory(123, 12);
@@ -376,7 +377,7 @@ public class MovieDaoImplTest {
     @Test
     public void testSearchMoviesByReleaseDate() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
         insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
         insertMovieToMovieCategory(123, 12);
@@ -406,7 +407,7 @@ public class MovieDaoImplTest {
     @Test
     public void testSearchMoviesByCategoryAndReleaseDate() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.MOVIES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
         insertMovie("TITULO",123,"imdb123", LocalDate.of(1998,8,6));
         insertMovieToMovieCategory(123, 12);

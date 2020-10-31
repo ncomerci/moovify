@@ -23,14 +23,14 @@
 //
 //    private static final Logger LOGGER = LoggerFactory.getLogger(UserVerificationTokenDaoImpl.class);
 //
-//    private static final String USER_VERIFICATION_TOKEN = TableNames.USER_VERIFICATION_TOKEN.getTableName();
-//    private static final String USERS = TableNames.USERS.getTableName();
+//    private static final String USER_VERIFICATION_TOKEN = UserVerificationToken.TABLE_NAME;
+//    private static final String USERS = User.TABLE_NAME;
 //    private static final String ROLES = TableNames.ROLES.getTableName();
-//    private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
-//    private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
-//    private static final String COMMENTS = TableNames.COMMENTS.getTableName();
-//    private static final String POSTS = TableNames.POSTS.getTableName();
-//    private static final String POSTS_LIKES = TableNames.POSTS_LIKES.getTableName();
+//    private static final String USER_ROLE = User.USER_ROLE_TABLE_NAME;
+//    private static final String COMMENTS_LIKES = CommentLike.TABLE_NAME;
+//    private static final String COMMENTS = Comment.TABLE_NAME;
+//    private static final String POSTS = Post.TABLE_NAME;
+//    private static final String POSTS_LIKES = PostLike.TABLE_NAME;
 //
 //
 //    private static final String GET_TOKEN_QUERY = "SELECT " +

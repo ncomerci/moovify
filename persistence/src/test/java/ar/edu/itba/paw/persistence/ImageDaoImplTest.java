@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.persistence;
 
+import ar.edu.itba.paw.models.Image;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class ImageDaoImplTest {
     public void setUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.imageInsert = new SimpleJdbcInsert(ds)
-                .withTableName(TableNames.IMAGES.getTableName())
+                .withTableName(Image.TABLE_NAME)
                 .usingGeneratedKeyColumns("image_id");
 
     }
@@ -46,11 +47,11 @@ public class ImageDaoImplTest {
     @Test
     public void testUploadImage() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.IMAGES.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
 
         imageDao.uploadImage(new byte[BYTE_ARRAY_SIZE], TAG);
 
-        final int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, TableNames.IMAGES.getTableName());
+        final int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, Image.TABLE_NAME);
 
         Assert.assertEquals(1, count);
     }

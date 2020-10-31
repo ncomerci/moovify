@@ -19,6 +19,10 @@ public class Post {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Post.class);
 
+    public static final String TABLE_NAME = "posts";
+    public static final String POST_MOVIE_TABLE_NAME = "post_movie";
+    public static final String TAGS_TABLE_NAME = "tags";
+
     static public int getLikeValueByUser(Post post, User user) {
         return post.getLikes().stream()
                 .filter(postLike -> postLike.getUser().getId() == user.getId())

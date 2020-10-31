@@ -8,6 +8,8 @@ import java.util.Objects;
 @Table(name = "post_category")
 public class PostCategory {
 
+    public static final String TABLE_NAME = "post_category";
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "post_category_category_id_seq")
     @SequenceGenerator(sequenceName = "post_category_category_id_seq", name = "post_category_category_id_seq", allocationSize = 1)

@@ -73,27 +73,27 @@ public class PostDaoImplTest {
     public void testSetUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.postInsert = new SimpleJdbcInsert(ds)
-                .withTableName(TableNames.POSTS.getTableName())
+                .withTableName(Post.TABLE_NAME)
                 .usingGeneratedKeyColumns("post_id");
 
         this.postMovieInsert = new SimpleJdbcInsert(ds)
-                .withTableName(TableNames.POST_MOVIE.getTableName());
+                .withTableName(Post.POST_MOVIE_TABLE_NAME);
 
-        this.postLikeInsert = new SimpleJdbcInsert(ds).withTableName(TableNames.POSTS_LIKES.getTableName());
+        this.postLikeInsert = new SimpleJdbcInsert(ds).withTableName(PostLike.TABLE_NAME);
     }
 
 //    @Rollback
 //    @Test
 //    public void testRegister() {
 //
-//        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+//        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 //
 //        final Post post = postDao.register(TITLE, BODY, WORD_COUNT, CATEGORY, USER_MOCK, TAGS, MOVIES, ENABLE);
 //
 //        final String whereClause = String.format("post_id = %d AND title = '%s' AND body = '%s'", post.getId(), TITLE, BODY);
 //
 //        Assert.assertEquals(1,
-//                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), whereClause)
+//                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Post.TABLE_NAME, whereClause)
 //        );
 //
 //    }
@@ -122,14 +122,14 @@ public class PostDaoImplTest {
     @Test
     public void testDeletePost() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         final Post mockedPost = Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(postId).getMock();
 
 //        postDao.deletePost(mockedPost);
 
-        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), "enabled = true");
+        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Post.TABLE_NAME, "enabled = true");
 
         Assert.assertEquals(0, countPostExecution);
     }
@@ -146,14 +146,14 @@ public class PostDaoImplTest {
     @Test
     public void testRestorePost() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
         final Post mockedPost = Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(postId).getMock();
 
 //        postDao.restorePost(mockedPost);
 
-        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS.getTableName(), "enabled = true");
+        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Post.TABLE_NAME, "enabled = true");
 
         Assert.assertEquals(1, countPostExecution);
     }
@@ -174,14 +174,14 @@ public class PostDaoImplTest {
     @Test
     public void testLikePost() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         final Post mockedPost = Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(postId).getMock();
 
         postDao.likePost(mockedPost, USER_MOCK, UP_VOTE);
 
-        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS_LIKES.getTableName(), "post_id = " + postId);
+        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PostLike.TABLE_NAME, "post_id = " + postId);
 
         Assert.assertEquals(1, countPostExecution);
     }
@@ -197,7 +197,7 @@ public class PostDaoImplTest {
     @Rollback
     @Test
     public void testRemoveLike() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         insertPostLike(postId, USER_ID, DOWN_VOTE);
@@ -205,7 +205,7 @@ public class PostDaoImplTest {
 
 //        postDao.removeLike(mockedPost, USER_MOCK);
 
-        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.POSTS_LIKES.getTableName(), "post_id = " + postId);
+        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PostLike.TABLE_NAME, "post_id = " + postId);
 
         Assert.assertEquals(0, countPostExecution);
     }
@@ -223,7 +223,7 @@ public class PostDaoImplTest {
     @Test
     public void testFindPostById() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
@@ -246,7 +246,7 @@ public class PostDaoImplTest {
     @Test
     public void testFindPostsByMovie() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long post1 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         insertPostMovie(post1, MOVIE_ID);
@@ -266,7 +266,7 @@ public class PostDaoImplTest {
     @Test
     public void testFindPostsByUser() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         insertPost(TITLE, USER_ID2, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
@@ -287,7 +287,7 @@ public class PostDaoImplTest {
     public void testGetAllPostsNewest() {
 
         // Requires users with ID 1, 2 and 3.
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long post1 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         final long post2 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
@@ -305,7 +305,7 @@ public class PostDaoImplTest {
     public void testGetAllPostsOldest() {
 
         //Requires users with ID 1, 2 and 3.
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long post1 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         final long post2 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
@@ -323,7 +323,7 @@ public class PostDaoImplTest {
     public void testGetAllPostsHottest() {
 
         //Requires users with ID 1, 2 and 3.
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long post1 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         insertPostLike(post1, 1L,UP_VOTE);
@@ -348,7 +348,7 @@ public class PostDaoImplTest {
     @Test
     public void testGetAllPostsEmptyPage() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
@@ -365,7 +365,7 @@ public class PostDaoImplTest {
     @Test
     public void testGetAllPostsExcludingNotEnabled() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
         insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
@@ -390,7 +390,7 @@ public class PostDaoImplTest {
     @Test
     public void testGetDeletedPostsExcludingEnabled() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
         insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
@@ -415,7 +415,7 @@ public class PostDaoImplTest {
     @Test
     public void testSearchPosts() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         insertPost("Title", USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         insertPost("Titulito", USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
@@ -438,7 +438,7 @@ public class PostDaoImplTest {
     @Test
     public void testSearchDeletedPosts() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         insertPost("Title", USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
         insertPost("Titulito", USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
@@ -461,7 +461,7 @@ public class PostDaoImplTest {
     @Test
     public void testSearchPostsByCategory() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         insertPost("Title", USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         insertPost("Titulito", USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID2, WORD_COUNT, BODY, ENABLE);
@@ -484,7 +484,7 @@ public class PostDaoImplTest {
     @Test
     public void testSearchPostsOlderThan() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long post1 = insertPost("Title", USER_ID, CREATION_DATE.minusHours(15), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         final long post2 = insertPost("Titulito", USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
@@ -508,7 +508,7 @@ public class PostDaoImplTest {
     @Test
     public void testSearchPostsByCategoryAndOlderThan() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.POSTS.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long post1 = insertPost("Title", USER_ID, CREATION_DATE.minusHours(15), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         final long post2 = insertPost("Titulito", USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);

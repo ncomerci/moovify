@@ -22,13 +22,13 @@
 //    private static final Logger LOGGER = LoggerFactory.getLogger(CommenJdbctDaoImpl.class);
 //
 //    // Constants with Table Names
-//    private static final String COMMENTS = TableNames.COMMENTS.getTableName();
-//    private static final String POSTS = TableNames.POSTS.getTableName();
-//    private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
-//    private static final String USERS = TableNames.USERS.getTableName();
+//    private static final String COMMENTS = Comment.TABLE_NAME;
+//    private static final String POSTS = Post.TABLE_NAME;
+//    private static final String POST_CATEGORY = PostCategory.TABLE_NAME;
+//    private static final String USERS = User.TABLE_NAME;
 //    private static final String ROLES = TableNames.ROLES.getTableName();
-//    private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
-//    private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
+//    private static final String USER_ROLE = User.USER_ROLE_TABLE_NAME;
+//    private static final String COMMENTS_LIKES = CommentLike.TABLE_NAME;
 //
 //    private static final int MAX_CHILDREN_PAGINATION_DEPTH = 5;
 //

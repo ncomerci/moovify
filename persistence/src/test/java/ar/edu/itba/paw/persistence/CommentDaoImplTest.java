@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -68,12 +65,12 @@ public class CommentDaoImplTest {
     public void setUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.likeInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TableNames.COMMENTS_LIKES.getTableName());
+                .withTableName(CommentLike.TABLE_NAME);
         this.commentInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TableNames.COMMENTS.getTableName())
+                .withTableName(Comment.TABLE_NAME)
                 .usingGeneratedKeyColumns("comment_id");
         this.userInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(TableNames.USERS.getTableName())
+                .withTableName(User.TABLE_NAME)
                 .usingGeneratedKeyColumns("user_id");
         mapInitializer();
     }
@@ -83,7 +80,7 @@ public class CommentDaoImplTest {
     @Test
     public void testRegister() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), "user_id = ?", USER_ID);
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME, "user_id = ?", USER_ID);
 
 //        2. ejercitar
         commentDao.register(POST, null, BODY, USER, true);
@@ -91,7 +88,7 @@ public class CommentDaoImplTest {
 //        3. post-condiciones
         final String whereClause = "user_id = " + USER_ID + " AND POST_ID = " + POST_ID;
         Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause)
         );
     }
 
@@ -107,7 +104,7 @@ public class CommentDaoImplTest {
     @Test
     public void testLikeComment() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS_LIKES.getTableName(),
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, CommentLike.TABLE_NAME,
                 "user_id = ? AND comment_id = ?", USER_ID, COMMENT_ID);
         final int value = 1;
 
@@ -117,7 +114,7 @@ public class CommentDaoImplTest {
 //        3. post-condiciones
         final String whereClause = String.format("user_id = %d AND comment_id = %d AND value = %d", USER_ID, COMMENT_ID, value);
         Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS_LIKES.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, CommentLike.TABLE_NAME, whereClause)
         );
     }
     */
@@ -126,7 +123,7 @@ public class CommentDaoImplTest {
     @Test
     public void removeLike() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS_LIKES.getTableName(),
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, CommentLike.TABLE_NAME,
                 "user_id = ? AND comment_id = ?", USER_ID, COMMENT_ID);
         final long value = 1L;
         Map<String, Object> row = new HashMap<>();
@@ -142,7 +139,7 @@ public class CommentDaoImplTest {
 //        3. post-condiciones
         final String whereClause = String.format("user_id = %d AND comment_id = %d", USER_ID, COMMENT_ID);
         Assert.assertEquals(0,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS_LIKES.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, CommentLike.TABLE_NAME, whereClause)
         );
     }
 
@@ -159,7 +156,7 @@ public class CommentDaoImplTest {
 //        3. post-condiciones
         final String whereClause = String.format("comment_id = %d AND enabled = false", id);
         Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause)
         );
     }
 
@@ -176,7 +173,7 @@ public class CommentDaoImplTest {
 //        3. post-condiciones
         final String whereClause = String.format("comment_id = %d AND enabled = true", id);
         Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause)
         );
     }
 
@@ -196,7 +193,7 @@ public class CommentDaoImplTest {
         Assert.assertEquals(comment.get().getUser().getId(), USER_ID);
         final String whereClause = String.format("comment_id = %d AND user_id = %d AND post_id = %d", id, USER_ID, POST_ID);
         Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause)
         );
     }
 
@@ -207,7 +204,7 @@ public class CommentDaoImplTest {
     @Test
     public void testFindCommentDescendantsByNewest() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), "parent_id = ?", PARENT_ID);
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME, "parent_id = ?", PARENT_ID);
         COMMENT_ROW.put("parent_id", PARENT_ID);
         final int cant = PAGE_SIZE*2;
         StringBuilder whereClause = new StringBuilder();
@@ -243,7 +240,7 @@ public class CommentDaoImplTest {
 
         }
         Assert.assertEquals(cant,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause.toString())
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause.toString())
         );
     }
     */
@@ -268,7 +265,7 @@ public class CommentDaoImplTest {
     @Test
     public void testFindCommentDescendantsByHottest() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), "parent_id = ?", PARENT_ID);
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME, "parent_id = ?", PARENT_ID);
         final int cant = PAGE_SIZE*2;
         COMMENT_ROW.put("parent_id", PARENT_ID);
 
@@ -315,7 +312,7 @@ public class CommentDaoImplTest {
 
         }
         Assert.assertEquals(cant,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause.toString())
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause.toString())
         );
     }
     */
@@ -324,7 +321,7 @@ public class CommentDaoImplTest {
     @Test
     public void testFindCommentsByPost() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME,
                 "post_id = ?", POST_ID);
         long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
 
@@ -336,7 +333,7 @@ public class CommentDaoImplTest {
         Assert.assertEquals(id, commentsByPost.getResults().toArray(new Comment[0])[0].getId());
         final String whereClause = String.format("comment_id = %d AND post_id = %d", id, POST_ID);
         Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause)
         );
     }
 
@@ -344,7 +341,7 @@ public class CommentDaoImplTest {
     @Test
     public void testFindCommentsByUser() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME,
                 "user_id = ?", USER_ID);
         long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
 
@@ -356,7 +353,7 @@ public class CommentDaoImplTest {
         Assert.assertEquals(id, commentsByUser.getResults().toArray(new Comment[0])[0].getId());
         final String whereClause = String.format("comment_id = %d AND user_id = %d", id, USER_ID);
         Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause)
         );
     }
 
@@ -364,7 +361,7 @@ public class CommentDaoImplTest {
     @Test
     public void testGetDeletedComments() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME,
                 "enabled = false");
         COMMENT_ROW.put("enabled", false);
         long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
@@ -377,7 +374,7 @@ public class CommentDaoImplTest {
         Assert.assertEquals(id, deletedComments.getResults().toArray(new Comment[0])[0].getId());
         final String whereClause = String.format("comment_id = %d AND user_id = %d AND post_id = %d  AND enabled = false", id, USER_ID, POST_ID);
         Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause)
         );
     }
 
@@ -385,7 +382,7 @@ public class CommentDaoImplTest {
     @Test
     public void testSearchDeletedComments() {
 //        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(),
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME,
                 "body = ?", BODY);
         COMMENT_ROW.put("enabled", false);
         long id = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
@@ -398,7 +395,7 @@ public class CommentDaoImplTest {
         Assert.assertEquals(id, deletedComments.getResults().toArray(new Comment[0])[0].getId());
         final String whereClause = String.format("comment_id = %d AND body = '%s' AND enabled = false", id, BODY);
         Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.COMMENTS.getTableName(), whereClause)
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause)
         );
     }
 }

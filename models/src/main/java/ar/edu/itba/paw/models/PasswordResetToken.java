@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 @Table(name = "password_reset_token")
 public class PasswordResetToken {
 
+    public static final String TABLE_NAME = "password_reset_token";
+
     private static final int VALID_DAYS = 1;
 
     @Id

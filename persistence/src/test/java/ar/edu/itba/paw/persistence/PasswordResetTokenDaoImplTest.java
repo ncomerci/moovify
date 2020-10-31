@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
+import ar.edu.itba.paw.models.PasswordResetToken;
 import ar.edu.itba.paw.models.User;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,21 +43,21 @@ public class PasswordResetTokenDaoImplTest {
     public void testSetUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.tokenInsert = new SimpleJdbcInsert(ds)
-                .withTableName(TableNames.PASSWORD_RESET_TOKEN.getTableName())
+                .withTableName(PasswordResetToken.TABLE_NAME)
                 .usingGeneratedKeyColumns("token_id");
     }
 
     @Test
     public void createPasswordResetToken() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.PASSWORD_RESET_TOKEN.getTableName());
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, PasswordResetToken.TABLE_NAME);
 
         passwordResetTokenDao.createPasswordResetToken(
                 UUID.randomUUID().toString(),
                 LocalDateTime.now().plusDays(1),
                 Mockito.when(Mockito.mock(User.class).getId()).thenReturn(USER_ID).getMock());
 
-        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.PASSWORD_RESET_TOKEN.getTableName(), String.format("user_id = %d", USER_ID));
+        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PasswordResetToken.TABLE_NAME, String.format("user_id = %d", USER_ID));
 
         Assert.assertEquals(1, count);
     }
@@ -74,7 +75,7 @@ public class PasswordResetTokenDaoImplTest {
 
         passwordResetTokenDao.deletePasswordResetToken(Mockito.when(Mockito.mock(User.class).getId()).thenReturn(USER_ID).getMock());
 
-        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, TableNames.PASSWORD_RESET_TOKEN.getTableName(), String.format("user_id = %d", USER_ID));
+        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PasswordResetToken.TABLE_NAME, String.format("user_id = %d", USER_ID));
 
         Assert.assertEquals(0, count);
     }

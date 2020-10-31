@@ -2,10 +2,7 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -23,8 +20,8 @@ public class CommentDaoImpl implements CommentDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentDaoImpl.class);
 
-    private static final String COMMENTS = TableNames.COMMENTS.getTableName();
-    private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
+    private static final String COMMENTS = Comment.TABLE_NAME;
+    private static final String COMMENTS_LIKES = CommentLike.TABLE_NAME;
 
     private static final String NATIVE_BASE_COMMENT_FROM = "FROM " + COMMENTS;
 

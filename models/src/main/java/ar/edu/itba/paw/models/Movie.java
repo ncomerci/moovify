@@ -12,6 +12,9 @@ import java.util.Set;
 @Table(name = "movies")
 public class Movie implements Serializable {
 
+    public static final String TABLE_NAME = "movies";
+    public static final String MOVIE_TO_MOVIE_CATEGORY_TABLE_NAME = "movies";
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movies_movie_id_seq")
     @SequenceGenerator(sequenceName = "movies_movie_id_seq", name = "movies_movie_id_seq", allocationSize = 1)

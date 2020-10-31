@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 @Table(name = "user_verification_token")
 public class UserVerificationToken {
 
+    public static final String TABLE_NAME = "users";
+
     private static final int VALID_DAYS = 1;
 
     @Id

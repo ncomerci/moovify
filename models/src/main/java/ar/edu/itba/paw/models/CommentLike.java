@@ -12,6 +12,8 @@ public class CommentLike {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentLike.class);
 
+    public static final String TABLE_NAME = "comments_likes";
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comments_likes_comments_likes_id_seq")
     @SequenceGenerator(sequenceName = "comments_likes_comments_likes_id_seq", name = "comments_likes_comments_likes_id_seq", allocationSize = 1)

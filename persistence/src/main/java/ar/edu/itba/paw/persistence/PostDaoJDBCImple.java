@@ -25,15 +25,15 @@
 //    private static final Logger LOGGER = LoggerFactory.getLogger(PostDaoImpl.class);
 //
 //    // Constants with Table Names
-//    private static final String POSTS = TableNames.POSTS.getTableName();
-//    private static final String MOVIES = TableNames.MOVIES.getTableName();
-//    private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
-//    private static final String POSTS_LIKES = TableNames.POSTS_LIKES.getTableName();
-//    private static final String TAGS = TableNames.TAGS.getTableName();
-//    private static final String POST_CATEGORY = TableNames.POST_CATEGORY.getTableName();
-//    private static final String USERS = TableNames.USERS.getTableName();
+//    private static final String POSTS = Post.TABLE_NAME;
+//    private static final String MOVIES = Movie.TABLE_NAME;
+//    private static final String POST_MOVIE = Post.POST_MOVIE_TABLE_NAME;
+//    private static final String POSTS_LIKES = PostLike.TABLE_NAME;
+//    private static final String TAGS = Post.TAGS_TABLE_NAME;
+//    private static final String POST_CATEGORY = PostCategory.TABLE_NAME;
+//    private static final String USERS = User.TABLE_NAME;
 //    private static final String ROLES = TableNames.ROLES.getTableName();
-//    private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
+//    private static final String USER_ROLE = User.USER_ROLE_TABLE_NAME;
 //
 //
 //    private static final String BASE_POST_SELECT = "SELECT " +

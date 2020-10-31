@@ -8,6 +8,8 @@ import java.util.Objects;
 @Table(name = "movie_categories")
 public class MovieCategory implements Serializable {
 
+    public static final String TABLE_NAME = "movie_categories";
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movie_categories_category_id_seq")
     @SequenceGenerator(sequenceName = "movie_categories_category_id_seq", name = "movie_categories_category_id_seq", allocationSize = 1)

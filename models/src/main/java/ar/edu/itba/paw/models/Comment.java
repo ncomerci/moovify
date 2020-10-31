@@ -17,6 +17,8 @@ public class Comment {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Comment.class);
 
+    public static final String TABLE_NAME = "comments";
+
     static public int getLikeValue(Comment comment, User user) {
         return comment.getLikes().stream()
                 .filter(commentLike -> commentLike.getUser().getId() == user.getId())
@@ -24,26 +26,9 @@ public class Comment {
                 .findFirst().orElse(0);
     }
 
-    /*
-    public static int getTotalComments(Collection<Comment> comments) {
-        if(maxDepth <= 1)
-            return 0;
-
-        return comments.stream().reduce(0, (acc, comment) -> acc + comment.getDescendantCount(maxDepth - 1) + 1, Integer::sum);
-    }
-    */
-
     public static int getDescendantCount(Comment comment, int maxDepth) {
         return comment.getDescendantCount(maxDepth);
     }
-
-    /*public static boolean hasUserVotedComment(Comment comment, long user_id){
-        return comment.getVotedBy().containsKey(user_id);
-    }
-
-    public static boolean hasUserLikedComment(Comment comment, long user_id){
-        return comment.getVotedBy().get(user_id) > 0;
-    }*/
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comments_comment_id_seq")

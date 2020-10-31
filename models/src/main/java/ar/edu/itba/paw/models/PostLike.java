@@ -12,6 +12,8 @@ public class PostLike {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PostLike.class);
 
+    public static final String TABLE_NAME = "posts_likes";
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_likes_post_likes_id_seq")
     @SequenceGenerator(sequenceName = "posts_likes_post_likes_id_seq", name = "posts_likes_post_likes_id_seq", allocationSize = 1)

@@ -3,10 +3,7 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
-import ar.edu.itba.paw.models.Image;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Role;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -27,15 +24,12 @@ public class UserDaoImpl implements UserDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
 
-    @PersistenceContext
-    private EntityManager em;
-
-    private static final String USERS = TableNames.USERS.getTableName();
-    private static final String USER_ROLE = TableNames.USER_ROLE.getTableName();
-    private static final String POSTS = TableNames.POSTS.getTableName();
-    private static final String POSTS_LIKES = TableNames.POSTS_LIKES.getTableName();
-    private static final String COMMENTS_LIKES = TableNames.COMMENTS_LIKES.getTableName();
-    private static final String COMMENTS = TableNames.COMMENTS.getTableName();
+    private static final String USERS = User.TABLE_NAME;
+    private static final String USER_ROLE = User.USER_ROLE_TABLE_NAME;
+    private static final String POSTS = Post.TABLE_NAME;
+    private static final String POSTS_LIKES = PostLike.TABLE_NAME;
+    private static final String COMMENTS_LIKES = CommentLike.TABLE_NAME;
+    private static final String COMMENTS = Comment.TABLE_NAME;
 
     private static final String NATIVE_BASE_USER_FROM = "FROM " + USERS;
 
@@ -96,6 +90,9 @@ public class UserDaoImpl implements UserDao {
 
         return sortCriteriaQuery;
     }
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public User register(String username, String password, String name, String email, String description, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateUniqueUserAttributeException {

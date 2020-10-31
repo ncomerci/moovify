@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.UserVerificationToken;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,14 +43,14 @@ public class UserVerificationTokenDaoImplTest {
         public void testSetUp() {
             this.jdbcTemplate = new JdbcTemplate(ds);
             this.tokenInsert = new SimpleJdbcInsert(ds)
-                    .withTableName(TableNames.USER_VERIFICATION_TOKEN.getTableName())
+                    .withTableName(UserVerificationToken.TABLE_NAME)
                     .usingGeneratedKeyColumns("token_id");
         }
 
         @Test
         public void createPasswordResetToken() {
 
-            JdbcTestUtils.deleteFromTables(jdbcTemplate, TableNames.USER_VERIFICATION_TOKEN.getTableName());
+            JdbcTestUtils.deleteFromTables(jdbcTemplate, UserVerificationToken.TABLE_NAME);
 
             userVerificationTokenDao.createVerificationToken(
                     UUID.randomUUID().toString(),
@@ -58,7 +59,7 @@ public class UserVerificationTokenDaoImplTest {
 
             final int count = JdbcTestUtils.countRowsInTableWhere(
                     jdbcTemplate,
-                    TableNames.USER_VERIFICATION_TOKEN.getTableName(),
+                    UserVerificationToken.TABLE_NAME,
                     String.format("user_id = %d", USER_ID));
 
             Assert.assertEquals(1, count);
@@ -80,7 +81,7 @@ public class UserVerificationTokenDaoImplTest {
 
             final int count = JdbcTestUtils.countRowsInTableWhere(
                     jdbcTemplate,
-                    TableNames.USER_VERIFICATION_TOKEN.getTableName(),
+                    UserVerificationToken.TABLE_NAME,
                     String.format("user_id = %d", USER_ID));
 
             Assert.assertEquals(0, count);

@@ -5,6 +5,7 @@ import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgume
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -23,11 +24,11 @@ public class MovieDaoImpl implements MovieDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieDaoImpl.class);
 
-    private static final String MOVIES = TableNames.MOVIES.getTableName();
-    private static final String POST_MOVIE = TableNames.POST_MOVIE.getTableName();
-    private static final String POSTS = TableNames.POSTS.getTableName();
-    private static final String MOVIE_TO_MOVIE_CATEGORY = TableNames.MOVIE_TO_MOVIE_CATEGORY.getTableName();
-    private static final String MOVIE_CATEGORIES = TableNames.MOVIE_CATEGORIES.getTableName();
+    private static final String MOVIES = Movie.TABLE_NAME;
+    private static final String POST_MOVIE = Post.POST_MOVIE_TABLE_NAME;
+    private static final String POSTS = Post.TABLE_NAME;
+    private static final String MOVIE_TO_MOVIE_CATEGORY = Movie.MOVIE_TO_MOVIE_CATEGORY_TABLE_NAME;
+    private static final String MOVIE_CATEGORIES = MovieCategory.TABLE_NAME;
 
     private static final String NATIVE_BASE_MOVIE_FROM = "FROM " + MOVIES;
 

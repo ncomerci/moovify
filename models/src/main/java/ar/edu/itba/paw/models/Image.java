@@ -6,6 +6,8 @@ import javax.persistence.*;
 @Table(name = "images")
 public class Image {
 
+    public static final String TABLE_NAME = "images";
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "images_image_id_seq")
     @SequenceGenerator(sequenceName = "images_image_id_seq", name = "images_image_id_seq", allocationSize = 1)
