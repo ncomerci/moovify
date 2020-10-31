@@ -3,8 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
@@ -64,7 +63,7 @@ public class UserServiceTest {
 
 
     @Test
-    public void testRegister() throws DuplicateUsernameException, DuplicateEmailException {
+    public void testRegister() throws DuplicateUniqueUserAttributeException {
 //        1. Setup: Establezco las pre-condiciones
 
         User user = Mockito.mock(User.class);
@@ -87,7 +86,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testRegisterWithAvatar() throws DuplicateUsernameException, DuplicateEmailException {
+    public void testRegisterWithAvatar() throws DuplicateUniqueUserAttributeException {
 //        1. Setup: Establezco las pre-condiciones
         User user = Mockito.mock(User.class);
         UserService userServiceMock = Mockito.mock(UserService.class);
@@ -114,7 +113,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testUpdateUsername() throws DuplicateUsernameException {
+    public void testUpdateUsername() throws DuplicateUniqueUserAttributeException {
         userService.updateUsername(Mockito.mock(User.class), USERNAME);
     }
 

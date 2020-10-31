@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
 
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
@@ -34,6 +33,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -83,17 +83,23 @@ public class UserController {
                     userCreateForm.getEmail(), userCreateForm.getDescription(), userCreateForm.getAvatar().getBytes(), "confirmEmail");
         }
 
-        catch(DuplicateUsernameException dupUsername) {
-            bindingResult.rejectValue("username", "validation.user.UniqueUsername");
+        catch(DuplicateUniqueUserAttributeException e) {
 
-            LOGGER.warn("There was an error creating a User. Username {} was not unique", userCreateForm.getUsername());
-            return showUserCreateForm(userCreateForm);
-        }
+            final EnumSet<DuplicateUniqueUserAttributeException.UniqueAttributes> duplicatedAttributes =
+                    e.getDuplicatedUniqueAttributes();
 
-        catch (DuplicateEmailException dupEmail) {
-            bindingResult.rejectValue("email", "validation.user.UniqueEmail");
+            if(duplicatedAttributes.contains(DuplicateUniqueUserAttributeException.UniqueAttributes.USERNAME)) {
+                bindingResult.rejectValue("username", "validation.user.UniqueUsername");
 
-            LOGGER.warn("There was an error creating a User. Email {} was not unique", userCreateForm.getEmail());
+                LOGGER.warn("There was an error creating a User. Username {} was not unique", userCreateForm.getUsername());
+            }
+
+            if(duplicatedAttributes.contains(DuplicateUniqueUserAttributeException.UniqueAttributes.EMAIL)) {
+                bindingResult.rejectValue("email", "validation.user.UniqueEmail");
+
+                LOGGER.warn("There was an error creating a User. Email {} was not unique", userCreateForm.getEmail());
+            }
+
             return showUserCreateForm(userCreateForm);
         }
 
@@ -222,12 +228,17 @@ public class UserController {
         try {
             userService.updateUsername(user, usernameEditForm.getUsername());
         }
-        catch(DuplicateUsernameException e) {
-            bindingResult.rejectValue("username", "validation.user.UniqueUsername");
+        catch(DuplicateUniqueUserAttributeException e) {
 
-            LOGGER.warn("User {} tried to update it's username to a one which already existed, {}", user.getId(), usernameEditForm.getUsername());
+            if(e.getDuplicatedUniqueAttributes().contains(DuplicateUniqueUserAttributeException.UniqueAttributes.USERNAME)) {
+                bindingResult.rejectValue("username", "validation.user.UniqueUsername");
 
-            return editProfile(nameEditForm, usernameEditForm, descriptionEditForm);
+                LOGGER.warn("User {} tried to update it's username to a one which already existed, {}", user.getId(), usernameEditForm.getUsername());
+
+                return editProfile(nameEditForm, usernameEditForm, descriptionEditForm);
+            }
+            else
+                throw new IllegalStateException("DuplicateUniqueUserAttributeException had invalid state in updateUsername");
         }
 
         manualLogin(request, usernameEditForm.getUsername(), user.getPassword(), user.getRoles());

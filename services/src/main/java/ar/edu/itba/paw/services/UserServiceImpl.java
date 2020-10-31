@@ -3,8 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
@@ -48,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) throws DuplicateUsernameException, DuplicateEmailException {
+    public User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) throws DuplicateUniqueUserAttributeException {
 
         final Image image = imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
 
@@ -70,7 +69,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateUsername(User user, String username) throws DuplicateUsernameException {
+    public void updateUsername(User user, String username) throws DuplicateUniqueUserAttributeException {
         userDao.updateUsername(user, username);
     }
 

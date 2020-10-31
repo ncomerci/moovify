@@ -1,8 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
@@ -108,7 +107,7 @@ public class UserDaoTest {
 
     @Rollback
     @Test
-    public void testRegister() throws DuplicateUsernameException, DuplicateEmailException {
+    public void testRegister() throws DuplicateUniqueUserAttributeException {
         Set<Role> roles = new HashSet<>();
         roles.add(Role.USER);
         roles.add(Role.ADMIN);

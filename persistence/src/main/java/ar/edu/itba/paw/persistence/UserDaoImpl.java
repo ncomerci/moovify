@@ -1,8 +1,7 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.PaginatedCollection;
@@ -99,9 +98,39 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User register(String username, String password, String name, String email, String description, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException {
+    public User register(String username, String password, String name, String email, String description, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateUniqueUserAttributeException {
 
-        // TODO: Throw DuplicateUsernameException/DuplicateEmailException if username/email is already taken
+        final List<Tuple> userIntegrityViolators =
+                em.createQuery(
+                        "SELECT u.username AS username, u.email AS email FROM User u WHERE u.username = :username OR u.email = :email",
+                        Tuple.class)
+                .setParameter("username", username)
+                .setParameter("email", email)
+                .getResultList();
+
+        // Verify User Unique Attributes Are Not Present In Database
+        if(!userIntegrityViolators.isEmpty()) {
+            final EnumSet<DuplicateUniqueUserAttributeException.UniqueAttributes> duplicatedUniqueAttributes =
+                    EnumSet.noneOf(DuplicateUniqueUserAttributeException.UniqueAttributes.class);
+
+            // Taking Advantage That UniqueAttributes Enum Size Is Just 2
+            if(userIntegrityViolators.size() == 2) {
+                duplicatedUniqueAttributes.add(DuplicateUniqueUserAttributeException.UniqueAttributes.USERNAME);
+                duplicatedUniqueAttributes.add(DuplicateUniqueUserAttributeException.UniqueAttributes.EMAIL);
+            }
+            else {
+                final Tuple duplicatedAttribute = userIntegrityViolators.get(0);
+
+                if(duplicatedAttribute.get(0, String.class).equals(username))
+                    duplicatedUniqueAttributes.add(DuplicateUniqueUserAttributeException.UniqueAttributes.USERNAME);
+
+                if(duplicatedAttribute.get(1, String.class).equals(email))
+                    duplicatedUniqueAttributes.add(DuplicateUniqueUserAttributeException.UniqueAttributes.EMAIL);
+            }
+
+            throw new DuplicateUniqueUserAttributeException(duplicatedUniqueAttributes);
+        }
+
         final User user = new User(LocalDateTime.now(), username, password, name, email, description, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
 
         em.persist(user);
@@ -112,9 +141,18 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public void updateUsername(User user, String username) throws DuplicateUsernameException {
+    public void updateUsername(User user, String username) throws DuplicateUniqueUserAttributeException {
 
-        // TODO: Throw DuplicateUsernameException if username is already taken
+        final Long userIntegrityViolatorsCount =
+                em.createQuery(
+                        "SELECT count(u) AS username FROM User u WHERE u.username = :username",
+                        Long.class)
+                        .setParameter("username", username)
+                        .getSingleResult();
+
+        if(userIntegrityViolatorsCount > 0)
+            throw new DuplicateUniqueUserAttributeException(EnumSet.of(DuplicateUniqueUserAttributeException.UniqueAttributes.USERNAME));
+
         user.setUsername(username);
 
         em.persist(user);

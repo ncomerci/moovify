@@ -1,20 +1,18 @@
 package ar.edu.itba.paw.interfaces.services;
 
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
-import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
+import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Optional;
 
 public interface UserService {
 
-    User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) throws DuplicateUsernameException, DuplicateEmailException;
+    User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) throws DuplicateUniqueUserAttributeException;
 
     void updateName(User user, String name);
 
-    void updateUsername(User user, String username) throws DuplicateUsernameException;
+    void updateUsername(User user, String username) throws DuplicateUniqueUserAttributeException;
 
     void updateDescription(User user, String description);
 
