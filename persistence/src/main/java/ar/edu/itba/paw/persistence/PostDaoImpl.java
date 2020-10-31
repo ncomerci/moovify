@@ -30,6 +30,9 @@ public class PostDaoImpl implements PostDao {
 
     private static final String NATIVE_BASE_POST_FROM = "FROM " + POSTS;
 
+    private static final String NATIVE_CATEGORY_FROM =
+            "INNER JOIN " + POST_CATEGORY + " ON " + POSTS + ".category_id = " + POST_CATEGORY + ".category_id";
+
     private static final String NATIVE_TOTAL_LIKES_FROM =
             "INNER JOIN " +
                     "(SELECT " + POSTS + ".post_id, COALESCE(SUM( " + POSTS_LIKES + ".value ), 0) likes " +
@@ -84,9 +87,9 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Collection<Movie> movies, boolean enabled) {
+    public Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Movie> movies, boolean enabled) {
 
-        final Post post = new Post(LocalDateTime.now(), title, body, wordCount, category, user, tags, enabled, Collections.emptyList(), movies, Collections.emptyList());
+        final Post post = new Post(LocalDateTime.now(), title, body, wordCount, category, user, tags, enabled, Collections.emptySet(), movies, Collections.emptySet());
 
         em.persist(post);
 
@@ -219,7 +222,7 @@ public class PostDaoImpl implements PostDao {
     }
 
     private String buildNativeFromStatement() {
-        return NATIVE_BASE_POST_FROM + " " + NATIVE_TOTAL_LIKES_FROM;
+        return NATIVE_BASE_POST_FROM + " " + NATIVE_CATEGORY_FROM + " " + NATIVE_TOTAL_LIKES_FROM;
     }
 
     private String buildNativeOrderByStatement(SortCriteria sortCriteria) {

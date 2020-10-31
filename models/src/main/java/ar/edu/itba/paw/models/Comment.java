@@ -7,7 +7,9 @@ import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @Entity
 @Table(name = "comments")
@@ -73,7 +75,7 @@ public class Comment {
     private User user;
 
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "comment", cascade = CascadeType.ALL)
-    private Collection<CommentLike> likes;
+    private Set<CommentLike> likes;
 
     @Transient
     private Long totalLikes;
@@ -81,12 +83,12 @@ public class Comment {
     @Column(nullable = false)
     private boolean enabled;
 
-    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Collection<Comment> children, String body, User user, boolean enabled, Collection<CommentLike> likes) {
+    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Collection<Comment> children, String body, User user, boolean enabled, Set<CommentLike> likes) {
         this(creationDate, post, parent, children, body, user, enabled, likes);
         this.id = id;
     }
 
-    public Comment(LocalDateTime creationDate, Post post, Comment parent, Collection<Comment> children, String body, User user, boolean enabled, Collection<CommentLike> likes) {
+    public Comment(LocalDateTime creationDate, Post post, Comment parent, Collection<Comment> children, String body, User user, boolean enabled, Set<CommentLike> likes) {
         this.creationDate = creationDate;
         this.post = post;
         this.parent = parent;
@@ -180,7 +182,16 @@ public class Comment {
     }
 
     public void removeLike(User user) {
-        likes.removeIf(like -> like.getUser().getId() == user.getId());
+
+        final Optional<CommentLike> optLike =
+                getLikes().stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
+
+        if(optLike.isPresent()) {
+            final CommentLike like = optLike.get();
+
+            like.getUser().removeCommentLike(like);
+            getLikes().remove(like);
+        }
     }
 
     public void like(User user, int value) {
@@ -189,15 +200,32 @@ public class Comment {
             return;
         }
 
-        Optional<CommentLike> existingLike = likes.stream()
+        final Optional<CommentLike> existingLike = likes.stream()
                 .filter(like -> like.getUser().getId() == user.getId())
                 .findFirst();
 
         if(existingLike.isPresent())
             existingLike.get().setValue(value);
 
-        else
-            likes.add(new CommentLike(user, this, value));
+        else {
+            final CommentLike like = new CommentLike(user, this, value);
+
+            user.addCommentLike(like);
+            getLikes().add(like);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return id == comment.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

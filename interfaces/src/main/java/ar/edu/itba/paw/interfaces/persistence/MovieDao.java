@@ -7,6 +7,7 @@ import ar.edu.itba.paw.models.PaginatedCollection;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 public interface MovieDao {
 
@@ -18,7 +19,7 @@ public interface MovieDao {
 
     Collection<Movie> findMoviesById(Collection<Long> moviesId);
 
-    Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage, String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<MovieCategory> genres);
+    Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage, String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Set<MovieCategory> genres);
 
     PaginatedCollection<Movie> getAllMovies(SortCriteria sortCriteria, int pageNumber, int pageSize);
 

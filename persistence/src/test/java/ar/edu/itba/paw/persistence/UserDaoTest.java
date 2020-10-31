@@ -109,7 +109,7 @@ public class UserDaoTest {
     @Rollback
     @Test
     public void testRegister() throws DuplicateUsernameException, DuplicateEmailException {
-        List<Role> roles = new ArrayList<>();
+        Set<Role> roles = new HashSet<>();
         roles.add(Role.USER);
         roles.add(Role.ADMIN);
 

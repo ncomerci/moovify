@@ -75,7 +75,7 @@ public class MovieDaoImpl implements MovieDao {
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, "m.releaseDate desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, "m.releaseDate");
-        sortCriteriaQuery.put(SortCriteria.POST_COUNT, "coalesce(postCount, 0) desc");
+        sortCriteriaQuery.put(SortCriteria.POST_COUNT, "postCount desc NULLS LAST");
         sortCriteriaQuery.put(SortCriteria.TITLE, "m.title");
 
         return sortCriteriaQuery;
@@ -85,9 +85,9 @@ public class MovieDaoImpl implements MovieDao {
     private EntityManager em;
 
     @Override
-    public Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage, String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<MovieCategory> categories) {
+    public Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage, String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Set<MovieCategory> categories) {
 
-        final Movie movie = new Movie(LocalDateTime.now(), title, originalTitle, tmdbId, imdbId, originalLanguage, overview, popularity, runtime, voteAverage, releaseDate, Collections.emptyList(), categories);
+        final Movie movie = new Movie(LocalDateTime.now(), title, originalTitle, tmdbId, imdbId, originalLanguage, overview, popularity, runtime, voteAverage, releaseDate, Collections.emptySet(), categories);
 
         em.persist(movie);
 
@@ -271,7 +271,7 @@ public class MovieDaoImpl implements MovieDao {
         // Map Tuples To Movies
         final Collection<Movie> movies = fetchQueryResult.stream().map(tuple -> {
 
-            tuple.get(0, Movie.class).setPostCount(tuple.get(1, Integer.class));
+            tuple.get(0, Movie.class).setPostCount(tuple.get(1, Long.class).intValue());
             return tuple.get(0, Movie.class);
 
         }).collect(Collectors.toList());

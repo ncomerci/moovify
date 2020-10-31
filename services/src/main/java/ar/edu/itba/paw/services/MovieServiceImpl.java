@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -35,7 +36,7 @@ public class MovieServiceImpl implements MovieService {
         final Collection<MovieCategory> categories = movieCategoryDao.findCategoriesById(categoriesId);
 
         final Movie movie = movieDao.register(title, originalTitle,  tmdbId,  imdbId,  originalLanguage,
-                 overview,  popularity,  runtime,  voteAverage,  releaseDate,  categories);
+                 overview,  popularity,  runtime,  voteAverage,  releaseDate,  new HashSet<>(categories));
 
         LOGGER.info("Created Movie {}", movie.getId());
 

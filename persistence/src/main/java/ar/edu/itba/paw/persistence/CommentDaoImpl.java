@@ -94,7 +94,7 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public Comment register(Post post, Comment parent, String body, User user, boolean enabled) {
 
-        final Comment comment = new Comment(LocalDateTime.now(), post, parent, Collections.emptyList(), body, user, enabled, Collections.emptyList());
+        final Comment comment = new Comment(LocalDateTime.now(), post, parent, Collections.emptyList(), body, user, enabled, Collections.emptySet());
 
         em.persist(comment);
 

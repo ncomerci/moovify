@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -45,7 +42,7 @@ public class PostServiceImpl implements PostService {
         final Collection<Movie> movies = movieDao.findMoviesById(moviesId);
 
         final Post post = postDao.register(title, body.trim(),
-                body.split("\\s+").length, category, user, tags, movies, true);
+                body.split("\\s+").length, category, user, tags, new HashSet<>(movies), true);
 
         LOGGER.info("Created Post {}", post.getId());
 

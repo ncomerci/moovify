@@ -4,6 +4,8 @@ import javax.persistence.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -46,10 +48,10 @@ public class User {
     private Image avatar;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
-    private Collection<PostLike> postLikes;
+    private Set<PostLike> postLikes;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
-    private Collection<CommentLike> commentLikes;
+    private Set<CommentLike> commentLikes;
 
     @Transient
     private Long totalLikes;
@@ -59,10 +61,10 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role_name", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Collection<Role> roles;
+    private Set<Role> roles;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Collection<Post> posts;
+    private Set<Post> posts;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Collection<Comment> comments;
@@ -70,12 +72,12 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLike> postLikes, Collection<CommentLike> commentLikes, Collection<Post> posts, Collection<Comment> comments) {
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments) {
         this(creationDate, username, password, name, email, description, avatar, roles, enabled, postLikes, commentLikes, posts, comments);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Collection<Role> roles, boolean enabled, Collection<PostLike> postLikes, Collection<CommentLike> commentLikes, Collection<Post> posts, Collection<Comment> comments) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
@@ -152,6 +154,14 @@ public class User {
         return roles;
     }
 
+    public void addRole(Role role) {
+        getRoles().add(role);
+    }
+
+    public void removeRole(Role role) {
+        getRoles().removeIf(r -> r.equals(role));
+    }
+
     public Collection<Post> getPosts() {
         return posts;
     }
@@ -168,8 +178,32 @@ public class User {
         this.totalLikes = totalLikes;
     }
 
+    public Collection<CommentLike> getCommentLikes() {
+        return commentLikes;
+    }
+
+    public void removeCommentLike(CommentLike like) {
+        getCommentLikes().remove(like);
+    }
+
+    public void addCommentLike(CommentLike like) {
+        getCommentLikes().add(like);
+    }
+
+    public Collection<PostLike> getPostLikes() {
+        return postLikes;
+    }
+
+    public void removePostLike(PostLike like) {
+        getPostLikes().remove(like);
+    }
+
+    public void addPostLike(PostLike like) {
+        getPostLikes().add(like);
+    }
+
     public boolean hasRole(Role role) {
-        return roles.stream().anyMatch(r -> r.equals(role));
+        return getRoles().stream().anyMatch(r -> r.equals(role));
     }
 
     public Duration getTimeSinceCreation() {
@@ -211,6 +245,19 @@ public class User {
 
     public boolean isValidated() {
         return hasRole(Role.USER);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return id == user.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

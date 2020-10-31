@@ -8,7 +8,9 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Entity
@@ -59,7 +61,7 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "movie_id", nullable = false)
     )
-    private Collection<Movie> movies;
+    private Set<Movie> movies;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
     private Collection<Comment> comments;
@@ -70,10 +72,10 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id", nullable = false)
     )
     @Column(name="tag", nullable = false)
-    private Collection<String> tags;
+    private Set<String> tags;
 
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "post", cascade = CascadeType.ALL)
-    private Collection<PostLike> likes;
+    private Set<PostLike> likes;
 
     @Transient
     private Long totalLikes;
@@ -83,12 +85,12 @@ public class Post {
 
     private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes, Collection<Movie> movies, Collection<Comment> comments) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Collection<Comment> comments) {
         this(creationDate, title, body, wordCount, category, user, tags, enabled, likes, movies, comments);
         this.id = id;
     }
 
-    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Collection<String> tags, boolean enabled, Collection<PostLike> likes, Collection<Movie> movies, Collection<Comment> comments) {
+    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Collection<Comment> comments) {
         this.creationDate = Timestamp.valueOf(creationDate);
         this.title = title;
         this.body = body;
@@ -170,7 +172,7 @@ public class Post {
     }
 
     public Duration getTimeSinceCreation() {
-        return Duration.between(creationDate.toLocalDateTime(), LocalDateTime.now());
+        return Duration.between(getCreationDate(), LocalDateTime.now());
     }
 
     public long getDaysSinceCreation() {
@@ -203,7 +205,16 @@ public class Post {
     }
 
     public void removeLike(User user) {
-        likes.removeIf(like -> like.getUser().getId() == user.getId());
+
+        final Optional<PostLike> optLike =
+                getLikes().stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
+
+        if(optLike.isPresent()) {
+            final PostLike like = optLike.get();
+
+            like.getUser().removePostLike(like);
+            getLikes().remove(like);
+        }
     }
 
     public void like(User user, int value) {
@@ -213,13 +224,31 @@ public class Post {
             return;
         }
 
-        Optional<PostLike> existingLike = likes.stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
+        Optional<PostLike> existingLike =
+                getLikes().stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
 
         if(existingLike.isPresent())
             existingLike.get().setValue(value);
 
-        else
-            likes.add(new PostLike(user, this, value));
+        else {
+            final PostLike like = new PostLike(user, this, value);
+
+            user.addPostLike(like);
+            getLikes().add(like);
+        }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return id == post.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

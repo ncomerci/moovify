@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "posts_likes", uniqueConstraints = @UniqueConstraint(columnNames = {"post_id", "user_id"}))
@@ -60,6 +61,19 @@ public class PostLike {
         }
 
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PostLike postLike = (PostLike) o;
+        return id == postLike.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

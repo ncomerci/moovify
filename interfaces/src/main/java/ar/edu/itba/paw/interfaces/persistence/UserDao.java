@@ -2,10 +2,13 @@ package ar.edu.itba.paw.interfaces.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateEmailException;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUsernameException;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Role;
+import ar.edu.itba.paw.models.User;
 
-import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserDao {
 
@@ -13,7 +16,9 @@ public interface UserDao {
         NEWEST, OLDEST, LIKES, USERNAME
     }
 
-    User register(String username, String password, String name, String email, String description, Collection<Role> roleNames, Image avatar, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException;
+    User register(String username, String password, String name, String email, String description, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException;
+
+    void updateUsername(User user, String username) throws DuplicateUsernameException;
 
     Optional<User> findUserById(long id);
 

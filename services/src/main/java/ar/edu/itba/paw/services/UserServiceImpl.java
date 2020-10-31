@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
         final Image image = imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
 
         final User user = userDao.register(username, passwordEncoder.encode(password),
-                name, email, description, Collections.singletonList(Role.NOT_VALIDATED), image, true);
+                name, email, description, Collections.singleton(Role.NOT_VALIDATED), image, true);
 
         createConfirmationEmail(user, confirmationMailTemplate);
 
@@ -71,8 +71,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateUsername(User user, String username) throws DuplicateUsernameException {
-        // TODO: Duplicate Useranme Exception
-        user.setName(username);
+        userDao.updateUsername(user, username);
     }
 
     @Transactional
@@ -131,7 +130,7 @@ public class UserServiceImpl implements UserService {
 
         Objects.requireNonNull(user);
 
-        user.getRoles().add(Role.ADMIN);
+        user.addRole(Role.ADMIN);
 
         LOGGER.info("Promoted User {} to Admin", user.getId());
     }
@@ -203,7 +202,9 @@ public class UserServiceImpl implements UserService {
 
         final User user = userVerificationToken.getUser();
 
-        replaceUserRole(user, Role.USER, Role.NOT_VALIDATED);
+        user.removeRole(Role.NOT_VALIDATED);
+
+        user.getRoles().add(Role.USER);
 
         // Delete Token. It is not needed anymore
         userVerificationTokenDao.deleteVerificationToken(userVerificationToken);
@@ -237,6 +238,7 @@ public class UserServiceImpl implements UserService {
         final User user = passwordResetToken.getUser();
 
         final String encodedPassword = passwordEncoder.encode(password);
+
         user.setPassword(encodedPassword);
 
         // Delete Token. It is not needed anymore
@@ -275,12 +277,5 @@ public class UserServiceImpl implements UserService {
     @Override
     public PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize) {
         return userDao.getAllUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
-    }
-
-    private void replaceUserRole(User user, Role newRole, Role oldRole) {
-
-        user.getRoles().removeIf(role -> role.equals(oldRole));
-
-        user.getRoles().add(newRole);
     }
 }

@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "movies")
@@ -41,7 +43,7 @@ public class Movie implements Serializable {
             joinColumns = @JoinColumn(name = "tmdb_id", nullable = false, referencedColumnName = "tmdb_id"),
             inverseJoinColumns = @JoinColumn(name = "tmdb_category_id", nullable = false, referencedColumnName = "tmdb_category_id")
     )
-    private Collection<MovieCategory> categories;
+    private Set<MovieCategory> categories;
 
     @Column(name = "original_language", nullable = false, length = 10)
     @Basic(optional = false)
@@ -65,14 +67,14 @@ public class Movie implements Serializable {
     private LocalDate releaseDate;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "movies")
-    private Collection<Post> posts;
+    private Set<Post> posts;
 
     @Transient
     private Integer postCount;
 
     public Movie(long id, LocalDateTime creationDate, String title, String originalTitle, long tmdbId,
                  String imdbId, String originalLanguage, String overview, float popularity, float runtime,
-                 float voteAverage, LocalDate releaseDate, Collection<Post> posts, Collection<MovieCategory> categories) {
+                 float voteAverage, LocalDate releaseDate, Set<Post> posts, Set<MovieCategory> categories) {
 
         this(creationDate, title, originalTitle, tmdbId, imdbId, originalLanguage, overview, popularity, runtime,
         voteAverage, releaseDate, posts, categories);
@@ -81,7 +83,7 @@ public class Movie implements Serializable {
 
     public Movie(LocalDateTime creationDate, String title, String originalTitle, long tmdbId,
                  String imdbId, String originalLanguage, String overview, float popularity, float runtime,
-                 float voteAverage, LocalDate releaseDate, Collection<Post> posts, Collection<MovieCategory> categories) {
+                 float voteAverage, LocalDate releaseDate, Set<Post> posts, Set<MovieCategory> categories) {
         this.creationDate = creationDate;
         this.title = title;
         this.originalTitle = originalTitle;
@@ -169,6 +171,19 @@ public class Movie implements Serializable {
 
     public Collection<MovieCategory> getCategories() {
         return categories;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movie movie = (Movie) o;
+        return id == movie.getId();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

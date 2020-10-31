@@ -98,17 +98,26 @@ public class UserDaoImpl implements UserDao {
         return sortCriteriaQuery;
     }
 
-//    TODO: ver como hacer para chequear el unique email y el unique username
     @Override
-    public User register(String username, String password, String name, String email, String description, Collection<Role> roleNames, Image avatar, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException {
+    public User register(String username, String password, String name, String email, String description, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateEmailException, DuplicateUsernameException {
 
-        final User user = new User(LocalDateTime.now(), username, password, name, email, description, avatar, roleNames, enabled, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        // TODO: Throw DuplicateUsernameException/DuplicateEmailException if username/email is already taken
+        final User user = new User(LocalDateTime.now(), username, password, name, email, description, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
 
         em.persist(user);
 
         user.setTotalLikes(0L);
 
         return user;
+    }
+
+    @Override
+    public void updateUsername(User user, String username) throws DuplicateUsernameException {
+
+        // TODO: Throw DuplicateUsernameException if username is already taken
+        user.setUsername(username);
+
+        em.persist(user);
     }
 
     @Override
