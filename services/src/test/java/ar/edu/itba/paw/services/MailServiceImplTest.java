@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,6 +24,6 @@ public class MailServiceImplTest {
     @Test
     public void testSendEmail() {
         // TODO: Como testear correctamente el envio mails.
-        mailService.sendEmail(DESTINATION, SUBJECT, TEMPLATE, VARIABLES);
+        mailService.sendEmail(DESTINATION, SUBJECT, TEMPLATE, VARIABLES, Locale.ENGLISH);
     }
 }

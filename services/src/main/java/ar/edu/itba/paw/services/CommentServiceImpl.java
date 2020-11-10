@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -33,7 +34,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public Comment register(Post post, Comment parent, String body, User user, String mailTemplate) {
+    public Comment register(Post post, Comment parent, String body, User user, String mailTemplate, Locale locale) {
 
         final Comment comment = commentDao.register(post, parent,
                 body.trim().replaceAll("[ \t]+", " ")
@@ -45,7 +46,7 @@ public class CommentServiceImpl implements CommentService {
         map.put("comment", comment);
 
         mailService.sendEmail(post.getUser().getEmail(),
-                "New comment on your post " + post.getTitle(), mailTemplate, map);
+                "New comment on your post " + post.getTitle(), mailTemplate, map, locale);
 
         LOGGER.info("Created Comment: {}", comment.getId());
 

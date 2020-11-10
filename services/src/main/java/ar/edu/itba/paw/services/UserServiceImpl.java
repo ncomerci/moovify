@@ -47,14 +47,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) throws DuplicateUniqueUserAttributeException {
+    public User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate, Locale locale) throws DuplicateUniqueUserAttributeException {
 
         final Image image = imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
 
         final User user = userDao.register(username, passwordEncoder.encode(password),
                 name, email, description, Collections.singleton(Role.NOT_VALIDATED), image, true);
 
-        createConfirmationEmail(user, confirmationMailTemplate);
+        createConfirmationEmail(user, confirmationMailTemplate, locale);
 
         LOGGER.info("Created User {}", user.getId());
 
@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void createConfirmationEmail(User user, String confirmationMailTemplate) {
+    public void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale) {
 
         Objects.requireNonNull(user);
 
@@ -156,14 +156,14 @@ public class UserServiceImpl implements UserService {
 
         emailVariables.put("token", token);
 
-        mailService.sendEmail(user.getEmail(), "Moovify - Confirmation Email", confirmationMailTemplate, emailVariables);
+        mailService.sendEmail(user.getEmail(), "Moovify - Confirmation Email", confirmationMailTemplate, emailVariables, locale);
 
         LOGGER.info("Created and sent email confirmation token {} to User {}", token, user.getId());
     }
 
     @Transactional
     @Override
-    public void createPasswordResetEmail(User user, String passwordResetMailTemplate) {
+    public void createPasswordResetEmail(User user, String passwordResetMailTemplate, Locale locale) {
 
         Objects.requireNonNull(user);
         
@@ -181,7 +181,7 @@ public class UserServiceImpl implements UserService {
         final Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("token", token);
 
-        mailService.sendEmail(user.getEmail(), "Moovify - Password Reset", passwordResetMailTemplate, emailVariables);
+        mailService.sendEmail(user.getEmail(), "Moovify - Password Reset", passwordResetMailTemplate, emailVariables, locale);
 
         LOGGER.info("Created and sent email confirmation token {} to User {}", token, user.getId());
     }

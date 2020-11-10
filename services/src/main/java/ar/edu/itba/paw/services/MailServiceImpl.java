@@ -15,6 +15,7 @@ import org.thymeleaf.context.Context;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -45,10 +46,10 @@ public class MailServiceImpl implements MailService {
 
     @Async
     @Override
-    public void sendEmail(String destination, String subject, String template, Map<String, Object> variables) {
+    public void sendEmail(String destination, String subject, String template, Map<String, Object> variables, Locale locale) {
 
         // Prepare the evaluation context
-        final Context context = new Context();
+        final Context context = new Context(locale);
 
         context.setVariable("applicationBasePath", applicationBasePath);
 

@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -73,11 +74,11 @@ public class UserServiceTest {
         Mockito.when(dao.register(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.eq(null), Mockito.eq(true)))
                 .thenReturn(user);
         Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
-        Mockito.doNothing().when(userServiceMock).createConfirmationEmail(Mockito.isA(User.class),Mockito.anyString());
+        Mockito.doNothing().when(userServiceMock).createConfirmationEmail(Mockito.isA(User.class),Mockito.anyString(), Locale.ENGLISH);
 
 
 //        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        User user1 = userService.register(USERNAME,PASSWORD, NAME, EMAIL, DESCRIPTION, new byte[]{}, "");
+        User user1 = userService.register(USERNAME,PASSWORD, NAME, EMAIL, DESCRIPTION, new byte[]{}, "", Locale.ENGLISH);
 
 //        3. Validaciones: Confirmo las postcondiciones
 
@@ -96,10 +97,10 @@ public class UserServiceTest {
 //                .thenReturn(user);
         Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
 //        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(AVATAR_ID);
-        Mockito.doNothing().when(userServiceMock).createConfirmationEmail(Mockito.isA(User.class),Mockito.anyString());
+        Mockito.doNothing().when(userServiceMock).createConfirmationEmail(Mockito.isA(User.class),Mockito.anyString(), Locale.ENGLISH);
 
 //        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        User user1 = userService.register(USERNAME,PASSWORD, NAME, EMAIL, DESCRIPTION, new byte[]{8}, "");
+        User user1 = userService.register(USERNAME,PASSWORD, NAME, EMAIL, DESCRIPTION, new byte[]{8}, "", Locale.ENGLISH);
 
 //        3. Validaciones: Confirmo las postcondiciones
         Assert.assertNotNull(user1);
@@ -184,17 +185,17 @@ public class UserServiceTest {
         UserVerificationToken userVerificationToken = Mockito.mock(UserVerificationToken.class);
 
         Mockito.when(userVerificationTokenDao.createVerificationToken(Mockito.anyString(),Mockito.isA(LocalDateTime.class), Mockito.isA(User.class))).thenReturn(userVerificationToken);
-        Mockito.doNothing().when(mailService).sendEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
+        Mockito.doNothing().when(mailService).sendEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyMap(), Locale.ENGLISH);
 
 
 //        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        userService.createConfirmationEmail(user," ");
+        userService.createConfirmationEmail(user," ", Locale.ENGLISH);
     }
 
     @Test(expected = NullPointerException.class)
     public void testCreateConfirmationEmailNull() {
 
-        userService.createConfirmationEmail(null," ");
+        userService.createConfirmationEmail(null," ", Locale.ENGLISH);
     }
 
     @Test
@@ -206,15 +207,15 @@ public class UserServiceTest {
         PasswordResetToken passwordResetToken = Mockito.mock(PasswordResetToken.class);
 
         Mockito.when(passwordResetTokenDao.createPasswordResetToken(Mockito.anyString(),Mockito.isA(LocalDateTime.class), Mockito.isA(User.class))).thenReturn(passwordResetToken);
-        Mockito.doNothing().when(mailService).sendEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyMap());
+        Mockito.doNothing().when(mailService).sendEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyMap(), Locale.ENGLISH);
 
 //        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        userService.createPasswordResetEmail(user, " ");
+        userService.createPasswordResetEmail(user, " ", Locale.ENGLISH);
 
     }
     @Test(expected = NullPointerException.class)
     public void testCreatePasswordResetEmailNull() {
-        userService.createPasswordResetEmail(null, " ");
+        userService.createPasswordResetEmail(null, " ", Locale.ENGLISH);
     }
 
 

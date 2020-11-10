@@ -16,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -49,7 +50,7 @@ public class CommentServiceImplTest {
         Mockito.when(post.getUser()).thenReturn(user);
 
 //        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        Comment commentResult = commentService.register(post, null, BODY, user,null);
+        Comment commentResult = commentService.register(post, null, BODY, user,null, Locale.ENGLISH);
 
 //        3. Validaciones: Confirmo las postcondiciones
         Assert.assertNotNull(commentResult);

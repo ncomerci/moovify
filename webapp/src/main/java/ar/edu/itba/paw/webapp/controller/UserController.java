@@ -80,7 +80,8 @@ public class UserController {
         try {
             user = userService.register(userCreateForm.getUsername(),
                     userCreateForm.getPassword(), userCreateForm.getName(),
-                    userCreateForm.getEmail(), userCreateForm.getDescription(), userCreateForm.getAvatar().getBytes(), "confirmEmail");
+                    userCreateForm.getEmail(), userCreateForm.getDescription(), userCreateForm.getAvatar().getBytes(),
+                    "confirmEmail", request.getLocale());
         }
 
         catch(DuplicateUniqueUserAttributeException e) {
@@ -351,7 +352,8 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/resetPassword", method = RequestMethod.POST)
-    public ModelAndView resetPassword(@Valid @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm, final BindingResult bindingResult) {
+    public ModelAndView resetPassword(@Valid @ModelAttribute("resetPasswordForm") final ResetPasswordForm resetPasswordForm, final BindingResult bindingResult,
+                                      HttpServletRequest request) {
 
         if(bindingResult.hasErrors()) {
             LOGGER.warn("Errors were found in the form resetPasswordForm updating avatar in /user/resetPassword");
@@ -376,7 +378,7 @@ public class UserController {
             return showResetPassword(resetPasswordForm);
         }
 
-        userService.createPasswordResetEmail(user, "passwordResetEmail");
+        userService.createPasswordResetEmail(user, "passwordResetEmail", request.getLocale());
 
         final ModelAndView mv = new ModelAndView("user/resetPassword/resetPasswordTokenGenerated");
 
@@ -388,13 +390,13 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/resendConfirmation", method = RequestMethod.GET)
-    public ModelAndView confirmRegistration(Principal principal) {
+    public ModelAndView confirmRegistration(Principal principal, HttpServletRequest request) {
 
         LOGGER.info("Accessed /user/resendConfirmation");
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.createConfirmationEmail(user, "confirmEmail");
+        userService.createConfirmationEmail(user, "confirmEmail", request.getLocale());
 
         final ModelAndView mv = new ModelAndView("user/confirmRegistration/resendConfirmation");
 
