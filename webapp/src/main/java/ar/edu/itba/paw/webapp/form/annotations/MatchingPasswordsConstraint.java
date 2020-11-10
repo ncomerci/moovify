@@ -11,7 +11,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Constraint(validatedBy = MatchingPasswordValidator.class)
-public @interface PasswordsEqualConstraint {
+public @interface MatchingPasswordsConstraint {
     String message() default "{javax.validation.constraints.PasswordsEqualConstraint.message}";
 
     Class<?>[] groups() default {};

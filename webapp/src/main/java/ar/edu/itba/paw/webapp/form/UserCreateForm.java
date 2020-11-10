@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.form.annotations.Avatar;
-import ar.edu.itba.paw.webapp.form.annotations.PasswordsEqualConstraint;
+import ar.edu.itba.paw.webapp.form.annotations.MatchingPasswordsConstraint;
 import ar.edu.itba.paw.webapp.form.annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@PasswordsEqualConstraint()
+@MatchingPasswordsConstraint()
 public class UserCreateForm implements MatchingPasswordForm {
 
     @Size(min = 6, max = 50)
