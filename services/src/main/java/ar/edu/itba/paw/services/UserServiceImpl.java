@@ -49,7 +49,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate) throws DuplicateUniqueUserAttributeException {
 
-        final Image image = imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
+        Image image = null;
+
+        if(avatar.length > 0)
+            image = imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
+
 
         final User user = userDao.register(username, passwordEncoder.encode(password),
                 name, email, description, Collections.singleton(Role.NOT_VALIDATED), image, true);

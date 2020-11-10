@@ -63,7 +63,7 @@
     </sec:authorize>
     <div class="uk-margin-large-top">
         <hr>
-<%--        <c:set var="paginatedComments" value="${comments}" scope="request"/>--%>
+        <c:set var="paginatedComments" value="${comments}" scope="request"/>
         <c:set var="comments" value="${comments.results}" scope="request"/>
         <c:set var="maxDepth" value="${maxDepth}" scope="request"/>
         <c:set var="maxDepth_unmodified" value="${maxDepth}" scope="request"/>
