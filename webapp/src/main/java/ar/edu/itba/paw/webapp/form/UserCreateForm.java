@@ -11,7 +11,7 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @PasswordsEqualConstraint()
-public class UserCreateForm {
+public class UserCreateForm implements MatchingPasswordForm {
 
     @Size(min = 6, max = 50)
     @Pattern(regexp = "[a-zA-Z0-9#_]+")
