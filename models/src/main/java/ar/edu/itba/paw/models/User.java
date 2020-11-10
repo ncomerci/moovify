@@ -12,7 +12,7 @@ import java.util.Set;
 public class User {
 
     public static final String TABLE_NAME = "users";
-    public static final String USER_ROLE_TABLE_NAME = "movie_to_movie_category";
+    public static final String USER_ROLE_TABLE_NAME = "user_role";
 
     public static final long DEFAULT_AVATAR_ID = 0;
 

@@ -13,7 +13,7 @@ import java.util.Set;
 public class Movie implements Serializable {
 
     public static final String TABLE_NAME = "movies";
-    public static final String MOVIE_TO_MOVIE_CATEGORY_TABLE_NAME = "movies";
+    public static final String MOVIE_TO_MOVIE_CATEGORY_TABLE_NAME = "movie_to_movie_category";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movies_movie_id_seq")
