@@ -93,16 +93,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return ds;
     }
 
-   /* @Bean
-    public DataSourceInitializer dataSourceInitializer(final DataSource ds) {
-        final DataSourceInitializer dsi = new DataSourceInitializer();
-
-        dsi.setDataSource(ds);
-        dsi.setDatabasePopulator(databasePopulator());
-
-        return dsi;
-    }*/
-
     @Bean
     public PlatformTransactionManager transactionManager(final EntityManagerFactory emf) {
         return new JpaTransactionManager(emf);
@@ -129,15 +119,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
         return factoryBean;
     }
-
-
-   /* private DatabasePopulator databasePopulator() {
-        final ResourceDatabasePopulator dbp = new ResourceDatabasePopulator();
-
-        dbp.addScripts(schemaSql, dataSql);
-
-        return dbp;
-    }*/
 
     @Bean
     public MessageSource messageSource() {

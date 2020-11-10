@@ -14,7 +14,7 @@ public class Image {
     @Column(name = "image_id")
     private Long id;
 
-    @Column(name = "image", nullable = false, columnDefinition="BLOB")
+    @Column(name = "image", nullable = false, columnDefinition="BYTEA")
     @Basic(fetch = FetchType.LAZY, optional = false)
     private byte[] data;
 
