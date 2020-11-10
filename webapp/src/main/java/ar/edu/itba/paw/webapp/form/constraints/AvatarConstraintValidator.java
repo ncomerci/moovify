@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.webapp.form.Constraints;
+package ar.edu.itba.paw.webapp.form.constraints;
 
-import ar.edu.itba.paw.webapp.form.Annotations.Avatar;
+import ar.edu.itba.paw.webapp.form.annotations.Avatar;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintValidator;

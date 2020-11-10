@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.webapp.form.Annotations;
+package ar.edu.itba.paw.webapp.form.annotations;
 
-import ar.edu.itba.paw.webapp.form.Constraints.MoviesSizeConstraintValidator;
+import ar.edu.itba.paw.webapp.form.constraints.MoviesSizeConstraintValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

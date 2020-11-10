@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.webapp.form.editProfile;
 
-import ar.edu.itba.paw.webapp.form.Annotations.PasswordsUpdateEqualConstraint;
-import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
+import ar.edu.itba.paw.webapp.form.annotations.PasswordsUpdateEqualConstraint;
+import ar.edu.itba.paw.webapp.form.annotations.ValidPassword;
 
 @PasswordsUpdateEqualConstraint()
 public class ChangePasswordForm {

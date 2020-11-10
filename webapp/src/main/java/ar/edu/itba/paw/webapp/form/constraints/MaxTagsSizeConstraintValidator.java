@@ -1,7 +1,7 @@
-package ar.edu.itba.paw.webapp.form.Constraints;
+package ar.edu.itba.paw.webapp.form.constraints;
 
 
-import ar.edu.itba.paw.webapp.form.Annotations.MaxTagsSizeConstraint;
+import ar.edu.itba.paw.webapp.form.annotations.MaxTagsSizeConstraint;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

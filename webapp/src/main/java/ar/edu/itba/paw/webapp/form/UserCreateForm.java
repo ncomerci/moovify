@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.form.Annotations.Avatar;
-import ar.edu.itba.paw.webapp.form.Annotations.PasswordsEqualConstraint;
-import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
+import ar.edu.itba.paw.webapp.form.annotations.Avatar;
+import ar.edu.itba.paw.webapp.form.annotations.PasswordsEqualConstraint;
+import ar.edu.itba.paw.webapp.form.annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;

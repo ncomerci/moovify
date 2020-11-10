@@ -1,7 +1,7 @@
-package ar.edu.itba.paw.webapp.form.Annotations;
+package ar.edu.itba.paw.webapp.form.annotations;
 
 
-import ar.edu.itba.paw.webapp.form.Constraints.PasswordsEqualConstraintValidator;
+import ar.edu.itba.paw.webapp.form.constraints.PasswordsEqualConstraintValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

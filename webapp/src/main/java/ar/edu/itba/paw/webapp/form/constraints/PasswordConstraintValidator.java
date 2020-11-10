@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.webapp.form.Constraints;
+package ar.edu.itba.paw.webapp.form.constraints;
 
-import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
+import ar.edu.itba.paw.webapp.form.annotations.ValidPassword;
 import org.passay.*;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

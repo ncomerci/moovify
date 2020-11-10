@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.form.Annotations.ValidPassword;
+import ar.edu.itba.paw.webapp.form.annotations.ValidPassword;
 
 public class UpdatePasswordForm {
 
