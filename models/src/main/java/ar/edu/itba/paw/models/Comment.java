@@ -49,7 +49,7 @@ public class Comment {
     private Comment parent;
 
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = false, mappedBy = "parent")
-    private Collection<Comment> children;
+    private Set<Comment> children;
 
     @Column(nullable = false, length = 1000)
     @Basic(optional = false, fetch = FetchType.LAZY)
@@ -68,12 +68,12 @@ public class Comment {
     @Column(nullable = false)
     private boolean enabled;
 
-    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Collection<Comment> children, String body, User user, boolean enabled, Set<CommentLike> likes) {
+    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, User user, boolean enabled, Set<CommentLike> likes) {
         this(creationDate, post, parent, children, body, user, enabled, likes);
         this.id = id;
     }
 
-    public Comment(LocalDateTime creationDate, Post post, Comment parent, Collection<Comment> children, String body, User user, boolean enabled, Set<CommentLike> likes) {
+    public Comment(LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, User user, boolean enabled, Set<CommentLike> likes) {
         this.creationDate = creationDate;
         this.post = post;
         this.parent = parent;
@@ -113,7 +113,7 @@ public class Comment {
         return parent;
     }
 
-    public Collection<Comment> getChildren() {
+    public Set<Comment> getChildren() {
         return children;
     }
 
