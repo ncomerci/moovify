@@ -15,7 +15,7 @@ public interface UserDao {
         NEWEST, OLDEST, LIKES, USERNAME
     }
 
-    User register(String username, String password, String name, String email, String description, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateUniqueUserAttributeException;
+    User register(String username, String password, String name, String email, String description, String language, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateUniqueUserAttributeException;
 
     void updateUsername(User user, String username) throws DuplicateUniqueUserAttributeException;
 

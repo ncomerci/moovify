@@ -71,7 +71,7 @@ public class UserServiceTest {
         UserService userServiceMock = Mockito.mock(UserService.class);
 
 
-        Mockito.when(dao.register(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.eq(null), Mockito.eq(true)))
+        Mockito.when(dao.register(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Locale.ENGLISH.getLanguage(), Mockito.any(), Mockito.eq(null), Mockito.eq(true)))
                 .thenReturn(user);
         Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
         Mockito.doNothing().when(userServiceMock).createConfirmationEmail(Mockito.isA(User.class),Mockito.anyString(), Locale.ENGLISH);

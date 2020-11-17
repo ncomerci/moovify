@@ -5,12 +5,11 @@ import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
-import java.util.Locale;
 import java.util.Optional;
 
 public interface CommentService {
 
-    Comment register(Post post, Comment parent, String body, User user, String mailTemplate, Locale locale);
+    Comment register(Post post, Comment parent, String body, User user, String mailTemplate);
 
     void likeComment(Comment comment, User user, int value);
 

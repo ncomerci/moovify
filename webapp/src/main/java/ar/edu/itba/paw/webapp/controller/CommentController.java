@@ -55,7 +55,7 @@ public class CommentController {
                     null;
 
             commentService.register(post, parent,
-                    commentCreateForm.getCommentBody(), user, "newCommentEmail", request.getLocale());
+                    commentCreateForm.getCommentBody(), user, "newCommentEmail");
 
             LOGGER.info("Accessed /comment/create and Created Comment successfully. Redirecting to {}{}", request.getHeader("Referer"), "#comment-section");
         }
@@ -102,6 +102,5 @@ public class CommentController {
         commentService.likeComment(comment, user, value);
 
         return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-section");
-
     }
 }

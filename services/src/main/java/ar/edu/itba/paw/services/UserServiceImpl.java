@@ -11,6 +11,7 @@ import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +41,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private MessageSource messageSource;
+
     // All users are created with NOT_VALIDATED_ROLE by default
 
     private static final String DEFAULT_AVATAR_PATH = "/images/avatar.jpg";
@@ -56,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
 
         final User user = userDao.register(username, passwordEncoder.encode(password),
-                name, email, description, Collections.singleton(Role.NOT_VALIDATED), image, true);
+                name, email, description, locale.getLanguage(), Collections.singleton(Role.NOT_VALIDATED), image, true);
 
         createConfirmationEmail(user, confirmationMailTemplate, locale);
 
@@ -160,7 +164,7 @@ public class UserServiceImpl implements UserService {
 
         emailVariables.put("token", token);
 
-        mailService.sendEmail(user.getEmail(), "Moovify - Confirmation Email", confirmationMailTemplate, emailVariables, locale);
+        mailService.sendEmail(user.getEmail(), messageSource.getMessage("mail.confirmation.subject", null, locale), confirmationMailTemplate, emailVariables, locale);
 
         LOGGER.info("Created and sent email confirmation token {} to User {}", token, user.getId());
     }
@@ -185,7 +189,7 @@ public class UserServiceImpl implements UserService {
         final Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("token", token);
 
-        mailService.sendEmail(user.getEmail(), "Moovify - Password Reset", passwordResetMailTemplate, emailVariables, locale);
+        mailService.sendEmail(user.getEmail(), messageSource.getMessage("mail.passwordReset.subject", null, locale), passwordResetMailTemplate, emailVariables, locale);
 
         LOGGER.info("Created and sent email confirmation token {} to User {}", token, user.getId());
     }

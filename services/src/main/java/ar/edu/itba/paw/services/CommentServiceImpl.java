@@ -10,6 +10,7 @@ import ar.edu.itba.paw.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +33,12 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @Transactional
     @Override
-    public Comment register(Post post, Comment parent, String body, User user, String mailTemplate, Locale locale) {
+    public Comment register(Post post, Comment parent, String body, User user, String mailTemplate) {
 
         final Comment comment = commentDao.register(post, parent,
                 body.trim().replaceAll("[ \t]+", " ")
@@ -45,8 +49,10 @@ public class CommentServiceImpl implements CommentService {
         map.put("post", post);
         map.put("comment", comment);
 
+        final Locale mailLocale = new Locale(post.getUser().getLanguage());
+
         mailService.sendEmail(post.getUser().getEmail(),
-                "New comment on your post " + post.getTitle(), mailTemplate, map, locale);
+                messageSource.getMessage("mail.newComment.subject", new Object[]{ post.getTitle() }, mailLocale), mailTemplate, map, mailLocale);
 
         LOGGER.info("Created Comment: {}", comment.getId());
 

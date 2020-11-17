@@ -46,6 +46,10 @@ public class User {
     @Basic(optional = false)
     private String description;
 
+    @Column(nullable = false, length = 15)
+    @Basic(optional = false)
+    private String language;
+
     @OneToOne(optional = true, fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "avatar_id", referencedColumnName = "image_id")
     private Image avatar;
@@ -75,18 +79,19 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments) {
-        this(creationDate, username, password, name, email, description, avatar, roles, enabled, postLikes, commentLikes, posts, comments);
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments) {
+        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postLikes, commentLikes, posts, comments);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
         this.description = description;
+        this.language = language;
         this.avatar = avatar;
         this.roles = roles;
         this.enabled = enabled;
@@ -147,6 +152,10 @@ public class User {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getLanguage() {
+        return language;
     }
 
     public void setDescription(String description) {

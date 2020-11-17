@@ -111,7 +111,7 @@ public class UserDaoTest {
 
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate,USERS,"username = ?", USERNAME );
 
-        User user = userDao.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, roles, null, ENABLE );
+        User user = userDao.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, Locale.ENGLISH.getLanguage(), roles, null, ENABLE);
         final String whereClause = String.format("user_id = %d and email = '%s' and name = '%s' and description = '%s'", user.getId(), EMAIL, NAME, DESCRIPTION);
 
         Assert.assertEquals(1,

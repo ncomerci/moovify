@@ -95,7 +95,7 @@ public class UserDaoImpl implements UserDao {
     private EntityManager em;
 
     @Override
-    public User register(String username, String password, String name, String email, String description, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateUniqueUserAttributeException {
+    public User register(String username, String password, String name, String email, String description, String language, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateUniqueUserAttributeException {
 
         final List<Tuple> userIntegrityViolators =
                 em.createQuery(
@@ -128,7 +128,7 @@ public class UserDaoImpl implements UserDao {
             throw new DuplicateUniqueUserAttributeException(duplicatedUniqueAttributes);
         }
 
-        final User user = new User(LocalDateTime.now(), username, password, name, email, description, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        final User user = new User(LocalDateTime.now(), username, password, name, email, description, language, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
 
         em.persist(user);
 
