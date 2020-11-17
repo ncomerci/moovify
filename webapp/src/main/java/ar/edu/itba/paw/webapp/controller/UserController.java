@@ -147,16 +147,15 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/{userId}/followed/users", method = RequestMethod.GET)
-    public ModelAndView viewFollowedUsers(HttpServletRequest request,
-                                     @PathVariable final long userId,
-                                     @RequestParam(defaultValue = "10") final int pageSize,
-                                     @RequestParam(defaultValue = "0") final int pageNumber) {
+    public ModelAndView viewFollowedUsers(@PathVariable final long userId,
+                                         @RequestParam(defaultValue = "10") final int pageSize,
+                                         @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /user/{}/followedUsers", userId);
 
         final ModelAndView mv = new ModelAndView("user/view/viewFollowedUsers");
 
-        final User user = getUserFromFlashParamsOrById(userId, request);
+        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("user", user);
 
@@ -210,7 +209,7 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/profile/profileFollowedUsers");
 
-        final User user = getUserFromFlashParamsOrByUsername(principal.getName(), request);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
         mv.addObject("followedUsers", userService.getFollowedUsers(user, pageNumber, pageSize));
@@ -242,7 +241,7 @@ public class UserController {
         LOGGER.info("Accessed /user/follow");
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-        final User followedUser = getUserFromFlashParamsOrById(userId, request);
+        final User followedUser = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
         if(!followedUser.isEnabled())
             throw new IllegalUserFollowException();
@@ -259,7 +258,7 @@ public class UserController {
         LOGGER.info("Accessed /user/follow");
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-        final User unfollowedUser = getUserFromFlashParamsOrById(userId, request);
+        final User unfollowedUser = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
         if(!unfollowedUser.isEnabled())
             throw new IllegalUserUnfollowException();
