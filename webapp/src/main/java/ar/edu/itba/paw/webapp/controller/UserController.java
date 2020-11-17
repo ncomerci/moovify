@@ -4,10 +4,12 @@ import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttr
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
+import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
 import ar.edu.itba.paw.webapp.form.UpdatePasswordForm;
@@ -169,6 +171,24 @@ public class UserController {
         return mv;
     }
 
+    @RequestMapping(path = {"/user/profile/favourite/posts"}, method = RequestMethod.GET)
+    public ModelAndView profileFavouritePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
+                                     final HttpServletRequest request, final Principal principal,
+                                     @RequestParam(defaultValue = "10") final int pageSize,
+                                     @RequestParam(defaultValue = "0") final int pageNumber) {
+
+        LOGGER.info("Accessed /user/profile/favourite/posts");
+
+        final ModelAndView mv = new ModelAndView("user/profile/profileFavouritePosts");
+
+        final User user = getUserFromFlashParamsOrByUsername(principal.getName(), request);
+
+        mv.addObject("loggedUser", user);
+        mv.addObject("posts", postService.getUserFavouritePosts(user, pageNumber, pageSize));
+
+        return mv;
+    }
+
     @RequestMapping(path = "/user/profile/comments", method = RequestMethod.GET)
     public ModelAndView profileComments(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, Principal principal,
                                         @RequestParam(defaultValue = "10") final int pageSize,
@@ -213,6 +233,30 @@ public class UserController {
         return new ModelAndView("redirect:/user/" + userId);
     }
 
+
+    @RequestMapping(path = "/user/favourite/posts/add", method = RequestMethod.POST)
+    public ModelAndView addFavouritePost(@RequestParam final long postId,
+                                         final HttpServletRequest request, final Principal principal) {
+
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        userService.addFavouritePost(user, post);
+
+        return new ModelAndView("redirect:" + request.getHeader("Referer"));
+    }
+
+    @RequestMapping(path = "/user/favourite/posts/remove", method = RequestMethod.POST)
+    public ModelAndView removeFavouritePost(@RequestParam final long postId,
+                                            final HttpServletRequest request, final Principal principal) {
+
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        userService.removeFavouritePost(user, post);
+
+        return new ModelAndView("redirect:" + request.getHeader("Referer"));
+    }
 
     @RequestMapping(path = "/user/profile/edit", method = RequestMethod.GET)
     public ModelAndView editProfile(@ModelAttribute("nameEditForm") final NameEditForm nameEditForm, @ModelAttribute("usernameEditForm") final UsernameEditForm usernameEditForm, @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm) {

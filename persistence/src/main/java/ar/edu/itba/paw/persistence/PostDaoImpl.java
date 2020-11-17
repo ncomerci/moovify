@@ -24,6 +24,7 @@ public class PostDaoImpl implements PostDao {
     private static final String POSTS_LIKES = PostLike.TABLE_NAME;
     private static final String TAGS = Post.TAGS_TABLE_NAME;
     private static final String POST_CATEGORY = PostCategory.TABLE_NAME;
+    private static final String USER_FAV_POST = User.USER_FAV_POST;
 
     @PersistenceContext
     private EntityManager em;
@@ -164,6 +165,21 @@ public class PostDaoImpl implements PostDao {
         return queryPosts(
                 "WHERE " + POSTS + ".enabled = false",
                 sortCriteria, pageNumber, pageSize, null);
+    }
+
+    @Override
+    public PaginatedCollection<Post> getUserFavouritePosts(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get User {} Favourite Posts Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
+
+        return queryPosts(
+                "WHERE " +
+                        POSTS + ".post_id IN ( " +
+                        "SELECT " + USER_FAV_POST + ".post_id " +
+                        "FROM " + USER_FAV_POST +
+                        " WHERE " + USER_FAV_POST + ".user_id = ?)" +
+                        " AND " + NATIVE_ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override

@@ -269,6 +269,18 @@ public class UserServiceImpl implements UserService {
         return Optional.of(user);
     }
 
+    @Transactional
+    @Override
+    public void addFavouritePost(User user, Post post) {
+        user.addFavouritePost(post);
+    }
+
+    @Transactional
+    @Override
+    public void removeFavouritePost(User user, Post post) {
+        user.removeFavouritePost(post);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Optional<User> findUserById(long id) {
