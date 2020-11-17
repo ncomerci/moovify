@@ -106,6 +106,12 @@
                         <spring:message code="user.profile.yourComments"/>
                     </a>
                 </li>
+                <li class="${currentState == 2 ? 'uk-active' : ''}">
+                    <c:url value="${'/user/profile/favourite/posts'}" var="favouritePostsURL"/>
+                    <a href="${currentState != 2 ? favouritePostsURL : ''}">
+                        <spring:message code="user.profile.yourFavouritePosts"/>
+                    </a>
+                </li>
             </ul>
         </div>
     </c:if>

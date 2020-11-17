@@ -2,6 +2,7 @@ package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Locale;
@@ -38,6 +39,10 @@ public interface UserService {
     Optional<byte[]> getAvatar(long avatarId);
 
     void updateAvatar(User user, byte[] newAvatar);
+
+    void addFavouritePost(User user, Post post);
+
+    void removeFavouritePost(User user, Post post);
 
     Optional<User> findUserById(long id);
 

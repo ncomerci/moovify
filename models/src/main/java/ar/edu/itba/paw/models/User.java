@@ -13,8 +13,13 @@ public class User {
 
     public static final String TABLE_NAME = "users";
     public static final String USER_ROLE_TABLE_NAME = "user_role";
+    public static final String USER_FAV_POST = "user_fav_post";
 
     public static final long DEFAULT_AVATAR_ID = 0;
+
+    public static boolean userHasFavedPost(User user, Post post) {
+        return user.isPostFavourite(post);
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_user_id_seq")
@@ -64,7 +69,7 @@ public class User {
     private Long totalLikes;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role",
+    @CollectionTable(name = USER_ROLE_TABLE_NAME,
             joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role_name", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -76,15 +81,23 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<Comment> comments;
 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = USER_FAV_POST,
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    private Set<Post> favouritePosts;
+
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments) {
-        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postLikes, commentLikes, posts, comments);
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<Post> favouritePosts) {
+        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postLikes, commentLikes, posts, comments, favouritePosts);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<Post> favouritePosts) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
@@ -99,6 +112,7 @@ public class User {
         this.commentLikes = commentLikes;
         this.posts = posts;
         this.comments = comments;
+        this.favouritePosts = favouritePosts;
     }
 
     protected User() {
@@ -216,6 +230,22 @@ public class User {
 
     public boolean hasRole(Role role) {
         return getRoles().stream().anyMatch(r -> r.equals(role));
+    }
+
+    public Collection<Post> getFavouritePosts() {
+        return favouritePosts;
+    }
+
+    public boolean isPostFavourite(Post post) {
+        return favouritePosts.contains(post);
+    }
+
+    public void addFavouritePost(Post post) {
+        favouritePosts.add(post);
+    }
+
+    public void removeFavouritePost(Post post) {
+        favouritePosts.remove(post);
     }
 
     public Duration getTimeSinceCreation() {

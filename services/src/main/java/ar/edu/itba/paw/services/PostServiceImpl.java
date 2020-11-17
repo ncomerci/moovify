@@ -116,6 +116,12 @@ public class PostServiceImpl implements PostService {
 
     @Transactional(readOnly = true)
     @Override
+    public PaginatedCollection<Post> getUserFavouritePosts(User user, int pageNumber, int pageSize) {
+        return postDao.getUserFavouritePosts(user, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public Collection<PostCategory> getAllPostCategories() {
         return categoryDao.getAllPostCategories();
     }
