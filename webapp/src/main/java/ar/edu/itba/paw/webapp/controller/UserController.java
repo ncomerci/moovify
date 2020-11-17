@@ -185,6 +185,34 @@ public class UserController {
 
         return mv;
     }
+    @RequestMapping(path = "/user/follow/{userId}", method = RequestMethod.POST)
+    public ModelAndView followUser(HttpServletRequest request,
+                                   @PathVariable final long userId,
+                                   final Principal principal) {
+
+        LOGGER.info("Accessed /user/follow");
+
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User followedUser = getUserFromFlashParamsOrById(userId, request);
+
+        userService.followUser(user, followedUser);
+        return new ModelAndView("redirect:/user/" + userId);
+    }
+
+    @RequestMapping(path = "/user/unfollow/{userId}", method = RequestMethod.POST)
+    public ModelAndView unfollowUser(HttpServletRequest request,
+                                   @PathVariable final long userId,
+                                   final Principal principal) {
+
+        LOGGER.info("Accessed /user/follow");
+
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User unfollowedUser = getUserFromFlashParamsOrById(userId, request);
+
+        userService.unfollowUser(user, unfollowedUser);
+        return new ModelAndView("redirect:/user/" + userId);
+    }
+
 
     @RequestMapping(path = "/user/profile/edit", method = RequestMethod.GET)
     public ModelAndView editProfile(@ModelAttribute("nameEditForm") final NameEditForm nameEditForm, @ModelAttribute("usernameEditForm") final UsernameEditForm usernameEditForm, @ModelAttribute("descriptionEditForm") final DescriptionEditForm descriptionEditForm) {

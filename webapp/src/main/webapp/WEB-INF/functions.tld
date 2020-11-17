@@ -31,4 +31,10 @@
         <function-class>ar.edu.itba.paw.models.Post</function-class>
         <function-signature>int getLikeValueByUser(ar.edu.itba.paw.models.Post,ar.edu.itba.paw.models.User)</function-signature>
     </function>
+
+    <function>
+        <name>hasUserFollowed</name>
+        <function-class>ar.edu.itba.paw.models.User</function-class>
+        <function-signature>boolean hasUserFollowed(ar.edu.itba.paw.models.User, ar.edu.itba.paw.models.User)</function-signature>
+    </function>
 </taglib>

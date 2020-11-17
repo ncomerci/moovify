@@ -29,6 +29,8 @@ public interface UserDao {
 
     PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
+    PaginatedCollection<User> getFollowedUsers(User user, UserDao.SortCriteria sortCriteria, int pageNumber, int pageSize);
+
     PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<User> searchUsersByRole(String query, Role role, SortCriteria sortCriteria, int pageNumber, int pageSize);

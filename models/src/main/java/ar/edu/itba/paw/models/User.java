@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -13,8 +14,13 @@ public class User {
 
     public static final String TABLE_NAME = "users";
     public static final String USER_ROLE_TABLE_NAME = "user_role";
+    public static final String USERS_FOLLOWS = "users_followed";
 
     public static final long DEFAULT_AVATAR_ID = 0;
+
+    static public boolean hasUserFollowed(User user, User followedUser) {
+        return user.getFollowing().contains(followedUser);
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_user_id_seq")
@@ -203,6 +209,10 @@ public class User {
         return commentLikes;
     }
 
+    public Set<User> getFollowing() {
+        return following;
+    }
+
     public void removeCommentLike(CommentLike like) {
         getCommentLikes().remove(like);
     }
@@ -229,6 +239,14 @@ public class User {
 
     public Collection<User> getFollowingUsers() {
         return following;
+    }
+
+    public void followUser(User user) {
+        getFollowing().add(user);
+    }
+
+    public void unfollowUser(User user) {
+        getFollowing().remove(user);
     }
 
     public Duration getTimeSinceCreation() {
