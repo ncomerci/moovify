@@ -95,6 +95,8 @@ public class PostDaoImpl implements PostDao {
 
         post.setTotalLikes(0L);
 
+        LOGGER.info("Created Post: {}", post.getId());
+
         return post;
     }
 
@@ -123,6 +125,8 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get All Posts Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
 
         return queryPosts("WHERE " + NATIVE_ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
@@ -293,6 +297,10 @@ public class PostDaoImpl implements PostDao {
                         "GROUP BY p " +
                         "%s", HQLOrderBy);
 
+        LOGGER.debug("QueryPosts nativeCountQuery: {}", nativeCountQuery);
+        LOGGER.debug("QueryPosts nativeQuery: {}", nativeQuery);
+        LOGGER.debug("QueryPosts fetchQuery: {}", fetchQuery);
+
         // Calculate Total Posts Count Disregarding Pagination (To Calculate Pages Later)
         final Query totalPostsNativeQuery = em.createNativeQuery(nativeCountQuery);
 
@@ -300,8 +308,10 @@ public class PostDaoImpl implements PostDao {
 
         final long totalPosts = ((Number) totalPostsNativeQuery.getSingleResult()).longValue();
 
-        if(totalPosts == 0)
+        if(totalPosts == 0) {
+            LOGGER.debug("QueryPosts Total Count == 0");
             return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalPosts);
+        }
 
         // Calculate Which Posts To Load And Load Their Ids
         final Query postIdsNativeQuery = em.createNativeQuery(nativeQuery);

@@ -48,7 +48,7 @@ public class PasswordResetToken {
         //Hibernate
     }
 
-    public long getTokenId() {
+    public long getId() {
         return tokenId;
     }
 

@@ -27,11 +27,15 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
 
         em.persist(passwordResetToken);
 
+        LOGGER.info("Created PasswordResetToken: {}", passwordResetToken.getId());
+
         return passwordResetToken;
     }
 
     @Override
     public Optional<PasswordResetToken> getResetPasswordToken(String token) {
+
+        LOGGER.info("Get Reset Password Token: {}", token);
 
         return em
                 .createQuery(
@@ -45,6 +49,8 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
     @Override
     public Optional<PasswordResetToken> findPasswordTokenByUser(User user) {
 
+        LOGGER.info("Find Password Token By User: {}", user.getId());
+
         return em
                 .createQuery(
                         "SELECT prt FROM PasswordResetToken prt WHERE prt.user.id = :id",
@@ -56,6 +62,7 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
 
     @Override
     public void deletePasswordResetToken(PasswordResetToken token) {
+        LOGGER.info("Delete Password Reset Token: {}", token.getId());
         em.remove(token);
     }
 }

@@ -33,12 +33,6 @@ public class PostServiceImpl implements PostService {
 
         Objects.requireNonNull(body);
 
-        Objects.requireNonNull(title, "PostDao: register: title can't be null");
-        Objects.requireNonNull(body);
-        Objects.requireNonNull(moviesId);
-        Objects.requireNonNull(category);
-        Objects.requireNonNull(user);
-
         final Collection<Movie> movies = movieDao.findMoviesById(moviesId);
 
         final Post post = postDao.register(title, body.trim(),
@@ -52,12 +46,14 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public void deletePost(Post post) {
+        LOGGER.info("Delete Post {}", post.getId());
         post.delete();
     }
 
     @Transactional
     @Override
     public void restorePost(Post post) {
+        LOGGER.info("Restore Post {}", post.getId());
         post.restore();
     }
 
@@ -65,11 +61,15 @@ public class PostServiceImpl implements PostService {
     @Override
     public void likePost(Post post, User user, int value) {
 
-        if(value == 0)
+        if(value == 0) {
+            LOGGER.info("Delete Like: User {} Post {}", user.getId(), post.getId());
             post.removeLike(user);
+        }
 
-        else if(value == -1 || value == 1)
+        else if(value == -1 || value == 1) {
+            LOGGER.info("Like: User {} Post {} Value {}", user.getId(), post.getId(), value);
             post.like(user, value);
+        }
     }
 
     @Transactional(readOnly = true)

@@ -94,6 +94,8 @@ public class MovieDaoImpl implements MovieDao {
 
         movie.setPostCount(0);
 
+        LOGGER.info("Created Movie: {}", movie.getId());
+
         return movie;
     }
 
@@ -122,6 +124,7 @@ public class MovieDaoImpl implements MovieDao {
     public PaginatedCollection<Movie> getAllMovies(SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Get All Movies Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
+
         return queryMovies("", sortCriteria, pageNumber, pageSize, null);
     }
 
@@ -129,6 +132,7 @@ public class MovieDaoImpl implements MovieDao {
     public Collection<Movie> getAllMoviesNotPaginated() {
 
         LOGGER.info("Get All Movies Not Paginated");
+
         return em.createQuery("SELECT m FROM Movie m", Movie.class).getResultList();
     }
 
@@ -244,6 +248,10 @@ public class MovieDaoImpl implements MovieDao {
                         "GROUP BY m " +
                         "%s", HQLOrderBy);
 
+        LOGGER.debug("QueryMovies nativeCountQuery: {}", nativeCountQuery);
+        LOGGER.debug("QueryMovies nativeQuery: {}", nativeQuery);
+        LOGGER.debug("QueryMovies fetchQuery: {}", fetchQuery);
+
         // Calculate Total Movie Count Disregarding Pagination (To Calculate Pages Later)
         final Query totalMoviesNativeQuery = em.createNativeQuery(nativeCountQuery);
 
@@ -251,8 +259,10 @@ public class MovieDaoImpl implements MovieDao {
 
         final long totalMovies = ((Number) totalMoviesNativeQuery.getSingleResult()).longValue();
 
-        if(totalMovies == 0)
+        if(totalMovies == 0) {
+            LOGGER.debug("QueryMovies Total Count == 0");
             return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalMovies);
+        }
 
         // Calculate Which Movies To Load And Load Their Ids
         final Query movieIdsNativeQuery = em.createNativeQuery(nativeQuery);

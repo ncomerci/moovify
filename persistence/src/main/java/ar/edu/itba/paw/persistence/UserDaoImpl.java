@@ -134,6 +134,8 @@ public class UserDaoImpl implements UserDao {
 
         user.setTotalLikes(0L);
 
+        LOGGER.info("Created User: {}", user.getId());
+
         return user;
     }
 
@@ -151,6 +153,8 @@ public class UserDaoImpl implements UserDao {
             throw new DuplicateUniqueUserAttributeException(EnumSet.of(DuplicateUniqueUserAttributeException.UniqueAttributes.USERNAME));
 
         user.setUsername(username);
+
+        LOGGER.info("Updating user {} username from {} to {}", user.getId(), user.getUsername(), username);
 
         em.persist(user);
     }
@@ -177,6 +181,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search All Users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
 
         return queryUsers("", sortCriteria, pageNumber, pageSize, null);
     }
@@ -206,6 +212,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search All Deleted Users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
 
         return queryUsers(
                 "WHERE " + NATIVE_SEARCH_BY_USERNAME +
@@ -285,6 +293,10 @@ public class UserDaoImpl implements UserDao {
                 "GROUP BY u " +
                 "%s", HQLOrderBy);
 
+        LOGGER.debug("QueryUsers nativeCountQuery: {}", nativeCountQuery);
+        LOGGER.debug("QueryUsers nativeQuery: {}", nativeQuery);
+        LOGGER.debug("QueryUsers fetchQuery: {}", fetchQuery);
+
         // Calculate Total User Count Disregarding Pagination (To Calculate Pages Later)
         final Query totalUsersNativeQuery = em.createNativeQuery(nativeCountQuery);
 
@@ -292,8 +304,10 @@ public class UserDaoImpl implements UserDao {
 
         final long totalUsers = ((Number) totalUsersNativeQuery.getSingleResult()).longValue();
 
-        if(totalUsers == 0)
+        if(totalUsers == 0) {
+            LOGGER.debug("QueryUsers Total Count == 0");
             return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalUsers);
+        }
 
         // Calculate Which Users To Load And Load Their Ids
         final Query userIdsNativeQuery = em.createNativeQuery(nativeQuery);
@@ -322,6 +336,9 @@ public class UserDaoImpl implements UserDao {
     }
 
     private <T> Optional<User> findByCriteria(String field, T value, boolean enabled) {
+
+        LOGGER.info("Find User By {}: {} and enabled = {}", field, value, enabled);
+
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
         CriteriaQuery<User> q = cb.createQuery(User.class);

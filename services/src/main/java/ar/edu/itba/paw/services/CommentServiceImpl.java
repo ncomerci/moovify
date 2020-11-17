@@ -57,22 +57,28 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void likeComment(Comment comment, User user, int value) {
 
-        if(value == 0)
+        if(value == 0) {
+            LOGGER.info("Delete Like: User {} Comment {}", user.getId(), comment.getId());
             comment.removeLike(user);
+        }
 
-        else if(value == -1 || value == 1)
+        else if(value == -1 || value == 1) {
+            LOGGER.info("Like: User {} Comment {} Value {}", user.getId(), comment.getId(), value);
             comment.like(user, value);
+        }
     }
 
     @Transactional
     @Override
     public void deleteComment(Comment comment) {
+        LOGGER.info("Delete Comment {}", comment.getId());
         comment.setEnabled(false);
     }
 
     @Transactional
     @Override
     public void restoreComment(Comment comment) {
+        LOGGER.info("Restore Comment {}", comment.getId());
         comment.setEnabled(true);
     }
 

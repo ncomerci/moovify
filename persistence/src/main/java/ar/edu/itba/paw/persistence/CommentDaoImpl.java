@@ -25,7 +25,6 @@ public class CommentDaoImpl implements CommentDao {
 
     private static final String NATIVE_BASE_COMMENT_FROM = "FROM " + COMMENTS;
 
-    // TODO: COALESCE AFTER SUM?
     private static final String NATIVE_TOTAL_LIKES_FROM =  " INNER JOIN ( " +
             "SELECT " + COMMENTS + ".comment_id tl_comment_id, " + "COALESCE(SUM( " + COMMENTS_LIKES + ".value ), 0) total_likes " +
             "FROM " + COMMENTS +
@@ -97,11 +96,15 @@ public class CommentDaoImpl implements CommentDao {
 
         comment.setTotalLikes(0L);
 
+        LOGGER.info("Created Comment: {}", comment.getId());
+
         return comment;
     }
 
     @Override
     public Optional<Comment> findCommentById(long id) {
+
+        LOGGER.info("Find Comment By Id: {}", id);
         return Optional.ofNullable(em.find(Comment.class, id));
     }
 
@@ -243,6 +246,10 @@ public class CommentDaoImpl implements CommentDao {
                         "GROUP BY c " +
                         "%s", HQLOrderBy);
 
+        LOGGER.debug("QueryComments nativeCountQuery: {}", nativeCountQuery);
+        LOGGER.debug("QueryComments nativeQuery: {}", nativeQuery);
+        LOGGER.debug("QueryComments fetchQuery: {}", fetchQuery);
+
         // Calculate Total Comment Count Disregarding Pagination (To Calculate Pages Later)
         final Query totalCommentsNativeQuery = em.createNativeQuery(nativeCountQuery);
 
@@ -250,8 +257,10 @@ public class CommentDaoImpl implements CommentDao {
 
         final long totalComments = ((Number) totalCommentsNativeQuery.getSingleResult()).longValue();
 
-        if(totalComments == 0)
+        if(totalComments == 0) {
+            LOGGER.debug("QueryComments Total Count == 0");
             return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalComments);
+        }
 
         // Calculate Which Comments To Load And Load Their Ids
         final Query commentIdsNativeQuery = em.createNativeQuery(nativeQuery);
@@ -316,14 +325,20 @@ public class CommentDaoImpl implements CommentDao {
                         "GROUP BY c " +
                         "%s", HQLOrderBy);
 
+        LOGGER.debug("QueryDescendantComments nativeCountQuery: {}", nativeCountQuery);
+        LOGGER.debug("QueryDescendantComments recursiveNativeQuery: {}", recursiveNativeQuery);
+        LOGGER.debug("QueryDescendantComments fetchQuery: {}", fetchQuery);
+
         // Calculate First Level Comment Count Disregarding Pagination (To Calculate Pages Later)
         final Query totalCommentsNativeQuery =
                 em.createNativeQuery(nativeCountQuery).setParameter("rootId", rootId);
 
         final long totalFirstLevelComments = ((Number) totalCommentsNativeQuery.getSingleResult()).longValue();
 
-        if(totalFirstLevelComments == 0)
+        if(totalFirstLevelComments == 0) {
+            LOGGER.debug("QueryComments Total Count == 0");
             return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalFirstLevelComments);
+        }
 
         // Calculate Which Comments To Load And Load Their Ids
         final Query commentIdsNativeQuery =
