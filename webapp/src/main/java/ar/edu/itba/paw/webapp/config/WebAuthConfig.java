@@ -64,13 +64,16 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/user/profile",
                                             "/user/profile/posts",
                                             "/user/profile/comments",
+                                            "/user/profile/followed/users",
                                             "/user/profile/edit",
                                             "/user/changePassword").authenticated()
                     .antMatchers(HttpMethod.POST,
                              "/user/edit/name",
                                         "/user/edit/username",
                                         "/user/edit/description",
-                                        "/user/profile/avatar").authenticated()
+                                        "/user/profile/avatar",
+                                        "/user/follow/{userId:[\\d]+}",
+                                        "/user/unfollow/{userId:[\\d]+}").authenticated()
                     .antMatchers("/user/resendConfirmation").hasRole("NOT_VALIDATED")
                     .antMatchers(
                             "/user/resetPassword",

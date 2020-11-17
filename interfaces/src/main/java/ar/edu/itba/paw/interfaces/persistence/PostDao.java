@@ -26,6 +26,8 @@ public interface PostDao {
 
     PaginatedCollection<Post> getDeletedPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
+    PaginatedCollection<Post> getFollowedUsersPosts(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
     PaginatedCollection<Post> getUserFavouritePosts(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);

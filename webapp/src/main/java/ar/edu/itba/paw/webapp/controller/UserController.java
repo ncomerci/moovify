@@ -7,10 +7,7 @@ import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
-import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.*;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
 import ar.edu.itba.paw.webapp.form.UpdatePasswordForm;
 import ar.edu.itba.paw.webapp.form.UserCreateForm;
@@ -153,6 +150,25 @@ public class UserController {
         return mv;
     }
 
+    @RequestMapping(path = "/user/{userId}/followed/users", method = RequestMethod.GET)
+    public ModelAndView viewFollowedUsers(HttpServletRequest request,
+                                     @PathVariable final long userId,
+                                     @RequestParam(defaultValue = "10") final int pageSize,
+                                     @RequestParam(defaultValue = "0") final int pageNumber) {
+
+        LOGGER.info("Accessed /user/{}/followedUsers", userId);
+
+        final ModelAndView mv = new ModelAndView("user/view/viewFollowedUsers");
+
+        final User user = getUserFromFlashParamsOrById(userId, request);
+
+        mv.addObject("user", user);
+
+        mv.addObject("followedUsers", userService.getFollowedUsers(user, pageNumber, pageSize));
+
+        return mv;
+    }
+
     @RequestMapping(path = {"/user/profile", "/user/profile/posts"}, method = RequestMethod.GET)
     public ModelAndView profilePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
                                      final HttpServletRequest request, final Principal principal,
@@ -188,6 +204,23 @@ public class UserController {
 
         return mv;
     }
+    @RequestMapping(path = {"/user/profile/followed/users"}, method = RequestMethod.GET)
+    public ModelAndView profileFollowedUsers(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
+                                              final HttpServletRequest request, final Principal principal,
+                                              @RequestParam(defaultValue = "10") final int pageSize,
+                                              @RequestParam(defaultValue = "0") final int pageNumber) {
+
+        LOGGER.info("Accessed /user/profile/followed/users");
+
+        final ModelAndView mv = new ModelAndView("user/profile/profileFollowedUsers");
+
+        final User user = getUserFromFlashParamsOrByUsername(principal.getName(), request);
+
+        mv.addObject("loggedUser", user);
+        mv.addObject("followedUsers", userService.getFollowedUsers(user, pageNumber, pageSize));
+
+        return mv;
+    }
 
     @RequestMapping(path = "/user/profile/comments", method = RequestMethod.GET)
     public ModelAndView profileComments(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm, Principal principal,
@@ -215,6 +248,9 @@ public class UserController {
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
         final User followedUser = getUserFromFlashParamsOrById(userId, request);
 
+        if(!followedUser.isEnabled())
+            throw new IllegalUserFollowException();
+
         userService.followUser(user, followedUser);
         return new ModelAndView("redirect:/user/" + userId);
     }
@@ -228,6 +264,9 @@ public class UserController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
         final User unfollowedUser = getUserFromFlashParamsOrById(userId, request);
+
+        if(!unfollowedUser.isEnabled())
+            throw new IllegalUserUnfollowException();
 
         userService.unfollowUser(user, unfollowedUser);
         return new ModelAndView("redirect:/user/" + userId);

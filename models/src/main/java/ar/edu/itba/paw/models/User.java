@@ -15,7 +15,7 @@ public class User {
     public static final String TABLE_NAME = "users";
     public static final String USER_ROLE_TABLE_NAME = "user_role";
     public static final String USER_FAV_POST = "user_fav_post";
-    public static final String USERS_FOLLOWS = "users_followed";
+    public static final String USERS_FOLLOWS = "users_follows";
 
     public static final long DEFAULT_AVATAR_ID = 0;
 

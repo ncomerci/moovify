@@ -30,6 +30,8 @@ public interface PostService {
 
     PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize);
 
+    PaginatedCollection<Post> getFollowedUsersPosts(User user, int pageNumber, int pageSize);
+
     PaginatedCollection<Post> getUserFavouritePosts(User user, int pageNumber, int pageSize);
 
     Collection<PostCategory> getAllPostCategories();

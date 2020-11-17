@@ -14,7 +14,7 @@
     <c:forEach items="${posts.results}" var="post">
         <div class="uk-width-1-1">
             <div class="uk-flex">
-                <div class="uk-width-expand uk-margin-small-top">
+                <div class="uk-width-expand uk-margin-small-top uk-text-truncate">
                     <a href="<c:url value="/post/${post.id}"/>">
                         <c:out value="${post.title}"/>
                     </a>

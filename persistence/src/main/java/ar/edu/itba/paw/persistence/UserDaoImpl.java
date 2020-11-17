@@ -129,7 +129,7 @@ public class UserDaoImpl implements UserDao {
             throw new DuplicateUniqueUserAttributeException(duplicatedUniqueAttributes);
         }
 
-        final User user = new User(LocalDateTime.now(), username, password, name, email, description, language, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        final User user = new User(LocalDateTime.now(), username, password, name, email, description, language, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
 
         em.persist(user);
 
@@ -196,7 +196,7 @@ public class UserDaoImpl implements UserDao {
         return queryUsers(
                 "WHERE " +
                         USERS + ".user_id IN ( " +
-                        "SELECT " + USERS_FOLLOWS + ".user_followed_id " +
+                        "SELECT " + USERS_FOLLOWS + ".user_follow_id " +
                         "FROM " + USERS_FOLLOWS +
                         " WHERE " + USERS_FOLLOWS + ".user_id = ?)" +
                         " AND " + NATIVE_ENABLED_FILTER,

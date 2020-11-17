@@ -26,7 +26,7 @@
     <div class="uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle" uk-grid>
         <div class="uk-width-1-3@m uk-flex-first uk-text-center">
             <img class="circle uk-background-cover" alt="user-avatar" data-src="<c:url value="/user/avatar/${user.avatarId}"/>" uk-img>
-            <c:if test="${not empty loggedUser and loggedUser.validated and loggedUser.id ne user.id}">
+            <c:if test="${not empty loggedUser and loggedUser.validated and loggedUser.enabled and loggedUser.id ne user.id}">
                 <c:set var="followed" value="${customTag:hasUserFollowed(loggedUser,user)}"/>
                 <c:if test="${!followed}">
                     <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
@@ -108,6 +108,12 @@
                 <c:url value="${'/user/'}${user.id}${'/comments'}" var="commentsURL"/>
                 <a href="${currentState != 1 ? commentsURL : ''}">
                     <spring:message code="user.view.Comments" arguments="${user.username}"/>
+                </a>
+            </li>
+            <li class="${currentState == 2 ? 'uk-active' : ''}">
+                <c:url value="${'/user/'}${user.id}${'/followed/users'}" var="followedUsersURL"/>
+                <a href="${currentState != 2 ? followedUsersURL : ''}">
+                    <spring:message code="user.view.usersFollowed" arguments="${user.username}"/>
                 </a>
             </li>
         </ul>
