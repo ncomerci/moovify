@@ -112,6 +112,12 @@
                         <spring:message code="user.profile.yourFavouritePosts"/>
                     </a>
                 </li>
+                <li class="${currentState == 3 ? 'uk-active' : ''}">
+                    <c:url value="${'/user/profile/followed/users'}" var="followedUsersURL"/>
+                    <a href="${currentState != 3 ? followedUsersURL : ''}">
+                        <spring:message code="user.profile.yourFollowedUsers"/>
+                    </a>
+                </li>
             </ul>
         </div>
     </c:if>

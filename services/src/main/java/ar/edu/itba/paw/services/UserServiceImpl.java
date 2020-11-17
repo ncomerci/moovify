@@ -144,6 +144,19 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
+    public void followUser(User user, User userFollowed) {
+        user.followUser(userFollowed);
+    }
+
+    @Transactional
+    @Override
+    public void unfollowUser(User user, User userUnfollowed) {
+        user.unfollowUser(userUnfollowed);
+    }
+
+
+    @Transactional
+    @Override
     public void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale) {
 
         Objects.requireNonNull(user);
@@ -297,4 +310,12 @@ public class UserServiceImpl implements UserService {
     public PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize) {
         return userDao.getAllUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedCollection<User> getFollowedUsers(User user, int pageNumber, int pageSize) {
+        return userDao.getFollowedUsers(user, UserDao.SortCriteria.USERNAME, pageNumber, pageSize);
+    }
+
+
 }

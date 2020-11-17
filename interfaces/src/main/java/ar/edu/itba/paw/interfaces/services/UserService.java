@@ -26,6 +26,10 @@ public interface UserService {
 
     void promoteUserToAdmin(User user);
 
+    void followUser(User user, User userFollowed);
+
+    void unfollowUser(User user, User userUnfollowed);
+
     Optional<User> confirmRegistration(String token);
 
     void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale);
@@ -53,4 +57,6 @@ public interface UserService {
     Optional<User> findUserByEmail(String email);
 
     PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize);
+
+    PaginatedCollection<User> getFollowedUsers(User user, int pageNumber, int pageSize);
 }

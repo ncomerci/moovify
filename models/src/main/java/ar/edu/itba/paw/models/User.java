@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -14,11 +15,16 @@ public class User {
     public static final String TABLE_NAME = "users";
     public static final String USER_ROLE_TABLE_NAME = "user_role";
     public static final String USER_FAV_POST = "user_fav_post";
+    public static final String USERS_FOLLOWS = "users_follows";
 
     public static final long DEFAULT_AVATAR_ID = 0;
 
     public static boolean userHasFavedPost(User user, Post post) {
         return user.isPostFavourite(post);
+    }
+
+    static public boolean hasUserFollowed(User user, User followedUser) {
+        return user.getFollowing().contains(followedUser);
     }
 
     @Id
@@ -83,6 +89,14 @@ public class User {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
+            name = "users_follows",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_follow_id")
+    )
+    private Set<User> following;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
             name = USER_FAV_POST,
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "post_id")
@@ -92,12 +106,12 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<Post> favouritePosts) {
-        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postLikes, commentLikes, posts, comments, favouritePosts);
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> favouritePosts) {
+        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postLikes, commentLikes, posts, comments, following, favouritePosts);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<Post> favouritePosts) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> favouritePosts) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
@@ -112,6 +126,7 @@ public class User {
         this.commentLikes = commentLikes;
         this.posts = posts;
         this.comments = comments;
+        this.following = following;
         this.favouritePosts = favouritePosts;
     }
 
@@ -208,6 +223,10 @@ public class User {
         return commentLikes;
     }
 
+    public Set<User> getFollowing() {
+        return following;
+    }
+
     public void removeCommentLike(CommentLike like) {
         getCommentLikes().remove(like);
     }
@@ -246,6 +265,18 @@ public class User {
 
     public void removeFavouritePost(Post post) {
         favouritePosts.remove(post);
+    }
+
+    public Collection<User> getFollowingUsers() {
+        return following;
+    }
+
+    public void followUser(User user) {
+        getFollowing().add(user);
+    }
+
+    public void unfollowUser(User user) {
+        getFollowing().remove(user);
     }
 
     public Duration getTimeSinceCreation() {

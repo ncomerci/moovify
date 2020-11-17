@@ -30,6 +30,7 @@ public class UserDaoImpl implements UserDao {
     private static final String POSTS_LIKES = PostLike.TABLE_NAME;
     private static final String COMMENTS_LIKES = CommentLike.TABLE_NAME;
     private static final String COMMENTS = Comment.TABLE_NAME;
+    private static final String USERS_FOLLOWS = User.USERS_FOLLOWS;
 
     private static final String NATIVE_BASE_USER_FROM = "FROM " + USERS;
 
@@ -128,7 +129,7 @@ public class UserDaoImpl implements UserDao {
             throw new DuplicateUniqueUserAttributeException(duplicatedUniqueAttributes);
         }
 
-        final User user = new User(LocalDateTime.now(), username, password, name, email, description, language, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        final User user = new User(LocalDateTime.now(), username, password, name, email, description, language, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
 
         em.persist(user);
 
@@ -185,6 +186,21 @@ public class UserDaoImpl implements UserDao {
         LOGGER.info("Search All Users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
 
         return queryUsers("", sortCriteria, pageNumber, pageSize, null);
+    }
+
+    @Override
+    public PaginatedCollection<User> getFollowedUsers(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get All followed users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
+
+        return queryUsers(
+                "WHERE " +
+                        USERS + ".user_id IN ( " +
+                        "SELECT " + USERS_FOLLOWS + ".user_follow_id " +
+                        "FROM " + USERS_FOLLOWS +
+                        " WHERE " + USERS_FOLLOWS + ".user_id = ?)" +
+                        " AND " + NATIVE_ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override
