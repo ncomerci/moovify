@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -38,7 +37,7 @@ public class Post {
 
     @Column(name = "creation_date", nullable = false)
     @Basic(optional = false)
-    private Timestamp creationDate;
+    private LocalDateTime creationDate;
 
     @Column(nullable = false, length = 200)
     @Basic(optional = false)
@@ -50,6 +49,13 @@ public class Post {
 
     @Column(name = "word_count", nullable = false)
     private int wordCount;
+
+    @Column(nullable = false)
+    private boolean edited;
+
+    @Column(name = "last_edited", nullable = true)
+    @Basic(optional = true)
+    private LocalDateTime lastEditDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="user_id", nullable = false)
@@ -89,19 +95,21 @@ public class Post {
 
     private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Set<Comment> comments) {
-        this(creationDate, title, body, wordCount, category, user, tags, enabled, likes, movies, comments);
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean edited, LocalDateTime lastEditDate, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Set<Comment> comments) {
+        this(creationDate, title, body, wordCount, category, user, tags, edited, lastEditDate, enabled, likes, movies, comments);
         this.id = id;
     }
 
-    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Set<Comment> comments) {
-        this.creationDate = Timestamp.valueOf(creationDate);
+    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean edited, LocalDateTime lastEditDate, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Set<Comment> comments) {
+        this.creationDate = creationDate;
         this.title = title;
         this.body = body;
         this.wordCount = wordCount;
         this.user = user;
         this.category = category;
         this.tags = tags;
+        this.edited = edited;
+        this.lastEditDate = lastEditDate;
         this.enabled = enabled;
         this.likes = likes;
         this.movies = movies;
@@ -136,7 +144,7 @@ public class Post {
     }
 
     public LocalDateTime getCreationDate() {
-        return creationDate.toLocalDateTime();
+        return creationDate;
     }
 
     public String getTitle() {
@@ -145,6 +153,12 @@ public class Post {
 
     public String getBody() {
         return body;
+    }
+
+    public void setBody(String body) {
+        edited = true;
+        lastEditDate = LocalDateTime.now();
+        this.body = body;
     }
 
     public int getWordCount() {
@@ -169,6 +183,14 @@ public class Post {
 
     public Collection<String> getTags() {
         return tags;
+    }
+
+    public boolean isEdited() {
+        return edited;
+    }
+
+    public LocalDateTime getLastEditDate() {
+        return lastEditDate;
     }
 
     public int getReadingTimeMinutes() {

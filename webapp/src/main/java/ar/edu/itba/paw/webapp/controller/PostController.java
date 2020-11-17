@@ -7,12 +7,10 @@ import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.exceptions.IllegalPostLikeException;
-import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
-import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.*;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
 import ar.edu.itba.paw.webapp.form.PostCreateForm;
+import ar.edu.itba.paw.webapp.form.PostEditForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +20,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.support.RequestContextUtils;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
-import java.util.Map;
 
 
 @Controller
@@ -54,14 +48,13 @@ public class PostController {
     public ModelAndView view(@PathVariable final long postId,
                              @RequestParam(defaultValue = "10") final int pageSize,
                              @RequestParam(defaultValue = "0") final int pageNumber,
-                             @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm,
-                             final HttpServletRequest request) {
+                             @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm) {
 
         LOGGER.info("Accessed /post/{}", postId);
 
         final ModelAndView mv = new ModelAndView("post/view");
 
-        final Post post = getPostFromFlashParamsOrById(postId, request);
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -117,8 +110,7 @@ public class PostController {
     @RequestMapping(path = "/post/create", method = RequestMethod.POST)
     public ModelAndView showPostCreateForm(@Valid @ModelAttribute("postCreateForm") final PostCreateForm postCreateForm,
                                            final BindingResult errors,
-                                           final Principal principal,
-                                           final RedirectAttributes redirectAttributes) {
+                                           final Principal principal) {
 
         if (errors.hasErrors()) {
             LOGGER.warn("Errors were found in the form postCreateForm creating a Post");
@@ -135,9 +127,53 @@ public class PostController {
                     postCreateForm.getTags() == null ? Collections.emptySet() : postCreateForm.getTags(),
                     postCreateForm.getMovies());
 
-        redirectAttributes.addFlashAttribute("post", post);
-
         LOGGER.info("Accessed /post/create to create Post. Redirecting to /post/{}", post.getId());
+
+        return new ModelAndView("redirect:/post/" + post.getId());
+    }
+
+    @RequestMapping(path = "/post/edit/{postId}", method = RequestMethod.GET)
+    public ModelAndView showPostEditForm(@PathVariable long postId, @ModelAttribute("postEditForm") final PostEditForm postEditForm,
+                                         Principal principal) {
+
+        LOGGER.info("Accessed /post/edit/{}", postId);
+
+        final ModelAndView mv = new ModelAndView("post/edit");
+
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+        if(!post.isEnabled())
+            throw new PostNotFoundException();
+
+        if(!post.getUser().getUsername().equals(principal.getName()))
+            throw new MissingPostEditPermissionException();
+
+        mv.addObject("post", post);
+
+        if(postEditForm.getBody() == null)
+            postEditForm.setBody(post.getBody());
+
+        return mv;
+    }
+
+    @RequestMapping(path = "/post/edit/{postId}", method = RequestMethod.POST)
+    public ModelAndView editPost(@PathVariable long postId, @Valid @ModelAttribute("postEditForm") final PostEditForm postEditForm,
+                                           final BindingResult errors, final Principal principal) {
+
+        if(errors.hasErrors()) {
+            LOGGER.warn("Errors were found in the form postEditForm editing a Post");
+            return showPostEditForm(postId, postEditForm, principal);
+        }
+
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+        if(!post.isEnabled())
+            throw new PostNotFoundException();
+
+        if(!post.getUser().getUsername().equals(principal.getName()))
+            throw new MissingPostEditPermissionException();
+
+        postService.editPost(post, postEditForm.getBody());
+
+        LOGGER.info("Accessed /post/edit to edit Post. Redirecting to /post/{}", post.getId());
 
         return new ModelAndView("redirect:/post/" + post.getId());
     }
@@ -145,17 +181,5 @@ public class PostController {
 
     private boolean isAnonymous(Authentication auth) {
         return auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ANONYMOUS"));
-    }
-
-    private Post getPostFromFlashParamsOrById(long postId, HttpServletRequest request) {
-
-        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
-
-        if(flashParams != null && flashParams.containsKey("post")) {
-            LOGGER.debug("Got Post {} from Flash Params", postId);
-            return (Post) flashParams.get("post");
-        }
-        else
-            return postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
     }
 }

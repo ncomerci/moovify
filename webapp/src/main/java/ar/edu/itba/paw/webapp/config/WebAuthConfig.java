@@ -80,6 +80,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Post Controller
                         // "/post/{postId}"
                     .antMatchers("/post/create").hasRole("USER")
+                    .antMatchers("/post/edit/{postId:[\\d]+}").hasRole("USER")
                     .antMatchers(HttpMethod.POST, "/post/like").hasRole("USER")
 
                     // Movie Controller

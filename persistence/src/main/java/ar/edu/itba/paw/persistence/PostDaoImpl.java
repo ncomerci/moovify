@@ -90,7 +90,7 @@ public class PostDaoImpl implements PostDao {
     @Override
     public Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Movie> movies, boolean enabled) {
 
-        final Post post = new Post(LocalDateTime.now(), title, body, wordCount, category, user, tags, enabled, Collections.emptySet(), movies, Collections.emptySet());
+        final Post post = new Post(LocalDateTime.now(), title, body, wordCount, category, user, tags, false, null, enabled, Collections.emptySet(), movies, Collections.emptySet());
 
         em.persist(post);
 

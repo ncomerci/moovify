@@ -60,6 +60,12 @@
                             </p>
                         </div>
 
+                        <c:if test="${post.user.id == loggedUser.id}" >
+                            <div>
+                                <a href="<c:url value="/post/edit/${post.id}"/>"><spring:message code="post.view.edit"/></a>
+                            </div>
+                        </c:if>
+
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
                             <a class=" like-post-button"  data-value="${ likeValue == -1 ? 0 : -1 }">
                                 <span class="iconify" data-icon="<c:out value="${ likeValue == -1 ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
@@ -98,6 +104,14 @@
             </c:choose>
         </span>
     </div>
+    <%--    TODO: Arreglar -Tobi :)--%>
+    <c:if test="${post.edited}">
+        <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.lastEdited"/>
+        <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
+                <fmt:parseDate value="${post.lastEditDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+        </span>
+    </c:if>
     <hr>
     <article id="post-body">
         <noscript id="unparsedBody" class="m-long-text">

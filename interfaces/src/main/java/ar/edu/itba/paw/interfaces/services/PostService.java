@@ -16,6 +16,8 @@ public interface PostService {
 
     void likePost(Post post, User user, int value);
 
+    void editPost(Post post, String newBody);
+
     Optional<Post> findPostById(long id);
 
     Optional<Post> findDeletedPostById(long id);

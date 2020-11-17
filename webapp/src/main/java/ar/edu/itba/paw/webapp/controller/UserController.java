@@ -70,7 +70,7 @@ public class UserController {
 
     @RequestMapping(path = "/user/create", method = RequestMethod.POST)
     public ModelAndView register(@Valid @ModelAttribute("userCreateForm") final UserCreateForm userCreateForm, final BindingResult bindingResult,
-                                  final HttpServletRequest request, final RedirectAttributes redirectAttributes) throws IOException {
+                                  final HttpServletRequest request) throws IOException {
 
         if(bindingResult.hasErrors()) {
             LOGGER.warn("Errors were found in the form userCreateForm creating a User");
@@ -108,16 +108,13 @@ public class UserController {
 
         manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
 
-        redirectAttributes.addFlashAttribute("user", user);
-
         LOGGER.info("User creation in /user/create was successful. Redirecting to /user/profile of User {}", user.getId());
 
         return new ModelAndView("redirect:/user/profile");
     }
 
     @RequestMapping(path = {"/user/{userId}", "/user/{userId}/posts"} , method = RequestMethod.GET)
-    public ModelAndView viewPosts(HttpServletRequest request,
-                                  @PathVariable final long userId,
+    public ModelAndView viewPosts(@PathVariable final long userId,
                                   @RequestParam(defaultValue = "10") final int pageSize,
                                   @RequestParam(defaultValue = "0") final int pageNumber) {
 
@@ -125,7 +122,7 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/view/viewPosts");
 
-        final User user = getUserFromFlashParamsOrById(userId, request);
+        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("user", user);
 
@@ -135,8 +132,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/{userId}/comments", method = RequestMethod.GET)
-    public ModelAndView viewComments(HttpServletRequest request,
-                                     @PathVariable final long userId,
+    public ModelAndView viewComments(@PathVariable final long userId,
                                      @RequestParam(defaultValue = "10") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
@@ -144,7 +140,7 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/view/viewComments");
 
-        final User user = getUserFromFlashParamsOrById(userId, request);
+        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("user", user);
 
@@ -155,7 +151,7 @@ public class UserController {
 
     @RequestMapping(path = {"/user/profile", "/user/profile/posts"}, method = RequestMethod.GET)
     public ModelAndView profilePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
-                                     final HttpServletRequest request, final Principal principal,
+                                     final Principal principal,
                                      @RequestParam(defaultValue = "10") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
@@ -163,7 +159,7 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/profile/profilePosts");
 
-        final User user = getUserFromFlashParamsOrByUsername(principal.getName(), request);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
         mv.addObject("posts", postService.findPostsByUser(user, pageNumber, pageSize));
@@ -173,7 +169,7 @@ public class UserController {
 
     @RequestMapping(path = {"/user/profile/favourite/posts"}, method = RequestMethod.GET)
     public ModelAndView profileFavouritePosts(@ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
-                                     final HttpServletRequest request, final Principal principal,
+                                     final Principal principal,
                                      @RequestParam(defaultValue = "10") final int pageSize,
                                      @RequestParam(defaultValue = "0") final int pageNumber) {
 
@@ -181,7 +177,7 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/profile/profileFavouritePosts");
 
-        final User user = getUserFromFlashParamsOrByUsername(principal.getName(), request);
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("loggedUser", user);
         mv.addObject("posts", postService.getUserFavouritePosts(user, pageNumber, pageSize));
@@ -340,14 +336,12 @@ public class UserController {
     @RequestMapping(path = "/user/profile/avatar", method = RequestMethod.POST)
     public ModelAndView updateAvatar(@Valid @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
                                             final BindingResult bindingResult,
-                                            final HttpServletRequest request,
                                             final Principal principal) throws IOException {
 
         if(bindingResult.hasErrors()) {
             LOGGER.warn("Errors were found in the form avatarEditForm updating avatar in /user/profile/avatar");
-            return profilePosts(avatarEditForm, request, principal, 5, 0);
+            return profilePosts(avatarEditForm, principal, 5, 0);
         }
-
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
@@ -530,31 +524,5 @@ public class UserController {
 
     private Collection<GrantedAuthority> getGrantedAuthorities(Collection<Role> roles) {
         return roles.stream().map((role) -> new SimpleGrantedAuthority("ROLE_" + role.name())).collect(Collectors.toList());
-    }
-
-    private User getUserFromFlashParamsOrById(long userId, HttpServletRequest request) {
-
-        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
-
-        if(flashParams != null && flashParams.containsKey("user")) {
-            LOGGER.debug("Obtained User from Flash Params");
-            return (User) flashParams.get("user");
-        }
-
-        else
-            return userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
-    }
-
-    private User getUserFromFlashParamsOrByUsername(String username, HttpServletRequest request) {
-
-        final Map<String, ?> flashParams = RequestContextUtils.getInputFlashMap(request);
-
-        if(flashParams != null && flashParams.containsKey("user")) {
-            LOGGER.debug("Obtained User from Flash Params");
-            return (User) flashParams.get("user");
-        }
-
-        else
-            return userService.findUserByUsername(username).orElseThrow(UserNotFoundException::new);
     }
 }

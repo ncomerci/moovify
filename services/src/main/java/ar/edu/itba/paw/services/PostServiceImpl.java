@@ -72,6 +72,14 @@ public class PostServiceImpl implements PostService {
         }
     }
 
+    @Transactional
+    @Override
+    public void editPost(Post post, String newBody) {
+        Objects.requireNonNull(newBody);
+
+        post.setBody(newBody.trim());
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Optional<Post> findPostById(long id) {

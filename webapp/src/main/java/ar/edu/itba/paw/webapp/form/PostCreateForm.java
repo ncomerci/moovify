@@ -5,16 +5,14 @@ import ar.edu.itba.paw.webapp.form.annotations.MoviesSizeConstraint;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
-
-
 import java.util.Set;
 
 public class PostCreateForm {
 
-    @Size( min = 6, max = 200)
+    @Size(min = 6, max = 200)
     private String title;
 
-    @Size( min = 1, max = 100000)
+    @Size(min = 1, max = 100000)
     private String body;
 
     @Min(1)
