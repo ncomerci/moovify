@@ -74,7 +74,7 @@ public class User {
     private Set<Post> posts;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Collection<Comment> comments;
+    private Set<Comment> comments;
 
     @Column(nullable = false)
     private boolean enabled;

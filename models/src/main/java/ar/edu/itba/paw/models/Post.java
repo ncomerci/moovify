@@ -68,7 +68,7 @@ public class Post {
     private Set<Movie> movies;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
-    private Collection<Comment> comments;
+    private Set<Comment> comments;
 
     @ElementCollection(targetClass = String.class)
     @CollectionTable(
@@ -89,12 +89,12 @@ public class Post {
 
     private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Collection<Comment> comments) {
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Set<Comment> comments) {
         this(creationDate, title, body, wordCount, category, user, tags, enabled, likes, movies, comments);
         this.id = id;
     }
 
-    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Collection<Comment> comments) {
+    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Set<Comment> comments) {
         this.creationDate = Timestamp.valueOf(creationDate);
         this.title = title;
         this.body = body;
