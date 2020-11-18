@@ -5,7 +5,7 @@ import javax.validation.constraints.Size;
 
 public class NameEditForm {
 
-    @Size(min=2, max=50)
+    @Size(min = 2, max = 50)
     @Pattern(regexp = "[a-zA-Z]+")
     private String name;
 

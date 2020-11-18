@@ -18,11 +18,13 @@ public class UserCreateForm implements MatchingPasswordForm {
     private String username;
 
     @ValidPassword
+    @Size(min=12, max=30)
     private String password;
 
     private String repeatPassword;
 
     @Pattern(regexp = "[a-zA-Z]+")
+    @Size(min = 2, max = 50)
     private String name;
 
     @Email

@@ -4,10 +4,13 @@ import ar.edu.itba.paw.webapp.form.MatchingPasswordForm;
 import ar.edu.itba.paw.webapp.form.annotations.MatchingPasswordsConstraint;
 import ar.edu.itba.paw.webapp.form.annotations.ValidPassword;
 
+import javax.validation.constraints.Size;
+
 @MatchingPasswordsConstraint()
 public class ChangePasswordForm implements MatchingPasswordForm {
 
     @ValidPassword
+    @Size(min = 12, max = 30)
     private String password;
 
     private String repeatPassword;
