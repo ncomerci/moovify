@@ -1,12 +1,12 @@
 package ar.edu.itba.paw.webapp.form.editProfile;
 
 import ar.edu.itba.paw.webapp.form.MatchingPasswordForm;
-import ar.edu.itba.paw.webapp.form.annotations.MatchingPasswordsConstraint;
+import ar.edu.itba.paw.webapp.form.annotations.MatchingPasswords;
 import ar.edu.itba.paw.webapp.form.annotations.ValidPassword;
 
 import javax.validation.constraints.Size;
 
-@MatchingPasswordsConstraint()
+@MatchingPasswords()
 public class ChangePasswordForm implements MatchingPasswordForm {
 
     @ValidPassword

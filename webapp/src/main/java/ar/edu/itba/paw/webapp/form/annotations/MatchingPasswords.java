@@ -1,7 +1,7 @@
 package ar.edu.itba.paw.webapp.form.annotations;
 
 
-import ar.edu.itba.paw.webapp.form.constraints.MatchingPasswordValidator;
+import ar.edu.itba.paw.webapp.form.constraints.MatchingPasswordsConstraintValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -10,10 +10,10 @@ import java.lang.annotation.*;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Constraint(validatedBy = MatchingPasswordValidator.class)
+@Constraint(validatedBy = MatchingPasswordsConstraintValidator.class)
 
-public @interface MatchingPasswordsConstraint {
-    String message() default "{javax.validation.constraints.Email.message}";
+public @interface MatchingPasswords {
+    String message() default "{javax.validation.constraints.MatchingPasswords.message}";
 
     Class<?>[] groups() default {};
 
