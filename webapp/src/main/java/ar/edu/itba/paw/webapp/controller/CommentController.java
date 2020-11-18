@@ -6,11 +6,9 @@ import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.IllegalCommentLikeException;
-import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.*;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
+import ar.edu.itba.paw.webapp.form.CommentEditForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +37,7 @@ public class CommentController {
     private UserService userService;
 
     @RequestMapping(path = "/comment/create",  method = RequestMethod.POST)
-    public ModelAndView post(@Valid @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm,
+    public ModelAndView createComment(@Valid @ModelAttribute("commentCreateForm") final CommentCreateForm commentCreateForm,
                              final BindingResult bindingResult, Principal principal, RedirectAttributes redirectAttributes,
                              final HttpServletRequest request) {
 
@@ -70,7 +68,8 @@ public class CommentController {
     public ModelAndView view(@PathVariable final long id,
                              @RequestParam(defaultValue = "10") final int pageSize,
                              @RequestParam(defaultValue = "0") final int pageNumber,
-                             @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm) {
+                             @ModelAttribute("commentCreateForm") final CommentCreateForm commentCreateForm,
+                             @ModelAttribute("commentEditForm") final CommentEditForm commentEditForm) {
 
         LOGGER.info("Accessed /comment/{}", id);
 
@@ -82,7 +81,34 @@ public class CommentController {
         mv.addObject("children", commentService.findCommentDescendants(comment, pageNumber, pageSize));
         mv.addObject("maxDepth", commentService.getMaxCommentTreeDepth());
 
+        if(commentEditForm.getCommentBody() == null)
+            commentEditForm.setCommentBody(comment.getBody());
+
         return mv;
+    }
+
+    @RequestMapping(path = "/comment/edit/{commentId}",  method = RequestMethod.POST)
+    public ModelAndView editComment(@PathVariable long commentId, @Valid @ModelAttribute("commentEditForm") final CommentEditForm commentEditForm,
+                             final BindingResult bindingResult, Principal principal) {
+
+        if(bindingResult.hasErrors()) {
+            LOGGER.warn("Errors were found in the form commentEditForm editing a Comment");
+            return new ModelAndView("redirect:/comment/" + commentId); // Temporal
+        }
+
+        final Comment comment = commentService.findCommentById(commentId).orElseThrow(CommentNotFoundException::new);
+
+        if(!comment.isEnabled())
+            throw new CommentNotFoundException();
+
+        if(!comment.getUser().getUsername().equals(principal.getName()))
+            throw new MissingCommentEditPermissionException();
+
+        commentService.editComment(comment, commentEditForm.getCommentBody());
+
+        LOGGER.info("Accessed /comment/edit to edit Comment. Redirecting to /comment/{}", comment.getId());
+
+        return new ModelAndView("redirect:/comment/" + comment.getId());
     }
 
     @RequestMapping(path = "/comment/like",  method = RequestMethod.POST)

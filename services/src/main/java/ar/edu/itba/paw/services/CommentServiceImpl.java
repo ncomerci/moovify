@@ -61,6 +61,17 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
+    public void editComment(Comment comment, String newBody) {
+
+        comment.setBody(
+                newBody.trim().replaceAll("[ \t]+", " ")
+                .replaceAll("(\r\n)+", "\n")
+                .replaceAll("^[ \r\n]+|[ \r\n]+$", "")
+        );
+    }
+
+    @Transactional
+    @Override
     public void likeComment(Comment comment, User user, int value) {
 
         if(value == 0) {

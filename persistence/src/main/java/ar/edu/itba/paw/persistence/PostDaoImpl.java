@@ -181,7 +181,6 @@ public class PostDaoImpl implements PostDao {
                         " WHERE " + USERS_FOLLOWS + ".user_id = ?)" +
                         " AND " + NATIVE_ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
-
     }
 
     @Override
