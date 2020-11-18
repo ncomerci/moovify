@@ -63,3 +63,6 @@ ALTER TABLE users ADD COLUMN language VARCHAR(15) NOT NULL default 'en';
 -- Edit Post --
 ALTER TABLE posts ADD COLUMN edited BOOLEAN NOT NULL default false;
 ALTER TABLE posts ADD COLUMN last_edited TIMESTAMP default NULL;
+
+-- Tests
+-- Image BYTEA -> VARBINARY(10500000);
