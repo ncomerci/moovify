@@ -234,8 +234,7 @@ public class UserController {
         return mv;
     }
     @RequestMapping(path = "/user/follow/{userId}", method = RequestMethod.POST)
-    public ModelAndView followUser(HttpServletRequest request,
-                                   @PathVariable final long userId,
+    public ModelAndView followUser(@PathVariable final long userId,
                                    final Principal principal) {
 
         LOGGER.info("Accessed /user/follow");
@@ -251,8 +250,7 @@ public class UserController {
     }
 
     @RequestMapping(path = "/user/unfollow/{userId}", method = RequestMethod.POST)
-    public ModelAndView unfollowUser(HttpServletRequest request,
-                                   @PathVariable final long userId,
+    public ModelAndView unfollowUser(@PathVariable final long userId,
                                    final Principal principal) {
 
         LOGGER.info("Accessed /user/follow");
