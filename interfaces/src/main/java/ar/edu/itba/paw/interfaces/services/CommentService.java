@@ -11,6 +11,8 @@ public interface CommentService {
 
     Comment register(Post post, Comment parent, String body, User user, String mailTemplate);
 
+    void editComment(Comment comment, String newBody);
+
     void likeComment(Comment comment, User user, int value);
 
     void deleteComment(Comment comment);

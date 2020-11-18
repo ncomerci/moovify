@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -21,13 +20,7 @@ public class LoggedUserAdvice {
     private UserService userService;
 
     @ModelAttribute("loggedUser")
-    public User loggedUser(Model model) {
-
-        if(model.containsAttribute("loggedUser")) {
-            LOGGER.debug("Logged User was obtained from Controller Method");
-            return (User) model.asMap().get("loggedUser");
-        }
-
+    public User loggedUser() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if(auth.isAuthenticated() && !isAnonymous(auth)) {

@@ -65,10 +65,17 @@
                                         <c:if test="${!comment.enabled}">
                                             <br><br>
                                         </c:if>
-                                        <p class="uk-comment-meta uk-margin-remove-top">
+                                        <p class="uk-comment-meta uk-margin-remove-top uk-margin-remove-bottom">
                                             <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                                             <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
                                         </p>
+                                        <c:if test="${comment.edited}">
+                                            <p class="uk-comment-meta uk-margin-remove">
+                                                <fmt:parseDate value="${comment.lastEditDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                                                <fmt:formatDate var="lastEditedDate" pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                                                <spring:message code="comment.lastEditDate.message" arguments="${lastEditedDate}"/>
+                                            </p>
+                                        </c:if>
                                     </div>
                                 </div>
                             </div>

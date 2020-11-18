@@ -75,7 +75,7 @@
                 </div>
             </div>
         </div>
-        <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
+        <span id="post-las_edit-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
 <%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
                 <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                 <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
