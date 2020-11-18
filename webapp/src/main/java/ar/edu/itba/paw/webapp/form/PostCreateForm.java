@@ -1,8 +1,5 @@
 package ar.edu.itba.paw.webapp.form;
 
-import ar.edu.itba.paw.webapp.form.annotations.MaxTagsSizeConstraint;
-import ar.edu.itba.paw.webapp.form.annotations.MoviesSizeConstraint;
-
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.Set;
@@ -18,10 +15,10 @@ public class PostCreateForm {
     @Min(1)
     private long category;
 
-    @MaxTagsSizeConstraint
+    @Size(max = 5)
     private Set<String> tags;
 
-    @MoviesSizeConstraint
+    @Size(min=1, max = 20)
     private Set<Long> movies;
 
     public String getTitle() {

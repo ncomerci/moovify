@@ -59,13 +59,6 @@
                                 <c:out value="${post.totalLikes}"/>
                             </p>
                         </div>
-
-                        <c:if test="${post.user.id == loggedUser.id}" >
-                            <div>
-                                <a href="<c:url value="/post/edit/${post.id}"/>"><spring:message code="post.view.edit"/></a>
-                            </div>
-                        </c:if>
-
                         <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
                             <a class=" like-post-button"  data-value="${ likeValue == -1 ? 0 : -1 }">
                                 <span class="iconify" data-icon="<c:out value="${ likeValue == -1 ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
@@ -73,6 +66,13 @@
                         </div>
                     </c:if>
                 </div>
+                <c:if test="${not empty loggedUser and loggedUser.validated and post.user.id == loggedUser.id}" >
+                    <div class="uk-margin-top">
+                        <a href="<c:url value="/post/edit/${post.id}"/>">
+                            <span uk-icon="icon: pencil; ratio: 1.2"  data-inline="false"></span><spring:message code="post.view.edit"/>
+                        </a>
+                    </div>
+                </c:if>
             </div>
         </div>
         <span id="post-las_edit-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
