@@ -55,6 +55,13 @@ public class Comment {
     @Basic(optional = false, fetch = FetchType.LAZY)
     private String body;
 
+    @Column(nullable = false)
+    private boolean edited;
+
+    @Column(name = "last_edited", nullable = true)
+    @Basic(optional = true)
+    private LocalDateTime lastEditDate;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="user_id", nullable = false)
     private User user;
@@ -68,17 +75,19 @@ public class Comment {
     @Column(nullable = false)
     private boolean enabled;
 
-    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, User user, boolean enabled, Set<CommentLike> likes) {
-        this(creationDate, post, parent, children, body, user, enabled, likes);
+    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, boolean edited, LocalDateTime lastEditDate, User user, boolean enabled, Set<CommentLike> likes) {
+        this(creationDate, post, parent, children, body, edited, lastEditDate, user, enabled, likes);
         this.id = id;
     }
 
-    public Comment(LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, User user, boolean enabled, Set<CommentLike> likes) {
+    public Comment(LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, boolean edited, LocalDateTime lastEditDate, User user, boolean enabled, Set<CommentLike> likes) {
         this.creationDate = creationDate;
         this.post = post;
         this.parent = parent;
         this.children = children;
         this.body = body;
+        this.edited = edited;
+        this.lastEditDate = lastEditDate;
         this.user = user;
         this.enabled = enabled;
         this.likes = likes;
@@ -119,6 +128,20 @@ public class Comment {
 
     public String getBody() {
         return body;
+    }
+
+    public void setBody(String body) {
+        edited = true;
+        lastEditDate = LocalDateTime.now();
+        this.body = body;
+    }
+
+    public boolean isEdited() {
+        return edited;
+    }
+
+    public LocalDateTime getLastEditDate() {
+        return lastEditDate;
     }
 
     public User getUser() {

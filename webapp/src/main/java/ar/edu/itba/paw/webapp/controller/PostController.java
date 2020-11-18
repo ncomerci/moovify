@@ -48,7 +48,7 @@ public class PostController {
     public ModelAndView view(@PathVariable final long postId,
                              @RequestParam(defaultValue = "10") final int pageSize,
                              @RequestParam(defaultValue = "0") final int pageNumber,
-                             @ModelAttribute("CommentCreateForm") final CommentCreateForm commentCreateForm) {
+                             @ModelAttribute("commentCreateForm") final CommentCreateForm commentCreateForm) {
 
         LOGGER.info("Accessed /post/{}", postId);
 

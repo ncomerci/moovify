@@ -3,6 +3,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
@@ -12,6 +13,7 @@
     <link rel="stylesheet" href="<c:url value="/resources/css/postView.css"/>"/>
     <script src="<c:url value="/resources/js/components/paginationController.js"/>"></script>
     <script src="<c:url value="/resources/js/components/createAndViewComments.js"/>"></script>
+    <script src="<c:url value="/resources/js/comment/edit.js"/>"></script>
 
     <sec:authorize access="isAuthenticated()">
         <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
@@ -63,10 +65,17 @@
                                         </c:choose>
                                     </h4>
                                 </c:if>
-                                <p class="uk-comment-meta uk-margin-remove-top">
+                                <p class="uk-comment-meta uk-margin-remove-top uk-margin-remove-bottom">
                                     <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                                     <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
                                 </p>
+                            <c:if test="${comment.edited}">
+                                <p class="uk-comment-meta uk-margin-remove">
+                                    <fmt:parseDate value="${comment.lastEditDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                                    <fmt:formatDate var="lastEditedDate" pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                                    <spring:message code="comment.lastEditDate.message" arguments="${lastEditedDate}"/>
+                                </p>
+                            </c:if>
                             </div>
                         </div>
                     </div>
@@ -106,7 +115,22 @@
             <div class="uk-comment-body">
             <c:choose>
                 <c:when test="${comment.enabled}">
-                    <span class="pre-line"><c:out value="${comment.body}"/></span>
+                    <span id="comment-body" class="pre-line"><c:out value="${comment.body}"/></span>
+
+                    <div id="comment-edit-form" class="hidden">
+                        <c:url value="/comment/edit/${comment.id}" var="action"/>
+                        <%--@elvariable id="commentEditForm" type="ar.edu.itba.paw.webapp.form.CommentEditForm"--%>
+                        <form:form id="spring-form" modelAttribute="commentEditForm" action="${action}" method="post">
+                            <div class="uk-margin">
+                                <form:label path="commentBody">
+                                    <form:textarea class="uk-textarea" rows="5" path="commentBody" />
+                                </form:label>
+                            </div>
+                            <div class="uk-margin-large-bottom uk-align-right">
+                                <input class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
+                            </div>
+                        </form:form>
+                    </div>
                 </c:when>
                 <c:otherwise>
                             <span class="uk-text-italic">
@@ -121,19 +145,33 @@
         </div>
         </div>
     </div>
-    <c:if test="${not empty loggedUser and loggedUser.admin}">
-        <c:if test="${comment.enabled}">
-        <div class="uk-flex uk-flex-right">
-            <button id="cmt-delete-btn"
-                    class="uk-button uk-button-default logout-button uk-border-rounded delete-comment-button"
-                    data-id="<c:out value="${comment.id}"/>"
-                    type="button"
-                    uk-toggle="target: #delete-comment-modal">
-                <spring:message code="comment.delete.button"/>
-            </button>
-        </div>
+
+    <div>
+        <c:if test="${not empty loggedUser}">
+            <c:if test="${comment.enabled}">
+                <div class="uk-flex uk-flex-right">
+                    <button id="cmt-edit-btn"
+                            class="uk-button uk-button-default uk-button-primary uk-border-rounded"
+                            type="button">
+                        <spring:message code="comment.edit.button"/>
+                    </button>
+                </div>
+            </c:if>
+            <c:if test="${loggedUser.admin}">
+                <c:if test="${comment.enabled}">
+                    <div class="uk-flex uk-flex-right">
+                        <button id="cmt-delete-btn"
+                                class="uk-button uk-button-default logout-button uk-border-rounded delete-comment-button"
+                                data-id="<c:out value="${comment.id}"/>"
+                                type="button"
+                                uk-toggle="target: #delete-comment-modal">
+                            <spring:message code="comment.delete.button"/>
+                        </button>
+                    </div>
+                </c:if>
+            </c:if>
         </c:if>
-    </c:if>
+    </div>
 
     <c:set var="comments" value="${children}" scope="request"/>
     <c:set var="postId" value="${comment.post.id}" scope="request"/>

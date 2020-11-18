@@ -82,6 +82,15 @@
     </form>
 
     <form id="restore-form" method="post" action="<c:url value="/user/restore"/>">
+        <label>
+            <input hidden name="query" type="text" value="${query}"/>
+        </label>
+        <label>
+            <input hidden name="pageSize" type="text" value="${collection.pageSize}"/>
+        </label>
+        <label>
+            <input hidden name = "pageNumber" value = "${collection.pageNumber}"/>
+        </label>
     </form>
 </main>
 </body>

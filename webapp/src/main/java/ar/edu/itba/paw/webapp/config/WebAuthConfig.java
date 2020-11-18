@@ -68,12 +68,17 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                                             "/user/profile/edit",
                                             "/user/changePassword").authenticated()
                     .antMatchers(HttpMethod.POST,
-                             "/user/edit/name",
-                                        "/user/edit/username",
-                                        "/user/edit/description",
-                                        "/user/profile/avatar",
-                                        "/user/follow/{userId:[\\d]+}",
-                                        "/user/unfollow/{userId:[\\d]+}").authenticated()
+                            "/user/edit/name",
+                            "/user/edit/username",
+                            "/user/edit/description",
+                            "/user/profile/avatar",
+                            "/user/follow/{userId:[\\d]+}",
+                            "/user/unfollow/{userId:[\\d]+}",
+                            "/user/favourite/posts/add",
+                            "/user/favourite/posts/remove"
+                    ).authenticated()
+
+
                     .antMatchers("/user/resendConfirmation").hasRole("NOT_VALIDATED")
                     .antMatchers(
                             "/user/resetPassword",

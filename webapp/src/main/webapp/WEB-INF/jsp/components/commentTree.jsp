@@ -21,10 +21,9 @@
                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
                             <div class="uk-width-2-3">
                                 <div class="uk-grid-medium uk-flex-middle" uk-grid>
-                                    <c:if test="${comment.enabled}">
-                                        <div class="uk-width-auto">
+                                        <div class="uk-width-1-5">
                                             <c:choose>
-                                                <c:when test="${comment.user.enabled}">
+                                                <c:when test="${comment.enabled and comment.user.enabled}">
                                                     <c:set var="avatarUrl"><c:url value="/user/avatar/${comment.user.avatarId}"/></c:set>
                                                 </c:when>
                                                 <c:otherwise>
@@ -33,8 +32,7 @@
                                             </c:choose>
                                             <img class="circle-comment uk-comment-avatar" src="${avatarUrl}" alt="">
                                         </div>
-                                    </c:if>
-                                    <div class="uk-width-expand">
+                                    <div class="uk-width-4-5">
                                         <c:if test="${comment.enabled}">
                                             <h4 class="uk-comment-title uk-margin-remove">
                                                 <c:choose>
@@ -63,17 +61,24 @@
                                             </h4>
                                         </c:if>
                                         <c:if test="${!comment.enabled}">
-                                            <br><br>
+                                            <p class="uk-text-danger"><spring:message code="comment.deleted"/></p>
                                         </c:if>
-                                        <p class="uk-comment-meta uk-margin-remove-top">
+                                        <p class="uk-comment-meta uk-margin-remove-top uk-margin-remove-bottom">
                                             <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                                             <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
                                         </p>
+                                        <c:if test="${comment.edited}">
+                                            <p class="uk-comment-meta uk-margin-remove">
+                                                <fmt:parseDate value="${comment.lastEditDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                                                <fmt:formatDate var="lastEditedDate" pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                                                <spring:message code="comment.lastEditDate.message" arguments="${lastEditedDate}"/>
+                                            </p>
+                                        </c:if>
                                     </div>
                                 </div>
                             </div>
-                            <c:if test="${comment.enabled}">
                             <div class="uk-width-1-3 uk-text-center uk-padding-remove uk-margin-remove ">
+                            <c:if test="${comment.enabled}">
                                 <div class="uk-position-top-right">
                                     <div class="uk-flex">
                                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-top" uk-grid>
@@ -116,9 +121,10 @@
                                             </c:if>
                                         </div>
                                     </div>
-                                </div>
                                 </c:if>
+                                </div>
                             </div>
+                        </div>
                     </header>
                     <div class="uk-comment-body">
                         <c:choose>

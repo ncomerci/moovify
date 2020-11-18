@@ -11,9 +11,12 @@
 -- mainController.js required.
 -- surrounding with form required
 --%>
-<h2 class="uk-text-center uk-margin-remove uk-text-capitalize">
-    <spring:message code="admin.deleted.title" arguments="${selectedView}"/>
-</h2>
+<div class="uk-margin-auto uk-margin-top">
+    <h2 class="uk-article-title uk-margin-auto uk-text-center uk-text-primary">
+        <spring:message code="admin.deleted.title" arguments="${selectedView}"/>
+    </h2>
+    <hr class="uk-divider-icon">
+</div>
 
 <div class="uk-flex uk-flex-middle">
     <div class="uk-search uk-search-large uk-width-expand">
