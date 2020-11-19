@@ -12,6 +12,8 @@ public interface UserService {
 
     User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate, Locale locale) throws DuplicateUniqueUserAttributeException;
 
+    void generalUserUpdate(User user, String name, String username, String description) throws DuplicateUniqueUserAttributeException;
+
     void updateName(User user, String name);
 
     void updateUsername(User user, String username) throws DuplicateUniqueUserAttributeException;

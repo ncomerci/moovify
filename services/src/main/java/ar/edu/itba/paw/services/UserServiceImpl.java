@@ -71,6 +71,20 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
+    public void generalUserUpdate(User user, String name, String username, String description) throws DuplicateUniqueUserAttributeException {
+
+        if(!user.getUsername().equals(username))
+            updateUsername(user, username);
+
+        if(!user.getName().equals(name))
+            updateName(user, name);
+
+        if((user.getDescription() == null && description != null) || (user.getDescription() != null && !user.getDescription().equals(description)))
+            updateDescription(user, description);
+    }
+
+    @Transactional
+    @Override
     public void updateName(User user, String name) {
         user.setName(name);
     }

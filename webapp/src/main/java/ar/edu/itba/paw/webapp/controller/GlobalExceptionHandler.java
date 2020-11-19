@@ -116,6 +116,20 @@ public class GlobalExceptionHandler {
         return mv;
     }
 
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(MissingCommentEditPermissionException.class)
+    public ModelAndView handleMissingCommentEditPermission() {
+
+        final ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.missingCommentEditPermissionException",null, LocaleContextHolder.getLocale()));
+        mv.addObject("code", "403" );
+
+        LOGGER.error("A user tried to edit a comment which didn't own. Responding with Http Status 403");
+
+        return mv;
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidPostCategoryException.class)
     public ModelAndView handleInvalidPostCategory() {

@@ -43,9 +43,7 @@
         <div class="uk-width-2-3@m uk-padding-remove">
             <h3 class="uk-card-title uk-margin-remove-bottom userTitle">
                 <c:out value="${loggedUser.username}"/>
-                <c:if test="${loggedUser.admin}">
-                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
-                </c:if>
+                <a uk-icon="icon: pencil; ratio: 1.2"  data-inline="false" uk-toggle="target: #edit-username-modal"></a>
             </h3>
             <p class="uk-text-meta uk-margin-remove-top">
                 <fmt:parseDate value="${loggedUser.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
@@ -54,23 +52,30 @@
             </p>
 
             <ul class="uk-list uk-list-bullet">
-                <li class="userTitle"><spring:message code="user.profile.Name" arguments="${loggedUser.name}"/></li>
+                <li class="userTitle">
+                    <spring:message code="user.profile.Name" arguments="${loggedUser.name}"/>
+                    <a uk-icon="icon: pencil; ratio: 1.2"  data-inline="false" uk-toggle="target: #edit-name-modal"></a>
+                </li>
                 <li class="userTitle"><spring:message code="user.profile.Email" arguments="${loggedUser.email}"/></li>
                 <c:if test="${loggedUser.admin}" >
                     <li class="userTitle"><spring:message code="user.profile.Administrator"/></li>
                 </c:if>
                 <c:if test="${fn:length(loggedUser.description) == 0}">
-                    <li class="userTitle"><spring:message code="user.profile.notDescription"/> </li>
+                    <li class="userTitle">
+                        <a uk-toggle="target: #edit-description-modal"><spring:message code="user.profile.notDescription"/></a>
+                    </li>
                 </c:if>
                 <c:if test="${fn:length(loggedUser.description) != 0}">
-                    <li class="userTitle m-long-text"><spring:message code="user.profile.Description" arguments="${loggedUser.description}"/></li>
+                    <li class="userTitle m-long-text">
+                        <spring:message code="user.profile.Description" arguments="${loggedUser.description}"/>
+                        <a uk-icon="icon: pencil; ratio: 1.2"  data-inline="false" uk-toggle="target: #edit-description-modal"></a></li>
                 </c:if>
             </ul>
             <c:if test="${loggedUser.validated}">
                 <p class="uk-margin-large-left">
-                    <a href="<c:url value="/user/profile/edit"/>">
+                    <a href="<c:url value="/user/changePassword"/>">
                         <button id="submit-form-button" class="uk-button uk-button-primary uk-border-rounded" type="button">
-                            <spring:message code="user.profile.EditProfile"/>
+                            <spring:message code="user.profile.edit.changePassword"/>
                         </button>
                     </a>
                 </p>
@@ -121,6 +126,70 @@
             </ul>
         </div>
     </c:if>
+</div>
+
+<c:url value="/user/edit" var="action"/>
+<%--@elvariable id="userEditForm" type="ar.edu.itba.paw.webapp.form.UserEditForm"--%>
+<form:form modelAttribute="userEditForm" class="uk-hidden" method="post" action='${action}' id="edit-user-form">
+
+    <form:label path="username">
+        <form:input path="username" id="user-edit-username-input"/>
+    </form:label>
+    <form:errors path="username" element="p" cssClass="error" id="user-edit-username-error"/>
+
+    <form:label path="name">
+        <form:input path="name" id="user-edit-name-input"/>
+    </form:label>
+    <form:errors path="name" element="p" cssClass="error" id="user-edit-name-error"/>
+
+    <form:label path="description">
+        <form:textarea path="description" id="user-edit-description-input"/>
+    </form:label>
+    <form:errors path="description" element="p" cssClass="error" id="user-edit-description-error"/>
+</form:form>
+
+<!-- edit name modal -->
+<div id="edit-name-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title"><spring:message code="user.profile.edit.name"/></h2>
+        <p id="edit-user-name-error" class="error"></p>
+        <div class="uk-flex">
+            <input id="edit-name-modal-input"
+                   class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+                    value="<c:out value="${loggedUser.name}"/>"/>
+            <button id="edit-name-modal-submit" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
+                    type="button"><spring:message code="user.profile.edit.submit.button"/></button>
+        </div>
+    </div>
+</div>
+
+<!-- edit username modal -->
+<div id="edit-username-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title"><spring:message code="user.profile.edit.username"/></h2>
+        <p id="edit-user-username-error" class="error"></p>
+        <div class="uk-flex">
+            <input id="edit-username-modal-input"
+                   class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+                   value="<c:out value="${loggedUser.username}"/>"/>
+            <button id="edit-username-modal-submit" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
+                    type="button"><spring:message code="user.profile.edit.submit.button"/></button>
+        </div>
+    </div>
+</div>
+
+<!-- edit description modal -->
+<div id="edit-description-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title"><spring:message code="user.profile.edit.description"/></h2>
+        <p id="edit-user-description-error" class="error"></p>
+        <div class="uk-flex">
+            <textarea id="edit-description-modal-input"
+                   class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"><c:out value="${loggedUser.description}"/></textarea>
+            <button id="edit-description-modal-submit" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
+                    type="button"><spring:message code="user.profile.edit.submit.button"/></button>
+        </div>
+    </div>
 </div>
 
 
