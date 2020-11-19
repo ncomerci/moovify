@@ -31,8 +31,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> moviesId) {
 
-        Objects.requireNonNull(body);
-
         final Collection<Movie> movies = movieDao.findMoviesById(moviesId);
 
         final Post post = postDao.register(title, body.trim(),

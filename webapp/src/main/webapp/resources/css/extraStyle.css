@@ -13,6 +13,11 @@
 .m-text-red {
     color: #EA5455 !important;
 }
+
+.m-text-white{
+    color: #ffffff; !important;
+}
+
 .m-width-max-content {
     width: max-content;
 }

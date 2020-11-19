@@ -102,7 +102,10 @@ public class AdminController {
     }
 
     @RequestMapping(path = "/comment/restore/{commentId}", method = RequestMethod.POST)
-    public ModelAndView restoreComment(@PathVariable final long commentId) {
+    public ModelAndView restoreComment(@PathVariable final long commentId,
+                                       @RequestParam(defaultValue = "") final String query,
+                                       @RequestParam(defaultValue = "10") final int pageSize,
+                                       @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /comment/restore/{} to restore comment. Redirecting to /comment/{}", commentId, commentId);
 
@@ -113,7 +116,7 @@ public class AdminController {
 
         commentService.restoreComment(comment);
 
-        return new ModelAndView("redirect:/comment/" + comment.getId());
+        return deletedComments(query, pageSize, pageNumber);
     }
 
     //    ================ POSTS PRIVILEGES ================
@@ -134,7 +137,10 @@ public class AdminController {
     }
 
     @RequestMapping(path = "/post/restore/{postId}", method = RequestMethod.POST)
-    public ModelAndView restorePost(@PathVariable final long postId) {
+    public ModelAndView restorePost(@PathVariable final long postId,
+                                    @RequestParam(defaultValue = "") final String query,
+                                    @RequestParam(defaultValue = "10") final int pageSize,
+                                    @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /post/restore/{} to restore post. Redirecting to /post/{}", postId, postId);
 
@@ -145,7 +151,7 @@ public class AdminController {
 
         postService.restorePost(post);
 
-        return new ModelAndView("redirect:/post/" + post.getId());
+        return deletedPosts(query, pageSize, pageNumber);
     }
 
     //    ================ USERS PRIVILEGES ================
@@ -187,7 +193,10 @@ public class AdminController {
     }
 
     @RequestMapping(path = "/user/restore/{userId}", method = RequestMethod.POST)
-    public ModelAndView restoreUser(@PathVariable long userId) {
+    public ModelAndView restoreUser(@PathVariable long userId,
+                                    @RequestParam(defaultValue = "") final String query,
+                                    @RequestParam(defaultValue = "10") final int pageSize,
+                                    @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /user/restore/{} to restore user. Redirecting to /user/{}", userId, userId);
 
@@ -198,6 +207,6 @@ public class AdminController {
 
         userService.restoreUser(user);
 
-        return new ModelAndView("redirect:/user/" + user.getId());
+        return deletedUsers(query, pageSize, pageNumber);
     }
 }

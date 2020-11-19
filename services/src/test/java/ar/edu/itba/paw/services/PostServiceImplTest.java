@@ -1,24 +1,18 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
-import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PostServiceImplTest {
 
-    @Mock
-    private PostDao postDao;
-
-    @Mock
-    private PostCategoryDao categoryDao;
+    private static final int UP_VOTE_VALUE = 1;
+    private static final int DOWN_VOTE_VALUE = -1;
 
     @InjectMocks
     private final PostServiceImpl postService = new PostServiceImpl();
@@ -26,19 +20,32 @@ public class PostServiceImplTest {
     @Test
     public void testLikePostRemove() {
 
-        postService.likePost(Mockito.mock(Post.class), Mockito.mock(User.class),0);
+        Post post = Mockito.mock(Post.class);
+
+        postService.likePost(post, Mockito.mock(User.class),0);
+
+        Mockito.verify(post).removeLike(Mockito.any());
     }
     
     @Test
     public void testLikePostGiveUpVote() {
 
-        postService.likePost(Mockito.mock(Post.class), Mockito.mock(User.class),1);
+        Post post = Mockito.mock(Post.class);
+        User user = Mockito.mock(User.class);
+
+        postService.likePost(post, user, UP_VOTE_VALUE);
+
+        Mockito.verify(post).like(Mockito.eq(user), Mockito.eq(UP_VOTE_VALUE));
     }
 
     @Test
     public void testLikePostGiveDownVote() {
 
-        postService.likePost(Mockito.mock(Post.class), Mockito.mock(User.class),-1);
-    }
+        Post post = Mockito.mock(Post.class);
+        User user = Mockito.mock(User.class);
 
+        postService.likePost(post, user,DOWN_VOTE_VALUE);
+
+        Mockito.verify(post).like(Mockito.eq(user), Mockito.eq(DOWN_VOTE_VALUE));
+    }
 }

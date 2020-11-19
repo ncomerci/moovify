@@ -17,24 +17,22 @@
         <li class="uk-margin-remove">
             <div id="${comment.id}">
                 <article class="uk-comment uk-visible-toggle" tabindex="-1">
-                    <header class="uk-comment-header uk-position-relative <c:out value="${comment.enabled ? '':'uk-margin-remove'}"/>">
+                    <header class="uk-comment-header uk-position-relative uk-margin-remove">
                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
                             <div class="uk-width-2-3">
                                 <div class="uk-grid-medium uk-flex-middle" uk-grid>
-                                    <c:if test="${comment.enabled}">
-                                        <div class="uk-width-auto">
-                                            <c:choose>
-                                                <c:when test="${comment.user.enabled}">
-                                                    <c:set var="avatarUrl"><c:url value="/user/avatar/${comment.user.avatarId}"/></c:set>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <c:set var="avatarUrl"><c:url value="/resources/images/avatar.jpg"/></c:set>
-                                                </c:otherwise>
-                                            </c:choose>
-                                            <img class="circle-comment uk-comment-avatar" src="${avatarUrl}" alt="">
-                                        </div>
-                                    </c:if>
-                                    <div class="uk-width-expand">
+                                    <div class="uk-width-1-5">
+                                        <c:choose>
+                                            <c:when test="${comment.enabled and comment.user.enabled}">
+                                                <c:set var="avatarUrl"><c:url value="/user/avatar/${comment.user.avatarId}"/></c:set>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <c:set var="avatarUrl"><c:url value="/resources/images/avatar.jpg"/></c:set>
+                                            </c:otherwise>
+                                        </c:choose>
+                                        <img class="circle-comment uk-comment-avatar" src="${avatarUrl}" alt="">
+                                    </div>
+                                    <div class="uk-width-auto">
                                         <c:if test="${comment.enabled}">
                                             <h4 class="uk-comment-title uk-margin-remove">
                                                 <c:choose>
@@ -52,18 +50,10 @@
                                                         </span>
                                                     </c:otherwise>
                                                 </c:choose>
-                                                <c:if test="${not empty loggedUser and loggedUser.admin}">
-                                                    <a href="#delete-comment-modal"
-                                                       data-id="<c:out value="${comment.id}"/>"
-                                                       class="uk-link-muted delete-comment-button uk-position-small uk-hidden-hover"
-                                                       uk-toggle>
-                                                        <spring:message code="comment.delete.button"/>
-                                                    </a>
-                                                </c:if>
                                             </h4>
                                         </c:if>
                                         <c:if test="${!comment.enabled}">
-                                            <br><br>
+                                            <p class="uk-text-danger"><spring:message code="comment.deleted"/></p>
                                         </c:if>
                                         <p class="uk-comment-meta uk-margin-remove-top uk-margin-remove-bottom">
                                             <fmt:parseDate value="${comment.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
@@ -77,21 +67,32 @@
                                             </p>
                                         </c:if>
                                     </div>
+                                    <div class="uk-width-auto uk-padding-remove">
+                                        <c:if test="${not empty loggedUser and loggedUser.admin and comment.enabled}">
+                                            <a href="#delete-comment-modal"
+                                               data-id="<c:out value="${comment.id}"/>"
+                                               class="uk-link-muted delete-comment-button uk-position-small uk-hidden-hover"
+                                               uk-toggle>
+                                                <span class="iconify" data-icon="ic:baseline-delete-forever" data-inline="false"></span>
+                                            </a>
+                                        </c:if>
+                                    </div>
                                 </div>
                             </div>
-                            <c:if test="${comment.enabled}">
                             <div class="uk-width-1-3 uk-text-center uk-padding-remove uk-margin-remove ">
+                                <c:if test="${comment.enabled}">
                                 <div class="uk-position-top-right">
                                     <div class="uk-flex">
                                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-top" uk-grid>
                                             <sec:authorize access="hasRole('USER')">
                                                 <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
                                                     <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover">
-                                                        <spring:message code="comment.create.reply"/>
+<%--                                                        <spring:message code="comment.create.reply"/>--%>
+                                                            <span class="iconify" data-icon="octicon:reply-16" data-inline="false"></span>
                                                     </a>
                                                 </div>
                                             </sec:authorize>
-                                            <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
+                                            <div class="uk-width-auto uk-text-center uk-padding-remove">
                                                 <a class="uk-link-muted reply-button uk-position-small uk-hidden-hover" href="<c:url value="/comment/${comment.id}"/>">
                                                     <spring:message code="comment.viewComment"/>
                                                 </a>
@@ -109,13 +110,9 @@
                                                     <a class="like-comment-button" data-id="${comment.id}" data-value="${ likeValue > 0 ? 0 : 1 }">
                                                         <span class="iconify" data-icon="<c:out value="${ likeValue > 0 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
                                                     </a>
-                                                </div>
-                                                <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
-                                                    <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
+                                                    <p class="uk-text-center uk-align-center uk-text-lead uk-margin-remove">
                                                         <c:out value="${ comment.totalLikes }"/>
                                                     </p>
-                                                </div>
-                                                <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
                                                     <a class=" like-comment-button" data-id="${comment.id}"  data-value="${ likeValue < 0 ? 0 : -1 }">
                                                         <span class="iconify" data-icon="<c:out value="${ likeValue < 0 ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
                                                     </a>
@@ -123,11 +120,12 @@
                                             </c:if>
                                         </div>
                                     </div>
+                                    </c:if>
                                 </div>
-                                </c:if>
                             </div>
+                        </div>
                     </header>
-                    <div class="uk-comment-body">
+                    <div class="uk-comment-body uk-margin-small-left">
                         <c:choose>
                             <c:when test="${comment.enabled}">
                                 <span class="pre-line"><c:out value="${comment.body}"/></span>
@@ -151,11 +149,11 @@
                     </a>
                 </c:if>
             </c:if>
-<%--            TODO: si este código comentado se borra, hay que sacar el código de javascript también--%>
-<%--            <div class="replies-show uk-margin-bottom" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${customTag:descendantCount(comment, maxDepth)}">
-                <a class="uk-link-muted"><spring:message code="comment.replies.show" arguments="${customTag:descendantCount(comment, maxDepth)}"/></a>
-            </div>--%>
-<%--            class="li uk-hidden"--%>
+                <%--            TODO: si este código comentado se borra, hay que sacar el código de javascript también--%>
+                <%--            <div class="replies-show uk-margin-bottom" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${customTag:descendantCount(comment, maxDepth)}">
+                                <a class="uk-link-muted"><spring:message code="comment.replies.show" arguments="${customTag:descendantCount(comment, maxDepth)}"/></a>
+                            </div>--%>
+                <%--            class="li uk-hidden"--%>
             <ul id="${comment.id}-children">
                 <c:if test="${maxDepth > 0}">
                     <%--  Recursive Call  --%>

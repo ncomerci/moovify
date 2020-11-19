@@ -61,4 +61,5 @@ public interface UserService {
     PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize);
 
     PaginatedCollection<User> getFollowedUsers(User user, int pageNumber, int pageSize);
+
 }

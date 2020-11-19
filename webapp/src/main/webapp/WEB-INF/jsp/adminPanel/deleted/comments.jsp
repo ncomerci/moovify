@@ -34,7 +34,9 @@
 
         <c:if test="${not empty comments.results}">
             <c:set var="collection" value="${comments}" scope="request"/>
-            <c:url var="baseURL" value="/admin/deleted/comments" context="/" scope="request"/>
+            <c:url var="baseURL" value="/admin/deleted/comments" context="/" scope="request">
+                <c:param name="query" value="${query}"/>
+            </c:url>
             <c:set var="numberOfInputs" value="${2}" scope="request"/>
             <form action="<c:url value="${baseURL}"/>" method="get">
                 <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
@@ -42,7 +44,16 @@
         </c:if>
     </form>
 
-    <form id="restore-form" method="post" action="<c:url value="/comment/restore"/>">
+    <form id="restore-form" action="<c:url value="/comment/restore"/>" method="post">
+        <label>
+            <input hidden name="query" type="text" value="${query}"/>
+        </label>
+        <label>
+            <input hidden name="pageSize" type="text" value="${collection.pageSize}"/>
+        </label>
+        <label>
+            <input hidden name = "pageNumber" value = "${collection.pageNumber}"/>
+        </label>
     </form>
 </main>
 </body>

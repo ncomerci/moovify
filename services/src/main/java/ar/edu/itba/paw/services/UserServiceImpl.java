@@ -58,7 +58,6 @@ public class UserServiceImpl implements UserService {
         if(avatar.length > 0)
             image = imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
 
-
         final User user = userDao.register(username, passwordEncoder.encode(password),
                 name, email, description, locale.getLanguage(), Collections.singleton(Role.NOT_VALIDATED), image, true);
 
@@ -111,9 +110,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateAvatar(User user, byte[] newAvatar) {
 
-        Objects.requireNonNull(user);
+        Image avatar = null;
 
-        final Image avatar = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
+        if(newAvatar.length > 0)
+            avatar = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
 
         user.setAvatar(avatar);
 
@@ -149,8 +149,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void promoteUserToAdmin(User user) {
 
-        Objects.requireNonNull(user);
-
         user.addRole(Role.ADMIN);
 
         LOGGER.info("Promoted User {} to Admin", user.getId());
@@ -168,12 +166,9 @@ public class UserServiceImpl implements UserService {
         user.unfollowUser(userUnfollowed);
     }
 
-
     @Transactional
     @Override
     public void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale) {
-
-        Objects.requireNonNull(user);
 
         final String token = UUID.randomUUID().toString();
 
@@ -200,8 +195,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createPasswordResetEmail(User user, String passwordResetMailTemplate, Locale locale) {
 
-        Objects.requireNonNull(user);
-        
         final String token = UUID.randomUUID().toString();
 
         final Optional<PasswordResetToken> optToken = passwordResetTokenDao.findPasswordTokenByUser(user);
@@ -330,6 +323,4 @@ public class UserServiceImpl implements UserService {
     public PaginatedCollection<User> getFollowedUsers(User user, int pageNumber, int pageSize) {
         return userDao.getFollowedUsers(user, UserDao.SortCriteria.USERNAME, pageNumber, pageSize);
     }
-
-
 }

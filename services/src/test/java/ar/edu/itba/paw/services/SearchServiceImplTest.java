@@ -12,7 +12,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SearchServiceImplTest {
@@ -217,8 +219,8 @@ public class SearchServiceImplTest {
 
         Mockito.when(userDao.searchUsersByRole(
                 Mockito.anyString(),
-                Mockito.mock(Role.class),
-                Mockito.isA(UserDao.SortCriteria.class),
+                Mockito.any(Role.class),
+                Mockito.any(UserDao.SortCriteria.class),
                 Mockito.intThat(e -> e >= 0),
                 Mockito.intThat(e -> e > 0))
         ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
