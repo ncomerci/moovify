@@ -20,9 +20,6 @@ function prepareEditUserModals() {
     let nameModalSubmit = document.getElementById('edit-name-modal-submit');
     let nameModalError = document.getElementById('edit-user-name-error');
 
-    prepareEditUserField(formElem, nameModalSubmit, nameModal, nameFormError, nameFormInput,
-        nameModalError, nameModalInput);
-
     // Username
     let usernameFormInput = document.getElementById('user-edit-username-input');
     let usernameFormError = document.getElementById('user-edit-username-error');
@@ -30,9 +27,6 @@ function prepareEditUserModals() {
     let usernameModalInput = document.getElementById('edit-username-modal-input');
     let usernameModalSubmit = document.getElementById('edit-username-modal-submit');
     let usernameModalError = document.getElementById('edit-user-username-error');
-
-    prepareEditUserField(formElem, usernameModalSubmit, usernameModal, usernameFormError,
-        usernameFormInput, usernameModalError, usernameModalInput);
 
     // Description
     let descriptionFormInput = document.getElementById('user-edit-description-input');
@@ -42,11 +36,49 @@ function prepareEditUserModals() {
     let descriptionModalSubmit = document.getElementById('edit-description-modal-submit');
     let descriptionModalError = document.getElementById('edit-user-description-error');
 
-    prepareEditUserField(formElem, descriptionModalSubmit, descriptionModal, descriptionFormError,
-        descriptionFormInput, descriptionModalError, descriptionModalInput);
+    let originalName = nameModalInput.value;
+    let originalUsername = usernameModalInput.value;
+    let originalDescription = descriptionModalInput.value;
+
+    // Name
+    prepareEditUserField(nameModal, nameFormError, nameFormInput,
+        nameModalError, nameModalInput);
+
+    nameModalSubmit.addEventListener('click', () => {
+
+        nameFormInput.value = nameModalInput.value;
+        usernameFormInput.value = originalUsername;
+        descriptionFormInput.value = originalDescription;
+
+        formElem.submit();
+    }, false);
+
+    // Username
+    prepareEditUserField(usernameModal, usernameFormError, usernameFormInput, usernameModalError, usernameModalInput);
+
+    usernameModalSubmit.addEventListener('click', () => {
+
+        nameFormInput.value = originalName;
+        usernameFormInput.value = usernameModalInput.value;
+        descriptionFormInput.value = originalDescription;
+
+        formElem.submit();
+    }, false);
+
+    // Description
+    prepareEditUserField(descriptionModal, descriptionFormError, descriptionFormInput, descriptionModalError, descriptionModalInput);
+
+    descriptionModalSubmit.addEventListener('click', () => {
+
+        nameFormInput.value = originalName;
+        usernameFormInput.value = originalUsername;
+        descriptionFormInput.value = descriptionModalInput.value;
+
+        formElem.submit();
+    }, false);
 }
 
-function prepareEditUserField(formElem, modalSubmit, modalElem, formError, formInput, modalError, modalInput) {
+function prepareEditUserField(modalElem, formError, formInput, modalError, modalInput) {
 
     if(formError != null) {
         modalInput.value = formInput.value;
@@ -56,9 +88,16 @@ function prepareEditUserField(formElem, modalSubmit, modalElem, formError, formI
     else {
         formInput.value = modalInput.value;
     }
+}
+
+function addModalSubmitEventListener(formElem, modalSubmit, nameVal, usernameVal, descriptionVal, nameInput, usernameInput, descriptionInput) {
+
 
     modalSubmit.addEventListener('click', () => {
-        formInput.value = modalInput.value;
+
+        nameInput.value = nameVal;
+        usernameInput.value = usernameVal;
+        descriptionInput.value = descriptionVal;
 
         formElem.submit();
     }, false);

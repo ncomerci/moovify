@@ -311,7 +311,6 @@ public class UserController {
     @RequestMapping(path = "/user/edit", method = RequestMethod.POST)
     public ModelAndView generalUserEdit(@Valid @ModelAttribute("userEditForm") final UserEditForm userEditForm,
                                      final BindingResult bindingResult,
-                                     @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
                                      HttpServletRequest request,
                                      RedirectAttributes redirectAttributes,
                                      final Principal principal) {
@@ -353,15 +352,6 @@ public class UserController {
         return new ModelAndView("redirect:" + request.getHeader("Referer"));
     }
 
-    private void loadUserEditBindingResultsToMv(HttpServletRequest request, ModelAndView mv) {
-        Map<String, ?> flashAttr = RequestContextUtils.getInputFlashMap(request);
-
-        if(flashAttr != null && flashAttr.containsKey("userEditFormBindingResult")) {
-            mv.addObject("org.springframework.validation.BindingResult.userEditForm",
-                    flashAttr.get("userEditFormBindingResult"));
-        }
-    }
-
     @RequestMapping(path = "/user/changePassword", method = RequestMethod.GET)
     public ModelAndView changePassword(@ModelAttribute("changePasswordForm") final ChangePasswordForm changePasswordForm) {
 
@@ -389,13 +379,18 @@ public class UserController {
     @RequestMapping(path = "/user/profile/avatar", method = RequestMethod.POST)
     public ModelAndView updateAvatar(@Valid @ModelAttribute("avatarEditForm") final AvatarEditForm avatarEditForm,
                                             final BindingResult bindingResult,
-                                            @ModelAttribute("userEditForm") final UserEditForm userEditForm,
                                             final Principal principal,
+                                            RedirectAttributes redirectAttributes,
                                             HttpServletRequest request) throws IOException {
 
         if(bindingResult.hasErrors()) {
+
             LOGGER.warn("Errors were found in the form avatarEditForm updating avatar in /user/profile/avatar");
-            return profilePosts(avatarEditForm, userEditForm, principal, request, 5, 0);
+
+            redirectAttributes.addFlashAttribute("avatarEditFormBindingResult", bindingResult);
+            redirectAttributes.addFlashAttribute("avatarEditForm", avatarEditForm);
+
+            return new ModelAndView("redirect:" + request.getHeader("Referer"));
         }
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
@@ -404,7 +399,7 @@ public class UserController {
 
         LOGGER.info("Changed User's {} password successfully. Redirecting to /user/profile", user.getId());
 
-        return new ModelAndView("redirect:/user/profile");
+        return new ModelAndView("redirect:" + request.getHeader("Referer"));
     }
 
     @RequestMapping(path = "/user/registrationConfirm", method = RequestMethod.GET)
@@ -562,6 +557,22 @@ public class UserController {
 
         LOGGER.info("Accessed /user/avatar/{}", avatarId);
         return userService.getAvatar(avatarId).orElseThrow(AvatarNotFoundException::new);
+    }
+
+    private void loadUserEditBindingResultsToMv(HttpServletRequest request, ModelAndView mv) {
+        Map<String, ?> flashAttr = RequestContextUtils.getInputFlashMap(request);
+
+        if(flashAttr != null) {
+            if (flashAttr.containsKey("userEditFormBindingResult")) {
+                mv.addObject("org.springframework.validation.BindingResult.userEditForm",
+                        flashAttr.get("userEditFormBindingResult"));
+            }
+
+            if (flashAttr.containsKey("avatarEditFormBindingResult")) {
+                mv.addObject("org.springframework.validation.BindingResult.avatarEditForm",
+                        flashAttr.get("avatarEditFormBindingResult"));
+            }
+        }
     }
 
     private void manualLogin(HttpServletRequest request, String username, String password, Collection<Role> roles) {
