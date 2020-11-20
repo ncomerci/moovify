@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags" %>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
@@ -49,6 +50,13 @@
 
                     <a href="<c:url value="/post/${post.id}"/>">
                         <c:out value="${post.title}"/>
+                        <sec:authorize access="isAuthenticated()">
+                            <c:set var="bookmarked" value="${customTag:hasUserBookmarkedPost(loggedUser, post)}"/>
+                            <c:if test="${bookmarked}">
+                                <c:out value="-"/>
+                                <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false"></span>
+                            </c:if>
+                        </sec:authorize>
                     </a>
 
 

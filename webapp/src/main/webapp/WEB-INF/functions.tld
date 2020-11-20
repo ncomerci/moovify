@@ -29,9 +29,9 @@
     </function>
 
     <function>
-        <name>hasUserFavedPost</name>
+        <name>hasUserBookmarkedPost</name>
         <function-class>ar.edu.itba.paw.models.User</function-class>
-        <function-signature>boolean userHasFavedPost(ar.edu.itba.paw.models.User,ar.edu.itba.paw.models.Post)</function-signature>
+        <function-signature>boolean hasUserBookmarkedPost(ar.edu.itba.paw.models.User,ar.edu.itba.paw.models.Post)</function-signature>
     </function>
 
     <function>
