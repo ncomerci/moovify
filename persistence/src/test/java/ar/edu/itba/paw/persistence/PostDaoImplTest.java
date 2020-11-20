@@ -125,59 +125,9 @@ public class PostDaoImplTest {
 //        postDao.register(null, null, WORD_COUNT, null, null, null, null, false);
 //    }
 
-    // ===========================================================
-
-    @Rollback
     @Test
-    public void testDeletePost() {
-
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
-
-        final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final Post mockedPost = Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(postId).getMock();
-
-//        postDao.deletePost(mockedPost);
-
-        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Post.TABLE_NAME, "enabled = true");
-
-        Assert.assertEquals(0, countPostExecution);
-    }
-
-//    @Rollback
-//    @Test(expected = RuntimeException.class)
-//    public void testDeletePostInvalidArgs() {
-//
-////        postDao.deletePost(null);
-//
-//    }
-
-    @Rollback
-    @Test
-    public void testRestorePost() {
-
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
-
-        final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        final Post mockedPost = Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(postId).getMock();
-
-//        postDao.restorePost(mockedPost);
-
-        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Post.TABLE_NAME, "enabled = true");
-
-        Assert.assertEquals(1, countPostExecution);
-    }
-
-//    @Rollback
-//    @Test(expected = RuntimeException.class)
-//    public void testRestorePostInvalidArgs() {
-//
-////        postDao.restorePost(null);
-//    }
-
-    // ===========================================================
-
-    @Rollback
-    @Test
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:categories.sql")
     public void testFindPostById() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -190,7 +140,6 @@ public class PostDaoImplTest {
         Assert.assertEquals(postId, post.get().getId());
     }
 
-    @Rollback
     @Test
     public void testFindPostByIdInvalidArgs() {
 
@@ -199,9 +148,8 @@ public class PostDaoImplTest {
         Assert.assertFalse(post.isPresent());
     }
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     @Sql("classpath:movies.sql")
     public void testFindPostsByMovie() {
@@ -222,9 +170,8 @@ public class PostDaoImplTest {
         Assert.assertEquals(2, posts.getTotalCount());
     }
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:user2.sql")
     @Sql("classpath:categories.sql")
     public void testFindPostsByUser() {
@@ -245,9 +192,8 @@ public class PostDaoImplTest {
     // Buscando en la 2 pagina -> bien orden global
     // Buscando el orden en results -> verificamos orden de la pagina
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     public void testGetAllPostsNewest() {
 
@@ -265,9 +211,8 @@ public class PostDaoImplTest {
         Assert.assertArrayEquals(new Long[]{post2, post4}, posts.getResults().stream().map(Post::getId).toArray());
     }
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     public void testGetAllPostsOldest() {
 
@@ -285,9 +230,8 @@ public class PostDaoImplTest {
         Assert.assertArrayEquals(new Long[]{post3, post1}, posts.getResults().stream().map(Post::getId).toArray());
     }
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:user2.sql")
     @Sql("classpath:user3.sql")
     @Sql("classpath:categories.sql")
@@ -315,9 +259,8 @@ public class PostDaoImplTest {
         Assert.assertArrayEquals(new Long[]{post4, post3}, posts.getResults().stream().map(Post::getId).toArray());
     }
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     public void testGetAllPostsEmptyPage() {
 
@@ -334,9 +277,8 @@ public class PostDaoImplTest {
         Assert.assertEquals(0, posts.getResults().size());
     }
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     public void testGetAllPostsExcludingNotEnabled() {
 
@@ -352,7 +294,6 @@ public class PostDaoImplTest {
         Assert.assertEquals(2, posts.getTotalCount());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testGetAllPostsInvalidArgs() {
 
@@ -361,9 +302,8 @@ public class PostDaoImplTest {
 
     // ===========================================================
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     public void testGetDeletedPostsExcludingEnabled() {
 
@@ -379,7 +319,6 @@ public class PostDaoImplTest {
         Assert.assertEquals(3, posts.getTotalCount());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testGetDeletedPostsInvalidArgs() {
 
@@ -388,9 +327,8 @@ public class PostDaoImplTest {
 
     // ===========================================================
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     public void testSearchPosts() {
 
@@ -413,9 +351,8 @@ public class PostDaoImplTest {
         postDao.searchPosts(null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     public void testSearchDeletedPosts() {
 
@@ -431,16 +368,14 @@ public class PostDaoImplTest {
         Assert.assertEquals(1, posts.getTotalCount());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testSearchDeletedPostsInvalidArgs() {
 
         postDao.searchDeletedPosts(null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     public void testSearchPostsByCategory() {
 
@@ -456,16 +391,14 @@ public class PostDaoImplTest {
         Assert.assertEquals(1, posts.getTotalCount());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testSearchPostsByCategoryInvalidArgs() {
 
         postDao.searchPostsByCategory(null, null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     public void testSearchPostsOlderThan() {
 
@@ -479,19 +412,18 @@ public class PostDaoImplTest {
         final PaginatedCollection<Post> posts = postDao.searchPostsOlderThan("Tit", CREATION_DATE, DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(1, posts.getTotalCount());
+        Assert.assertTrue(posts.getResults().stream().findFirst().isPresent());
         Assert.assertEquals(post2, posts.getResults().stream().findFirst().get().getId());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testSearchPostsOlderThanInvalidArgs() {
 
         postDao.searchPostsOlderThan(null, null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
-    @Rollback
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
     public void testSearchPostsByCategoryAndOlderThan() {
 
@@ -506,10 +438,10 @@ public class PostDaoImplTest {
                 CREATION_DATE, DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(1, posts.getTotalCount());
+        Assert.assertTrue(posts.getResults().stream().findFirst().isPresent());
         Assert.assertEquals(post2, posts.getResults().stream().findFirst().get().getId());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testSearchPostsByCategoryAndOlderThanInvalidArgs() {
 
