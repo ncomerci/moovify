@@ -90,7 +90,6 @@ public class Comment {
         this.likes = likes;
     }
 
-
     protected Comment() {
         //Hibernate
     }

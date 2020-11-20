@@ -13,10 +13,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -55,11 +58,18 @@ public class UserDaoTest {
     private static final boolean DISABLE = false;
     private static final int UPVOTE = 1;
 
+    private static long userIdCount = 0;
+    private static long postIdCount = 0;
+    private static long postLikeIdCount = 0;
+
     @Autowired
     private UserDaoImpl userDao;
 
     @Autowired
     private DataSource ds;
+
+    @PersistenceContext
+    private EntityManager em;
 
     private JdbcTemplate jdbcTemplate;
     private SimpleJdbcInsert usersInsert;
@@ -75,8 +85,7 @@ public class UserDaoTest {
     public void setUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.usersInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(USERS)
-                .usingGeneratedKeyColumns("user_id");
+                .withTableName(USERS);
         this.usersRolesInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(USERS_ROLES);
         this.postsLikesInsert = new SimpleJdbcInsert(jdbcTemplate)
@@ -84,11 +93,9 @@ public class UserDaoTest {
         this.postsMoviesInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(POST_MOVIES);
         this.imageInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(IMAGE)
-                .usingGeneratedKeyColumns("image_id");
+                .withTableName(IMAGE);
         this.postsInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(POSTS)
-                .usingGeneratedKeyColumns("post_id");
+                .withTableName(POSTS);
 
         map = new HashMap<>();
         LocalDateTime creationDate = LocalDateTime.now();
@@ -102,7 +109,6 @@ public class UserDaoTest {
         map.put("enabled", ENABLE);
     }
 
-    @Rollback
     @Test
     public void testRegister() throws DuplicateUniqueUserAttributeException {
 
@@ -113,174 +119,19 @@ public class UserDaoTest {
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, USERS,"username = ?", USERNAME );
 
         User user = userDao.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, LOCALE_LANGUAGE, roles, null, ENABLE);
+
+        em.flush();
+
         final String whereClause = String.format("user_id = %d", user.getId());
 
-        Assert.assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, USERS)
-//                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause)
+        Assert.assertEquals(1,
+                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause)
         );
     }
 
-//    @Rollback
-//    @Test
-//    public void testUpdateName() {
-//        long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, USERS, "name = ?", "testName");
-//
-//        userDao.updateName( Mockito.when(Mockito.mock(User.class).getId()).thenReturn(id).getMock(), "testName");
-//        final String whereClause = String.format("name = '%s'", "testName");
-//
-//        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
-//    }
-
-//    @Rollback
-//    @Test
-//    public void testUpdateUsername() throws DuplicateUsernameException {
-//        long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, USERS, "username = ?", "testUsername");
-//
-//        userDao.updateUsername( Mockito.when(Mockito.mock(User.class).getId()).thenReturn(id).getMock(), "testUsername");
-//        final String whereClause = String.format("username = '%s'", "testUsername");
-//
-//        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
-//    }
-
-//    @Rollback
-//    @Test
-//    public void testUpdateDescription() {
-//        long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, USERS, "description = ?", "testDescription");
-//
-//        userDao.updateDescription( Mockito.when(Mockito.mock(User.class).getId()).thenReturn(id).getMock(), "testDescription");
-//        final String whereClause = String.format("description = '%s'", "testDescription");
-//
-//        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
-//    }
-
-//    @Rollback
-//    @Test
-//    public void testDeleteUser() {
-//
-//        userDao.deleteUser( Mockito.when(Mockito.mock(User.class).getId()).thenReturn(insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE)).getMock());
-//        final String whereClause = String.format("username = '%s' and enabled = '%s'", USERNAME, "false");
-//
-//        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
-//    }
-
-//    @Rollback
-//    @Test
-//    public void testRestoreUser() {
-//        long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-//        userDao.restoreUser( Mockito.when(Mockito.mock(User.class).getId()).thenReturn(id).getMock());
-//        final String whereClause = String.format("username = '%s' and enabled = '%s'", USERNAME, "true");
-//
-//        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
-//    }
-
-//    @Rollback
-//    @Test
-//    public void testReplaceUserRole() {
-//        long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-//
-//        userDao.replaceUserRole( Mockito.when(Mockito.mock(User.class).getId()).thenReturn(id).getMock(), Role.ADMIN_ROLE, Role.USER_ROLE);
-//
-//        final String whereClause = String.format("user_id = %d and role_id = %d",id, ADMIN_ROLE);
-//
-//        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS_ROLES, whereClause));
-//
-//    }
-
-    @Rollback
-    @Test
-    public void testHasUserLikedPositive() {
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, POST_LIKES, "user_id = ? and post_id = ?", ID, ID);
-
-        HashMap<String, Object> mapLike = new HashMap<>();
-        mapLike.put("user_id", ID);
-        mapLike.put("post_id", ID);
-        mapLike.put("value", 1);
-
-        postsLikesInsert.execute(mapLike);
-
-//        Assert.assertEquals(1, userDao.hasUserLiked(USER, POST));
-
-    }
-
-    @Rollback
-    @Test
-    public void testHasUserLikedNegative() {
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, POST_LIKES, "user_id = ? and post_id = ?", ID, ID);
-        HashMap<String, Object> mapLike = new HashMap<>();
-        mapLike.put("user_id", ID);
-        mapLike.put("post_id", ID);
-        mapLike.put("value", -1);
-
-        postsLikesInsert.execute(mapLike);
-
-//        Assert.assertEquals(-1, userDao.hasUserLiked( USER, POST));
-
-    }
-
-    @Rollback
-    @Test
-    public void testHasUserNotLiked() {
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, POST_LIKES, "user_id = ? and post_id = ?", ID, ID);
-
-//        Assert.assertEquals(0, userDao.hasUserLiked( USER, POST));
-
-    }
-
-//    @Rollback
-//    @Test
-//    public void testAddRoles() {
-//
-//        long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-//
-//        List<Role> list =  new ArrayList<>();
-//        list.add(Role.ADMIN);
-//
-//        userDao.addRoles( Mockito.when(Mockito.mock(User.class).getId()).thenReturn(id).getMock(), list);
-//        final String whereClause = String.format("user_id = %d and role_id = %d",id, ADMIN_ROLE);
-//
-//        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS_ROLES, whereClause));
-//    }
-
-//    @Rollback
-//    @Test
-//    public void testUpdatePassword() {
-//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, USERS, "password = ?", "testPassword");
-//
-//        userDao.updatePassword( Mockito.when(Mockito.mock(User.class).getId()).thenReturn(usersInsert.executeAndReturnKey(map).longValue()).getMock(), "testPassword");
-//        final String whereClause = String.format("password = '%s' ", "testPassword");
-//
-//        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
-//    }
-
-//    @Rollback
-//    @Test
-//    public void updateAvatarId() {
-//        HashMap<String, Object> mapImage = new HashMap<>();
-//        mapImage.put("image", new byte[]{8});
-//        mapImage.put("security_tag","AVATAR");
-//        long image_id = imageInsert.executeAndReturnKey(mapImage).longValue();
-//
-//        HashMap<String, Object> mapImage2 = new HashMap<>();
-//        mapImage2.put("image", new byte[]{8});
-//        mapImage2.put("security_tag","AVATAR");
-//        long image_id2 = imageInsert.executeAndReturnKey(mapImage2).longValue();
-//
-//        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, USERS, "avatar_id = ?", image_id2);
-//
-//        map.put("avatar_id", image_id);
-//
-//        userDao.updateAvatarId( Mockito.when(Mockito.mock(User.class).getId()).thenReturn(usersInsert.executeAndReturnKey(map).longValue()).getMock(), image_id2);
-//
-//        final String whereClause = String.format("avatar_id = %d", image_id2);
-//        Assert.assertEquals(1, JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
-//    }
-
-    @Rollback
     @Test
     public void testFindUserById() {
+
         long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
 
         final Optional<User> user = userDao.findUserById(id);
@@ -292,12 +143,11 @@ public class UserDaoTest {
         Assert.assertEquals(id,user.get().getId() );
         Assert.assertEquals(USERNAME, user.get().getUsername() );
         Assert.assertEquals(EMAIL, user.get().getEmail());
-
     }
 
-    @Rollback
     @Test
     public void testFindUserByUsername() {
+
         long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
 
         final Optional<User> user = userDao.findUserByUsername(USERNAME);
@@ -312,9 +162,9 @@ public class UserDaoTest {
 
     }
 
-    @Rollback
     @Test
     public void testFindUserByEmail() {
+
         long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
 
         final Optional<User> user = userDao.findUserByEmail(EMAIL);
@@ -328,9 +178,9 @@ public class UserDaoTest {
         Assert.assertEquals(EMAIL, user.get().getEmail());
     }
 
-    @Rollback
     @Test
     public void testGetAllUsersOldest() {
+
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USERS);
         long user1 = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
         long user2 = insertUser(USERNAME2, NAME, CREATION_DATE.plusHours(10), "email2", ENABLE);
@@ -342,10 +192,11 @@ public class UserDaoTest {
         Assert.assertArrayEquals(new Long[]{user2, user4}, users.getResults().stream().map(User::getId).toArray());
     }
 
-    @Rollback
     @Test
     public void testGetAllUsersNewest() {
+
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USERS);
+
         long user1 = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
         long user2 = insertUser(USERNAME2, NAME, CREATION_DATE.plusHours(10), "email2", ENABLE);
         long user3 = insertUser("username3", NAME, CREATION_DATE.plusHours(8), "email3", ENABLE);
@@ -356,10 +207,11 @@ public class UserDaoTest {
         Assert.assertArrayEquals(new Long[]{user3, user1}, users.getResults().stream().map(User::getId).toArray());
     }
 
-    @Rollback
     @Test
     public void testGetAllUsersName() {
+
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USERS);
+
         long user1 = insertUser(USERNAME, "name", CREATION_DATE, EMAIL, ENABLE);
         long user2 = insertUser(USERNAME2, "xname", CREATION_DATE.plusHours(10), "email2", ENABLE);
         long user3 = insertUser("username3", "yname", CREATION_DATE.plusHours(8), "email3", ENABLE);
@@ -370,11 +222,14 @@ public class UserDaoTest {
         Assert.assertArrayEquals(new String[]{"yname", "zname"}, users.getResults().stream().map(User::getName).toArray());
     }
 
-    @Rollback
     @Test
+    @Sql("classpath:movies.sql")
+    @Sql("classpath:categories.sql")
     public void testGetAllUsersHottest() {
+
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USERS);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, POSTS);
+
         long user1 = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
         long post1 = insertPost(user1);
         long user2 = insertUser(USERNAME2, NAME, CREATION_DATE, "email2", ENABLE);
@@ -394,7 +249,6 @@ public class UserDaoTest {
     }
 
 
-    @Rollback
     @Test
     public void testSearchUsers() {
         JdbcTestUtils.deleteFromTables(jdbcTemplate ,USERS);
@@ -426,11 +280,12 @@ public class UserDaoTest {
 
     @Test
     public void searchDeletedUsers() {
+
         JdbcTestUtils.deleteFromTables(jdbcTemplate ,USERS);
 
         insertUser(USERNAME, "NAME", CREATION_DATE, EMAIL, ENABLE);
-        insertUser(USERNAME, "NOmbre", CREATION_DATE, "email2", ENABLE);
-        insertUser(USERNAME, NAME, CREATION_DATE, "email3", DISABLE);
+        insertUser("New USername", "NOmbre", CREATION_DATE, "email2", ENABLE);
+        insertUser("Alternate USERNAME", NAME, CREATION_DATE, "email3", DISABLE);
         insertUser("USUARIO", "Nein", CREATION_DATE, "email4", DISABLE);
 
         PaginatedCollection<User> users = userDao.searchDeletedUsers(USERNAME, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
@@ -439,58 +294,69 @@ public class UserDaoTest {
     }
 
     private long insertUser(String username, String name, LocalDateTime creationDate,  String email, boolean enabled){
+
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, USERS, "username = ?", username);
         HashMap<String, Object> map = new HashMap<>();
 
-        map.put("creation_date", creationDate);
-        map.put("username", username);
-        map.put("password", PASSWORD);
-        map.put("name", name);
-        map.put("email", email);
-        map.put("description", DESCRIPTION);
-        map.put("avatar_id", null);
-        map.put("enabled", enabled);
+        long id = userIdCount++;
 
-        long id = usersInsert.executeAndReturnKey(map).longValue();
+        map.put("user_id", id);
+        map.put("creation_date", creationDate);
+        map.put("description", DESCRIPTION);
+        map.put("email", email);
+        map.put("enabled", enabled);
+        map.put("language", "en");
+        map.put("name", name);
+        map.put("password", PASSWORD);
+        map.put("username", username);
+        map.put("avatar_id", null);
+
+        usersInsert.execute(map);
 
         HashMap<String, Object> map2 = new HashMap<>();
         map2.put("user_id", id);
-        map2.put("role_id", USER_ROLE);
+        map2.put("role_name", "ADMIN");
 
         usersRolesInsert.execute(map2);
         return id;
     }
 
     private long insertPost(long user_id){
-        HashMap<String, Object> map = new HashMap<>();
 
-        map.put("creation_date", CREATION_DATE);
-        map.put("title", "title");
-        map.put("user_id", user_id);
-        map.put("category_id", 1);
-        map.put("word_count", 1);
-        map.put("body", "body");
-        map.put("enabled", ENABLE);
+        final long postId = postIdCount++;
 
-        long post_id = postsInsert.executeAndReturnKey(map).longValue();
+        Map<String, Object> postMap = new HashMap<>();
+        postMap.put("post_id", postId);
+        postMap.put("body", "body");
+        postMap.put("creation_date", CREATION_DATE);
+        postMap.put("edited", false);
+        postMap.put("enabled", ENABLE);
+        postMap.put("last_edited", null);
+        postMap.put("title", "title");
+        postMap.put("word_count", 1);
+        postMap.put("category_id", 1);
+        postMap.put("user_id", user_id);
+
+        postsInsert.execute(postMap);
 
         HashMap<String, Object> map2 = new HashMap<>();
-        map2.put("post_id", post_id);
+        map2.put("post_id", postId);
         map2.put("movie_id", ID);
         postsMoviesInsert.execute(map2);
 
-        return post_id;
+        return postId;
 
     }
 
     private void insertPostLike(long postId, long userId, int value) {
 
+        long id = postLikeIdCount++;
+
         Map<String, Object> map = new HashMap<>();
+        map.put("post_likes_id", id);
         map.put("post_id", postId);
         map.put("user_id", userId);
         map.put("value", value);
         postsLikesInsert.execute(map);
     }
-
-
 }

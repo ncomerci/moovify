@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Transactional
+@Rollback
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class MovieDaoImplTest {
@@ -38,6 +40,8 @@ public class MovieDaoImplTest {
 
     private static final int ACTION_ID = 28;
     private static final String ACTION_NAME = "action";
+
+    private static long movieIdCount = 0;
 
     @Autowired
     private MovieDao movieDao;
@@ -71,8 +75,7 @@ public class MovieDaoImplTest {
     public void setUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.movieJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(Movie.TABLE_NAME)
-                .usingGeneratedKeyColumns("movie_id");
+                .withTableName(Movie.TABLE_NAME);
         this.movieToMovieInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(Movie.MOVIE_TO_MOVIE_CATEGORY_TABLE_NAME);
         mapInitializer();
@@ -102,18 +105,22 @@ public class MovieDaoImplTest {
 //        );
 //    }
 
-    @Test(expected = NullPointerException.class)
-    public void testInvalidRegister() {
-        movieDao.register(null, null, 0, null, null, null, 0, 0, 0, null, null);
-    }
+//    @Test(expected = NullPointerException.class)
+//    public void testInvalidRegister() {
+//        movieDao.register(null, null, 0, null, null, null, 0, 0, 0, null, null);
+//    }
 
-    @Rollback
     @Test
     public void testFindMovieById() {
 //        1. precondiciones
-        long id = movieJdbcInsert.executeAndReturnKey(MOVIE_ROW).longValue();
+        long id = movieIdCount++;
+
+        MOVIE_ROW.put("movie_id", id);
+        movieJdbcInsert.execute(MOVIE_ROW);
+
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Movie.MOVIE_TO_MOVIE_CATEGORY_TABLE_NAME,
-                "tmdb_category_id = ? AND tmdb_id = ?",MOVIE_TO_MOVIE_CATEGORY_ROW.get("tmdb_category_id"),  MOVIE_ROW.get("tmdb_id"));
+                "tmdb_category_id = ? AND tmdb_id = ?", MOVIE_TO_MOVIE_CATEGORY_ROW.get("tmdb_category_id"),  MOVIE_ROW.get("tmdb_id"));
+
         movieToMovieInsert.execute(MOVIE_TO_MOVIE_CATEGORY_ROW);
 
 //        2. ejercitar
@@ -157,13 +164,17 @@ public class MovieDaoImplTest {
 //        Assert.assertEquals(2, movies.size());
 //    }
 
-    @Rollback
     @Test
+    @Sql("classpath:movie-categories.sql")
     public void testGetAllMoviesNotPaginated() {
 //        1. precondiciones
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
-        long id = movieJdbcInsert.executeAndReturnKey(MOVIE_ROW).longValue();
+        long id = movieIdCount++;
+
+        MOVIE_ROW.put("movie_id", id);
+
+        movieJdbcInsert.execute(MOVIE_ROW);
         movieToMovieInsert.execute(MOVIE_TO_MOVIE_CATEGORY_ROW);
 
         int[] aux_ids = {2, 3, 4};
@@ -172,7 +183,11 @@ public class MovieDaoImplTest {
         for(int i = 0; i < aux_ids.length ; i++) {
             MOVIE_ROW.put("tmdb_id", aux_ids[i]);
             MOVIE_ROW.put("imdb_id", String.format("%d", aux_ids[i]));
-            ids[i] = movieJdbcInsert.executeAndReturnKey(MOVIE_ROW).longValue();
+
+            ids[i] = movieIdCount++;
+            MOVIE_ROW.put("movie_id", ids[i]);
+             movieJdbcInsert.execute(MOVIE_ROW);
+
             MOVIE_TO_MOVIE_CATEGORY_ROW.put("tmdb_id", MOVIE_ROW.get("tmdb_id"));
             movieToMovieInsert.execute(MOVIE_TO_MOVIE_CATEGORY_ROW);
         }
@@ -189,8 +204,8 @@ public class MovieDaoImplTest {
         );
     }
 
-    @Rollback
     @Test
+    @Sql("classpath:movie-categories.sql")
     public void testGetAllMoviesNewest() {
 
         // Requires users with ID 1, 2 and 3.
@@ -211,8 +226,8 @@ public class MovieDaoImplTest {
         Assert.assertArrayEquals(new Long[]{124L, 123L}, movies.getResults().stream().map(Movie::getTmdbId).toArray());
     }
 
-    @Rollback
     @Test
+    @Sql("classpath:movie-categories.sql")
     public void testGetAllMoviesOldest() {
 
         //Requires users with ID 1, 2 and 3.
@@ -233,8 +248,8 @@ public class MovieDaoImplTest {
         Assert.assertArrayEquals(new Long[]{125L, 126L}, movies.getResults().stream().map(Movie::getTmdbId).toArray());
     }
 
-    @Rollback
     @Test
+    @Sql("classpath:movie-categories.sql")
     public void testGetAllMoviesTitle() {
 
         //Requires users with ID 1, 2 and 3.
@@ -255,8 +270,13 @@ public class MovieDaoImplTest {
         Assert.assertArrayEquals(new Long[]{123L, 126L}, movies.getResults().stream().map(Movie::getTmdbId).toArray());
     }
 
-    @Rollback
     @Test
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:categories.sql")
+    @Sql("classpath:post1.sql")
+    @Sql("classpath:post2.sql")
+    @Sql("classpath:post3.sql")
+    @Sql("classpath:movie-categories.sql")
     public void testGetAllMoviesPostCount() {
 
         //Requires users with ID 1, 2 and 3.
@@ -286,8 +306,8 @@ public class MovieDaoImplTest {
         Assert.assertArrayEquals(new Long[]{124L, 125L}, movies.getResults().stream().map(Movie::getTmdbId).toArray());
     }
 
-    @Rollback
     @Test
+    @Sql("classpath:movie-categories.sql")
     public void testGetAllMoviesEmptyPage() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
@@ -307,7 +327,6 @@ public class MovieDaoImplTest {
         Assert.assertEquals(0, movies.getResults().size());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testGetAllMoviesInvalidArgs() {
 
@@ -315,8 +334,8 @@ public class MovieDaoImplTest {
     }
 
 
-    @Rollback
     @Test
+    @Sql("classpath:movie-categories.sql")
     public void testSearchMovies() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
@@ -335,15 +354,14 @@ public class MovieDaoImplTest {
         Assert.assertEquals(2, movies.getTotalCount());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testSearchmoviesInvalidArgs() {
 
         movieDao.searchMovies(null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
-    @Rollback
     @Test
+    @Sql("classpath:movie-categories.sql")
     public void testSearchMoviesByCategory() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
@@ -366,15 +384,14 @@ public class MovieDaoImplTest {
         Assert.assertEquals(1, movies.getTotalCount());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testSearchMoviesByCategoryInvalidArgs() {
 
         movieDao.searchMoviesByCategory(null, null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
-    @Rollback
     @Test
+    @Sql("classpath:movie-categories.sql")
     public void testSearchMoviesByReleaseDate() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
@@ -396,15 +413,14 @@ public class MovieDaoImplTest {
         Assert.assertEquals(1, movies.getTotalCount());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testSearchMoviesByReleaseDateInvalidArgs() {
 
         movieDao.searchMoviesByReleaseDate(null, null, null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
 
-    @Rollback
     @Test
+    @Sql("classpath:movie-categories.sql")
     public void testSearchMoviesByCategoryAndReleaseDate() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
@@ -433,7 +449,6 @@ public class MovieDaoImplTest {
         Assert.assertEquals(1, movies.getTotalCount());
     }
 
-    @Rollback
     @Test(expected = RuntimeException.class)
     public void testSearchMoviesByCategoryAndReleaseDateInvalidArgs() {
 
@@ -445,6 +460,9 @@ public class MovieDaoImplTest {
 
         Map<String, Object> map = new HashMap<>();
 
+        final long id = movieIdCount++;
+
+        map.put("movie_id", id);
         map.put("creation_date", Timestamp.valueOf(LocalDateTime.of(2020,8,6,12,16)));
         map.put("release_date", releaseDate);
         map.put("title", title);
@@ -457,7 +475,9 @@ public class MovieDaoImplTest {
         map.put("runtime", 5.2);
         map.put("vote_average", 5.2);
 
-        return movieJdbcInsert.executeAndReturnKey(map).longValue();
+        movieJdbcInsert.execute(map);
+
+        return id;
     }
 
     private void insertMovieToMovieCategory(int movie_id, int category_id) {

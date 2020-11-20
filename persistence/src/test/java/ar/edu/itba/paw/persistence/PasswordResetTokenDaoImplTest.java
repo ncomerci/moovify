@@ -51,7 +51,7 @@ public class PasswordResetTokenDaoImplTest {
     }
 
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     public void testCreatePasswordResetToken() {
 
         // Pre conditions
@@ -73,7 +73,7 @@ public class PasswordResetTokenDaoImplTest {
     }
 
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:password-reset-token.sql")
     public void testGetVerificationToken() {
 
@@ -84,7 +84,7 @@ public class PasswordResetTokenDaoImplTest {
     }
 
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:password-reset-token.sql")
     public void testGetVerificationTokenWithInvalidToken() {
 
@@ -94,7 +94,7 @@ public class PasswordResetTokenDaoImplTest {
     }
 
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:password-reset-token.sql")
     public void testFindVerificationTokenByUser() {
 
@@ -108,7 +108,7 @@ public class PasswordResetTokenDaoImplTest {
     }
 
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:password-reset-token.sql")
     public void testFindVerificationTokenByInvalidUser() {
 
@@ -121,7 +121,7 @@ public class PasswordResetTokenDaoImplTest {
 
 
     @Test
-    @Sql("classpath:user.sql")
+    @Sql("classpath:user1.sql")
     @Sql("classpath:password-reset-token.sql")
     public void testDeletePasswordResetToken() {
 
