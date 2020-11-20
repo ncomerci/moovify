@@ -6,84 +6,142 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.Optional;
+
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 @Transactional
+@Rollback
 public class UserVerificationTokenDaoImplTest {
 
-        private static final long USER_ID = 1L;
-        @Autowired
-        private UserVerificationTokenDaoImpl userVerificationTokenDao;
+    private static final long USER_ID = 1L;
+    private static final long TOKEN_ID = 1L;
+    private static final String TOKEN = "XeRUE6wVBX8D8ETYLghHN44VBLcvSIJrtSNJwsGjxMGbArkljlgKPtw1auDsbPKmuPAuJNRLHghP2coHhJe2XkBqlqElp3XIWXttR453gGH3KWq0kVLJo6zPHvHNq8isU6AyQUNqE1tEkiA7labxfr345f2VDnj7QxjsVIMrfHco00H5HM5STlGxIWNQp6kzixCklaId4v9BHx6wYgSLbuixTOk37l9BLpsrja7Bue9RIo6tsDpIQPM0fv";
+    private static final String INVALID_TOKEN = "Invalid Token";
+    private static final LocalDateTime EXPIRATORY_DATE = LocalDateTime.of(2021,8,6,8,6);
 
-        @Autowired
-        private DataSource ds;
+    @Autowired
+    private UserVerificationTokenDaoImpl userVerificationTokenDao;
 
-        private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private DataSource ds;
 
-        private SimpleJdbcInsert tokenInsert;
+    @PersistenceContext
+    private EntityManager em;
 
-        @Before
-        public void testSetUp() {
-            this.jdbcTemplate = new JdbcTemplate(ds);
-            this.tokenInsert = new SimpleJdbcInsert(ds)
-                    .withTableName(UserVerificationToken.TABLE_NAME)
-                    .usingGeneratedKeyColumns("token_id");
-        }
+    private JdbcTemplate jdbcTemplate;
 
-        @Test
-        public void createPasswordResetToken() {
+    private SimpleJdbcInsert tokenInsert;
 
-            JdbcTestUtils.deleteFromTables(jdbcTemplate, UserVerificationToken.TABLE_NAME);
-
-            userVerificationTokenDao.createVerificationToken(
-                    UUID.randomUUID().toString(),
-                    LocalDateTime.now().plusDays(1),
-                    Mockito.when(Mockito.mock(User.class).getId()).thenReturn(USER_ID).getMock());
-
-            final int count = JdbcTestUtils.countRowsInTableWhere(
-                    jdbcTemplate,
-                    UserVerificationToken.TABLE_NAME,
-                    String.format("user_id = %d", USER_ID));
-
-            Assert.assertEquals(1, count);
-        }
-
-
-        @Test
-        public void testDeletePasswordResetToken() {
-
-            Map<String, Object> map = new HashMap<>();
-            map.put("user_id", USER_ID);
-            map.put("token", UUID.randomUUID());
-            map.put("expiry", Timestamp.valueOf(LocalDateTime.now().plusDays(1)));
-
-            tokenInsert.execute(map);
-
-            userVerificationTokenDao.deleteVerificationToken(
-                    Mockito.when(Mockito.mock(User.class).getId()).thenReturn(USER_ID).getMock());
-
-            final int count = JdbcTestUtils.countRowsInTableWhere(
-                    jdbcTemplate,
-                    UserVerificationToken.TABLE_NAME,
-                    String.format("user_id = %d", USER_ID));
-
-            Assert.assertEquals(0, count);
-        }
+    @Before
+    public void testSetUp() {
+        this.jdbcTemplate = new JdbcTemplate(ds);
+        this.tokenInsert = new SimpleJdbcInsert(ds)
+                .withTableName(UserVerificationToken.TABLE_NAME);
     }
+
+    @Test
+    @Sql("classpath:user.sql")
+    public void testCreatePasswordResetToken() {
+
+        // Pre conditions
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, UserVerificationToken.TABLE_NAME);
+
+        User user = em.find(User.class, USER_ID);
+
+        // Exercise
+        UserVerificationToken userVT = userVerificationTokenDao.createVerificationToken(TOKEN, EXPIRATORY_DATE, user);
+
+        em.flush();
+
+        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, UserVerificationToken.TABLE_NAME, String.format("user_id = %d", USER_ID));
+
+        // Post conditions
+        Assert.assertEquals(1, count);
+        Assert.assertEquals(TOKEN, userVT.getToken());
+        Assert.assertEquals(user, userVT.getUser());
+    }
+
+    @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:user-verification-token.sql")
+    public void testGetVerificationToken() {
+
+        Optional<UserVerificationToken> userVT = userVerificationTokenDao.getVerificationToken(TOKEN);
+
+        Assert.assertTrue(userVT.isPresent());
+        Assert.assertEquals(TOKEN, userVT.get().getToken());
+    }
+
+    @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:user-verification-token.sql")
+    public void testGetVerificationTokenWithInvalidToken() {
+
+        Optional<UserVerificationToken> userVT = userVerificationTokenDao.getVerificationToken(INVALID_TOKEN);
+
+        Assert.assertFalse(userVT.isPresent());
+    }
+
+    @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:user-verification-token.sql")
+    public void testFindVerificationTokenByUser() {
+
+        User user = em.find(User.class, USER_ID);
+
+        Optional<UserVerificationToken> userVT = userVerificationTokenDao.findVerificationTokenByUser(user);
+
+        Assert.assertTrue(userVT.isPresent());
+        Assert.assertEquals(TOKEN, userVT.get().getToken());
+        Assert.assertEquals(user, userVT.get().getUser());
+    }
+
+    @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:user-verification-token.sql")
+    public void testFindVerificationTokenByInvalidUser() {
+
+        User user = ModelHelper.getHelperInvalidUser();
+
+        Optional<UserVerificationToken> userVT = userVerificationTokenDao.findVerificationTokenByUser(user);
+
+        Assert.assertFalse(userVT.isPresent());
+    }
+
+
+    @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:user-verification-token.sql")
+    public void testDeletePasswordResetToken() {
+
+        // Pre conditions
+        UserVerificationToken userVT = em.find(UserVerificationToken.class, TOKEN_ID);
+
+        // Exercise
+        userVerificationTokenDao.deleteVerificationToken(userVT);
+
+        em.flush();
+
+        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, UserVerificationToken.TABLE_NAME, String.format("user_id = %d", USER_ID));
+
+        // Post conditions
+        Assert.assertEquals(0, count);
+    }
+}
