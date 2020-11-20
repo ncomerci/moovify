@@ -22,8 +22,12 @@ public class PostServiceImplTest {
     public void testLikePostRemove() throws IllegalPostLikeException {
 
         Post post = Mockito.mock(Post.class);
+        User user = Mockito.mock(User.class);
 
-        postService.likePost(post, Mockito.mock(User.class),0);
+        Mockito.when(post.isEnabled()).thenReturn(true);
+        Mockito.when(post.getLikeValue(user)).thenReturn(UP_VOTE_VALUE);
+
+        postService.likePost(post, user,0);
 
         Mockito.verify(post).removeLike(Mockito.any());
     }
@@ -33,6 +37,9 @@ public class PostServiceImplTest {
 
         Post post = Mockito.mock(Post.class);
         User user = Mockito.mock(User.class);
+
+        Mockito.when(post.isEnabled()).thenReturn(true);
+        Mockito.when(post.getLikeValue(user)).thenReturn(0);
 
         postService.likePost(post, user, UP_VOTE_VALUE);
 
@@ -45,8 +52,22 @@ public class PostServiceImplTest {
         Post post = Mockito.mock(Post.class);
         User user = Mockito.mock(User.class);
 
+        Mockito.when(post.isEnabled()).thenReturn(true);
+        Mockito.when(post.getLikeValue(user)).thenReturn(0);
+
         postService.likePost(post, user, DOWN_VOTE_VALUE);
 
         Mockito.verify(post).like(Mockito.eq(user), Mockito.eq(DOWN_VOTE_VALUE));
+    }
+
+    @Test(expected = IllegalPostLikeException.class)
+    public void testLikePostDisabledPost() throws IllegalPostLikeException {
+
+        Post post = Mockito.mock(Post.class);
+        User user = Mockito.mock(User.class);
+
+        Mockito.when(post.isEnabled()).thenReturn(false);
+
+        postService.likePost(post, user, DOWN_VOTE_VALUE);
     }
 }
