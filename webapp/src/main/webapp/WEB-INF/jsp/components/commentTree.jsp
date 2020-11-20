@@ -81,47 +81,47 @@
                             </div>
                             <div class="uk-width-1-3 uk-text-center uk-padding-remove uk-margin-remove ">
                                 <c:if test="${comment.enabled}">
-                                <div class="uk-position-top-right">
-                                    <div class="uk-flex">
-                                        <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-top" uk-grid>
-                                            <sec:authorize access="hasRole('USER')">
-                                                <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
-                                                    <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover">
-<%--                                                        <spring:message code="comment.create.reply"/>--%>
+                                    <div class="uk-position-top-right">
+                                        <div class="uk-flex">
+                                            <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-top" uk-grid>
+                                                <sec:authorize access="hasRole('USER')">
+                                                    <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
+                                                        <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover">
+                                                                <%--                                                        <spring:message code="comment.create.reply"/>--%>
                                                             <span class="iconify" data-icon="octicon:reply-16" data-inline="false"></span>
+                                                        </a>
+                                                    </div>
+                                                </sec:authorize>
+                                                <div class="uk-width-auto uk-text-center uk-padding-remove">
+                                                    <a class="uk-link-muted reply-button uk-position-small uk-hidden-hover" href="<c:url value="/comment/${comment.id}"/>">
+                                                        <spring:message code="comment.viewComment"/>
                                                     </a>
                                                 </div>
-                                            </sec:authorize>
-                                            <div class="uk-width-auto uk-text-center uk-padding-remove">
-                                                <a class="uk-link-muted reply-button uk-position-small uk-hidden-hover" href="<c:url value="/comment/${comment.id}"/>">
-                                                    <spring:message code="comment.viewComment"/>
-                                                </a>
+                                                <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
+                                                    <div class="uk-text-center uk-padding-remove uk-margin-remove">
+                                                        <p class="uk-text-center uk-align-center uk-text-lead">
+                                                            <spring:message code="comment.view.votes" arguments="${comment.totalLikes}"/>
+                                                        </p>
+                                                    </div>
+                                                </sec:authorize>
+                                                <c:if test="${not empty loggedUser and loggedUser.validated}">
+                                                    <c:set var="likeValue" value="${ customTag:getCommentLikeValue(comment,loggedUser) }" />
+                                                    <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right ">
+                                                        <a class="like-comment-button" data-id="${comment.id}" data-value="${ likeValue > 0 ? 0 : 1 }">
+                                                            <span class="iconify" data-icon="<c:out value="${ likeValue > 0 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
+                                                        </a>
+                                                        <p class="uk-text-center uk-align-center uk-text-lead uk-margin-remove">
+                                                            <c:out value="${ comment.totalLikes }"/>
+                                                        </p>
+                                                        <a class=" like-comment-button" data-id="${comment.id}"  data-value="${ likeValue < 0 ? 0 : -1 }">
+                                                            <span class="iconify" data-icon="<c:out value="${ likeValue < 0 ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
+                                                        </a>
+                                                    </div>
+                                                </c:if>
                                             </div>
-                                            <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
-                                                <div class="uk-text-center uk-padding-remove uk-margin-remove">
-                                                    <p class="uk-text-center uk-align-center uk-text-lead">
-                                                        <spring:message code="comment.view.votes" arguments="${comment.totalLikes}"/>
-                                                    </p>
-                                                </div>
-                                            </sec:authorize>
-                                            <c:if test="${not empty loggedUser and loggedUser.validated}">
-                                                <c:set var="likeValue" value="${ customTag:getCommentLikeValue(comment,loggedUser) }" />
-                                                <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right ">
-                                                    <a class="like-comment-button" data-id="${comment.id}" data-value="${ likeValue > 0 ? 0 : 1 }">
-                                                        <span class="iconify" data-icon="<c:out value="${ likeValue > 0 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
-                                                    </a>
-                                                    <p class="uk-text-center uk-align-center uk-text-lead uk-margin-remove">
-                                                        <c:out value="${ comment.totalLikes }"/>
-                                                    </p>
-                                                    <a class=" like-comment-button" data-id="${comment.id}"  data-value="${ likeValue < 0 ? 0 : -1 }">
-                                                        <span class="iconify" data-icon="<c:out value="${ likeValue < 0 ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
-                                                    </a>
-                                                </div>
-                                            </c:if>
                                         </div>
                                     </div>
-                                    </c:if>
-                                </div>
+                                </c:if>
                             </div>
                         </div>
                     </header>
@@ -139,7 +139,7 @@
                         </c:choose>
                     </div>
                 </article>
-                <hr>
+                <hr/>
             </div>
             <c:if test="${maxDepth == 0}">
                 <c:set var="descendants" value="${customTag:descendantCount(comment, maxDepth_unmodified)}"/>
@@ -149,11 +149,6 @@
                     </a>
                 </c:if>
             </c:if>
-                <%--            TODO: si este código comentado se borra, hay que sacar el código de javascript también--%>
-                <%--            <div class="replies-show uk-margin-bottom" id="${comment.id}-replies-show" data-id="${comment.id}" data-amount="${customTag:descendantCount(comment, maxDepth)}">
-                                <a class="uk-link-muted"><spring:message code="comment.replies.show" arguments="${customTag:descendantCount(comment, maxDepth)}"/></a>
-                            </div>--%>
-                <%--            class="li uk-hidden"--%>
             <ul id="${comment.id}-children">
                 <c:if test="${maxDepth > 0}">
                     <%--  Recursive Call  --%>
