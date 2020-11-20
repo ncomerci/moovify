@@ -38,7 +38,7 @@ public class UserServiceTest {
     private static final int PAGE_NUMBER = 0;
     private static final int PAGE_SIZE = 2;
     private static final int TOTAL_COUNT = 4;
-    private static final long AVATAR_ID = 69;
+    private static final long AVATAR_ID = 6;
     private static final long DEFAULT_AVATAR_ID = 0;
 
     @Mock
@@ -102,9 +102,10 @@ public class UserServiceTest {
         Mockito.doNothing().when(userServiceSpy).createConfirmationEmail(
                 Mockito.any(User.class),
                 Mockito.anyString(),
-                Mockito.any(Locale.class));
+                Mockito.any(Locale.class)
+        );
 
-        User user = userServiceSpy.register(USERNAME,PASSWORD, NAME, EMAIL, DESCRIPTION, IMAGE, "", Locale.ENGLISH);
+        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, IMAGE, "", Locale.ENGLISH);
 
         // Quiero revisar que el register haya utilizado el mock que le da el image service
         Mockito.verify(dao).register(Mockito.anyString(), // username

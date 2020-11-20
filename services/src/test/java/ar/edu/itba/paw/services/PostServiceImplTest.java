@@ -44,7 +44,7 @@ public class PostServiceImplTest {
         Post post = Mockito.mock(Post.class);
         User user = Mockito.mock(User.class);
 
-        postService.likePost(post, user,DOWN_VOTE_VALUE);
+        postService.likePost(post, user, DOWN_VOTE_VALUE);
 
         Mockito.verify(post).like(Mockito.eq(user), Mockito.eq(DOWN_VOTE_VALUE));
     }
