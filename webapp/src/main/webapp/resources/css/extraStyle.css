@@ -118,3 +118,7 @@
 .m-long-text {
     word-break: break-all;
 }
+
+.extra-margin-small-top {
+    margin-top: 5px !important;
+}
