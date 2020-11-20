@@ -29,13 +29,13 @@
                     <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
                         <c:choose>
                             <c:when test="${comment.user.enabled}">
-                                <c:set var="name" value="${comment.user.name}"/>
+                                <c:set var="name" value="${comment.user.username}"/>
                             </c:when>
                             <c:otherwise>
                                 <c:set var="name"><spring:message code="user.notEnabled.name"/></c:set>
                             </c:otherwise>
                         </c:choose>
-                        <spring:message code="commentDisplay.meta.description" arguments="${comment.user.name}, ${comment.totalLikes}"/>
+                        <spring:message code="commentDisplay.meta.description" arguments="${comment.post.title}, ${comment.totalLikes}"/>
                         <span uk-icon="icon: ${comment.totalLikes >= 0 ? 'chevron-up' : 'chevron-down'}; ratio: 0.8"></span>
                     </p>
                 </div>

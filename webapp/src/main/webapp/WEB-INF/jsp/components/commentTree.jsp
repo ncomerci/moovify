@@ -38,7 +38,7 @@
                                                 <c:choose>
                                                     <c:when test="${comment.user.enabled}">
                                                         <a class="comment-user-name <c:out value="${comment.user.admin ? 'uk-text-primary':''}"/>" href = "<c:url value="/user/${comment.user.id}" />">
-                                                            <c:out value="${comment.user.name}"/>
+                                                            <c:out value="${comment.user.username}"/>
                                                             <c:if test="${comment.user.admin}">
                                                                 <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
                                                             </c:if>

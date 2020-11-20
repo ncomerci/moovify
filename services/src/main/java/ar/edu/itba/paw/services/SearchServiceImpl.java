@@ -112,7 +112,7 @@ public class SearchServiceImpl implements SearchService {
     private static Map<String, UserDao.SortCriteria> getUserSortCriteriaMap() {
         final Map<String, UserDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
 
-        sortCriteriaMap.put("name", UserDao.SortCriteria.USERNAME);
+        sortCriteriaMap.put("username", UserDao.SortCriteria.USERNAME);
         sortCriteriaMap.put("newest", UserDao.SortCriteria.NEWEST);
 //        sortCriteriaMap.put("oldest", UserDao.SortCriteria.OLDEST);
         sortCriteriaMap.put("likes", UserDao.SortCriteria.LIKES);

@@ -45,7 +45,7 @@
                                 <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
                                     <c:choose>
                                         <c:when test="${post.user.enabled}">
-                                            <c:set var="name" value="${post.user.name}"/>
+                                            <c:set var="name" value="${post.user.username}"/>
                                         </c:when>
                                         <c:otherwise>
                                             <c:set var="name"><spring:message code="user.notEnabled.name"/></c:set>
