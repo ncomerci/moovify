@@ -29,10 +29,12 @@ import java.util.Optional;
 @Rollback
 public class UserVerificationTokenDaoImplTest {
 
-    private static final long USER_ID = 1L;
+    private static final long USER1_ID = InsertHelper.USER1_ID;
+    private static final long USER2_ID = InsertHelper.USER2_ID;
+
     private static final long TOKEN_ID = 1L;
-    private static final String TOKEN = "XeRUE6wVBX8D8ETYLghHN44VBLcvSIJrtSNJwsGjxMGbArkljlgKPtw1auDsbPKmuPAuJNRLHghP2coHhJe2XkBqlqElp3XIWXttR453gGH3KWq0kVLJo6zPHvHNq8isU6AyQUNqE1tEkiA7labxfr345f2VDnj7QxjsVIMrfHco00H5HM5STlGxIWNQp6kzixCklaId4v9BHx6wYgSLbuixTOk37l9BLpsrja7Bue9RIo6tsDpIQPM0fv";
     private static final String INVALID_TOKEN = "Invalid Token";
+    private static final String TOKEN = "XeRUE6wVBX8D8ETYLghHN44VBLcvSIJrtSNJwsGjxMGbArkljlgKPtw1auDsbPKmuPAuJNRLHghP2coHhJe2XkBqlqElp3XIWXttR453gGH3KWq0kVLJo6zPHvHNq8isU6AyQUNqE1tEkiA7labxfr345f2VDnj7QxjsVIMrfHco00H5HM5STlGxIWNQp6kzixCklaId4v9BHx6wYgSLbuixTOk37l9BLpsrja7Bue9RIo6tsDpIQPM0fv";
     private static final LocalDateTime EXPIRATORY_DATE = LocalDateTime.of(2021,8,6,8,6);
 
     @Autowired
@@ -53,19 +55,19 @@ public class UserVerificationTokenDaoImplTest {
 
     @Test
     @Sql("classpath:user1.sql")
-    public void testCreatePasswordResetToken() {
+    public void testCreateUserVerificationToken() {
 
         // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, UserVerificationToken.TABLE_NAME);
 
-        User user = em.find(User.class, USER_ID);
+        User user = em.find(User.class, USER1_ID);
 
         // Exercise
         UserVerificationToken userVT = userVerificationTokenDao.createVerificationToken(TOKEN, EXPIRATORY_DATE, user);
 
         em.flush();
 
-        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, UserVerificationToken.TABLE_NAME, String.format("user_id = %d", USER_ID));
+        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, UserVerificationToken.TABLE_NAME, String.format("user_id = %d", USER1_ID));
 
         // Post conditions
         Assert.assertEquals(1, count);
@@ -78,8 +80,10 @@ public class UserVerificationTokenDaoImplTest {
     @Sql("classpath:user-verification-token.sql")
     public void testGetVerificationToken() {
 
+        // Exercise
         Optional<UserVerificationToken> userVT = userVerificationTokenDao.getVerificationToken(TOKEN);
 
+        // Post conditions
         Assert.assertTrue(userVT.isPresent());
         Assert.assertEquals(TOKEN, userVT.get().getToken());
     }
@@ -89,8 +93,10 @@ public class UserVerificationTokenDaoImplTest {
     @Sql("classpath:user-verification-token.sql")
     public void testGetVerificationTokenWithInvalidToken() {
 
+        // Exercise
         Optional<UserVerificationToken> userVT = userVerificationTokenDao.getVerificationToken(INVALID_TOKEN);
 
+        // Post conditions
         Assert.assertFalse(userVT.isPresent());
     }
 
@@ -99,10 +105,13 @@ public class UserVerificationTokenDaoImplTest {
     @Sql("classpath:user-verification-token.sql")
     public void testFindVerificationTokenByUser() {
 
-        User user = em.find(User.class, USER_ID);
+        // Pre conditions
+        User user = em.find(User.class, USER1_ID);
 
+        // Exercise
         Optional<UserVerificationToken> userVT = userVerificationTokenDao.findVerificationTokenByUser(user);
 
+        // Post conditions
         Assert.assertTrue(userVT.isPresent());
         Assert.assertEquals(TOKEN, userVT.get().getToken());
         Assert.assertEquals(user, userVT.get().getUser());
@@ -110,21 +119,24 @@ public class UserVerificationTokenDaoImplTest {
 
     @Test
     @Sql("classpath:user1.sql")
+    @Sql("classpath:user2.sql")
     @Sql("classpath:user-verification-token.sql")
     public void testFindVerificationTokenByInvalidUser() {
 
-        User user = ModelHelper.getHelperInvalidUser();
+        // Pre conditions
+        User user = em.find(User.class, USER2_ID);
 
+        // Exercise
         Optional<UserVerificationToken> userVT = userVerificationTokenDao.findVerificationTokenByUser(user);
 
+        // Post conditions
         Assert.assertFalse(userVT.isPresent());
     }
-
 
     @Test
     @Sql("classpath:user1.sql")
     @Sql("classpath:user-verification-token.sql")
-    public void testDeletePasswordResetToken() {
+    public void testDeleteVerificationToken() {
 
         // Pre conditions
         UserVerificationToken userVT = em.find(UserVerificationToken.class, TOKEN_ID);
@@ -134,7 +146,7 @@ public class UserVerificationTokenDaoImplTest {
 
         em.flush();
 
-        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, UserVerificationToken.TABLE_NAME, String.format("user_id = %d", USER_ID));
+        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, UserVerificationToken.TABLE_NAME, String.format("user_id = %d", USER1_ID));
 
         // Post conditions
         Assert.assertEquals(0, count);

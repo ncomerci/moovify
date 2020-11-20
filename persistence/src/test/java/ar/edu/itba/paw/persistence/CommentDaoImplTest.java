@@ -1,14 +1,16 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -19,10 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Transactional
@@ -31,18 +29,15 @@ import java.util.Optional;
 @ContextConfiguration(classes = TestConfig.class)
 public class CommentDaoImplTest {
 
-    private static final long POST1_ID = 1L;
-    private static final long POST2_ID = 2L;
-    private static final long POST3_ID = 3L;
+    private static final long POST1_ID = InsertHelper.POST1_ID;
+    private static final long POST2_ID = InsertHelper.POST2_ID;
+    private static final long POST3_ID = InsertHelper.POST3_ID;
 
-    private static final long USER1_ID = 1L;
-    private static final long USER2_ID = 2L;
-    private static final long USER3_ID = 3L;
+    private static final long USER1_ID = InsertHelper.POST1_ID;
+    private static final long USER2_ID = InsertHelper.POST2_ID;
+    private static final long USER3_ID = InsertHelper.POST3_ID;
 
     private static final CommentDao.SortCriteria NEWEST = CommentDao.SortCriteria.NEWEST;
-
-    private static long commentIdCount = 0;
-    private static long commentLikesIdCount = 0;
 
     @Autowired
     private CommentDaoImpl commentDao;
@@ -53,19 +48,13 @@ public class CommentDaoImplTest {
     @Autowired
     private DataSource ds;
 
+    private InsertHelper helper;
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert likeInsert;
-    private SimpleJdbcInsert commentInsert;
 
     @Before
     public void setUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
-
-        this.likeInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(CommentLike.TABLE_NAME);
-
-        this.commentInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(Comment.TABLE_NAME);
+        this.helper = new InsertHelper(jdbcTemplate);
     }
 
     @Test
@@ -73,7 +62,8 @@ public class CommentDaoImplTest {
     @Sql("classpath:categories.sql")
     @Sql("classpath:post1.sql")
     public void testRegister() {
-//        1. precondiciones
+
+        // Pre conditions
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME, "user_id = ?", USER1_ID);
 
         Post post = em.find(Post.class, POST1_ID);
@@ -96,8 +86,9 @@ public class CommentDaoImplTest {
     @Sql("classpath:categories.sql")
     @Sql("classpath:post1.sql")
     public void testFindCommentById() {
-//        1. precondiciones
-        long id = insertComment(true, null, POST1_ID, USER1_ID,"body");
+
+        // Pre conditions
+        long id = helper.insertComment(true, null, POST1_ID, USER1_ID,"body");
 
 //        2. ejercitar
         final Optional<Comment> comment = commentDao.findCommentById(id);
@@ -117,6 +108,7 @@ public class CommentDaoImplTest {
     @Test
     public void testFindCommentByNonExistingId() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Comment.TABLE_NAME);
 
         final Optional<Comment> comment = commentDao.findCommentById(1);
@@ -134,12 +126,12 @@ public class CommentDaoImplTest {
         // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Comment.TABLE_NAME);
 
-        long parentCommentId = insertComment(true, null, POST1_ID, USER1_ID, "body Text");
-        long child1Id = insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
-        long child2Id = insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
-        long child3Id = insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
-        long child4Id = insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
-        long rootLevelCommentId = insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+        long parentCommentId = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
+        long child1Id = helper.insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
+        long child2Id = helper.insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
+        long child3Id = helper.insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
+        long child4Id = helper.insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
+        long rootLevelCommentId = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
 
         Comment parentComment = em.find(Comment.class, parentCommentId);
 
@@ -162,12 +154,12 @@ public class CommentDaoImplTest {
         // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Comment.TABLE_NAME);
 
-        long parentCommentId = insertComment(true, null, POST1_ID, USER1_ID, "body Text");
-        long child1Id = insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
-        long child2Id = insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
-        long child3Id = insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
-        long child4Id = insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
-        long rootLevelCommentId = insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+        long parentCommentId = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
+        long child1Id = helper.insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
+        long child2Id = helper.insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
+        long child3Id = helper.insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
+        long child4Id = helper.insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
+        long rootLevelCommentId = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
 
         Comment parentComment = em.find(Comment.class, parentCommentId);
 
@@ -190,19 +182,19 @@ public class CommentDaoImplTest {
         // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Comment.TABLE_NAME);
 
-        long parentCommentId = insertComment(true, null, POST1_ID, USER1_ID, "body Text");
-        long child1Id = insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
-        insertCommentLike(-1, child1Id, USER2_ID);
-        insertCommentLike(1, child1Id, USER1_ID);
-        long child2Id = insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
-        insertCommentLike(1, child2Id, USER2_ID);
-        insertCommentLike(1, child2Id, USER1_ID);
-        long child3Id = insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
-        insertCommentLike(-1, child3Id, USER2_ID);
-        insertCommentLike(-1, child3Id, USER1_ID);
-        long child4Id = insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
-        insertCommentLike(1, child4Id, USER1_ID);
-        long rootLevelCommentId = insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+        long parentCommentId = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
+        long child1Id = helper.insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
+        helper.insertCommentLike(-1, child1Id, USER2_ID);
+        helper.insertCommentLike(1, child1Id, USER1_ID);
+        long child2Id = helper.insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
+        helper.insertCommentLike(1, child2Id, USER2_ID);
+        helper.insertCommentLike(1, child2Id, USER1_ID);
+        long child3Id = helper.insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
+        helper.insertCommentLike(-1, child3Id, USER2_ID);
+        helper.insertCommentLike(-1, child3Id, USER1_ID);
+        long child4Id = helper.insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
+        helper.insertCommentLike(1, child4Id, USER1_ID);
+        long rootLevelCommentId = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
 
         Comment parentComment = em.find(Comment.class, parentCommentId);
 
@@ -332,16 +324,17 @@ public class CommentDaoImplTest {
     @Sql("classpath:post2.sql")
     @Sql("classpath:post3.sql")
     public void testFindCommentsByPost() {
-//        1. precondiciones
+
+        // Pre conditions
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME,
                 "post_id = ?", POST1_ID);
 
-        long comment1ID = insertComment(true, null, POST1_ID, USER1_ID, "body Text");
-        long comment2ID = insertComment(true, null, POST2_ID, USER2_ID, "body Text");
-        long comment3ID = insertComment(true, null, POST1_ID, USER1_ID, "body Text");
-        long comment4ID = insertComment(true, null, POST1_ID, USER2_ID, "body Text");
-        long comment5ID = insertComment(true, null, POST3_ID, USER2_ID, "body Text");
-        long comment6ID = insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+        long comment1ID = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
+        long comment2ID = helper.insertComment(true, null, POST2_ID, USER2_ID, "body Text");
+        long comment3ID = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
+        long comment4ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+        long comment5ID = helper.insertComment(true, null, POST3_ID, USER2_ID, "body Text");
+        long comment6ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
 
         Post post = em.find(Post.class, POST1_ID);
 
@@ -362,16 +355,17 @@ public class CommentDaoImplTest {
     @Sql("classpath:post2.sql")
     @Sql("classpath:post3.sql")
     public void testFindCommentsByUser() {
-//        1. precondiciones
+
+        // Pre conditions
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME,
                 "user_id = ?", USER1_ID);
 
-        long comment1ID = insertComment(true, null, POST1_ID, USER1_ID, "body Text");
-        long comment2ID = insertComment(true, null, POST2_ID, USER2_ID, "body Text");
-        long comment3ID = insertComment(true, null, POST1_ID, USER2_ID, "body Text");
-        long comment4ID = insertComment(true, null, POST1_ID, USER2_ID, "body Text");
-        long comment5ID = insertComment(true, null, POST3_ID, USER3_ID, "body Text");
-        long comment6ID = insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+        long comment1ID = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
+        long comment2ID = helper.insertComment(true, null, POST2_ID, USER2_ID, "body Text");
+        long comment3ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+        long comment4ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+        long comment5ID = helper.insertComment(true, null, POST3_ID, USER3_ID, "body Text");
+        long comment6ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
 
         User user = em.find(User.class, USER2_ID);
 
@@ -392,16 +386,17 @@ public class CommentDaoImplTest {
     @Sql("classpath:post2.sql")
     @Sql("classpath:post3.sql")
     public void testGetDeletedComments() {
-//        1. precondiciones
+
+        // Pre conditions
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME,
                 "enabled = false");
 
-        long comment1ID = insertComment(true, null, POST1_ID, USER1_ID, "body Text");
-        long comment2ID = insertComment(false, null, POST2_ID, USER2_ID, "body Text");
-        long comment3ID = insertComment(false, null, POST1_ID, USER1_ID, "body Text");
-        long comment4ID = insertComment(true, null, POST1_ID, USER2_ID, "body Text");
-        long comment5ID = insertComment(false, null, POST3_ID, USER3_ID, "body Text");
-        long comment6ID = insertComment(false, null, POST1_ID, USER2_ID, "body Text");
+        long comment1ID = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
+        long comment2ID = helper.insertComment(false, null, POST2_ID, USER2_ID, "body Text");
+        long comment3ID = helper.insertComment(false, null, POST1_ID, USER1_ID, "body Text");
+        long comment4ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+        long comment5ID = helper.insertComment(false, null, POST3_ID, USER3_ID, "body Text");
+        long comment6ID = helper.insertComment(false, null, POST1_ID, USER2_ID, "body Text");
 
 //        2. ejercitar
         final PaginatedCollection<Comment> deletedComments = commentDao.getDeletedComments(NEWEST, 1, 2);
@@ -420,16 +415,17 @@ public class CommentDaoImplTest {
     @Sql("classpath:post2.sql")
     @Sql("classpath:post3.sql")
     public void testSearchDeletedComments() {
-//        1. precondiciones
+
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Comment.TABLE_NAME);
 
-        long comment1ID = insertComment(false, null, POST1_ID, USER1_ID, "body Text");
-        long comment2ID = insertComment(false, null, POST2_ID, USER2_ID, "alterante message");
-        long comment3ID = insertComment(false, null, POST1_ID, USER1_ID, "Text");
-        long comment4ID = insertComment(false, null, POST1_ID, USER2_ID, "body");
-        long comment5ID = insertComment(false, null, POST3_ID, USER3_ID, "bodyText");
-        long comment6ID = insertComment(false, null, POST1_ID, USER2_ID, "BodYBodYBodY");
-        long comment7ID = insertComment(true, null, POST1_ID, USER2_ID, "bODy");
+        long comment1ID = helper.insertComment(false, null, POST1_ID, USER1_ID, "body Text");
+        long comment2ID = helper.insertComment(false, null, POST2_ID, USER2_ID, "alterante message");
+        long comment3ID = helper.insertComment(false, null, POST1_ID, USER1_ID, "Text");
+        long comment4ID = helper.insertComment(false, null, POST1_ID, USER2_ID, "body");
+        long comment5ID = helper.insertComment(false, null, POST3_ID, USER3_ID, "bodyText");
+        long comment6ID = helper.insertComment(false, null, POST1_ID, USER2_ID, "BodYBodYBodY");
+        long comment7ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "bODy");
 
 //        2. ejercitar
         final PaginatedCollection<Comment> deletedComments = commentDao.searchDeletedComments("bODy", NEWEST, 1, 2);
@@ -437,39 +433,5 @@ public class CommentDaoImplTest {
 //        3. post-condiciones
         Assert.assertArrayEquals(new Long[]{comment4ID, comment1ID}, deletedComments.getResults().stream().map(Comment::getId).toArray());
         Assert.assertEquals(4, deletedComments.getTotalCount());
-    }
-
-    private long insertComment(boolean enabled, Long parentId, long postId, long userId, String body){
-
-        long id = ++commentIdCount;
-
-        Map<String, Object> comment = new HashMap<>();
-
-        comment.put("comment_id", id);
-        comment.put("body", body);
-        comment.put("creation_date", Timestamp.valueOf(LocalDateTime.of(2020, 8, 6, 12, 14).plusHours(id)));
-        comment.put("edited", false);
-        comment.put("enabled", enabled);
-        comment.put("last_edited", null);
-        comment.put("parent_id", parentId);
-        comment.put("post_id", postId);
-        comment.put("user_id", userId);
-
-        commentInsert.execute(comment);
-
-        return id;
-    }
-
-    private void insertCommentLike(int value, long commentId, long userId){
-
-        long id = ++commentLikesIdCount;
-
-        Map<String, Object> map = new HashMap<>();
-
-        map.put("comments_likes_id", id);
-        map.put("value", value);
-        map.put("user_id", userId);
-        map.put("comment_id", commentId);
-        likeInsert.execute(map);
     }
 }
