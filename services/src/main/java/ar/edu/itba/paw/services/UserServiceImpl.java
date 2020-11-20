@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
         if(!user.getName().equals(name))
             updateName(user, name);
 
-        if((user.getDescription() == null && description != null) || (user.getDescription() != null && !user.getDescription().equals(description)))
+        if(!user.getDescription().equals(description))
             updateDescription(user, description);
     }
 

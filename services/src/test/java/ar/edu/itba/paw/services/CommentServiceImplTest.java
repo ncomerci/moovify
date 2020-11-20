@@ -5,6 +5,7 @@ import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
 import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.User;
 import org.junit.Test;
@@ -109,5 +110,14 @@ public class CommentServiceImplTest {
         Mockito.when(comment.isEnabled()).thenReturn(false);
 
         commentService.likeComment(comment, user, DOWN_VOTE_VALUE);
+    }
+
+    @Test(expected = RestoredEnabledModelException.class)
+    public void testRestoreEnabledComment() throws RestoredEnabledModelException {
+
+        Comment comment = Mockito.mock(Comment.class);
+        Mockito.when(comment.isEnabled()).thenReturn(true);
+
+        commentService.restoreComment(comment);
     }
 }

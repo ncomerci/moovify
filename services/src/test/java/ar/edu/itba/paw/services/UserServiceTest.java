@@ -7,7 +7,9 @@ import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttr
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import org.junit.Assert;
 import org.junit.Test;
@@ -207,5 +209,175 @@ public class UserServiceTest {
                 Mockito.anyBoolean()            // enabled
         );
         Assert.assertEquals(ENCODED_PASSWORD, user.getPassword());
+    }
+
+    @Test
+    public void testGeneralUserUpdateAll() throws DuplicateUniqueUserAttributeException {
+
+        String username = "testUsername";
+        String name = "testName";
+        String description = "testDescription";
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn("");
+        Mockito.when(user.getName()).thenReturn("");
+        Mockito.when(user.getDescription()).thenReturn("");
+
+        userService.generalUserUpdate(user, name, username, description);
+
+        Mockito.verify(dao).updateUsername(user, username);
+        Mockito.verify(user).setName(name);
+        Mockito.verify(user).setDescription(description);
+    }
+
+    @Test
+    public void testGeneralUserUpdateNone() throws DuplicateUniqueUserAttributeException {
+
+        String username = "testUsername";
+        String name = "testName";
+        String description = "testDescription";
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn(username);
+        Mockito.when(user.getName()).thenReturn(name);
+        Mockito.when(user.getDescription()).thenReturn(description);
+
+        userService.generalUserUpdate(user, name, username, description);
+
+        Mockito.verify(dao, Mockito.never()).updateUsername(user, username);
+        Mockito.verify(user, Mockito.never()).setName(name);
+        Mockito.verify(user, Mockito.never()).setDescription(description);
+    }
+
+    @Test
+    public void testUpdateAvatarEmptyByteArray() {
+
+        User user = Mockito.mock(User.class);
+
+        userService.updateAvatar(user, new byte[0]);
+
+        Mockito.verify(imageService, Mockito.never()).uploadImage(Mockito.any(byte[].class), Mockito.anyString());
+        Mockito.verify(user).setAvatar(null);
+    }
+
+    @Test
+    public void testUpdateAvatar() {
+
+        Image image = Mockito.mock(Image.class);
+
+        User user = Mockito.mock(User.class);
+        byte[] data = new byte[10];
+
+        Mockito.when(imageService.uploadImage(Mockito.eq(data), Mockito.anyString())).thenReturn(image);
+
+        userService.updateAvatar(user, data);
+
+        Mockito.verify(imageService).uploadImage(Mockito.eq(data), Mockito.anyString());
+        Mockito.verify(user).setAvatar(image);
+    }
+
+    @Test
+    public void testGetDefaultAvatar() {
+
+        Mockito.when(imageService.getImage(Mockito.anyString())).thenReturn(new byte[10]);
+
+        userService.getAvatar(User.DEFAULT_AVATAR_ID);
+
+        Mockito.verify(imageService).getImage(Mockito.anyString());
+    }
+
+    @Test
+    public void testGetAvatar() {
+
+        long avatarId = 5L;
+
+        userService.getAvatar(avatarId);
+
+        Mockito.verify(imageService).getImage(Mockito.eq(avatarId), Mockito.anyString());
+    }
+
+    @Test(expected = DeletedDisabledModelException.class)
+    public void testDeleteDisabledUser() throws DeletedDisabledModelException {
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(false);
+
+        userService.deleteUser(user);
+    }
+
+    @Test(expected = RestoredEnabledModelException.class)
+    public void testRestoreEnabledUser() throws RestoredEnabledModelException {
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(true);
+
+        userService.restoreUser(user);
+    }
+
+    @Test(expected = InvalidUserPromotionException.class)
+    public void testPromoteUserToAdminDisabledUser() throws InvalidUserPromotionException {
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(false);
+
+        userService.promoteUserToAdmin(user);
+    }
+
+    @Test(expected = InvalidUserPromotionException.class)
+    public void testPromoteUserToAdminAdminUser() throws InvalidUserPromotionException {
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(false);
+        Mockito.when(user.isAdmin()).thenReturn(true);
+
+        userService.promoteUserToAdmin(user);
+    }
+
+    @Test(expected = InvalidUserPromotionException.class)
+    public void testPromoteUserToAdminNotValidated() throws InvalidUserPromotionException {
+
+        User user = Mockito.mock(User.class);
+
+        Mockito.when(user.isEnabled()).thenReturn(true);
+        Mockito.when(user.isAdmin()).thenReturn(false);
+        Mockito.when(user.isValidated()).thenReturn(false);
+
+        userService.promoteUserToAdmin(user);
+    }
+
+    @Test
+    public void testPromoteUserToAdminValid() throws InvalidUserPromotionException {
+
+        User user = Mockito.mock(User.class);
+
+        Mockito.when(user.isEnabled()).thenReturn(true);
+        Mockito.when(user.isAdmin()).thenReturn(false);
+        Mockito.when(user.isValidated()).thenReturn(true);
+
+        userService.promoteUserToAdmin(user);
+
+        Mockito.verify(user).addRole(Role.ADMIN);
+    }
+
+    @Test(expected = IllegalUserFollowException.class)
+    public void testFollowDisabledUser() throws IllegalUserFollowException {
+
+        User user = Mockito.mock(User.class);
+
+        User followedUser = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(false);
+
+        userService.followUser(user, followedUser);
+    }
+
+    @Test(expected = IllegalUserUnfollowException.class)
+    public void testUnfollowDisabledUser() throws IllegalUserUnfollowException {
+
+        User user = Mockito.mock(User.class);
+
+        User followedUser = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(false);
+
+        userService.unfollowUser(user, followedUser);
     }
 }

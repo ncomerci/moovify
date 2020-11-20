@@ -65,14 +65,13 @@
     height: 24px !important;
 }
 
-.iconify {
-    width: 32px;
-    height: 32px;
-}
-
 .small {
     font-size: 16px;
     line-height: 20px;
+}
+
+.margin-user-display{
+    margin-top: 40px !important;
 }
 
 .edit-icon-button:hover,
@@ -118,7 +117,17 @@
     -webkit-border-radius: 99em;
     -moz-border-radius: 99em;
 }
-
+.image-user-display{
+    display: block;
+    width: 100px;
+    height:100px;
+    margin: 1em auto;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    -webkit-border-radius: 99em;
+    -moz-border-radius: 99em;
+}
 .circle-navbar {
     display: block;
     width: 45px;

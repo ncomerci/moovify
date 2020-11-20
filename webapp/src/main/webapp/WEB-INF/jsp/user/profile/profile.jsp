@@ -17,7 +17,7 @@
     </div>
 
     <div class="uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
-        <div class="uk-width-1-3@m uk-flex-first uk-text-center">
+        <div class="uk-width-1-4@m uk-flex-first uk-text-center">
             <c:url value="/user/profile/avatar" var="action"/>
             <%--@elvariable id="avatarEditForm" type="ar.edu.itba.paw.webapp.form.editProfile.AvatarEditForm"--%>
             <form:form modelAttribute="avatarEditForm" action="${action}" method="post" enctype="multipart/form-data">
@@ -72,9 +72,9 @@
                 </c:if>
             </ul>
             <c:if test="${loggedUser.validated}">
-                <p class="uk-margin-large-left">
+                <p class="uk-margin-left">
                     <a href="<c:url value="/user/changePassword"/>">
-                        <button id="submit-form-button" class="uk-button uk-button-primary uk-border-rounded" type="button">
+                        <button id="submit-form-button" class="uk-button uk-button-default uk-border-rounded" type="button">
                             <spring:message code="user.profile.edit.changePassword"/>
                         </button>
                     </a>
