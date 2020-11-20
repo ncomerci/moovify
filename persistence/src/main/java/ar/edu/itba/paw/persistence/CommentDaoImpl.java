@@ -272,6 +272,11 @@ public class CommentDaoImpl implements CommentDao {
                 ((List<Number>)commentIdsNativeQuery.getResultList())
                         .stream().map(Number::longValue).collect(Collectors.toList());
 
+        if(commentIds.isEmpty()) {
+            LOGGER.debug("QueryComments Empty Page");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalComments);
+        }
+
         // Get Comments Based on Ids
         final Collection<Tuple> fetchQueryResult = em.createQuery(fetchQuery, Tuple.class)
                 .setParameter("commentIds", commentIds)
@@ -336,7 +341,7 @@ public class CommentDaoImpl implements CommentDao {
         final long totalFirstLevelComments = ((Number) totalCommentsNativeQuery.getSingleResult()).longValue();
 
         if(totalFirstLevelComments == 0) {
-            LOGGER.debug("QueryComments Total Count == 0");
+            LOGGER.debug("QueryCommentsDescendants Total Count == 0");
             return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalFirstLevelComments);
         }
 
@@ -348,6 +353,11 @@ public class CommentDaoImpl implements CommentDao {
         final Collection<Long> commentIds =
                 ((List<Number>)commentIdsNativeQuery.getResultList())
                         .stream().map(Number::longValue).collect(Collectors.toList());
+
+        if(commentIds.isEmpty()) {
+            LOGGER.debug("QueryCommentsDescendants Empty Page");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalFirstLevelComments);
+        }
 
         // Get Comments Based on Ids
         final Collection<Tuple> fetchQueryResult = em.createQuery(fetchQuery, Tuple.class)

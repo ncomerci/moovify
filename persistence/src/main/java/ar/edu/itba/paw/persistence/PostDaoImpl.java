@@ -355,6 +355,11 @@ public class PostDaoImpl implements PostDao {
                 ((List<Number>)postIdsNativeQuery.getResultList())
                         .stream().map(Number::longValue).collect(Collectors.toList());
 
+        if(postIds.isEmpty()) {
+            LOGGER.debug("QueryPosts Empty Page");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalPosts);
+        }
+
         // Get Posts Based on Ids
         final Collection<Tuple> fetchQueryResult = em.createQuery(fetchQuery, Tuple.class)
                 .setParameter("postIds", postIds)

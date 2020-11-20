@@ -12,10 +12,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -24,6 +27,7 @@ import java.util.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 @Transactional
+@Rollback
 public class PostDaoImplTest {
 
     private static final String TITLE = "Title";
@@ -37,8 +41,9 @@ public class PostDaoImplTest {
     private static final int UP_VOTE = 1;
     private static final int DOWN_VOTE = -1;
 
-    private static final long USER_ID = 1;
+    private static final long USER_ID = 1L;
     private static final long USER_ID2 = 2L;
+    private static final long USER_ID3 = 3L;
     private static final User USER_MOCK = Mockito.when(Mockito.mock(User.class).getId()).thenReturn(USER_ID).getMock();
 
     private static final long CATEGORY_ID = 1;
@@ -52,6 +57,8 @@ public class PostDaoImplTest {
     private static final long MOVIE_ID2 = 2L;
     private static final Set<Long> MOVIES = Collections.singleton(1L);
 
+    private static long postIdCount = 0;
+    private static long postLikeIdCount = 0;
 
     private static final int INVALID_PAGE_NUMBER = -1;
     private static final int INVALID_PAGE_SIZE = 0;
@@ -63,6 +70,9 @@ public class PostDaoImplTest {
     @Autowired
     private DataSource ds;
 
+    @PersistenceContext
+    private EntityManager em;
+
     private JdbcTemplate jdbcTemplate;
 
     private SimpleJdbcInsert postInsert;
@@ -73,8 +83,7 @@ public class PostDaoImplTest {
     public void testSetUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.postInsert = new SimpleJdbcInsert(ds)
-                .withTableName(Post.TABLE_NAME)
-                .usingGeneratedKeyColumns("post_id");
+                .withTableName(Post.TABLE_NAME);
 
         this.postMovieInsert = new SimpleJdbcInsert(ds)
                 .withTableName(Post.POST_MOVIE_TABLE_NAME);
@@ -109,12 +118,12 @@ public class PostDaoImplTest {
 //        postDao.register(TITLE, BODY, WORD_COUNT, CATEGORY, USER_MOCK, TAGS, movies, ENABLE);
 //    }
 
-    @Rollback
-    @Test(expected = NullPointerException.class)
-    public void testRegisterInvalidArgs() {
-
-        postDao.register(null, null, WORD_COUNT, null, null, null, null, false);
-    }
+//    @Rollback
+//    @Test(expected = NullPointerException.class)
+//    public void testRegisterInvalidArgs() {
+//
+//        postDao.register(null, null, WORD_COUNT, null, null, null, null, false);
+//    }
 
     // ===========================================================
 
@@ -134,13 +143,13 @@ public class PostDaoImplTest {
         Assert.assertEquals(0, countPostExecution);
     }
 
-    @Rollback
-    @Test(expected = RuntimeException.class)
-    public void testDeletePostInvalidArgs() {
-
-//        postDao.deletePost(null);
-
-    }
+//    @Rollback
+//    @Test(expected = RuntimeException.class)
+//    public void testDeletePostInvalidArgs() {
+//
+////        postDao.deletePost(null);
+//
+//    }
 
     @Rollback
     @Test
@@ -158,64 +167,12 @@ public class PostDaoImplTest {
         Assert.assertEquals(1, countPostExecution);
     }
 
-    @Rollback
-    @Test(expected = RuntimeException.class)
-    public void testRestorePostInvalidArgs() {
-
-//        postDao.restorePost(null);
-    }
-
-    // ===========================================================
-
-    // likePost() uses the Postgresql feature INSERT ON CONFLICT which is not ANSI and hsqldb doesn't support it.
-    // Until it is changed, the feature will remain untested.
-    /*
-    @Rollback
-    @Test
-    public void testLikePost() {
-
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
-
-        final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final Post mockedPost = Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(postId).getMock();
-
-        postDao.likePost(mockedPost, USER_MOCK, UP_VOTE);
-
-        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PostLike.TABLE_NAME, "post_id = " + postId);
-
-        Assert.assertEquals(1, countPostExecution);
-    }
-    */
-
-    @Rollback
-    @Test(expected = RuntimeException.class)
-    public void testLikePostInvalidArgs() {
-
-//        postDao.likePost(null, null, 1);
-    }
-
-    @Rollback
-    @Test
-    public void testRemoveLike() {
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
-
-        final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostLike(postId, USER_ID, DOWN_VOTE);
-        final Post mockedPost = Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(postId).getMock();
-
-//        postDao.removeLike(mockedPost, USER_MOCK);
-
-        final int countPostExecution = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PostLike.TABLE_NAME, "post_id = " + postId);
-
-        Assert.assertEquals(0, countPostExecution);
-    }
-
-    @Rollback
-    @Test(expected = RuntimeException.class)
-    public void testRemoveLikeInvalidArgs() {
-
-//        postDao.removeLike(null, null);
-    }
+//    @Rollback
+//    @Test(expected = RuntimeException.class)
+//    public void testRestorePostInvalidArgs() {
+//
+////        postDao.restorePost(null);
+//    }
 
     // ===========================================================
 
@@ -244,6 +201,9 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
+    @Sql("classpath:movies.sql")
     public void testFindPostsByMovie() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -264,6 +224,9 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:user2.sql")
+    @Sql("classpath:categories.sql")
     public void testFindPostsByUser() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -284,6 +247,8 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
     public void testGetAllPostsNewest() {
 
         // Requires users with ID 1, 2 and 3.
@@ -302,6 +267,8 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
     public void testGetAllPostsOldest() {
 
         //Requires users with ID 1, 2 and 3.
@@ -320,22 +287,26 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:user2.sql")
+    @Sql("classpath:user3.sql")
+    @Sql("classpath:categories.sql")
     public void testGetAllPostsHottest() {
 
         //Requires users with ID 1, 2 and 3.
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
         final long post1 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostLike(post1, 1L,UP_VOTE);
-        insertPostLike(post1, 2L,UP_VOTE);
+        insertPostLike(post1, USER_ID, UP_VOTE);
+        insertPostLike(post1, USER_ID2, UP_VOTE);
         final long post2 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostLike(post2, 1L,UP_VOTE);
-        insertPostLike(post2, 2L,UP_VOTE);
-        insertPostLike(post2, 3L,UP_VOTE);
+        insertPostLike(post2, USER_ID, UP_VOTE);
+        insertPostLike(post2, USER_ID2, UP_VOTE);
+        insertPostLike(post2, USER_ID3, UP_VOTE);
         final long post3 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostLike(post3, 1L,UP_VOTE);
-        insertPostLike(post3, 2L,DOWN_VOTE);
-        insertPostLike(post3, 3L,DOWN_VOTE);
+        insertPostLike(post3, USER_ID, UP_VOTE);
+        insertPostLike(post3, USER_ID2, DOWN_VOTE);
+        insertPostLike(post3, USER_ID3, DOWN_VOTE);
         final long post4 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.HOTTEST, 1, 2);
@@ -346,6 +317,8 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
     public void testGetAllPostsEmptyPage() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -363,6 +336,8 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
     public void testGetAllPostsExcludingNotEnabled() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -388,6 +363,8 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
     public void testGetDeletedPostsExcludingEnabled() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -413,6 +390,8 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
     public void testSearchPosts() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -436,6 +415,8 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
     public void testSearchDeletedPosts() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -459,6 +440,8 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
     public void testSearchPostsByCategory() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -482,6 +465,8 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
     public void testSearchPostsOlderThan() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -506,6 +491,8 @@ public class PostDaoImplTest {
 
     @Rollback
     @Test
+    @Sql("classpath:user.sql")
+    @Sql("classpath:categories.sql")
     public void testSearchPostsByCategoryAndOlderThan() {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
@@ -533,18 +520,21 @@ public class PostDaoImplTest {
 
     private long insertPost(String title, long userId, LocalDateTime creationDate, long categoryId, int wordCount, String body, boolean enable) {
 
-        final long postId;
+        final long postId = postIdCount++;
 
         Map<String, Object> postMap = new HashMap<>();
-        postMap.put("creation_date", Timestamp.valueOf(creationDate));
-        postMap.put("title", title);
-        postMap.put("user_id", userId);
-        postMap.put("category_id", categoryId);
-        postMap.put("word_count", wordCount);
+        postMap.put("post_id", postId);
         postMap.put("body", body);
+        postMap.put("creation_date", Timestamp.valueOf(creationDate));
+        postMap.put("edited", false);
         postMap.put("enabled", enable);
+        postMap.put("last_edited", null);
+        postMap.put("title", title);
+        postMap.put("word_count", wordCount);
+        postMap.put("category_id", categoryId);
+        postMap.put("user_id", userId);
 
-        postId = postInsert.executeAndReturnKey(postMap).longValue();
+        postInsert.execute(postMap);
 
         return postId;
 
@@ -561,7 +551,10 @@ public class PostDaoImplTest {
 
     private void insertPostLike(long postId, long userId, int value) {
 
+        final long id = postLikeIdCount++;
+
         Map<String, Object> map = new HashMap<>();
+        map.put("post_likes_id", id);
         map.put("post_id", postId);
         map.put("user_id", userId);
         map.put("value", value);
