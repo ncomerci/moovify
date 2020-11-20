@@ -32,7 +32,7 @@ public class HomeController {
     private MessageSource messageSource;
 
     @RequestMapping(path = {"/", "/hottest"}, method = RequestMethod.GET)
-    public ModelAndView indexHottest(@RequestParam(defaultValue = "25") final int pageSize,
+    public ModelAndView indexHottest(@RequestParam(defaultValue = "35") final int pageSize,
                                    @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /. Hello World!");
@@ -40,13 +40,13 @@ public class HomeController {
         final ModelAndView mv = new ModelAndView("home/hottestPosts");
 
         mv.addObject("hottestPosts", homeService.getHottestPosts(pageNumber, pageSize));
-        mv.addObject("hottestUsers", homeService.getHottestUsers(pageNumber, pageSize));
+        mv.addObject("hottestUsers", homeService.getHottestUsers());
 
         return mv;
     }
 
     @RequestMapping(path = "/newest", method = RequestMethod.GET)
-    public ModelAndView indexNewest(@RequestParam(defaultValue = "25") final int pageSize,
+    public ModelAndView indexNewest(@RequestParam(defaultValue = "35") final int pageSize,
                                     @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /newest with pageSize = {} and pageNumber = {}", pageSize, pageNumber);
@@ -54,14 +54,14 @@ public class HomeController {
         final ModelAndView mv = new ModelAndView("home/newestPosts");
 
         mv.addObject("newestPosts", homeService.getNewestPosts(pageNumber, pageSize));
-        mv.addObject("hottestUsers", homeService.getHottestUsers(pageNumber, pageSize));
+        mv.addObject("hottestUsers", homeService.getHottestUsers());
 
         return mv;
     }
 
     @RequestMapping(path = "/feed", method = RequestMethod.GET)
     public ModelAndView indexFeed(Principal principal,
-                                  @RequestParam(defaultValue = "25") final int pageSize,
+                                  @RequestParam(defaultValue = "35") final int pageSize,
                                   @RequestParam(defaultValue = "0") final int pageNumber) {
 
         LOGGER.info("Accessed /feed with pageSize = {} and pageNumber = {}", pageSize, pageNumber);
@@ -71,7 +71,7 @@ public class HomeController {
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("followedUsersPosts", homeService.getFollowedUsersPosts(user, pageNumber, pageSize));
-        mv.addObject("hottestUsers", homeService.getHottestUsers(pageNumber, pageSize));
+        mv.addObject("hottestUsers", homeService.getHottestUsers());
 
         return mv;
     }

@@ -26,6 +26,8 @@ public class HomeServiceImpl implements HomeService {
     private static final PostDao.SortCriteria HOTTEST_POST_SORT_CRITERIA = PostDao.SortCriteria.HOTTEST;
     private static final PostDao.SortCriteria NEWEST_POST_SORT_CRITERIA = PostDao.SortCriteria.NEWEST;
     private static final UserDao.SortCriteria HOTTEST_USERS_SORT_CRITERIA = UserDao.SortCriteria.LIKES;
+    private static final int HOTTEST_USER_PAGE_NUMBER = 0;
+    private static final int HOTTEST_USER_PAGE_SIZE = 15;
 
     @Transactional(readOnly = true)
     @Override
@@ -49,7 +51,7 @@ public class HomeServiceImpl implements HomeService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<User> getHottestUsers(int pageNumber, int pageSize) {
-        return userDao.getAllUsers(HOTTEST_USERS_SORT_CRITERIA, pageNumber, pageSize);
+    public PaginatedCollection<User> getHottestUsers() {
+        return userDao.getAllUsers(HOTTEST_USERS_SORT_CRITERIA, HOTTEST_USER_PAGE_NUMBER, HOTTEST_USER_PAGE_SIZE);
     }
 }

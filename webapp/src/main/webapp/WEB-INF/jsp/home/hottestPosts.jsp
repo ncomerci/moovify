@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 
 <html>
@@ -70,7 +71,7 @@
 
                     <c:if test="${not empty hottestPosts.results}">
                         <c:set var="collection" value="${posts}" scope="request"/>
-                        <c:url var="baseURL" value="/user/profile/comments" context="/" scope="request"/>
+                        <c:url var="baseURL" value="/hottest" context="/" scope="request"/>
                         <c:set var="numberOfInputs" value="${2}" scope="request"/>
                         <form action="<c:url value="${baseURL}"/>" method="get">
                             <jsp:include page="/WEB-INF/jsp/components/paginationController.jsp" />
@@ -89,12 +90,19 @@
                             <div class="uk-width-2-3 uk-margin-top">
                                 <div class="uk-flex">
                                     <div class="uk-width-expand">
-                                        <a href="<c:url value="/user/${user.id}"/>" class="${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
-                                            <c:out value="${user.username}"/>
-                                            <c:if test="${user.admin}">
-                                                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
-                                            </c:if>
-                                        </a>
+                                            <a href="<c:url value="/user/${user.id}"/>" class="${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
+                                                <c:out value="${user.username}"/>
+                                                <c:if test="${user.admin}">
+                                                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                                </c:if>
+                                                <sec:authorize access="isAuthenticated()">
+                                                    <c:set var="followed" value="${customTag:hasUserFollowed(loggedUser,user)}"/>
+                                                    <c:if test="${followed}">
+                                                        <c:out value="-"/>
+                                                        <span class="iconify small-iconify" data-icon="ri:user-follow-line" data-inline="false"></span>
+                                                    </c:if>
+                                                </sec:authorize>
+                                            </a>
                                         <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
                                             <spring:message code="userDisplay.meta.description" arguments="${user.name}, ${user.totalLikes}"/>
                                         </p>
