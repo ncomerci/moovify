@@ -3,10 +3,15 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
+import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.exceptions.*;
+import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
 import ar.edu.itba.paw.webapp.form.CommentEditForm;
 import org.slf4j.Logger;
@@ -89,7 +94,7 @@ public class CommentController {
 
     @RequestMapping(path = "/comment/edit/{commentId}",  method = RequestMethod.POST)
     public ModelAndView editComment(@PathVariable long commentId, @Valid @ModelAttribute("commentEditForm") final CommentEditForm commentEditForm,
-                             final BindingResult bindingResult, Principal principal) {
+                             final BindingResult bindingResult, Principal principal) throws MissingCommentEditPermissionException, IllegalCommentEditionException {
 
         if(bindingResult.hasErrors()) {
             LOGGER.warn("Errors were found in the form commentEditForm editing a Comment");
@@ -98,13 +103,9 @@ public class CommentController {
 
         final Comment comment = commentService.findCommentById(commentId).orElseThrow(CommentNotFoundException::new);
 
-        if(!comment.isEnabled())
-            throw new CommentNotFoundException();
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        if(!comment.getUser().getUsername().equals(principal.getName()))
-            throw new MissingCommentEditPermissionException();
-
-        commentService.editComment(comment, commentEditForm.getCommentBody());
+        commentService.editComment(user, comment, commentEditForm.getCommentBody());
 
         LOGGER.info("Accessed /comment/edit to edit Comment. Redirecting to /comment/{}", comment.getId());
 
@@ -115,15 +116,13 @@ public class CommentController {
     public ModelAndView post(@RequestParam final long comment_id,
                              @RequestParam(defaultValue = "0") final int value,
                              final Principal principal,
-                             final HttpServletRequest request) {
+                             final HttpServletRequest request) throws IllegalCommentLikeException {
 
         LOGGER.info("Accessed /comment/like");
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-        final Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
 
-        if(!comment.isEnabled() || Comment.getLikeValue(comment, user) == value)
-            throw new IllegalCommentLikeException();
+        final Comment comment = commentService.findCommentById(comment_id).orElseThrow(CommentNotFoundException::new);
 
         commentService.likeComment(comment, user, value);
 

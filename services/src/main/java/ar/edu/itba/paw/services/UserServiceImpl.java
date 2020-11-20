@@ -7,6 +7,7 @@ import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttr
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +71,20 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
+    public void generalUserUpdate(User user, String name, String username, String description) throws DuplicateUniqueUserAttributeException {
+
+        if(!user.getUsername().equals(username))
+            updateUsername(user, username);
+
+        if(!user.getName().equals(name))
+            updateName(user, name);
+
+        if((user.getDescription() == null && description != null) || (user.getDescription() != null && !user.getDescription().equals(description)))
+            updateDescription(user, description);
+    }
+
+    @Transactional
+    @Override
     public void updateName(User user, String name) {
         user.setName(name);
     }
@@ -121,19 +136,30 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteUser(User user) {
+    public void deleteUser(User user) throws DeletedDisabledModelException {
+
+        if(!user.isEnabled())
+            throw new DeletedDisabledModelException();
+
         user.setEnabled(false);
     }
 
     @Transactional
     @Override
-    public void restoreUser(User user) {
+    public void restoreUser(User user) throws RestoredEnabledModelException {
+
+        if(user.isEnabled())
+            throw new RestoredEnabledModelException();
+
         user.setEnabled(true);
     }
 
     @Transactional
     @Override
-    public void promoteUserToAdmin(User user) {
+    public void promoteUserToAdmin(User user) throws InvalidUserPromotionException {
+
+        if(!user.isEnabled() || user.isAdmin() || !user.isValidated())
+            throw new InvalidUserPromotionException();
 
         user.addRole(Role.ADMIN);
 
@@ -142,13 +168,21 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void followUser(User user, User userFollowed) {
+    public void followUser(User user, User userFollowed) throws IllegalUserFollowException {
+
+        if(!userFollowed.isEnabled())
+            throw new IllegalUserFollowException();
+
         user.followUser(userFollowed);
     }
 
     @Transactional
     @Override
-    public void unfollowUser(User user, User userUnfollowed) {
+    public void unfollowUser(User user, User userUnfollowed) throws IllegalUserUnfollowException {
+
+        if(!userUnfollowed.isEnabled())
+            throw new IllegalUserUnfollowException();
+
         user.unfollowUser(userUnfollowed);
     }
 

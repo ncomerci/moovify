@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
@@ -12,6 +13,8 @@ public interface UserService {
 
     User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate, Locale locale) throws DuplicateUniqueUserAttributeException;
 
+    void generalUserUpdate(User user, String name, String username, String description) throws DuplicateUniqueUserAttributeException;
+
     void updateName(User user, String name);
 
     void updateUsername(User user, String username) throws DuplicateUniqueUserAttributeException;
@@ -20,15 +23,15 @@ public interface UserService {
 
     void updatePassword(User user, String password);
 
-    void deleteUser(User user);
+    void deleteUser(User user) throws DeletedDisabledModelException;
 
-    void restoreUser(User user);
+    void restoreUser(User user) throws RestoredEnabledModelException;
 
-    void promoteUserToAdmin(User user);
+    void promoteUserToAdmin(User user) throws InvalidUserPromotionException;
 
-    void followUser(User user, User userFollowed);
+    void followUser(User user, User userFollowed) throws IllegalUserFollowException;
 
-    void unfollowUser(User user, User userUnfollowed);
+    void unfollowUser(User user, User userUnfollowed) throws IllegalUserUnfollowException;
 
     Optional<User> confirmRegistration(String token);
 

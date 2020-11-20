@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.MailService;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.User;
 import org.junit.Test;
@@ -33,7 +34,7 @@ public class CommentServiceImplTest {
      */
 
     @Test
-    public void testLikeCommentRemove() {
+    public void testLikeCommentRemove() throws IllegalCommentLikeException {
 
         Comment comment = Mockito.mock(Comment.class);
 
@@ -43,7 +44,7 @@ public class CommentServiceImplTest {
     }
 
     @Test
-    public void testLikeCommentGiveUpVote() {
+    public void testLikeCommentGiveUpVote() throws IllegalCommentLikeException {
 
         Comment comment = Mockito.mock(Comment.class);
         User user = Mockito.mock(User.class);
@@ -54,7 +55,7 @@ public class CommentServiceImplTest {
     }
 
     @Test
-    public void testLikeCommentGiveDownVote() {
+    public void testLikeCommentGiveDownVote() throws IllegalCommentLikeException {
 
         Comment comment = Mockito.mock(Comment.class);
         User user = Mockito.mock(User.class);

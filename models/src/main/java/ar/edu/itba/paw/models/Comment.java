@@ -20,10 +20,7 @@ public class Comment {
     public static final String TABLE_NAME = "comments";
 
     static public int getLikeValue(Comment comment, User user) {
-        return comment.getLikes().stream()
-                .filter(commentLike -> commentLike.getUser().getId() == user.getId())
-                .map(CommentLike::getValue)
-                .findFirst().orElse(0);
+        return comment.getLikeValue(user);
     }
 
     public static int getDescendantCount(Comment comment, long maxDepth) {
@@ -158,6 +155,13 @@ public class Comment {
 
     public void setTotalLikes(long totalLikes) {
         this.totalLikes = totalLikes;
+    }
+
+    public int getLikeValue(User user) {
+        return getLikes().stream()
+                .filter(commentLike -> commentLike.getUser().getId() == user.getId())
+                .map(CommentLike::getValue)
+                .findFirst().orElse(0);
     }
 
     public int getDescendantCount(long maxDepth) {

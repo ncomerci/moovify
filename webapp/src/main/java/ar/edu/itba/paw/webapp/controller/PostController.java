@@ -4,18 +4,21 @@ import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostEditionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostLikeException;
+import ar.edu.itba.paw.interfaces.services.exceptions.MissingPostEditPermissionException;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.PostCategory;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.exceptions.*;
+import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
+import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.CommentCreateForm;
 import ar.edu.itba.paw.webapp.form.PostCreateForm;
 import ar.edu.itba.paw.webapp.form.PostEditForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -56,19 +59,6 @@ public class PostController {
 
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
-        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if(!isAnonymous(auth)) {
-
-            final User user = userService.findUserByUsername(auth.getName()).orElseThrow(UserNotFoundException::new);
-
-            mv.addObject("loggedUser", user);
-
-            LOGGER.info("Was accessed by User {}", user.getId());
-        }
-        else
-            LOGGER.info("Was accessed by Anonymous User.");
-
         mv.addObject("post", post);
         mv.addObject("comments", commentService.findPostCommentDescendants(post, pageNumber, pageSize));
         mv.addObject("maxDepth", commentService.getMaxCommentTreeDepth());
@@ -79,15 +69,13 @@ public class PostController {
     @RequestMapping(path = "/post/like", method = RequestMethod.POST)
     public ModelAndView likePost(@RequestParam final long postId,
                                  @RequestParam(defaultValue = "0") final int value,
-                                 final Principal principal) {
+                                 final Principal principal) throws IllegalPostLikeException {
 
         LOGGER.info("Accessed /post/like");
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
-        if(!post.isEnabled())
-            throw new IllegalPostLikeException();
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
         postService.likePost(post, user, value);
 
@@ -134,18 +122,17 @@ public class PostController {
 
     @RequestMapping(path = "/post/edit/{postId}", method = RequestMethod.GET)
     public ModelAndView showPostEditForm(@PathVariable long postId, @ModelAttribute("postEditForm") final PostEditForm postEditForm,
-                                         Principal principal) {
+                                         Principal principal) throws MissingPostEditPermissionException, IllegalPostEditionException {
 
         LOGGER.info("Accessed /post/edit/{}", postId);
 
         final ModelAndView mv = new ModelAndView("post/edit");
 
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
-        if(!post.isEnabled())
-            throw new PostNotFoundException();
 
-        if(!post.getUser().getUsername().equals(principal.getName()))
-            throw new MissingPostEditPermissionException();
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        postService.guaranteePostEditionPermissions(user, post);
 
         mv.addObject("post", post);
 
@@ -157,7 +144,7 @@ public class PostController {
 
     @RequestMapping(path = "/post/edit/{postId}", method = RequestMethod.POST)
     public ModelAndView editPost(@PathVariable long postId, @Valid @ModelAttribute("postEditForm") final PostEditForm postEditForm,
-                                           final BindingResult errors, final Principal principal) {
+                                           final BindingResult errors, final Principal principal) throws MissingPostEditPermissionException, IllegalPostEditionException {
 
         if(errors.hasErrors()) {
             LOGGER.warn("Errors were found in the form postEditForm editing a Post");
@@ -165,21 +152,13 @@ public class PostController {
         }
 
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
-        if(!post.isEnabled())
-            throw new PostNotFoundException();
 
-        if(!post.getUser().getUsername().equals(principal.getName()))
-            throw new MissingPostEditPermissionException();
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        postService.editPost(post, postEditForm.getBody());
+        postService.editPost(user, post, postEditForm.getBody());
 
         LOGGER.info("Accessed /post/edit to edit Post. Redirecting to /post/{}", post.getId());
 
         return new ModelAndView("redirect:/post/" + post.getId());
-    }
-
-
-    private boolean isAnonymous(Authentication auth) {
-        return auth.getAuthorities().stream().anyMatch(role -> role.getAuthority().equals("ROLE_ANONYMOUS"));
     }
 }

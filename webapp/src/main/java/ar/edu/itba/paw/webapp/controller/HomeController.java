@@ -3,8 +3,6 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.services.HomeService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.exceptions.InvalidPostCollectionException;
-import ar.edu.itba.paw.webapp.exceptions.InvalidUserCollectionException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +39,8 @@ public class HomeController {
 
         final ModelAndView mv = new ModelAndView("home/hottestPosts");
 
-        mv.addObject("hottestPosts", homeService.getHottestPosts(pageNumber, pageSize).orElseThrow(InvalidPostCollectionException::new));
-        mv.addObject("hottestUsers", homeService.getHottestUsers(pageNumber, pageSize).orElseThrow(InvalidUserCollectionException::new));
+        mv.addObject("hottestPosts", homeService.getHottestPosts(pageNumber, pageSize));
+        mv.addObject("hottestUsers", homeService.getHottestUsers(pageNumber, pageSize));
 
         return mv;
     }
@@ -55,8 +53,8 @@ public class HomeController {
 
         final ModelAndView mv = new ModelAndView("home/newestPosts");
 
-        mv.addObject("newestPosts", homeService.getNewestPosts(pageNumber, pageSize).orElseThrow(InvalidPostCollectionException::new));
-        mv.addObject("hottestUsers", homeService.getHottestUsers(pageNumber, pageSize).orElseThrow(InvalidUserCollectionException::new));
+        mv.addObject("newestPosts", homeService.getNewestPosts(pageNumber, pageSize));
+        mv.addObject("hottestUsers", homeService.getHottestUsers(pageNumber, pageSize));
 
         return mv;
     }
@@ -71,8 +69,9 @@ public class HomeController {
         final ModelAndView mv = new ModelAndView("home/feed");
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-        mv.addObject("followedUsersPosts", homeService.getFollowedUsersPosts(user, pageNumber, pageSize).orElseThrow(InvalidPostCollectionException::new));
-        mv.addObject("hottestUsers", homeService.getHottestUsers(pageNumber, pageSize).orElseThrow(InvalidUserCollectionException::new));
+
+        mv.addObject("followedUsersPosts", homeService.getFollowedUsersPosts(user, pageNumber, pageSize));
+        mv.addObject("hottestUsers", homeService.getHottestUsers(pageNumber, pageSize));
 
         return mv;
     }
