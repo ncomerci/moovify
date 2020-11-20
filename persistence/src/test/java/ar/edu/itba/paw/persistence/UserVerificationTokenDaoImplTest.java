@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -47,13 +46,9 @@ public class UserVerificationTokenDaoImplTest {
 
     private JdbcTemplate jdbcTemplate;
 
-    private SimpleJdbcInsert tokenInsert;
-
     @Before
     public void testSetUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
-        this.tokenInsert = new SimpleJdbcInsert(ds)
-                .withTableName(UserVerificationToken.TABLE_NAME);
     }
 
     @Test
