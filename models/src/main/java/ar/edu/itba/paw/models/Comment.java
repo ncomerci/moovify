@@ -246,6 +246,7 @@ public class Comment {
                 ", creationDate=" + creationDate +
                 ", children=" + children +
                 ", enabled=" + enabled +
+                ", parent=" + (parent != null ? parent.getId() : 0) +
                 '}';
     }
 }

@@ -452,7 +452,7 @@ public class PostDaoImplTest {
 
     private long insertPost(String title, long userId, LocalDateTime creationDate, long categoryId, int wordCount, String body, boolean enable) {
 
-        final long postId = postIdCount++;
+        final long postId = ++postIdCount;
 
         Map<String, Object> postMap = new HashMap<>();
         postMap.put("post_id", postId);
@@ -483,7 +483,7 @@ public class PostDaoImplTest {
 
     private void insertPostLike(long postId, long userId, int value) {
 
-        final long id = postLikeIdCount++;
+        final long id = ++postLikeIdCount;
 
         Map<String, Object> map = new HashMap<>();
         map.put("post_likes_id", id);
