@@ -24,7 +24,7 @@
         <img alt="" src="<c:url value="/resources/images/background.jpg"/>" uk-cover>
     </div>
     <div class="uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle" uk-grid>
-        <div class="uk-width-1-3@m uk-flex-first uk-text-center">
+        <div class="uk-width-1-4@m uk-flex-first uk-text-center">
             <img class="circle uk-background-cover" alt="user-avatar" data-src="<c:url value="/user/avatar/${user.avatarId}"/>" uk-img>
             <c:if test="${not empty loggedUser and loggedUser.validated and loggedUser.enabled and loggedUser.id ne user.id}">
                 <c:set var="followed" value="${customTag:hasUserFollowed(loggedUser,user)}"/>

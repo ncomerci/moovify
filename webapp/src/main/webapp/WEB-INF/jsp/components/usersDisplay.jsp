@@ -1,38 +1,48 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <jsp:useBean id="users" scope="request" type="ar.edu.itba.paw.models.PaginatedCollection"/>
 
-<div class="uk-flex uk-flex-wrap">
-    <c:forEach items="${users.results}" var="user">
-        <div class="uk-width-1-1">
+<c:forEach items="${users.results}" var="user">
+    <div class="uk-grid-small" uk-grid>
+        <div class="uk-width-1-6 uk-margin-remove">
+            <img class="image-user-display" src="<c:url value="/user/avatar/${user.avatarId}"/>" alt="">
+        </div>
+        <div class="uk-width-3-5 margin-user-display uk-padding-remove-left">
             <div class="uk-flex">
-                <div class="uk-width-expand uk-margin-small-top">
+                <div class="uk-width-expand">
                     <a href="<c:url value="/user/${user.id}"/>" class="${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
                         <c:out value="${user.username}"/>
                         <c:if test="${user.admin}">
                             <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
                         </c:if>
+                        <sec:authorize access="isAuthenticated()">
+                            <c:set var="followed" value="${customTag:hasUserFollowed(loggedUser,user)}"/>
+                            <c:if test="${followed}">
+                                <c:out value="-"/>
+                                <span class="iconify small-iconify" data-icon="ri:user-follow-line" data-inline="false"></span>
+                            </c:if>
+                        </sec:authorize>
                     </a>
-                    <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
-                        <spring:message code="userDisplay.meta.description" arguments="${user.name}, ${user.totalLikes}"/>
-                    </p>
-                </div>
-                <div class="uk-width-auto">
-                    <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
-                        <c:if test="${user.daysSinceCreation > 0}">
-                            <spring:message code="postDisplay.meta.age.days" arguments="${user.daysSinceCreation}"/>
+                    <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical uk-text-truncate">
+                        <c:if test="${!customTag:hasDescription(user)}">
+                            <c:set var="description" value="${user.description}"/>
                         </c:if>
-                        <c:if test="${user.daysSinceCreation == 0 && user.hoursSinceCreation > 0}">
-                            <spring:message code="postDisplay.meta.age.hours" arguments="${user.hoursSinceCreation}"/>
+                        <c:if test="${customTag:hasDescription(user)}">
+                            <spring:message var="description" code="userDisplay.meta.empty.description"/>
                         </c:if>
-                        <c:if test="${user.daysSinceCreation == 0 && user.hoursSinceCreation == 0}">
-                            <spring:message code="postDisplay.meta.age.minutes" arguments="${user.minutesSinceCreation}"/>
-                        </c:if>
+                        <spring:message code="userDisplay.meta.description" arguments="${user.name}, ${description}"/>
                     </p>
                 </div>
             </div>
         </div>
-    </c:forEach>
-</div>
+        <div class="uk-width-1-5">
+            <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
+                <spring:message code="userDisplay.meta.votes" arguments="${user.totalLikes}"/>
+            </p>
+        </div>
+    </div>
+</c:forEach>
