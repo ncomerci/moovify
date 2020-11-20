@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostLikeException;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import org.junit.Test;
@@ -18,7 +19,7 @@ public class PostServiceImplTest {
     private final PostServiceImpl postService = new PostServiceImpl();
 
     @Test
-    public void testLikePostRemove() {
+    public void testLikePostRemove() throws IllegalPostLikeException {
 
         Post post = Mockito.mock(Post.class);
 
@@ -28,7 +29,7 @@ public class PostServiceImplTest {
     }
     
     @Test
-    public void testLikePostGiveUpVote() {
+    public void testLikePostGiveUpVote() throws IllegalPostLikeException {
 
         Post post = Mockito.mock(Post.class);
         User user = Mockito.mock(User.class);
@@ -39,12 +40,12 @@ public class PostServiceImplTest {
     }
 
     @Test
-    public void testLikePostGiveDownVote() {
+    public void testLikePostGiveDownVote() throws IllegalPostLikeException {
 
         Post post = Mockito.mock(Post.class);
         User user = Mockito.mock(User.class);
 
-        postService.likePost(post, user,DOWN_VOTE_VALUE);
+        postService.likePost(post, user, DOWN_VOTE_VALUE);
 
         Mockito.verify(post).like(Mockito.eq(user), Mockito.eq(DOWN_VOTE_VALUE));
     }

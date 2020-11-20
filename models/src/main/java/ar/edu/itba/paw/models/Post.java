@@ -22,12 +22,10 @@ public class Post {
     public static final String POST_MOVIE_TABLE_NAME = "post_movie";
     public static final String TAGS_TABLE_NAME = "tags";
 
-    static public int getLikeValueByUser(Post post, User user) {
-        return post.getLikes().stream()
-                .filter(postLike -> postLike.getUser().getId() == user.getId())
-                .map(PostLike::getValue)
-                .findFirst().orElse(0);
+    static public int getLikeValue(Post post, User user) {
+        return post.getLikeValue(user);
     }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_post_id_seq")

@@ -37,8 +37,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
 
         LOGGER.info("Get User Verification Token: {}", token);
 
-        return em
-                .createQuery(
+        return em.createQuery(
                         "SELECT uvt FROM UserVerificationToken uvt WHERE uvt.token = :token",
                         UserVerificationToken.class)
                 .setParameter("token", token)
@@ -51,8 +50,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
 
         LOGGER.info("Find User Verification Token By User: {}", user.getId());
 
-        return em
-                .createQuery(
+        return em.createQuery(
                         "SELECT uvt FROM UserVerificationToken uvt WHERE uvt.user.id = :id",
                         UserVerificationToken.class)
                 .setParameter("id", user.getId())

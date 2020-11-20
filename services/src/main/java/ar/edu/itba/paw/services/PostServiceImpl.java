@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,21 +44,37 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void deletePost(Post post) {
+    public void deletePost(Post post) throws DeletedDisabledModelException {
+
+        if(!post.isEnabled())
+            throw new DeletedDisabledModelException();
+
         LOGGER.info("Delete Post {}", post.getId());
+
         post.delete();
     }
 
     @Transactional
     @Override
-    public void restorePost(Post post) {
+    public void restorePost(Post post) throws RestoredEnabledModelException {
+
+        if(post.isEnabled())
+            throw new RestoredEnabledModelException();
+
         LOGGER.info("Restore Post {}", post.getId());
+
         post.restore();
     }
 
     @Transactional
     @Override
-    public void likePost(Post post, User user, int value) {
+    public void likePost(Post post, User user, int value) throws IllegalPostLikeException {
+
+        if(!post.isEnabled())
+            throw new IllegalPostLikeException();
+
+        if(post.getLikeValue(user) == value)
+            return;
 
         if(value == 0) {
             LOGGER.info("Delete Like: User {} Post {}", user.getId(), post.getId());
@@ -72,10 +89,22 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void editPost(Post post, String newBody) {
+    public void editPost(User editor, Post post, String newBody) throws MissingPostEditPermissionException, IllegalPostEditionException {
         Objects.requireNonNull(newBody);
 
+        guaranteePostEditionPermissions(editor, post);
+
         post.setBody(newBody.trim());
+    }
+
+    @Override
+    public void guaranteePostEditionPermissions(User editor, Post post) throws IllegalPostEditionException, MissingPostEditPermissionException {
+
+        if(!post.isEnabled())
+            throw new IllegalPostEditionException();
+
+        if(!editor.equals(post.getUser()))
+            throw new MissingPostEditPermissionException();
     }
 
     @Transactional(readOnly = true)

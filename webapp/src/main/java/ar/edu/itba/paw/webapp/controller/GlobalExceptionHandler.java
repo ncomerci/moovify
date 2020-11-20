@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidMovieIdException;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.InvalidPaginationArgumentException;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.webapp.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,7 +145,6 @@ public class GlobalExceptionHandler {
         return mv;
     }
 
-
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidMovieIdException.class)
     public ModelAndView handleInvalidMovieId() {
@@ -275,6 +275,62 @@ public class GlobalExceptionHandler {
         mv.addObject("code", "400" );
 
         LOGGER.error("RestoredEnabledModelException was thrown. Responding with Http Status 400");
+
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalUserFollowException.class)
+    public ModelAndView handleIllegalUserFollow() {
+
+        final ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.illegalUserFollowException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "400" );
+
+        LOGGER.error("IllegalUserFollowException was thrown. Responding with Http Status 400");
+
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalUserUnfollowException.class)
+    public ModelAndView handleIllegalUserUnfollow() {
+
+        final ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.illegalUserUnfollowException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "400" );
+
+        LOGGER.error("IllegalUserUnfollowException was thrown. Responding with Http Status 400");
+
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalCommentEditionException.class)
+    public ModelAndView handleIllegalCommentEdition() {
+
+        final ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.illegalCommentEditionException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "400" );
+
+        LOGGER.error("IllegalCommentEditionException was thrown. Responding with Http Status 400");
+
+        return mv;
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalPostEditionException.class)
+    public ModelAndView handleIllegalPostEdition() {
+
+        final ModelAndView mv = new ModelAndView("errorView");
+
+        mv.addObject("message", messageSource.getMessage("error.illegalPostEditionException",null, LocaleContextHolder.getLocale()) );
+        mv.addObject("code", "400" );
+
+        LOGGER.error("IllegalPostEditionException was thrown. Responding with Http Status 400");
 
         return mv;
     }

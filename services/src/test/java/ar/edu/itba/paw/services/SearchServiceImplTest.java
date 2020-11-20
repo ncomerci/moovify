@@ -77,7 +77,7 @@ public class SearchServiceImplTest {
                 Mockito.isA(PostDao.SortCriteria.class),
                 Mockito.intThat(e -> e >= 0),
                 Mockito.intThat(e -> e > 0))
-        ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
+        ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT));
 
         Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(QUERY, POST_CATEGORY, null, null, PAGE_NUMBER, PAGE_SIZE);
 
