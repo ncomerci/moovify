@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 
@@ -96,7 +97,7 @@ public class AdminController {
     //    ================ COMMENTS PRIVILEGES ================
 
     @RequestMapping(path = "/comment/delete/{commentId}", method = RequestMethod.POST)
-    public ModelAndView deleteComment(@PathVariable final long commentId) {
+    public ModelAndView deleteComment(@PathVariable final long commentId, HttpServletRequest request) {
 
         LOGGER.info("Accessed /comment/delete/{} to delete comment. Redirecting to /comment/{}", commentId, commentId);
 
@@ -104,7 +105,7 @@ public class AdminController {
 
         commentService.deleteComment(comment);
 
-        return new ModelAndView("redirect:/comment/" + comment.getId());
+        return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-" + comment.getId());
     }
 
     @RequestMapping(path = "/comment/restore/{commentId}", method = RequestMethod.POST)

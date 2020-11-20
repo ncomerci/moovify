@@ -101,8 +101,6 @@ public class GlobalExceptionHandler {
         return mv;
     }
 
-
-
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(MissingPostEditPermissionException.class)
     public ModelAndView handleMissingPostEditPermission() {

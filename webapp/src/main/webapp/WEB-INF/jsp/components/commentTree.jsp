@@ -16,6 +16,7 @@
 
         <li class="uk-margin-remove">
             <div id="${comment.id}">
+                <a class="anchor" id="comment-${comment.id}" ></a>
                 <article class="uk-comment uk-visible-toggle" tabindex="-1">
                     <header class="uk-comment-header uk-position-relative uk-margin-remove">
                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
@@ -133,9 +134,6 @@
                             <c:when test="${not empty loggedUser and loggedUser.admin}">
                                 <div class="uk-text-italic"><c:out value="[${comment.user.username}: ${comment.body}]"/></div>
                             </c:when>
-                            <c:otherwise>
-                                <div class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></div>
-                            </c:otherwise>
                         </c:choose>
                     </div>
                 </article>

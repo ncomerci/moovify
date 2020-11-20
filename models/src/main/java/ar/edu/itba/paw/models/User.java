@@ -19,8 +19,8 @@ public class User {
 
     public static final long DEFAULT_AVATAR_ID = 0;
 
-    public static boolean userHasFavedPost(User user, Post post) {
-        return user.isPostFavourite(post);
+    public static boolean hasUserBookmarkedPost(User user, Post post) {
+        return user.isPostBookmarked(post);
     }
 
     static public boolean hasUserFollowed(User user, User followedUser) {
@@ -259,7 +259,7 @@ public class User {
         return favouritePosts;
     }
 
-    public boolean isPostFavourite(Post post) {
+    public boolean isPostBookmarked(Post post) {
         return favouritePosts.contains(post);
     }
 

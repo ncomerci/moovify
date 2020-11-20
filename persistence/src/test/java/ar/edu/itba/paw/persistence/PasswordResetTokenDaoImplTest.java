@@ -27,7 +27,8 @@ import java.util.Optional;
 @Transactional
 public class PasswordResetTokenDaoImplTest {
 
-    private static final long USER_ID = 1L;
+    private static final long USER1_ID = InsertHelper.USER1_ID;
+    private static final long USER2_ID = InsertHelper.USER2_ID;
     private static final long TOKEN_ID = 1L;
     private static final String TOKEN = "XeRUE6wVBX8D8ETYLghHN44VBLcvSIJrtSNJwsGjxMGbArkljlgKPtw1auDsbPKmuPAuJNRLHghP2coHhJe2XkBqlqElp3XIWXttR453gGH3KWq0kVLJo6zPHvHNq8isU6AyQUNqE1tEkiA7labxfr345f2VDnj7QxjsVIMrfHco00H5HM5STlGxIWNQp6kzixCklaId4v9BHx6wYgSLbuixTOk37l9BLpsrja7Bue9RIo6tsDpIQPM0fv";
     private static final String INVALID_TOKEN = "Invalid Token";
@@ -44,7 +45,6 @@ public class PasswordResetTokenDaoImplTest {
 
     private JdbcTemplate jdbcTemplate;
 
-
     @Before
     public void testSetUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
@@ -57,14 +57,14 @@ public class PasswordResetTokenDaoImplTest {
         // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, UserVerificationToken.TABLE_NAME);
 
-        User user = em.find(User.class, USER_ID);
+        User user = em.find(User.class, USER1_ID);
 
         // Exercise
         PasswordResetToken passwordRT = passwordResetTokenDao.createPasswordResetToken(TOKEN, EXPIRATORY_DATE, user);
 
         em.flush();
 
-        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PasswordResetToken.TABLE_NAME, String.format("user_id = %d", USER_ID));
+        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PasswordResetToken.TABLE_NAME, String.format("user_id = %d", USER1_ID));
 
         // Post conditions
         Assert.assertEquals(1, count);
@@ -77,8 +77,10 @@ public class PasswordResetTokenDaoImplTest {
     @Sql("classpath:password-reset-token.sql")
     public void testGetVerificationToken() {
 
+        // Exercise
         Optional<PasswordResetToken> passwordRT = passwordResetTokenDao.getResetPasswordToken(TOKEN);
 
+        // Post conditions
         Assert.assertTrue(passwordRT.isPresent());
         Assert.assertEquals(TOKEN, passwordRT.get().getToken());
     }
@@ -88,8 +90,10 @@ public class PasswordResetTokenDaoImplTest {
     @Sql("classpath:password-reset-token.sql")
     public void testGetVerificationTokenWithInvalidToken() {
 
+        // Exercise
         Optional<PasswordResetToken> passwordRT = passwordResetTokenDao.getResetPasswordToken(INVALID_TOKEN);
 
+        // Post conditions
         Assert.assertFalse(passwordRT.isPresent());
     }
 
@@ -98,10 +102,13 @@ public class PasswordResetTokenDaoImplTest {
     @Sql("classpath:password-reset-token.sql")
     public void testFindVerificationTokenByUser() {
 
-        User user = em.find(User.class, USER_ID);
+        // Pre conditions
+        User user = em.find(User.class, USER1_ID);
 
+        // Exercise
         Optional<PasswordResetToken> passwordRT = passwordResetTokenDao.findPasswordTokenByUser(user);
 
+        // Post conditions
         Assert.assertTrue(passwordRT.isPresent());
         Assert.assertEquals(TOKEN, passwordRT.get().getToken());
         Assert.assertEquals(user, passwordRT.get().getUser());
@@ -109,16 +116,19 @@ public class PasswordResetTokenDaoImplTest {
 
     @Test
     @Sql("classpath:user1.sql")
+    @Sql("classpath:user2.sql")
     @Sql("classpath:password-reset-token.sql")
     public void testFindVerificationTokenByInvalidUser() {
 
-        User user = ModelHelper.getHelperInvalidUser();
+        // Pre conditions
+        User user = em.find(User.class, USER2_ID);
 
+        // Post conditions
         Optional<PasswordResetToken> passwordRT = passwordResetTokenDao.findPasswordTokenByUser(user);
 
+        // Post conditions
         Assert.assertFalse(passwordRT.isPresent());
     }
-
 
     @Test
     @Sql("classpath:user1.sql")
@@ -133,7 +143,7 @@ public class PasswordResetTokenDaoImplTest {
 
         em.flush();
 
-        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PasswordResetToken.TABLE_NAME, String.format("user_id = %d", USER_ID));
+        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PasswordResetToken.TABLE_NAME, String.format("user_id = %d", USER1_ID));
 
         // Post conditions
         Assert.assertEquals(0, count);

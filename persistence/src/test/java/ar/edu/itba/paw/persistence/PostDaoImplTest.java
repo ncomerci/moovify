@@ -1,15 +1,16 @@
 package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.Movie;
+import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -20,9 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -41,28 +41,19 @@ public class PostDaoImplTest {
     private static final int UP_VOTE = 1;
     private static final int DOWN_VOTE = -1;
 
-    private static final long USER_ID = 1L;
-    private static final long USER_ID2 = 2L;
-    private static final long USER_ID3 = 3L;
-    private static final User USER_MOCK = Mockito.when(Mockito.mock(User.class).getId()).thenReturn(USER_ID).getMock();
+    private static final long USER1_ID = InsertHelper.USER1_ID;
+    private static final long USER_ID2 = InsertHelper.USER2_ID;
+    private static final long USER_ID3 = InsertHelper.USER3_ID;
 
     private static final long CATEGORY_ID = 1;
     private static final String CATEGORY_NAME = "watchlist";
     private static final long CATEGORY_ID2 = 2L;
-    private static final PostCategory CATEGORY = Mockito.when(Mockito.mock(PostCategory.class).getId()).thenReturn(CATEGORY_ID).getMock();
 
-    private static final Set<String> TAGS = Collections.singleton("Tag");
-
-    private static final long MOVIE_ID = 1L;
-    private static final long MOVIE_ID2 = 2L;
-    private static final Set<Long> MOVIES = Collections.singleton(1L);
-
-    private static long postIdCount = 0;
-    private static long postLikeIdCount = 0;
+    private static final long MOVIE1_ID = 1L;
+    private static final long MOVIE2_ID = 2L;
 
     private static final int INVALID_PAGE_NUMBER = -1;
     private static final int INVALID_PAGE_SIZE = 0;
-    private static final Movie MOVIE_MOCK = Mockito.when(Mockito.mock(Movie.class).getId()).thenReturn(MOVIE_ID).getMock();
 
     @Autowired
     private PostDaoImpl postDao;
@@ -75,20 +66,12 @@ public class PostDaoImplTest {
 
     private JdbcTemplate jdbcTemplate;
 
-    private SimpleJdbcInsert postInsert;
-    private SimpleJdbcInsert postMovieInsert;
-    private SimpleJdbcInsert postLikeInsert;
+    private InsertHelper helper;
 
     @Before
     public void testSetUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
-        this.postInsert = new SimpleJdbcInsert(ds)
-                .withTableName(Post.TABLE_NAME);
-
-        this.postMovieInsert = new SimpleJdbcInsert(ds)
-                .withTableName(Post.POST_MOVIE_TABLE_NAME);
-
-        this.postLikeInsert = new SimpleJdbcInsert(ds).withTableName(PostLike.TABLE_NAME);
+        this.helper = new InsertHelper(jdbcTemplate);
     }
 
 //    @Rollback
@@ -132,7 +115,7 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        final long postId = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long postId = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final Optional<Post> post = postDao.findPostById(postId);
 
@@ -156,16 +139,18 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        final long post1 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostMovie(post1, MOVIE_ID);
-        final long post2 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostMovie(post2, MOVIE_ID2);
-        final long post3 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostMovie(post3, MOVIE_ID);
-        final long post4 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostMovie(post4, MOVIE_ID2);
+        final long post1 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPostMovie(post1, MOVIE1_ID);
+        final long post2 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPostMovie(post2, MOVIE2_ID);
+        final long post3 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPostMovie(post3, MOVIE1_ID);
+        final long post4 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPostMovie(post4, MOVIE2_ID);
 
-        final PaginatedCollection<Post> posts = postDao.findPostsByMovie(MOVIE_MOCK, DEFAULT_SORT_CRITERIA, 0, 2);
+        Movie movie = em.find(Movie.class, MOVIE1_ID);
+
+        final PaginatedCollection<Post> posts = postDao.findPostsByMovie(movie, DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(2, posts.getTotalCount());
     }
@@ -178,12 +163,14 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost(TITLE, USER_ID2, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost(TITLE, USER_ID2, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER_ID2, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER_ID2, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
-        final PaginatedCollection<Post> posts = postDao.findPostsByUser(USER_MOCK, DEFAULT_SORT_CRITERIA, 0, 2);
+        User user = em.find(User.class, USER1_ID);
+
+        final PaginatedCollection<Post> posts = postDao.findPostsByUser(user, DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(2, posts.getTotalCount());
     }
@@ -200,10 +187,10 @@ public class PostDaoImplTest {
         // Requires users with ID 1, 2 and 3.
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        final long post1 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post2 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post3 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post4 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post1 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post2 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post3 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post4 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.NEWEST, 1, 2);
 
@@ -219,10 +206,10 @@ public class PostDaoImplTest {
         //Requires users with ID 1, 2 and 3.
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        final long post1 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post2 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post3 = insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post4 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post1 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post2 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post3 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post4 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.OLDEST, 1, 2);
 
@@ -240,18 +227,18 @@ public class PostDaoImplTest {
         //Requires users with ID 1, 2 and 3.
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        final long post1 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostLike(post1, USER_ID, UP_VOTE);
-        insertPostLike(post1, USER_ID2, UP_VOTE);
-        final long post2 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostLike(post2, USER_ID, UP_VOTE);
-        insertPostLike(post2, USER_ID2, UP_VOTE);
-        insertPostLike(post2, USER_ID3, UP_VOTE);
-        final long post3 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPostLike(post3, USER_ID, UP_VOTE);
-        insertPostLike(post3, USER_ID2, DOWN_VOTE);
-        insertPostLike(post3, USER_ID3, DOWN_VOTE);
-        final long post4 = insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post1 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPostLike(post1, USER1_ID, UP_VOTE);
+        helper.insertPostLike(post1, USER_ID2, UP_VOTE);
+        final long post2 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPostLike(post2, USER1_ID, UP_VOTE);
+        helper.insertPostLike(post2, USER_ID2, UP_VOTE);
+        helper.insertPostLike(post2, USER_ID3, UP_VOTE);
+        final long post3 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPostLike(post3, USER1_ID, UP_VOTE);
+        helper.insertPostLike(post3, USER_ID2, DOWN_VOTE);
+        helper.insertPostLike(post3, USER_ID3, DOWN_VOTE);
+        final long post4 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.HOTTEST, 1, 2);
 
@@ -266,10 +253,10 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.NEWEST, 10, 10);
 
@@ -284,10 +271,10 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.NEWEST, 0, 2);
 
@@ -309,10 +296,10 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        insertPost(TITLE, USER_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost(TITLE, USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.getDeletedPosts(PostDao.SortCriteria.NEWEST, 0, 2);
 
@@ -334,10 +321,10 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        insertPost("Title", USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost("Titulito", USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost("Tetle", USER_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost("Nombre", USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost("Title", USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost("Titulito", USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost("Tetle", USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost("Nombre", USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.searchPosts("Tit", DEFAULT_SORT_CRITERIA, 0, 2);
 
@@ -358,10 +345,10 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        insertPost("Title", USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        insertPost("Titulito", USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost("Tetle", USER_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        insertPost("Nombre", USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost("Title", USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
+        helper.insertPost("Titulito", USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost("Tetle", USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
+        helper.insertPost("Nombre", USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.searchPosts("Tit", DEFAULT_SORT_CRITERIA, 0, 2);
 
@@ -381,10 +368,10 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        insertPost("Title", USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost("Titulito", USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID2, WORD_COUNT, BODY, ENABLE);
-        insertPost("Tetle", USER_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        insertPost("Nombre", USER_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost("Title", USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost("Titulito", USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID2, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost("Tetle", USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        helper.insertPost("Nombre", USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.searchPostsByCategory("Tit", CATEGORY_NAME, DEFAULT_SORT_CRITERIA, 0, 2);
 
@@ -404,10 +391,10 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        final long post1 = insertPost("Title", USER_ID, CREATION_DATE.minusHours(15), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post2 = insertPost("Titulito", USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post3 = insertPost("Tetle", USER_ID, CREATION_DATE.minusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post4 = insertPost("Nombre", USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post1 = helper.insertPost("Title", USER1_ID, CREATION_DATE.minusHours(15), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post2 = helper.insertPost("Titulito", USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post3 = helper.insertPost("Tetle", USER1_ID, CREATION_DATE.minusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post4 = helper.insertPost("Nombre", USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.searchPostsOlderThan("Tit", CREATION_DATE, DEFAULT_SORT_CRITERIA, 0, 2);
 
@@ -429,10 +416,10 @@ public class PostDaoImplTest {
 
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
 
-        final long post1 = insertPost("Title", USER_ID, CREATION_DATE.minusHours(15), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post2 = insertPost("Titulito", USER_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post3 = insertPost("Nombre", USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        final long post4 = insertPost("Tittle", USER_ID, CREATION_DATE.plusHours(10), CATEGORY_ID2, WORD_COUNT, BODY, ENABLE);
+        final long post1 = helper.insertPost("Title", USER1_ID, CREATION_DATE.minusHours(15), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post2 = helper.insertPost("Titulito", USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post3 = helper.insertPost("Nombre", USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
+        final long post4 = helper.insertPost("Tittle", USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID2, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.searchPostsByCategoryAndOlderThan("Tit", CATEGORY_NAME,
                 CREATION_DATE, DEFAULT_SORT_CRITERIA, 0, 2);
@@ -447,51 +434,4 @@ public class PostDaoImplTest {
 
         postDao.searchPostsByCategoryAndOlderThan(null, null, null, null, INVALID_PAGE_NUMBER, INVALID_PAGE_SIZE);
     }
-
-    // ===========================================================
-
-    private long insertPost(String title, long userId, LocalDateTime creationDate, long categoryId, int wordCount, String body, boolean enable) {
-
-        final long postId = postIdCount++;
-
-        Map<String, Object> postMap = new HashMap<>();
-        postMap.put("post_id", postId);
-        postMap.put("body", body);
-        postMap.put("creation_date", Timestamp.valueOf(creationDate));
-        postMap.put("edited", false);
-        postMap.put("enabled", enable);
-        postMap.put("last_edited", null);
-        postMap.put("title", title);
-        postMap.put("word_count", wordCount);
-        postMap.put("category_id", categoryId);
-        postMap.put("user_id", userId);
-
-        postInsert.execute(postMap);
-
-        return postId;
-
-    }
-
-    private void insertPostMovie(long postId, long movieId) {
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("post_id", postId);
-        map.put("movie_id", movieId);
-
-        postMovieInsert.execute(map);
-    }
-
-    private void insertPostLike(long postId, long userId, int value) {
-
-        final long id = postLikeIdCount++;
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("post_likes_id", id);
-        map.put("post_id", postId);
-        map.put("user_id", userId);
-        map.put("value", value);
-
-        postLikeInsert.execute(map);
-    }
-
 }
