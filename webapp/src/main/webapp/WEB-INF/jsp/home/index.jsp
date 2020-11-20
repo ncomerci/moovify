@@ -20,8 +20,8 @@
 <sec:authorize access="!isAuthenticated()">
 <div class="uk-height-large uk-background-cover uk-overflow-hidden uk-flex uk-flex-top uk-background-fixed" uk-parallax="bgy: -50" style="background-image: url(<c:url value="/resources/images/banner.jpg"/>);">
     <div class="uk-width-1-2@m uk-text-center uk-margin-auto uk-margin-auto-vertical">
-        <h1 class="m-text-white uk-text-bold" uk-parallax="opacity: 0,8; y: -100,0; scale: 2,1; viewport: 0.2;"><spring:message code="index.slogan"/></h1>
-        <h1 class="m-text-white uk-text-bold" uk-parallax="opacity: 0,8; y: 100,0; scale: 1,1; viewport: 0.3;"><spring:message code="index.welcome"/></h1>
+        <h1 class="m-text-white uk-text-bold uk-animation-scale-up"><spring:message code="index.slogan"/></h1>
+        <h1 class="m-text-white uk-text-bold" uk-parallax="opacity: 0,8; y: 100,0; scale: 1,1; viewport: 0.2;"><spring:message code="index.welcome"/></h1>
     </div>
 </div>
 </sec:authorize>

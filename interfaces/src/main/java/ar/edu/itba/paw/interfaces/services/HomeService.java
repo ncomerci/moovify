@@ -12,5 +12,5 @@ public interface HomeService {
 
     PaginatedCollection<Post> getFollowedUsersPosts(User user, int pageNumber, int pageSize);
 
-    PaginatedCollection<User> getHottestUsers(int pageNumber, int pageSize);
+    PaginatedCollection<User> getHottestUsers();
 }
