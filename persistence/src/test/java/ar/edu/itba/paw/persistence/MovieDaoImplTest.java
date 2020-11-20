@@ -113,7 +113,7 @@ public class MovieDaoImplTest {
     @Test
     public void testFindMovieById() {
 //        1. precondiciones
-        long id = movieIdCount++;
+        long id = ++movieIdCount;
 
         MOVIE_ROW.put("movie_id", id);
         movieJdbcInsert.execute(MOVIE_ROW);
@@ -170,7 +170,7 @@ public class MovieDaoImplTest {
 //        1. precondiciones
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Movie.TABLE_NAME);
 
-        long id = movieIdCount++;
+        long id = ++movieIdCount;
 
         MOVIE_ROW.put("movie_id", id);
 
@@ -184,7 +184,7 @@ public class MovieDaoImplTest {
             MOVIE_ROW.put("tmdb_id", aux_ids[i]);
             MOVIE_ROW.put("imdb_id", String.format("%d", aux_ids[i]));
 
-            ids[i] = movieIdCount++;
+            ids[i] = ++movieIdCount;
             MOVIE_ROW.put("movie_id", ids[i]);
              movieJdbcInsert.execute(MOVIE_ROW);
 
@@ -460,7 +460,7 @@ public class MovieDaoImplTest {
 
         Map<String, Object> map = new HashMap<>();
 
-        final long id = movieIdCount++;
+        final long id = ++movieIdCount;
 
         map.put("movie_id", id);
         map.put("creation_date", Timestamp.valueOf(LocalDateTime.of(2020,8,6,12,16)));
