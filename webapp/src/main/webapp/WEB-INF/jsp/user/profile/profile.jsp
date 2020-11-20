@@ -43,7 +43,7 @@
         <div class="uk-width-2-3@m uk-padding-remove">
             <h3 class="uk-card-title uk-margin-remove-bottom userTitle">
                 <c:out value="${loggedUser.username}"/>
-                <a uk-icon="icon: pencil; ratio: 1.2"  data-inline="false" uk-toggle="target: #edit-username-modal"></a>
+                <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1"  data-inline="false" uk-toggle="target: #edit-username-modal"></a>
             </h3>
             <p class="uk-text-meta uk-margin-remove-top">
                 <fmt:parseDate value="${loggedUser.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
@@ -54,7 +54,7 @@
             <ul class="uk-list uk-list-bullet">
                 <li class="userTitle">
                     <spring:message code="user.profile.Name" arguments="${loggedUser.name}"/>
-                    <a uk-icon="icon: pencil; ratio: 1.2"  data-inline="false" uk-toggle="target: #edit-name-modal"></a>
+                    <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1"  data-inline="false" uk-toggle="target: #edit-username-modal"></a>
                 </li>
                 <li class="userTitle"><spring:message code="user.profile.Email" arguments="${loggedUser.email}"/></li>
                 <c:if test="${loggedUser.admin}" >
@@ -68,7 +68,7 @@
                 <c:if test="${fn:length(loggedUser.description) != 0}">
                     <li class="userTitle m-long-text">
                         <spring:message code="user.profile.Description" arguments="${loggedUser.description}"/>
-                        <a uk-icon="icon: pencil; ratio: 1.2"  data-inline="false" uk-toggle="target: #edit-description-modal"></a></li>
+                        <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1"  data-inline="false" uk-toggle="target: #edit-description-modal"></a></li>
                 </c:if>
             </ul>
             <c:if test="${loggedUser.validated}">
@@ -152,11 +152,14 @@
 <div id="edit-name-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
         <h2 class="uk-modal-title"><spring:message code="user.profile.edit.name"/></h2>
+        <span class="uk-text-normal uk-text-italic uk-text-bold"><spring:message code="user.profile.edit.name.meta"/> </span>
         <p id="edit-user-name-error" class="error"></p>
         <div class="uk-flex">
-            <input id="edit-name-modal-input"
-                   class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
-                    value="<c:out value="${loggedUser.name}"/>"/>
+            <label>
+                <input id="edit-name-modal-input"
+                       class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+                       value="<c:out value="${loggedUser.name}"/>"/>
+            </label>
             <button id="edit-name-modal-submit" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
                     type="button"><spring:message code="user.profile.edit.submit.button"/></button>
         </div>
@@ -167,11 +170,14 @@
 <div id="edit-username-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
         <h2 class="uk-modal-title"><spring:message code="user.profile.edit.username"/></h2>
+        <span class="uk-text-normal uk-text-italic uk-text-bold"><spring:message code="user.profile.edit.username.meta"/> </span>
         <p id="edit-user-username-error" class="error"></p>
         <div class="uk-flex">
-            <input id="edit-username-modal-input"
-                   class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
-                   value="<c:out value="${loggedUser.username}"/>"/>
+            <label>
+                <input id="edit-username-modal-input"
+                       class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+                       value="<c:out value="${loggedUser.username}"/>"/>
+            </label>
             <button id="edit-username-modal-submit" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
                     type="button"><spring:message code="user.profile.edit.submit.button"/></button>
         </div>
@@ -182,10 +188,13 @@
 <div id="edit-description-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
         <h2 class="uk-modal-title"><spring:message code="user.profile.edit.description"/></h2>
+        <span class="uk-text-normal uk-text-italic uk-text-bold"><spring:message code="user.profile.edit.description.meta"/> </span>
         <p id="edit-user-description-error" class="error"></p>
         <div class="uk-flex">
+            <label>
             <textarea id="edit-description-modal-input"
-                   class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"><c:out value="${loggedUser.description}"/></textarea>
+                      class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"><c:out value="${loggedUser.description}"/></textarea>
+            </label>
             <button id="edit-description-modal-submit" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
                     type="button"><spring:message code="user.profile.edit.submit.button"/></button>
         </div>

@@ -59,6 +59,25 @@
 .red-button:focus {
     background-color: #900d0d;
 }
+.edit-icon-button:hover,
+.edit-icon-button:focus {
+    background: rgba(170, 170, 170, 0.55)
+}
+.edit-icon-button {
+    box-sizing: border-box;
+    width: 32px;
+    height: 32px;
+    border-radius: 400px;
+    background: rgba(170, 170, 170, 0.25);
+    color: #fa8a32;
+    vertical-align: middle;
+    /* 1 */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.1s ease-in-out;
+    transition-property: color, background-color;
+}
 
 .circle {
     display: block;

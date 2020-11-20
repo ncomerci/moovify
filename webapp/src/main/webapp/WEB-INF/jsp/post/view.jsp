@@ -90,7 +90,7 @@
             <c:choose>
                 <c:when test="${post.user.enabled}">
                     <a href="<c:url value="/user/${post.user.id}"/>">
-                        <c:out value="${post.user.name}"/>
+                        <c:out value="${post.user.username}"/>
                         <c:if test="${post.user.admin}">
                             <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
                         </c:if>
