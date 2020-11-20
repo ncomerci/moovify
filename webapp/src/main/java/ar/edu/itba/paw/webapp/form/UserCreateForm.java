@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.form;
 
 import ar.edu.itba.paw.webapp.form.annotations.Avatar;
 import ar.edu.itba.paw.webapp.form.annotations.MatchingPasswords;
+import ar.edu.itba.paw.webapp.form.annotations.SpacesNormalization;
 import ar.edu.itba.paw.webapp.form.annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -23,7 +24,8 @@ public class UserCreateForm implements MatchingPasswordForm {
 
     private String repeatPassword;
 
-    @Pattern(regexp = "[a-zA-Z]+")
+    @Pattern(regexp = "[a-zA-Z ]+")
+    @SpacesNormalization
     @Size(min = 2, max = 50)
     private String name;
 
