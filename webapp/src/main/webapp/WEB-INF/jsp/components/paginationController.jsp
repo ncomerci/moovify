@@ -17,10 +17,11 @@
             <spring:message code="paginationController.pageSize.message"/>
         </label>
         <select id="pagination-page-size" name="pageSize" class="uk-select uk-form-blank uk-width-expand">
-            <option <c:out value="${ collection.pageSize == 2 ? 'selected' : ''}"/> label="2" value="2">2</option>
-            <option <c:out value="${ collection.pageSize == 5 ? 'selected' : ''}"/> label="5" value="5">5</option>
-            <option <c:out value="${ collection.pageSize == 10 ? 'selected' : ''}"/> label="10" value="10">10</option>
-            <option <c:out value="${ collection.pageSize == 25 ? 'selected' : ''}"/> label="25" value="25">25</option>
+            <option <c:out value="${ collection.pageSize == 2 ? 'selected' : ''}"/> label="2" value="2"><c:out value="2"/></option>
+            <option <c:out value="${ collection.pageSize == 5 ? 'selected' : ''}"/> label="5" value="5"><spring:message code="paginationController.pageSize.five"/></option>
+            <option <c:out value="${ collection.pageSize == 10 ? 'selected' : ''}"/> label="10" value="10"><spring:message code="paginationController.pageSize.ten"/></option>
+            <option <c:out value="${ collection.pageSize == 25 ? 'selected' : ''}"/> label="25" value="25"><spring:message code="paginationController.pageSize.twentyfive"/></option>
+            <option <c:out value="${ collection.pageSize == 35 ? 'selected' : ''}"/> label="35" value="35"><c:out value="35"/></option>
         </select>
     </div>
     <ul id="pagination-page-selector" class="uk-width-expand uk-pagination uk-flex-center" uk-margin>

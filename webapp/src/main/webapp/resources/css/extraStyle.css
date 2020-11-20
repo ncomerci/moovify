@@ -59,6 +59,22 @@
 .red-button:focus {
     background-color: #900d0d;
 }
+
+.small-iconify {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.iconify {
+    width: 32px;
+    height: 32px;
+}
+
+.small {
+    font-size: 16px;
+    line-height: 20px;
+}
+
 .edit-icon-button:hover,
 .edit-icon-button:focus {
     background: rgba(170, 170, 170, 0.55)
