@@ -298,7 +298,7 @@ public class UserDaoTest {
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, USERS, "username = ?", username);
         HashMap<String, Object> map = new HashMap<>();
 
-        long id = userIdCount++;
+        long id = ++userIdCount;
 
         map.put("user_id", id);
         map.put("creation_date", creationDate);
@@ -323,7 +323,7 @@ public class UserDaoTest {
 
     private long insertPost(long user_id){
 
-        final long postId = postIdCount++;
+        final long postId = ++postIdCount;
 
         Map<String, Object> postMap = new HashMap<>();
         postMap.put("post_id", postId);
@@ -350,7 +350,7 @@ public class UserDaoTest {
 
     private void insertPostLike(long postId, long userId, int value) {
 
-        long id = postLikeIdCount++;
+        long id = ++postLikeIdCount;
 
         Map<String, Object> map = new HashMap<>();
         map.put("post_likes_id", id);

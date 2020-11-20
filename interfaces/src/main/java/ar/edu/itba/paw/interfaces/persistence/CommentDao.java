@@ -17,6 +17,9 @@ public interface CommentDao {
 
     Optional<Comment> findCommentById(long id);
 
+    /**
+     * Get all direct children of a comment. Doesn't include sub children.
+     */
     PaginatedCollection<Comment> findCommentChildren(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> findCommentDescendants(Comment comment, long maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize);
