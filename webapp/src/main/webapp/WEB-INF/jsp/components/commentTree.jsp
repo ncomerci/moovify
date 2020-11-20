@@ -16,6 +16,7 @@
 
         <li class="uk-margin-remove">
             <div id="${comment.id}">
+                <a class="anchor" id="comment-${comment.id}" ></a>
                 <article class="uk-comment uk-visible-toggle" tabindex="-1">
                     <header class="uk-comment-header uk-position-relative uk-margin-remove">
                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>

@@ -21,7 +21,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -43,10 +42,8 @@ public class CommentController {
 
     @RequestMapping(path = "/comment/create",  method = RequestMethod.POST)
     public ModelAndView createComment(@Valid @ModelAttribute("commentCreateForm") final CommentCreateForm commentCreateForm,
-                             final BindingResult bindingResult, Principal principal, RedirectAttributes redirectAttributes,
+                             final BindingResult bindingResult, Principal principal,
                              final HttpServletRequest request) {
-
-        redirectAttributes.addFlashAttribute(commentCreateForm);
 
         if(!bindingResult.hasErrors()){
 
@@ -57,16 +54,18 @@ public class CommentController {
                     commentService.findCommentById(commentCreateForm.getParentId()).orElseThrow(CommentNotFoundException::new) :
                     null;
 
-            commentService.register(post, parent,
+            final Comment comment = commentService.register(post, parent,
                     commentCreateForm.getCommentBody(), user, "newCommentEmail");
 
-            LOGGER.info("Accessed /comment/create and Created Comment successfully. Redirecting to {}{}", request.getHeader("Referer"), "#comment-section");
-        }
-        else
-            LOGGER.warn("Accessed /comment/create and errors were found in creation form. Redirecting to {}{}", request.getHeader("Referer"), "#comment-section");
+            LOGGER.info("Accessed /comment/create and Created Comment successfully. Redirecting to {}#{}", request.getHeader("Referer"),  comment.getId());
 
-//        Goes back to the specific view that generated the request
-        return new ModelAndView("redirect:"+ request.getHeader("Referer") + "#comment-section");
+            return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-" + comment.getId());
+        }
+
+        else {
+            LOGGER.warn("Accessed /comment/create and errors were found in creation form. Redirecting to {}{}", request.getHeader("Referer"), "#comment-section");
+            return new ModelAndView("redirect:"+ request.getHeader("Referer") + "#comment-section");
+        }
     }
 
     @RequestMapping(path = "/comment/{id}", method = RequestMethod.GET)
@@ -126,6 +125,6 @@ public class CommentController {
 
         commentService.likeComment(comment, user, value);
 
-        return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-section");
+        return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-" + comment.getId());
     }
 }
