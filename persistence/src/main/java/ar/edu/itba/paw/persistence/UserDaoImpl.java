@@ -335,6 +335,11 @@ public class UserDaoImpl implements UserDao {
                 ((List<Number>)userIdsNativeQuery.getResultList())
                 .stream().map(Number::longValue).collect(Collectors.toList());
 
+        if(userIds.isEmpty()) {
+            LOGGER.debug("QueryUsers Empty Page");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalUsers);
+        }
+
         // Get Users Based on Ids
         final Collection<Tuple> fetchQueryResult = em.createQuery(fetchQuery, Tuple.class)
                 .setParameter("userIds", userIds)

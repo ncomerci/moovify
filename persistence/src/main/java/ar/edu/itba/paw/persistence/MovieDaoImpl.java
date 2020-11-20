@@ -274,6 +274,11 @@ public class MovieDaoImpl implements MovieDao {
                 ((List<Number>)movieIdsNativeQuery.getResultList())
                         .stream().map(Number::longValue).collect(Collectors.toList());
 
+        if(movieIds.isEmpty()) {
+            LOGGER.debug("QueryMovies Empty Page");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalMovies);
+        }
+
         // Get Movies Based on Ids
         final Collection<Tuple> fetchQueryResult = em.createQuery(fetchQuery, Tuple.class)
                 .setParameter("movieIds", movieIds)
