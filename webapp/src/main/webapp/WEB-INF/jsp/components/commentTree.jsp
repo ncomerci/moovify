@@ -134,9 +134,6 @@
                             <c:when test="${not empty loggedUser and loggedUser.admin}">
                                 <div class="uk-text-italic"><c:out value="[${comment.user.username}: ${comment.body}]"/></div>
                             </c:when>
-                            <c:otherwise>
-                                <div class="uk-text-italic"><spring:message code="comment.notEnabled.message"/></div>
-                            </c:otherwise>
                         </c:choose>
                     </div>
                 </article>
