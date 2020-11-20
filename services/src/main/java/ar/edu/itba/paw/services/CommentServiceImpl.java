@@ -3,6 +3,10 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MailService;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
+import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
@@ -61,7 +65,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void editComment(Comment comment, String newBody) {
+    public void editComment(User editor, Comment comment, String newBody) throws IllegalCommentEditionException, MissingCommentEditPermissionException {
+
+        if(!comment.isEnabled())
+            throw new IllegalCommentEditionException();
+
+        if(!editor.equals(comment.getUser()))
+            throw new MissingCommentEditPermissionException();
 
         comment.setBody(
                 newBody.trim().replaceAll("[ \t]+", " ")
@@ -72,7 +82,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void likeComment(Comment comment, User user, int value) {
+    public void likeComment(Comment comment, User user, int value) throws IllegalCommentLikeException {
+
+        if(!comment.isEnabled())
+            throw new IllegalCommentLikeException();
+
+        if(comment.getLikeValue(user) == value)
+            return;
 
         if(value == 0) {
             LOGGER.info("Delete Like: User {} Comment {}", user.getId(), comment.getId());
@@ -94,8 +110,13 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void restoreComment(Comment comment) {
+    public void restoreComment(Comment comment) throws RestoredEnabledModelException {
+
+        if(comment.isEnabled())
+            throw new RestoredEnabledModelException();
+
         LOGGER.info("Restore Comment {}", comment.getId());
+
         comment.setEnabled(true);
     }
 

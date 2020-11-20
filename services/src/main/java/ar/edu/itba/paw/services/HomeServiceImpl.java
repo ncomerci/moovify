@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.services;
 
-import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.services.HomeService;
@@ -11,8 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class HomeServiceImpl implements HomeService {
@@ -29,32 +27,29 @@ public class HomeServiceImpl implements HomeService {
     private static final PostDao.SortCriteria NEWEST_POST_SORT_CRITERIA = PostDao.SortCriteria.NEWEST;
     private static final UserDao.SortCriteria HOTTEST_USERS_SORT_CRITERIA = UserDao.SortCriteria.LIKES;
 
+    @Transactional(readOnly = true)
     @Override
-    public Optional<PaginatedCollection<Post>> getHottestPosts( int pageNumber, int pageSize) {
-
-        LOGGER.info("Search All Posts Order By {}. Page number {}, Page Size {}", HOTTEST_POST_SORT_CRITERIA, pageNumber, pageSize);
-
-        return Optional.of(postDao.getAllPosts(HOTTEST_POST_SORT_CRITERIA, pageNumber, pageSize));
+    public PaginatedCollection<Post> getHottestPosts( int pageNumber, int pageSize) {
+        return postDao.getAllPosts(HOTTEST_POST_SORT_CRITERIA, pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Optional<PaginatedCollection<Post>> getNewestPosts(int pageNumber, int pageSize) {
-        LOGGER.info("Search All Posts Order By {}. Page number {}, Page Size {}", NEWEST_POST_SORT_CRITERIA, pageNumber, pageSize);
-
-        return Optional.of(postDao.getAllPosts(NEWEST_POST_SORT_CRITERIA, pageNumber, pageSize));
+    public PaginatedCollection<Post> getNewestPosts(int pageNumber, int pageSize) {
+        return postDao.getAllPosts(NEWEST_POST_SORT_CRITERIA, pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Optional<PaginatedCollection<Post>> getFollowedUsersPosts(User user, int pageNumber, int pageSize) {
-        LOGGER.info("Search All Posts of {}'s followed users Order By {}. Page number {}, Page Size {}", user, NEWEST_POST_SORT_CRITERIA, pageNumber, pageSize);
+    public PaginatedCollection<Post> getFollowedUsersPosts(User user, int pageNumber, int pageSize) {
+        LOGGER.info("Search All Posts of {}'s followed users", user);
 
-        return Optional.of(postDao.getFollowedUsersPosts(user, NEWEST_POST_SORT_CRITERIA, pageNumber, pageSize));
+        return postDao.getFollowedUsersPosts(user, NEWEST_POST_SORT_CRITERIA, pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Optional<PaginatedCollection<User>> getHottestUsers(int pageNumber, int pageSize) {
-        LOGGER.info("Search All Users Order By {}. Page number {}, Page Size {}", HOTTEST_USERS_SORT_CRITERIA, pageNumber, pageSize);
-
-        return Optional.of(userDao.getAllUsers(HOTTEST_USERS_SORT_CRITERIA, pageNumber, pageSize));
+    public PaginatedCollection<User> getHottestUsers(int pageNumber, int pageSize) {
+        return userDao.getAllUsers(HOTTEST_USERS_SORT_CRITERIA, pageNumber, pageSize);
     }
 }

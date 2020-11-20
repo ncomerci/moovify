@@ -4,10 +4,15 @@ import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttr
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalUserFollowException;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalUserUnfollowException;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.exceptions.*;
+import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
+import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
 import ar.edu.itba.paw.webapp.form.UpdatePasswordForm;
 import ar.edu.itba.paw.webapp.form.UserCreateForm;
@@ -182,7 +187,6 @@ public class UserController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        mv.addObject("loggedUser", user);
         mv.addObject("posts", postService.findPostsByUser(user, pageNumber, pageSize));
 
         return mv;
@@ -204,7 +208,6 @@ public class UserController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        mv.addObject("loggedUser", user);
         mv.addObject("posts", postService.getUserFavouritePosts(user, pageNumber, pageSize));
 
         return mv;
@@ -225,7 +228,6 @@ public class UserController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        mv.addObject("loggedUser", user);
         mv.addObject("followedUsers", userService.getFollowedUsers(user, pageNumber, pageSize));
 
         return mv;
@@ -247,40 +249,37 @@ public class UserController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
-        mv.addObject("loggedUser", user);
         mv.addObject("comments", commentService.findCommentsByUser(user, pageNumber, pageSize));
 
         return mv;
     }
     @RequestMapping(path = "/user/follow/{userId}", method = RequestMethod.POST)
     public ModelAndView followUser(@PathVariable final long userId,
-                                   final Principal principal) {
+                                   final Principal principal) throws IllegalUserFollowException {
 
         LOGGER.info("Accessed /user/follow");
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
         final User followedUser = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
-        if(!followedUser.isEnabled())
-            throw new IllegalUserFollowException();
-
         userService.followUser(user, followedUser);
+
         return new ModelAndView("redirect:/user/" + userId);
     }
 
     @RequestMapping(path = "/user/unfollow/{userId}", method = RequestMethod.POST)
     public ModelAndView unfollowUser(@PathVariable final long userId,
-                                   final Principal principal) {
+                                   final Principal principal) throws IllegalUserUnfollowException {
 
         LOGGER.info("Accessed /user/follow");
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
         final User unfollowedUser = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
-        if(!unfollowedUser.isEnabled())
-            throw new IllegalUserUnfollowException();
-
         userService.unfollowUser(user, unfollowedUser);
+
         return new ModelAndView("redirect:/user/" + userId);
     }
 
@@ -289,6 +288,7 @@ public class UserController {
                                          final HttpServletRequest request, final Principal principal) {
 
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.addFavouritePost(user, post);
@@ -301,6 +301,7 @@ public class UserController {
                                             final HttpServletRequest request, final Principal principal) {
 
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
         userService.removeFavouritePost(user, post);
@@ -470,8 +471,6 @@ public class UserController {
 
         final ModelAndView mv = new ModelAndView("user/resetPassword/resetPasswordTokenGenerated");
 
-        mv.addObject("loggedUser", user);
-
         LOGGER.info("Password reset successful by User {} in /user/resetPassword", user.getId());
 
         return mv;
@@ -486,11 +485,7 @@ public class UserController {
 
         userService.createConfirmationEmail(user, "confirmEmail", request.getLocale());
 
-        final ModelAndView mv = new ModelAndView("user/confirmRegistration/resendConfirmation");
-
-        mv.addObject("loggedUser", user);
-
-        return mv;
+        return new ModelAndView("user/confirmRegistration/resendConfirmation");
     }
 
     @RequestMapping(path = "/user/updatePassword/token", method = RequestMethod.GET)
@@ -543,13 +538,9 @@ public class UserController {
 
         manualLogin(request, user.getUsername(), user.getPassword(), user.getRoles());
 
-        final ModelAndView mv = new ModelAndView("user/resetPassword/passwordResetSuccess");
-
-        mv.addObject("loggedUser", user);
-
         LOGGER.info("User {} resetted password successfully in /user/updatePassword", user.getId());
 
-        return mv;
+        return new ModelAndView("user/resetPassword/passwordResetSuccess");
     }
 
     @RequestMapping(path = "/user/avatar/{avatarId}", method = RequestMethod.GET, produces = "image/*")
