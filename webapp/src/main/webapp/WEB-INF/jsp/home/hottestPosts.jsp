@@ -78,7 +78,7 @@
                     </c:if>
                 </div>
             </div>
-            <div class="uk-width-1-4 uk-margin-auto">
+            <div class="uk-width-1-3 uk-margin-large-left uk-padding uk-padding-remove-top">
                 <h3 class="uk-margin-medium-top"><spring:message code="index.hottestUsers"/></h3>
                 <c:forEach items="${hottestUsers.results}" var="user">
                     <c:if test="${user.enabled}">
