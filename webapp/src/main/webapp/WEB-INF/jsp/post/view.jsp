@@ -62,13 +62,6 @@
                             </p>
                         </div>
                     </sec:authorize>
-                    <c:if test="${not empty loggedUser and loggedUser.validated and post.user.id == loggedUser.id}" >
-                        <div class="uk-margin-top uk-flex uk-flex-middle">
-                            <a href="<c:url value="/post/edit/${post.id}"/>">
-                                <span uk-icon="icon: pencil; ratio: 1.2"  data-inline="false"></span><spring:message code="post.view.edit"/>
-                            </a>
-                        </div>
-                    </c:if>
                 </div>
                 <div class="uk-flex uk-flex-between uk-margin-remove uk-margin-bottom" uk-grid>
                 <span id="post-author" class="uk-article-meta uk-align-right uk-margin-remove uk-padding-remove">
@@ -93,17 +86,28 @@
                     <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                     <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
                 </span>
-                    <span id="post-reading-time" class="uk-article-meta uk-align-right uk-margin-remove-bottom">
-                <span data-uk-icon="icon: future" class="uk-margin-small-right"></span>
-                    <spring:message code="post.view.minReading" arguments="${post.readingTimeMinutes}"/>
-                </span>
+                    <span>
+                    <c:if test="${not empty loggedUser and loggedUser.validated and post.user.id == loggedUser.id}" >
+                        <div class="uk-flex uk-flex-middle">
+                            <a href="<c:url value="/post/edit/${post.id}"/>">
+                                <span uk-icon="icon: pencil; ratio: 1.2"  data-inline="false"></span><spring:message code="post.view.edit"/>
+                            </a>
+                        </div>
+                    </c:if>
+                    </span>
                 </div>
-                <c:if test="${post.edited}">
+                <div class="uk-flex uk-flex-between uk-margin-remove uk-margin-bottom" uk-grid>
+                    <span id="post-reading-time" class="uk-article-meta uk-align-left uk-padding-remove uk-margin-remove-bottom">
+                        <span data-uk-icon="icon: future" class="uk-margin-small-right"></span>
+                        <spring:message code="post.view.minReading" arguments="${post.readingTimeMinutes}"/>
+                    </span>
+                    <c:if test="${post.edited}">
                     <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.lastEdited"/>
                             <fmt:parseDate value="${post.lastEditDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                             <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
                     </span>
-                </c:if>
+                    </c:if>
+                </div>
             </div>
         </div>
         <c:if test="${not empty loggedUser and loggedUser.validated}">
@@ -203,10 +207,14 @@
     </c:if>
 
     <form method="post" action="<c:url value="/user/favourite/posts/add"/>" id="add-bookmark-form">
-        <input hidden name="postId" type="number" value="${post.id}">
+        <label>
+            <input hidden name="postId" type="number" value="${post.id}">
+        </label>
     </form>
 
     <form method="post" action="<c:url value="/user/favourite/posts/remove"/>" id="remove-bookmark-form">
-        <input hidden name="postId" type="number" value="${post.id}">
+        <label>
+            <input hidden name="postId" type="number" value="${post.id}">
+        </label>
     </form>
 </c:if>
