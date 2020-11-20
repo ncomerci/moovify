@@ -54,7 +54,7 @@
             <ul class="uk-list uk-list-bullet">
                 <li class="userTitle">
                     <spring:message code="user.profile.Name" arguments="${loggedUser.name}"/>
-                    <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1"  data-inline="false" uk-toggle="target: #edit-username-modal"></a>
+                    <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1"  data-inline="false" uk-toggle="target: #edit-name-modal"></a>
                 </li>
                 <li class="userTitle"><spring:message code="user.profile.Email" arguments="${loggedUser.email}"/></li>
                 <c:if test="${loggedUser.admin}" >
@@ -155,11 +155,9 @@
         <span class="uk-text-normal uk-text-italic uk-text-bold"><spring:message code="user.profile.edit.name.meta"/> </span>
         <p id="edit-user-name-error" class="error"></p>
         <div class="uk-flex">
-            <label>
-                <input id="edit-name-modal-input"
-                       class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
-                       value="<c:out value="${loggedUser.name}"/>"/>
-            </label>
+            <input id="edit-name-modal-input"
+                   class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+                   value="<c:out value="${loggedUser.name}"/>"/>
             <button id="edit-name-modal-submit" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
                     type="button"><spring:message code="user.profile.edit.submit.button"/></button>
         </div>
@@ -173,11 +171,9 @@
         <span class="uk-text-normal uk-text-italic uk-text-bold"><spring:message code="user.profile.edit.username.meta"/> </span>
         <p id="edit-user-username-error" class="error"></p>
         <div class="uk-flex">
-            <label>
-                <input id="edit-username-modal-input"
-                       class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
-                       value="<c:out value="${loggedUser.username}"/>"/>
-            </label>
+            <input id="edit-username-modal-input"
+                   class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+                   value="<c:out value="${loggedUser.username}"/>"/>
             <button id="edit-username-modal-submit" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
                     type="button"><spring:message code="user.profile.edit.submit.button"/></button>
         </div>
@@ -191,10 +187,8 @@
         <span class="uk-text-normal uk-text-italic uk-text-bold"><spring:message code="user.profile.edit.description.meta"/> </span>
         <p id="edit-user-description-error" class="error"></p>
         <div class="uk-flex">
-            <label>
             <textarea id="edit-description-modal-input"
                       class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"><c:out value="${loggedUser.description}"/></textarea>
-            </label>
             <button id="edit-description-modal-submit" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
                     type="button"><spring:message code="user.profile.edit.submit.button"/></button>
         </div>
