@@ -67,3 +67,7 @@ ALTER TABLE posts ADD COLUMN last_edited TIMESTAMP default NULL;
 -- Edit Comment --
 ALTER TABLE comments ADD COLUMN edited BOOLEAN NOT NULL default false;
 ALTER TABLE comments ADD COLUMN last_edited TIMESTAMP default NULL;
+
+-- Movie Images --
+ALTER TABLE movies ADD COLUMN poster_id INTEGER default NULL;
+ALTER TABLE movies ADD CONSTRAINT fk_movie_poster FOREIGN KEY (poster_id) REFERENCES IMAGES (image_id);

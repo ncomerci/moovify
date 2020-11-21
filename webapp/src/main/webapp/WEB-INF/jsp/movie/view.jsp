@@ -14,6 +14,7 @@
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
     <article id="movie">
         <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-margin-remove-top"><c:out value="${movie.title}"/></h1>
+        <img src="<c:url value="/movie/poster/${movie.posterId}"/>"/>
         <hr class="uk-divider-icon">
         <p class="uk-article-meta"><spring:message code="movie.view.meta.releaseDate" arguments="${movie.releaseDate}"/></p>
         <p class="uk-article-meta"><spring:message code="movie.view.meta.popularity" arguments="${movie.popularity}"/></p>

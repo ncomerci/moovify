@@ -94,6 +94,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Movie Controller
                         // "/movies/{movieId}
                     .antMatchers("/movie/create").hasRole("ADMIN")
+                    .antMatchers("/movie/{movieId:[\\d]+}/poster/update").hasRole("ADMIN")
 
                     // Comment Controller
                         // "/comment/{commentId:[\\d]+}"

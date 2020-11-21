@@ -4,17 +4,19 @@ import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.MoviePosterNotFoundException;
+import ar.edu.itba.paw.webapp.form.UpdateMoviePosterForm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collection;
 
@@ -78,5 +80,43 @@ public class MovieController {
         mv.addObject("posts", postService.findPostsByMovie(movie, pageNumber, pageSize));
 
         return mv;
+    }
+
+    @RequestMapping(path = "/movie/{movieId}/poster/update", method = RequestMethod.GET)
+    public ModelAndView showUpdatePoster(@PathVariable final long movieId,
+                                         @ModelAttribute("updateMoviePosterForm") UpdateMoviePosterForm updateMoviePosterForm) {
+
+        LOGGER.info("Accessed /movie/{}/poster/update.", movieId);
+
+        final ModelAndView mv = new ModelAndView("movie/updatePoster");
+
+        mv.addObject(movieService.findMovieById(movieId).orElseThrow(MovieNotFoundException::new));
+
+        return mv;
+    }
+
+    @RequestMapping(path = "/movie/{movieId}/poster/update", method = RequestMethod.POST)
+    public ModelAndView updatePoster(@PathVariable final long movieId,
+                                     @ModelAttribute("updateMoviePosterForm") UpdateMoviePosterForm updateMoviePosterForm,
+                                     final BindingResult bindingResult) throws IOException {
+
+        if(bindingResult.hasErrors()) {
+            LOGGER.warn("Errors were found in the form updateMoviePosterForm updating movie poster in /movie/{}/poster/update", movieId);
+            return showUpdatePoster(movieId, updateMoviePosterForm);
+        }
+
+        final Movie movie = movieService.findMovieById(movieId).orElseThrow(MovieNotFoundException::new);
+
+        movieService.updatePoster(movie, updateMoviePosterForm.getPoster().getBytes());
+
+        return new ModelAndView("redirect:/movie/" + movie.getId());
+    }
+
+    @RequestMapping(path = "/movie/poster/{posterId}", method = RequestMethod.GET, produces = { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
+    public @ResponseBody
+    byte[] getPoster(@PathVariable long posterId) {
+
+        LOGGER.info("Accessed /movie/poster/{}", posterId);
+        return movieService.getPoster(posterId).orElseThrow(MoviePosterNotFoundException::new);
     }
 }

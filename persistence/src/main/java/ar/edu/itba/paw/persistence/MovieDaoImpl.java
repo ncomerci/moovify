@@ -88,7 +88,7 @@ public class MovieDaoImpl implements MovieDao {
     @Override
     public Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage, String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Set<MovieCategory> categories) {
 
-        final Movie movie = new Movie(LocalDateTime.now(), title, originalTitle, tmdbId, imdbId, originalLanguage, overview, popularity, runtime, voteAverage, releaseDate, Collections.emptySet(), categories);
+        final Movie movie = new Movie(LocalDateTime.now(), title, originalTitle, tmdbId, imdbId, originalLanguage, overview, popularity, runtime, voteAverage, releaseDate, null, Collections.emptySet(), categories);
 
         em.persist(movie);
 

@@ -10,10 +10,14 @@ import java.util.Optional;
 
 public interface MovieService {
 
-    Optional<Movie> findMovieById(long id);
-
     Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage,
                    String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Collection<Long> categories);
+
+    Optional<Movie> findMovieById(long id);
+
+    void updatePoster(Movie movie, byte[] newPoster);
+
+    Optional<byte[]> getPoster(long posterId);
 
     PaginatedCollection<Movie> getAllMovies(int pageNumber, int pageSize);
 
