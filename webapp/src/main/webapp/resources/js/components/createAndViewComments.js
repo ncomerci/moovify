@@ -4,7 +4,6 @@ window.addEventListener('load', () => {
 
     const commentLikeForm = document.forms['comment-like-form'];
 
-
     document.querySelectorAll(".like-comment-button")
         .forEach(button => {
                 button.addEventListener('click', () => likeComment(commentLikeForm, button.dataset.id, button.dataset.value), false)
@@ -17,9 +16,14 @@ window.addEventListener('load', () => {
         if(e.target !== replyForm && !replyForm.contains(e.target)) {
             const id = replyForm.elements['send-bt'].dataset.id;
             const replyToSave = replyForm.elements['textarea'].value;
-            if(id !== undefined && replyToSave !== "") {
-                localStorage.setItem(`comment-${id}`, JSON.stringify(replyToSave));
-                localStorageIds.push(id);
+            if(id !== undefined) {
+                if(replyToSave !== "") {
+                    localStorage.setItem(`comment-${id}`, JSON.stringify(replyToSave));
+                    localStorageIds.push(id);
+                }
+                else if(localStorage.getItem(`comment-${id}`)) {
+                    localStorage.removeItem(`comment-${id}`);
+                }
             }
 
             replyForm.classList.add('uk-hidden');
@@ -50,6 +54,19 @@ window.addEventListener('load', () => {
 
     document.querySelectorAll(".delete-comment-button")
         .forEach(button => button.addEventListener('click', () => deleteComment(button.dataset.id), false));
+
+    const commentBody = document.getElementById('commentBody');
+    const bodyCounter = document.getElementById('body-counter');
+    const submitBtn = document.getElementById('submitBtn');
+
+    commentBody.addEventListener('input', event => bodyLengthChecker(event, commentBody.dataset.maxlength, bodyCounter, submitBtn));
+
+    const replyBody = document.getElementById('textarea');
+    const replyCounter = document.getElementById('reply-counter');
+    const replyBtn = document.getElementById('send-bt');
+
+    replyBody.addEventListener('input', event => bodyLengthChecker(event, replyBody.dataset.maxlength, replyCounter, replyBtn))
+
 }, false);
 
 function likeComment(commentLikeForm, commentId, value){
@@ -111,4 +128,20 @@ function submitCommentDeleteForm(commentId) {
     const deleteForm = document.forms['delete-comment-form'];
     deleteForm.action += `comment/delete/${commentId}`;
     deleteForm.submit();
+}
+
+function bodyLengthChecker(event, bodyLength, bodyCounter, submitBtn) {
+    const currentLength = event.currentTarget.value.length;
+    bodyCounter.innerText = `${currentLength}/${bodyLength}`;
+
+    if(currentLength > bodyLength) {
+        bodyCounter.classList.remove('uk-text-muted');
+        bodyCounter.classList.add('uk-text-danger');
+        submitBtn.disabled = true;
+    }
+    else if(submitBtn.disabled) {
+        bodyCounter.classList.remove('uk-text-danger');
+        bodyCounter.classList.add('uk-text-muted');
+        submitBtn.disabled = false;
+    }
 }
