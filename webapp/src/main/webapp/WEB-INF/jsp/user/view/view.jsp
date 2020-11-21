@@ -52,7 +52,7 @@
             <h3 class="uk-card-title uk-margin-remove-bottom userTitle">
                 <c:out value="${user.username} "/>
                 <c:if test="${user.admin}">
-                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
                 </c:if>
             </h3>
             <p class="uk-text-meta uk-margin-remove-top">

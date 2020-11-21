@@ -42,7 +42,7 @@
                         <spring:message code="${post.category.name}" var="category"/>
                         <spring:message code="postDisplay.meta.description" arguments="${category}, ${name}"/>
                         <c:if test="${post.user.admin && post.user.enabled}">
-                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
                         </c:if>
                         <spring:message code="postDisplay.meta.votes" arguments="${post.totalLikes}"/>
                         <span uk-icon="icon: <c:out value="${post.totalLikes >= 0 ? 'chevron-up':'chevron-down'}"/>; ratio: 0.8"></span>
@@ -54,7 +54,7 @@
                             <c:set var="bookmarked" value="${customTag:hasUserBookmarkedPost(loggedUser, post)}"/>
                             <c:if test="${bookmarked}">
                                 <c:out value="-"/>
-                                <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false"></span>
+                                <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false" title="<spring:message code="post.bookmarked"/>"></span>
                             </c:if>
                         </sec:authorize>
                     </a>
