@@ -21,6 +21,8 @@
     <c:set var="parentId" value="${null}"/>
 </c:if>
 
+<c:set var="commentMaxLength" value="400"/>
+
 <section id="post-comments" class="uk-container uk-container-small">
     <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${comments.totalCount}"/></h1>
     <c:if test="${not empty loggedUser and loggedUser.validated and enableReplies}">
@@ -37,11 +39,12 @@
                         <form:hidden path="parentId" value="${parentId}"/>
                     </form:label>
                     <form:label path="commentBody">
-                        <form:textarea class="uk-textarea" rows="5" path="commentBody" placeholder="${placeholder}" />
+                        <form:textarea class="uk-textarea" rows="5" path="commentBody" data-maxlength="${commentMaxLength}" placeholder="${placeholder}"/>
                     </form:label>
                 </div>
+                <p id="body-counter" class="uk-text-muted uk-align-left">0/${commentMaxLength}</p>
                 <div class="uk-margin-large-bottom uk-align-right">
-                    <input class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
+                    <input id="submitBtn" class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
                 </div>
             </form:form>
         </div>
@@ -85,8 +88,9 @@
         <fieldset class="uk-fieldset">
             <div class="uk-margin">
                 <label for="textarea"></label>
-                <textarea id="textarea" class="uk-textarea" rows="5" placeholder="<spring:message code="comment.create.replyPlaceholder"/>" autofocus></textarea>
+                <textarea id="textarea" class="uk-textarea" rows="5" data-maxlength="${commentMaxLength}" placeholder="<spring:message code="comment.create.replyPlaceholder"/>" autofocus></textarea>
             </div>
+            <p id="reply-counter" class="uk-text-muted uk-align-left">0/${commentMaxLength}</p>
             <div class="uk-align-right">
                 <button id="send-bt" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.create.replyBtn"/></button>
             </div>

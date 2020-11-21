@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.form.editProfile;
 
+import ar.edu.itba.paw.webapp.form.annotations.SpacesNormalization;
+
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -10,7 +12,8 @@ public class UserEditForm {
     private String username;
 
     @Size(min = 2, max = 50)
-    @Pattern(regexp = "[a-zA-Z]+")
+    @Pattern(regexp = "[a-zA-Z ]+")
+    @SpacesNormalization
     private String name;
 
     @Size(max = 400)

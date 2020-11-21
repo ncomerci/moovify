@@ -4,8 +4,12 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
+
+<c:set var="commentMaxLength" value="400"/>
+
 <html>
 <head>
     <title><spring:message code="comment.title"/></title>
@@ -119,11 +123,12 @@
                             <form:form id="spring-form" modelAttribute="commentEditForm" action="${action}" method="post">
                                 <div class="uk-margin">
                                     <form:label path="commentBody">
-                                        <form:textarea class="uk-textarea" rows="5" path="commentBody" />
+                                        <form:textarea id="commentEditBody" data-maxlength="${commentMaxLength}" class="uk-textarea" rows="5" path="commentBody" />
                                     </form:label>
                                 </div>
+                                <p id="edit-counter" class="uk-text-muted uk-align-left">${fn:length(comment.body)}/${commentMaxLength}</p>
                                 <div class="uk-margin-large-bottom uk-align-right">
-                                    <input class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
+                                    <input id="submit-edt-btn" class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
                                 </div>
                             </form:form>
                         </div>

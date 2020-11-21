@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Rollback
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -53,25 +54,27 @@ public class ImageDaoImplTest {
 
     }
 
-    @Rollback
     @Test
     public void testUploadImage() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
 
+        // Exercise
         imageDao.uploadImage(new byte[BYTE_ARRAY_SIZE], TAG);
 
         em.flush();
 
         final int count = JdbcTestUtils.countRowsInTable(jdbcTemplate, Image.TABLE_NAME);
 
+        // Post conditions
         Assert.assertEquals(1, count);
     }
 
-    @Rollback
     @Test
     public void testFindImageById() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
 
         Map<String, Object> imgMap = new HashMap<>();
@@ -81,29 +84,33 @@ public class ImageDaoImplTest {
 
         imageInsert.execute(imgMap);
 
+        // Exercise
         Optional<Image> img = imageDao.findImageById(IMG_ID);
 
+        // Post conditions
         Assert.assertTrue(img.isPresent());
         Assert.assertEquals(IMG_ID, img.get().getId());
         Assert.assertEquals(TAG, img.get().getTag());
         Assert.assertArrayEquals(IMG_DATA, img.get().getData());
     }
 
-    @Rollback
     @Test
     public void testFindImageByNotPresentId() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
 
+        // Exercise
         Optional<Image> img = imageDao.findImageById(IMG_ID);
 
+        // Post conditions
         Assert.assertFalse(img.isPresent());
     }
 
-    @Rollback
     @Test
     public void testGetImageById() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
 
         Map<String, Object> imgMap = new HashMap<>();
@@ -113,29 +120,33 @@ public class ImageDaoImplTest {
 
         imageInsert.execute(imgMap);
 
+        // Exercise
         Optional<Image> img = imageDao.getImage(IMG_ID, TAG);
 
+        // Post exercise
         Assert.assertTrue(img.isPresent());
         Assert.assertEquals(IMG_ID, img.get().getId());
         Assert.assertEquals(TAG, img.get().getTag());
         Assert.assertArrayEquals(IMG_DATA, img.get().getData());
     }
 
-    @Rollback
     @Test
     public void testGetImageByNotPresentId() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
 
+        // Exercise
         Optional<Image> img = imageDao.getImage(IMG_ID, TAG);
 
+        // Post conditions
         Assert.assertFalse(img.isPresent());
     }
 
-    @Rollback
     @Test
     public void testGetImageByIdNonMatchingTag() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
 
         Map<String, Object> imgMap = new HashMap<>();
@@ -145,9 +156,10 @@ public class ImageDaoImplTest {
 
         imageInsert.execute(imgMap);
 
+        // Exercise
         Optional<Image> img = imageDao.getImage(IMG_ID, OTHER_TAG);
 
-
+        // Post conditions
         Assert.assertFalse(img.isPresent());
     }
 }

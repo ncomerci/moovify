@@ -38,9 +38,8 @@
             <div class="uk-flex uk-flex-column uk-width-expand">
                 <div class="uk-flex uk-flex-between uk-margin-bottom" uk-grid>
                     <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-width-4-5">
-                        <c:out value="${post.title}"/>
                         <sec:authorize access="hasRole('USER')">
-                            <c:set var="bookmarked" value="${customTag:hasUserFavedPost(loggedUser, post)}"/>
+                            <c:set var="bookmarked" value="${customTag:hasUserBookmarkedPost(loggedUser, post)}"/>
                             <c:choose>
                                 <c:when test="${bookmarked}">
                                     <a id="bookmark" title="<spring:message code="post.remove.bookmark"/>">
@@ -54,6 +53,7 @@
                                 </c:otherwise>
                             </c:choose>
                         </sec:authorize>
+                        <c:out value="${post.title}"/>
                     </h1>
                     <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
                         <div class="uk-text-center uk-padding-remove uk-margin-remove uk-flex uk-flex-middle">
@@ -66,7 +66,6 @@
                 <div class="uk-flex uk-flex-between uk-margin-remove uk-margin-bottom" uk-grid>
                 <span id="post-author" class="uk-article-meta uk-align-right uk-margin-remove uk-padding-remove">
                     <spring:message code="post.view.writtenBy"/>
-
                     <c:choose>
                         <c:when test="${post.user.enabled}">
                             <a href="<c:url value="/user/${post.user.id}"/>">
@@ -85,23 +84,33 @@
                     <spring:message code="post.view.writtenSeparator"/>
                     <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                     <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                    <c:out value="-"/>
+                    <span data-uk-icon="icon: future"></span>
+                    <spring:message code="post.view.minReading" arguments="${post.readingTimeMinutes}"/>
                 </span>
                     <span>
-                    <c:if test="${not empty loggedUser and loggedUser.validated and post.user.id == loggedUser.id}" >
+                        <c:set var="editable" value="${not empty loggedUser and loggedUser.validated and post.user.id == loggedUser.id}"/>
+                        <c:choose>
+                            <c:when test="${editable}" >
                         <div class="uk-flex uk-flex-middle">
                             <a href="<c:url value="/post/edit/${post.id}"/>">
                                 <span uk-icon="icon: pencil; ratio: 1.2"  data-inline="false"></span><spring:message code="post.view.edit"/>
                             </a>
                         </div>
-                    </c:if>
+                            </c:when>
+                            <c:otherwise>
+                                <c:if test="${post.edited}">
+                                    <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.lastEdited"/>
+                                            <fmt:parseDate value="${post.lastEditDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                                            <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                                    </span>
+                                </c:if>
+                            </c:otherwise>
+                        </c:choose>
                     </span>
                 </div>
-                <div class="uk-flex uk-flex-between uk-margin-remove uk-margin-bottom" uk-grid>
-                    <span id="post-reading-time" class="uk-article-meta uk-align-left uk-padding-remove uk-margin-remove-bottom">
-                        <span data-uk-icon="icon: future" class="uk-margin-small-right"></span>
-                        <spring:message code="post.view.minReading" arguments="${post.readingTimeMinutes}"/>
-                    </span>
-                    <c:if test="${post.edited}">
+                <div class="uk-flex uk-flex-right uk-margin-remove uk-margin-bottom" uk-grid>
+                    <c:if test="${editable and post.edited}">
                     <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.lastEdited"/>
                             <fmt:parseDate value="${post.lastEditDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
                             <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
@@ -112,7 +121,7 @@
         </div>
         <c:if test="${not empty loggedUser and loggedUser.validated}">
             <c:set var="likeValue" value="${ customTag:getPostLikeValue(post, loggedUser) }" />
-            <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-left uk-margin-remove-bottom uk-flex uk-flex-middle">
+            <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-left uk-flex uk-flex-middle">
                 <div class="uk-flex uk-flex-column uk-width-expand">
                     <a class="like-post-button" data-value="${ likeValue == 1 ? 0 : 1 }">
                         <span class="iconify" data-icon="<c:out value="${ likeValue == 1 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>

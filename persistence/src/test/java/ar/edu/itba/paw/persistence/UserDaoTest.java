@@ -2,15 +2,16 @@ package ar.edu.itba.paw.persistence;
 
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.Role;
+import ar.edu.itba.paw.models.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
@@ -21,9 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
@@ -32,14 +35,10 @@ import java.util.*;
 public class UserDaoTest {
 
     private static final Long ID = 1L;
-    private static final User USER = Mockito.when(Mockito.mock(User.class).getId()).thenReturn(ID).getMock();
-    private static final Post POST = Mockito.when(Mockito.mock(Post.class).getId()).thenReturn(ID).getMock();
+    private static final Long USER1_ID = InsertHelper.USER1_ID;
+    private static final Long USER2_ID = InsertHelper.USER2_ID;
     private static final String USERS = User.TABLE_NAME;
-    private static final String USERS_ROLES = User.USER_ROLE_TABLE_NAME;
-    private static final String POST_LIKES = PostLike.TABLE_NAME;
-    private static final String POST_MOVIES = Post.POST_MOVIE_TABLE_NAME;
     private static final String POSTS = Post.TABLE_NAME;
-    private static final String IMAGE = Image.TABLE_NAME;
     private static final String USERNAME = "Username";
     private static final String LOCALE_LANGUAGE = Locale.ENGLISH.getLanguage();
     private static final String USERNAME2 = "Username2";
@@ -49,18 +48,12 @@ public class UserDaoTest {
     private static final String NAME2 = "Name2";
     private static final String DESCRIPTION = "Description";
     private static final LocalDateTime CREATION_DATE = LocalDateTime.of(2020, 8, 6, 11,55);
-    private static final long USER_ROLE = 1;
-    private static final long ADMIN_ROLE = 2;
     private static final int PAGE_FIRST = 0;
     private static final int PAGE_SECOND = 1;
     private static final int PAGE_SIZE = 2;
     private static final boolean ENABLE = true;
     private static final boolean DISABLE = false;
     private static final int UPVOTE = 1;
-
-    private static long userIdCount = 0;
-    private static long postIdCount = 0;
-    private static long postLikeIdCount = 0;
 
     @Autowired
     private UserDaoImpl userDao;
@@ -72,41 +65,13 @@ public class UserDaoTest {
     private EntityManager em;
 
     private JdbcTemplate jdbcTemplate;
-    private SimpleJdbcInsert usersInsert;
-    private SimpleJdbcInsert usersRolesInsert;
-    private SimpleJdbcInsert postsLikesInsert;
-    private SimpleJdbcInsert postsMoviesInsert;
-    private SimpleJdbcInsert imageInsert;
-    private SimpleJdbcInsert postsInsert;
-    private HashMap<String, Object> map;
 
-
+    private InsertHelper helper;
+    
     @Before
     public void setUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
-        this.usersInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(USERS);
-        this.usersRolesInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(USERS_ROLES);
-        this.postsLikesInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(POST_LIKES);
-        this.postsMoviesInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(POST_MOVIES);
-        this.imageInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(IMAGE);
-        this.postsInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(POSTS);
-
-        map = new HashMap<>();
-        LocalDateTime creationDate = LocalDateTime.now();
-        map.put("creation_date", Timestamp.valueOf(creationDate));
-        map.put("username", USERNAME);
-        map.put("password", PASSWORD);
-        map.put("name", NAME);
-        map.put("email", EMAIL);
-        map.put("description", DESCRIPTION);
-        map.put("avatar_id", null);
-        map.put("enabled", ENABLE);
+        this.helper = new InsertHelper(jdbcTemplate);
     }
 
     @Test
@@ -130,15 +95,73 @@ public class UserDaoTest {
     }
 
     @Test
+    @Sql("classpath:user1.sql")
+    public void testUpdateUsername() throws DuplicateUniqueUserAttributeException {
+
+        // Pre conditions
+        User user = em.find(User.class, USER1_ID);
+
+        // Exercise
+        userDao.updateUsername(user, "myNewUsername");
+
+        // Post conditions
+        Assert.assertEquals("myNewUsername", user.getUsername());
+    }
+
+    @Test(expected = DuplicateUniqueUserAttributeException.class)
+    @Sql("classpath:user1.sql")
+    public void testUpdateUsernameSameUsername() throws DuplicateUniqueUserAttributeException {
+
+        // Pre conditions
+        User user = em.find(User.class, USER1_ID);
+
+        // Exercise
+        userDao.updateUsername(user, user.getUsername());
+    }
+
+    @Test(expected = DuplicateUniqueUserAttributeException.class)
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:user2.sql")
+    public void testUpdateUsernameTakenUsername() throws DuplicateUniqueUserAttributeException {
+
+        // Pre conditions
+        User user1 = em.find(User.class, USER1_ID);
+        User user2 = em.find(User.class, USER2_ID);
+
+        // Exercise
+        userDao.updateUsername(user1, user2.getUsername());
+    }
+
+    @Test
     public void testFindUserById() {
 
-        long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
+        // Pre conditions
+        long id = helper.insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE, "USER");
 
+        // Exercise
         final Optional<User> user = userDao.findUserById(id);
 
         final String whereClause = String.format("user_id = %d", id);
-        Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
+
+        // Post conditions
+        Assert.assertTrue(user.isPresent());
+        Assert.assertEquals(id,user.get().getId() );
+        Assert.assertEquals(USERNAME, user.get().getUsername() );
+        Assert.assertEquals(EMAIL, user.get().getEmail());
+    }
+
+    @Test
+    public void testFindDeletedUserById() {
+
+        // Pre conditions
+        long id = helper.insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, DISABLE, "USER");
+
+        // Exercise
+        final Optional<User> user = userDao.findDeletedUserById(id);
+
+        final String whereClause = String.format("user_id = %d", id);
+
+        // Post conditions
         Assert.assertTrue(user.isPresent());
         Assert.assertEquals(id,user.get().getId() );
         Assert.assertEquals(USERNAME, user.get().getUsername() );
@@ -148,32 +171,29 @@ public class UserDaoTest {
     @Test
     public void testFindUserByUsername() {
 
-        long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
+        // Pre conditions
+        long id = helper.insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE, "USER");
 
+        // Exercise
         final Optional<User> user = userDao.findUserByUsername(USERNAME);
 
+        // Post conditions
         Assert.assertTrue(user.isPresent() );
-
-        final String whereClause = String.format("username = '%s'", USERNAME);
-        Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
         Assert.assertEquals(USERNAME, user.get().getUsername() );
         Assert.assertEquals(EMAIL, user.get().getEmail());
-
     }
 
     @Test
     public void testFindUserByEmail() {
 
-        long id = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
+        // Pre conditions
+        long id = helper.insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE, "USER");
 
+        // Exercise
         final Optional<User> user = userDao.findUserByEmail(EMAIL);
 
+        // Post conditions
         Assert.assertTrue(user.isPresent());
-
-        final String whereClause = String.format("email = '%s'", EMAIL);
-        Assert.assertEquals(1,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, USERS, whereClause));
         Assert.assertEquals(USERNAME, user.get().getUsername() );
         Assert.assertEquals(EMAIL, user.get().getEmail());
     }
@@ -181,13 +201,17 @@ public class UserDaoTest {
     @Test
     public void testGetAllUsersOldest() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USERS);
-        long user1 = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-        long user2 = insertUser(USERNAME2, NAME, CREATION_DATE.plusHours(10), "email2", ENABLE);
-        long user3 = insertUser("username3" , NAME, CREATION_DATE.plusHours(8), "email3", ENABLE);
-        long user4 = insertUser("username4", NAME, CREATION_DATE.plusHours(20), "email4", ENABLE);
+        long user1 = helper.insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE, "USER");
+        long user2 = helper.insertUser(USERNAME2, NAME, CREATION_DATE.plusHours(10), "email2", ENABLE, "USER");
+        long user3 = helper.insertUser("username3" , NAME, CREATION_DATE.plusHours(8), "email3", ENABLE, "USER");
+        long user4 = helper.insertUser("username4", NAME, CREATION_DATE.plusHours(20), "email4", ENABLE, "USER");
 
+        // Exercise
         PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.OLDEST, PAGE_SECOND, PAGE_SIZE);
+
+        // Post conditions
         Assert.assertEquals(4, users.getTotalCount());
         Assert.assertArrayEquals(new Long[]{user2, user4}, users.getResults().stream().map(User::getId).toArray());
     }
@@ -195,14 +219,18 @@ public class UserDaoTest {
     @Test
     public void testGetAllUsersNewest() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USERS);
 
-        long user1 = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-        long user2 = insertUser(USERNAME2, NAME, CREATION_DATE.plusHours(10), "email2", ENABLE);
-        long user3 = insertUser("username3", NAME, CREATION_DATE.plusHours(8), "email3", ENABLE);
-        long user4 = insertUser("username4", NAME, CREATION_DATE.plusHours(20), "email4", ENABLE);
+        long user1 = helper.insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE, "USER");
+        long user2 = helper.insertUser(USERNAME2, NAME, CREATION_DATE.plusHours(10), "email2", ENABLE, "USER");
+        long user3 = helper.insertUser("username3", NAME, CREATION_DATE.plusHours(8), "email3", ENABLE, "USER");
+        long user4 = helper.insertUser("username4", NAME, CREATION_DATE.plusHours(20), "email4", ENABLE, "USER");
 
+        // Exercise
         PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.NEWEST, PAGE_SECOND, PAGE_SIZE);
+
+        // Post conditions
         Assert.assertEquals(4, users.getTotalCount());
         Assert.assertArrayEquals(new Long[]{user3, user1}, users.getResults().stream().map(User::getId).toArray());
     }
@@ -210,14 +238,18 @@ public class UserDaoTest {
     @Test
     public void testGetAllUsersName() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USERS);
 
-        long user1 = insertUser(USERNAME, "name", CREATION_DATE, EMAIL, ENABLE);
-        long user2 = insertUser(USERNAME2, "xname", CREATION_DATE.plusHours(10), "email2", ENABLE);
-        long user3 = insertUser("username3", "yname", CREATION_DATE.plusHours(8), "email3", ENABLE);
-        long user4 = insertUser("username4", "zname", CREATION_DATE.plusHours(20), "email4", ENABLE);
+        long user1 = helper.insertUser(USERNAME, "name", CREATION_DATE, EMAIL, ENABLE, "USER");
+        long user2 = helper.insertUser(USERNAME2, "xname", CREATION_DATE.plusHours(10), "email2", ENABLE, "USER");
+        long user3 = helper.insertUser("username3", "yname", CREATION_DATE.plusHours(8), "email3", ENABLE, "USER");
+        long user4 = helper.insertUser("username4", "zname", CREATION_DATE.plusHours(20), "email4", ENABLE, "USER");
 
+        // Exercise
         PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.USERNAME, PAGE_SECOND, PAGE_SIZE);
+
+        // Post conditions
         Assert.assertEquals(4, users.getTotalCount());
         Assert.assertArrayEquals(new String[]{"yname", "zname"}, users.getResults().stream().map(User::getName).toArray());
     }
@@ -227,136 +259,83 @@ public class UserDaoTest {
     @Sql("classpath:categories.sql")
     public void testGetAllUsersHottest() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate, USERS);
         JdbcTestUtils.deleteFromTables(jdbcTemplate, POSTS);
 
-        long user1 = insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-        long post1 = insertPost(user1);
-        long user2 = insertUser(USERNAME2, NAME, CREATION_DATE, "email2", ENABLE);
-        long post2 = insertPost(user2);
-        long user3 = insertUser("username3", NAME, CREATION_DATE.plusHours(8), "email3", ENABLE);
-        long user4 = insertUser("username4", NAME, CREATION_DATE.plusHours(20), "email4", ENABLE);
+        long user1 = helper.insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE, "USER");
+        long post1 = helper.insertPost(user1);
+        long user2 = helper.insertUser(USERNAME2, NAME, CREATION_DATE, "email2", ENABLE, "USER");
+        long post2 = helper.insertPost(user2);
+        long user3 = helper.insertUser("username3", NAME, CREATION_DATE.plusHours(8), "email3", ENABLE, "USER");
+        long user4 = helper.insertUser("username4", NAME, CREATION_DATE.plusHours(20), "email4", ENABLE, "USER");
 
-        insertPostLike(post1, user1, UPVOTE);
-        insertPostLike(post2, user1, UPVOTE);
-        insertPostLike(post1, user2, UPVOTE);
-        insertPostLike(post2, user2, UPVOTE);
-        insertPostLike(post1, user3, UPVOTE);
+        helper.insertPostLike(post1, user1, UPVOTE);
+        helper.insertPostLike(post2, user1, UPVOTE);
+        helper.insertPostLike(post1, user2, UPVOTE);
+        helper.insertPostLike(post2, user2, UPVOTE);
+        helper.insertPostLike(post1, user3, UPVOTE);
 
+        // Exercise
         PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+
+        // Post conditions
         Assert.assertEquals(4, users.getTotalCount());
         Assert.assertArrayEquals(new Long[]{user1, user2}, users.getResults().stream().map(User::getId).toArray());
     }
 
-
     @Test
     public void testSearchUsers() {
+
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate ,USERS);
 
-        insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-        insertUser("usuario", NAME2, CREATION_DATE, "email2", ENABLE);
-        insertUser("ussssername3", "test", CREATION_DATE.plusHours(8), "email3", ENABLE);
-        insertUser("username4", "test", CREATION_DATE.plusHours(20), "email4", ENABLE);
+        long user1ID = helper.insertUser("username", NAME, CREATION_DATE, EMAIL, ENABLE, "USER");
+        long user2ID = helper.insertUser("usuario", NAME2, CREATION_DATE, "email2", ENABLE, "USER");
+        long user3ID = helper.insertUser("userNAMEUSERname", "test", CREATION_DATE.plusHours(8), "email3", ENABLE, "USER");
+        long user4ID = helper.insertUser("nombre", "test", CREATION_DATE.plusHours(20), "email4", ENABLE, "USER");
 
-        PaginatedCollection<User> users = userDao.searchUsers(USERNAME, UserDao.SortCriteria.USERNAME, PAGE_FIRST, PAGE_SIZE);
+        // Exercise
+        PaginatedCollection<User> users = userDao.searchUsers("useRName", UserDao.SortCriteria.NEWEST, 0, 10);
+
+        // Post conditions
         Assert.assertEquals(2, users.getTotalCount());
-        Assert.assertArrayEquals(new String[]{USERNAME, "username4"}, users.getResults().stream().map(User::getUsername).toArray());
+        Assert.assertArrayEquals(new Long[]{user3ID, user1ID}, users.getResults().stream().map(User::getId).toArray());
     }
 
-//    @Rollback
-//    @Test
-//    public void testSearchUsersByRole() {
-//        JdbcTestUtils.deleteFromTables(jdbcTemplate ,USERS);
-//
-//        insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE);
-//        insertUser(USERNAME2, NAME, CREATION_DATE, "email2", ENABLE);
-//
-//        PaginatedCollection<User> users = userDao.searchUsersByRole(USERNAME, Role.ADMIN_ROLE, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
-//        Assert.assertEquals(0, users.getTotalCount());
-//
-//        PaginatedCollection<User> users2 = userDao.searchUsersByRole(USERNAME, Role.USER_ROLE, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
-//        Assert.assertEquals(2, users2.getTotalCount());
-//    }
+    @Rollback
+    @Test
+    public void testSearchUsersByRole() {
+
+        // Pre conditions
+        JdbcTestUtils.deleteFromTables(jdbcTemplate ,USERS);
+
+        helper.insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, ENABLE, "USER");
+        helper.insertUser(USERNAME2, NAME, CREATION_DATE, "email2", ENABLE, "ADMIN");
+        helper.insertUser("user", NAME, CREATION_DATE, "email3", ENABLE, "USER");
+
+        // Exercise
+        PaginatedCollection<User> users = userDao.searchUsersByRole(USERNAME, Role.USER, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+
+        // Post conditions
+        Assert.assertEquals(1, users.getTotalCount());
+    }
 
     @Test
     public void searchDeletedUsers() {
 
+        // Pre conditions
         JdbcTestUtils.deleteFromTables(jdbcTemplate ,USERS);
 
-        insertUser(USERNAME, "NAME", CREATION_DATE, EMAIL, ENABLE);
-        insertUser("New USername", "NOmbre", CREATION_DATE, "email2", ENABLE);
-        insertUser("Alternate USERNAME", NAME, CREATION_DATE, "email3", DISABLE);
-        insertUser("USUARIO", "Nein", CREATION_DATE, "email4", DISABLE);
+        helper.insertUser(USERNAME, "NAME", CREATION_DATE, EMAIL, ENABLE, "USER");
+        helper.insertUser("usuarioCOOL", "NOmbre", CREATION_DATE, "email2", ENABLE, "USER");
+        helper.insertUser("Alternate USERNAME", NAME, CREATION_DATE, "email3", DISABLE, "USER");
+        helper.insertUser("USUARIO", "Nein", CREATION_DATE, "email4", DISABLE, "USER");
 
-        PaginatedCollection<User> users = userDao.searchDeletedUsers(USERNAME, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+        // Exercise
+        PaginatedCollection<User> users = userDao.searchDeletedUsers("usuario", UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+
+        // Post conditions
         Assert.assertEquals(1, users.getTotalCount());
-
-    }
-
-    private long insertUser(String username, String name, LocalDateTime creationDate,  String email, boolean enabled){
-
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, USERS, "username = ?", username);
-        HashMap<String, Object> map = new HashMap<>();
-
-        long id = ++userIdCount;
-
-        map.put("user_id", id);
-        map.put("creation_date", creationDate);
-        map.put("description", DESCRIPTION);
-        map.put("email", email);
-        map.put("enabled", enabled);
-        map.put("language", "en");
-        map.put("name", name);
-        map.put("password", PASSWORD);
-        map.put("username", username);
-        map.put("avatar_id", null);
-
-        usersInsert.execute(map);
-
-        HashMap<String, Object> map2 = new HashMap<>();
-        map2.put("user_id", id);
-        map2.put("role_name", "ADMIN");
-
-        usersRolesInsert.execute(map2);
-        return id;
-    }
-
-    private long insertPost(long user_id){
-
-        final long postId = ++postIdCount;
-
-        Map<String, Object> postMap = new HashMap<>();
-        postMap.put("post_id", postId);
-        postMap.put("body", "body");
-        postMap.put("creation_date", CREATION_DATE);
-        postMap.put("edited", false);
-        postMap.put("enabled", ENABLE);
-        postMap.put("last_edited", null);
-        postMap.put("title", "title");
-        postMap.put("word_count", 1);
-        postMap.put("category_id", 1);
-        postMap.put("user_id", user_id);
-
-        postsInsert.execute(postMap);
-
-        HashMap<String, Object> map2 = new HashMap<>();
-        map2.put("post_id", postId);
-        map2.put("movie_id", ID);
-        postsMoviesInsert.execute(map2);
-
-        return postId;
-
-    }
-
-    private void insertPostLike(long postId, long userId, int value) {
-
-        long id = ++postLikeIdCount;
-
-        Map<String, Object> map = new HashMap<>();
-        map.put("post_likes_id", id);
-        map.put("post_id", postId);
-        map.put("user_id", userId);
-        map.put("value", value);
-        postsLikesInsert.execute(map);
     }
 }
