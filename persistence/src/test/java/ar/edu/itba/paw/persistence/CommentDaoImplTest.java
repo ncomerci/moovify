@@ -37,6 +37,8 @@ public class CommentDaoImplTest {
     private static final long USER2_ID = InsertHelper.POST2_ID;
     private static final long USER3_ID = InsertHelper.POST3_ID;
 
+    private static final int CHILDREN_COUNT = 5;
+
     private static final CommentDao.SortCriteria NEWEST = CommentDao.SortCriteria.NEWEST;
 
     @Autowired
@@ -207,114 +209,95 @@ public class CommentDaoImplTest {
         Assert.assertEquals(4, commentChildren.getTotalCount());
     }
 
-
-    // Even though the recursive query in CommentDaoImpl is ANSI, hsqldb fails running it.
-    // We decided to disable the tests involving that query for now.
-    /*
-    @Rollback
     @Test
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:user2.sql")
+    @Sql("classpath:categories.sql")
+    @Sql("classpath:post1.sql")
     public void testFindCommentDescendantsByNewest() {
-//        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME, "parent_id = ?", PARENT_ID);
-        COMMENT_ROW.put("parent_id", PARENT_ID);
-        final int cant = PAGE_SIZE*2;
-        StringBuilder whereClause = new StringBuilder();
-        Long[] ids = new Long[cant];
 
-        for(int i = 0 ; i < cant ; i++) {
-            COMMENT_ROW.put("creation_date", Timestamp.valueOf(LocalDateTime.of(2020, 10, 10, i, 0)));
-            ids[i] = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
-            whereClause.append("comment_id = ").append(ids[i]).append(" OR ");
+        // Pre conditions
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Comment.TABLE_NAME);
+
+        long parentCommentId = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
+
+        // Un comment
+        long child1Id = helper.insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
+
+        Long[] child1ChildrenIds = new Long[CHILDREN_COUNT];
+
+        // Con 5 hijos
+        for(int i = 0; i < CHILDREN_COUNT; i++) {
+            child1ChildrenIds[i] = helper.insertComment(true, child1Id, POST1_ID, USER2_ID, "body Text");
         }
-        whereClause.setLength(whereClause.length() - " OR ".length());
-        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(PARENT_ID).getMock();
 
-//        2. ejercitar
-        final PaginatedCollection<Comment> commentDescendants1 = commentDao.findCommentDescendants(comment, NEWEST, PAGE_NUMBER, PAGE_SIZE);
-        final PaginatedCollection<Comment> commentDescendants2 = commentDao.findCommentDescendants(comment, NEWEST, PAGE_NUMBER+1, PAGE_SIZE);
-
-//        3. post-condiciones
-        Assert.assertNotNull(commentDescendants1);
-        Assert.assertNotNull(commentDescendants2);
-
-        final Collection<Comment> descendants1Results = commentDescendants1.getResults();
-        final Collection<Comment> descendants2Results = commentDescendants2.getResults();
-        final Comment[] array1 = descendants1Results.toArray(new Comment[0]);
-        final Comment[] array2 = descendants2Results.toArray(new Comment[0]);
-
-        Assert.assertEquals(PAGE_SIZE, descendants1Results.size());
-        Assert.assertEquals(PAGE_SIZE, descendants2Results.size());
-
-        for(int i = 0 ; i < PAGE_SIZE ; i++) {
-            Assert.assertEquals(ids[cant - 1 - i], (Long) array1[i].getId());
-            Assert.assertEquals(ids[cant/2 - 1 - i], (Long) array2[i].getId());
-
+        // Cada hijo con un hijo mas => 11 comments
+        for(Long commentId : child1ChildrenIds){
+            helper.insertComment(true, commentId, POST1_ID, USER2_ID, "body Text");
         }
-        Assert.assertEquals(cant,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause.toString())
-        );
+
+        long child2Id = helper.insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
+
+        long child3Id = helper.insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
+
+        long child4Id = helper.insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
+
+        long rootLevelCommentId = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+
+        Comment parentComment = em.find(Comment.class, parentCommentId);
+
+        // Exercise
+        final PaginatedCollection<Comment> commentChildren = commentDao
+                .findCommentDescendants(parentComment, 5, CommentDao.SortCriteria.NEWEST , 1, 3);
+
+        // Post conditions
+        Assert.assertEquals(4, commentChildren.getTotalCount());
+        Assert.assertEquals(1, commentChildren.getResults().size());
+        Assert.assertEquals(5, commentChildren.getResults().stream().findFirst().get().getChildren().size());
     }
-    */
 
-
-    // Even though the recursive query in CommentDaoImpl is ANSI, hsqldb fails running it.
-    // We decided to disable the tests involving that query for now.
-    /*
-    @Rollback
     @Test
-    public void testFindCommentDescendantsByHottest() {
-//        1. precondiciones
-        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME, "parent_id = ?", PARENT_ID);
-        final int cant = PAGE_SIZE*2;
-        COMMENT_ROW.put("parent_id", PARENT_ID);
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:user2.sql")
+    @Sql("classpath:categories.sql")
+    @Sql("classpath:post1.sql")
+    public void testFindPostDescendantsByNewest() {
 
-        StringBuilder whereClause = new StringBuilder();
-        Long[] ids = new Long[cant];
-        Long[] userIds = new Long[cant];
-        Map<String, Object> like_row = new HashMap<>();
-        like_row.put("value", 1);
+        // Pre conditions
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, Comment.TABLE_NAME);
 
-        int i, j;
-        for(i = 0 ; i < cant ; i++) {
-            COMMENT_ROW.put("creation_date", Timestamp.valueOf(LocalDateTime.now()));
-            ids[i] = commentInsert.executeAndReturnKey(COMMENT_ROW).longValue();
-            userIds[i] = insertUser(Timestamp.valueOf(LocalDateTime.now()), String.valueOf(i), "", "", String.valueOf(i), "", true);
-            for(j = 0; j <= i ; j++) {
-                like_row.put("user_id", userIds[j]);
-                like_row.put("comment_id", ids[i]);
-                likeInsert.execute(like_row);
-            }
-            whereClause.append("comment_id = ").append(ids[i]).append(" OR ");
+        // Un comment
+        long child1Id = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
+
+        Long[] child1ChildrenIds = new Long[CHILDREN_COUNT];
+
+        // Con 5 hijos
+        for(int i = 0; i < CHILDREN_COUNT; i++) {
+            child1ChildrenIds[i] = helper.insertComment(true, child1Id, POST1_ID, USER2_ID, "body Text");
         }
-        whereClause.setLength(whereClause.length() - " OR ".length());
-        Comment comment = Mockito.when(Mockito.mock(Comment.class).getId()).thenReturn(PARENT_ID).getMock();
 
-//        2. ejercitar
-        final PaginatedCollection<Comment> commentDescendants1 = commentDao.findCommentDescendants(comment, CommentDao.SortCriteria.HOTTEST, PAGE_NUMBER, PAGE_SIZE);
-        final PaginatedCollection<Comment> commentDescendants2 = commentDao.findCommentDescendants(comment, CommentDao.SortCriteria.HOTTEST, PAGE_NUMBER+1, PAGE_SIZE);
-
-//        3. post-condiciones
-        Assert.assertNotNull(commentDescendants1);
-        Assert.assertNotNull(commentDescendants2);
-
-        final Collection<Comment> descendants1Results = commentDescendants1.getResults();
-        final Collection<Comment> descendants2Results = commentDescendants2.getResults();
-        final Comment[] array1 = descendants1Results.toArray(new Comment[0]);
-        final Comment[] array2 = descendants2Results.toArray(new Comment[0]);
-
-        Assert.assertEquals(PAGE_SIZE, descendants1Results.size());
-        Assert.assertEquals(PAGE_SIZE, descendants2Results.size());
-
-        for(i = 0 ; i < PAGE_SIZE ; i++) {
-            Assert.assertEquals(ids[cant - 1 - i], (Long) array1[i].getId());
-            Assert.assertEquals(ids[cant/2 - 1 - i], (Long) array2[i].getId());
-
+        // Cada hijo con un hijo mas => 11 comments
+        for(Long commentId : child1ChildrenIds){
+            helper.insertComment(true, commentId, POST1_ID, USER2_ID, "body Text");
         }
-        Assert.assertEquals(cant,
-                JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, Comment.TABLE_NAME, whereClause.toString())
-        );
+
+        long child2Id = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+
+        long child3Id = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
+
+        long child4Id = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
+
+        Post post = em.find(Post.class, POST1_ID);
+
+        // Exercise
+        final PaginatedCollection<Comment> commentChildren = commentDao
+                .findPostCommentDescendants(post, 5, CommentDao.SortCriteria.NEWEST , 1, 3);
+
+        // Post conditions
+        Assert.assertEquals(4, commentChildren.getTotalCount());
+        Assert.assertEquals(1, commentChildren.getResults().size());
+        Assert.assertEquals(5, commentChildren.getResults().stream().findFirst().get().getChildren().size());
     }
-    */
 
     @Test
     @Sql("classpath:user1.sql")

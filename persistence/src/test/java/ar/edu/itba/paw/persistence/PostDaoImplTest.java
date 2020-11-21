@@ -415,7 +415,7 @@ public class PostDaoImplTest {
         helper.insertPost("Tetle", USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
         helper.insertPost("Nombre", USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
-        final PaginatedCollection<Post> posts = postDao.searchPosts("Tit", DEFAULT_SORT_CRITERIA, 0, 2);
+        final PaginatedCollection<Post> posts = postDao.searchDeletedPosts("Tit", DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(1, posts.getTotalCount());
     }

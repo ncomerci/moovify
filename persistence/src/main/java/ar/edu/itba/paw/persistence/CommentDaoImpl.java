@@ -33,7 +33,7 @@ public class CommentDaoImpl implements CommentDao {
             ") " + COMMENTS_LIKES  + " ON " + COMMENTS + ".comment_id = " + COMMENTS_LIKES + ".tl_comment_id";
 
         private static final String NATIVE_PAGINATION_RECURSIVE_QUERY_UPPER =
-            "WITH RECURSIVE comments_rec AS (" +
+            "WITH RECURSIVE comments_rec(comment_id, parent_id, post_id, user_id, creation_date, body, enabled, iteration) AS (" +
                 "SELECT " +
                     "root_comments.comment_id, " +
                     "root_comments.parent_id, " +
