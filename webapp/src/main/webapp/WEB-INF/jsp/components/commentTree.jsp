@@ -41,7 +41,7 @@
                                                         <a class="comment-user-name <c:out value="${comment.user.admin ? 'uk-text-primary':''}"/>" href = "<c:url value="/user/${comment.user.id}" />">
                                                             <c:out value="${comment.user.username}"/>
                                                             <c:if test="${comment.user.admin}">
-                                                                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                                                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
                                                             </c:if>
                                                         </a>
                                                     </c:when>
@@ -73,6 +73,7 @@
                                             <a href="#delete-comment-modal"
                                                data-id="<c:out value="${comment.id}"/>"
                                                class="uk-link-muted delete-comment-button uk-position-small uk-hidden-hover"
+                                               title="<spring:message code="comment.delete.button"/>"
                                                uk-toggle>
                                                 <span class="iconify" data-icon="ic:baseline-delete-forever" data-inline="false"></span>
                                             </a>
@@ -87,8 +88,10 @@
                                             <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-top" uk-grid>
                                                 <sec:authorize access="hasRole('USER')">
                                                     <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-remove">
-                                                        <a data-id="<c:out value="${comment.id}"/>" class="uk-link-muted reply-button uk-position-small uk-hidden-hover">
-                                                                <%--                                                        <spring:message code="comment.create.reply"/>--%>
+                                                        <a data-id="<c:out value="${comment.id}"/>"
+                                                           class="uk-link-muted reply-button uk-position-small uk-hidden-hover"
+                                                           title="<spring:message code="comment.create.reply"/>"
+                                                        >
                                                             <span class="iconify" data-icon="octicon:reply-16" data-inline="false"></span>
                                                         </a>
                                                     </div>
@@ -126,7 +129,7 @@
                             </div>
                         </div>
                     </header>
-                    <div class="uk-comment-body uk-margin-small-left">
+                    <div class="uk-comment-body uk-margin-small-left uk-margin-medium-right">
                         <c:choose>
                             <c:when test="${comment.enabled}">
                                 <span class="pre-line"><c:out value="${comment.body}"/></span>

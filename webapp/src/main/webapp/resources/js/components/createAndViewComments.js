@@ -135,9 +135,11 @@ function bodyLengthChecker(event, bodyLength, bodyCounter, submitBtn) {
     bodyCounter.innerText = `${currentLength}/${bodyLength}`;
 
     if(currentLength > bodyLength) {
-        bodyCounter.classList.remove('uk-text-muted');
-        bodyCounter.classList.add('uk-text-danger');
-        submitBtn.disabled = true;
+        if (!submitBtn.disabled) {
+            bodyCounter.classList.remove('uk-text-muted');
+            bodyCounter.classList.add('uk-text-danger');
+            submitBtn.disabled = true;
+        }
     }
     else if(submitBtn.disabled) {
         bodyCounter.classList.remove('uk-text-danger');
