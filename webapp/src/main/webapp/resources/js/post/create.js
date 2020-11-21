@@ -6,6 +6,7 @@ window.addEventListener('load', function(){
     let moviesSelectedElem = document.getElementById('movies-selected');
     let addTagInputElem = document.getElementById('add-tag-input');
     let addTagButtonElem = document.getElementById('add-tag-button');
+    let addTagCounter = document.getElementById('tag-counter');
     let tagsSelectedElem = document.getElementById('tags-selected');
     let submitFormButton = document.getElementById('submit-form-button');
     let datalistElem = document.getElementById('movie-list');
@@ -25,8 +26,9 @@ window.addEventListener('load', function(){
 
     addMovieInputElem.addEventListener('change', () => addMovie(formElem, addMovieInputElem, datalistElem, moviesSelectedElem));
 
-    addTagInputElem.addEventListener('change', () => addTag(formElem, addTagInputElem, tagsSelectedElem));
+    addTagInputElem.addEventListener('input', event => bodyLengthChecker(event, addTagInputElem.dataset.maxlength, addTagCounter, addTagButtonElem));
 
+    addTagInputElem.addEventListener('change', () => addTag(formElem, addTagInputElem, tagsSelectedElem));
 
     addTagButtonElem.addEventListener('click',
         () => addTag(formElem, addTagInputElem, tagsSelectedElem),
@@ -42,6 +44,7 @@ window.addEventListener('load', function(){
     // moviesModalElem.addEventListener('beforehide', () => cancelModal(formElem, datalistElem, moviesSelectedElem), false);
 
 }, false);
+
 
 function configureEasyMDE(formElem, moviesModalElem){
     return new EasyMDE({
@@ -242,4 +245,19 @@ function validateModal(formElem, movieErrorElem) {
     }
 
     return true;
+}
+function bodyLengthChecker(event, bodyLength, bodyCounter, submitBtn) {
+    const currentLength = event.currentTarget.value.length;
+    bodyCounter.innerText = `${currentLength}/${bodyLength}`;
+
+    if(currentLength > bodyLength) {
+        bodyCounter.classList.remove('uk-text-muted');
+        bodyCounter.classList.add('uk-text-danger');
+        submitBtn.disabled = true;
+    }
+    else if(submitBtn.disabled) {
+        bodyCounter.classList.remove('uk-text-danger');
+        bodyCounter.classList.add('uk-text-muted');
+        submitBtn.disabled = false;
+    }
 }

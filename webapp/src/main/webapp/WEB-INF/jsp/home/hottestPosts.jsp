@@ -104,7 +104,7 @@
                                                 </sec:authorize>
                                             </a>
                                         <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
-                                            <spring:message code="userDisplay.meta.description" arguments="${user.name}, ${user.totalLikes}"/>
+                                            <spring:message code="userDisplay.meta.name.votes" arguments="${user.name}, ${user.totalLikes}"/>
                                         </p>
                                     </div>
                                 </div>

@@ -1,5 +1,7 @@
 package ar.edu.itba.paw.webapp.form;
 
+import ar.edu.itba.paw.webapp.form.annotations.TagSize;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.Set;
@@ -16,6 +18,7 @@ public class PostCreateForm {
     private long category;
 
     @Size(max = 5)
+    @TagSize(max = 50)
     private Set<String> tags;
 
     @Size(min=1, max = 20)

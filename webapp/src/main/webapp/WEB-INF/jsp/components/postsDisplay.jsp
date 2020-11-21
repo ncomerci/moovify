@@ -49,7 +49,6 @@
                     </p>
 
                     <a href="<c:url value="/post/${post.id}"/>">
-                        <c:out value="${post.title}"/>
                         <sec:authorize access="isAuthenticated()">
                             <c:set var="bookmarked" value="${customTag:hasUserBookmarkedPost(loggedUser, post)}"/>
                             <c:if test="${bookmarked}">
@@ -57,6 +56,7 @@
                                 <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false" title="<spring:message code="post.bookmarked"/>"></span>
                             </c:if>
                         </sec:authorize>
+                        <c:out value="${post.title}"/>
                     </a>
 
 

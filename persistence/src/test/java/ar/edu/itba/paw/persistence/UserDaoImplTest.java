@@ -32,7 +32,7 @@ import java.util.Set;
 @ContextConfiguration(classes = TestConfig.class)
 @Transactional
 @Rollback
-public class UserDaoTest {
+public class UserDaoImplTest {
 
     private static final Long ID = 1L;
     private static final Long USER1_ID = InsertHelper.USER1_ID;

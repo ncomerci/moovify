@@ -138,7 +138,7 @@
                                 <spring:message code="comment.notEnabled.fullMessage"/>
                                 <c:if test="${loggedUser.admin}">
                                     <br><br><hr>
-                                    [ <c:out value="${comment.user.username}: ${comment.body}" /> ]
+                                    <spring:message code="comment.notEnabled.comment.body" arguments="${comment.user.username}, ${comment.body}"/>
                                 </c:if>
                             </span>
                     </c:otherwise>

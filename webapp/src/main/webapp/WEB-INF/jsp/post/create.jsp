@@ -4,6 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <!DOCTYPE html>
+<c:set var="tagMaxLength" value="50"/>
 <html lang="en">
 <head>
     <title><spring:message code="post.create.title"/></title>
@@ -13,8 +14,8 @@
     <script src="<c:url value="/resources/js/post/create.js" />"></script>
 </head>
 <body>
-<jsp:include page="/WEB-INF/jsp/components/navBar.jsp"/>
 
+<jsp:include page="/WEB-INF/jsp/components/navBar.jsp"/>
 <div class="uk-margin-auto uk-margin-top">
     <h1 class="uk-article-title uk-margin-auto uk-text-center uk-text-primary">
         <spring:message code="post.create.newPost"/></h1>
@@ -96,11 +97,14 @@
                     <spring:message code="post.create.modal.tags.constrains"/>
                 </label>
                 <div class="uk-flex">
-                    <input id="add-tag-input"
+                    <input id="add-tag-input" maxlength="50" data-maxlength="${tagMaxLength}"
                            class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
                            placeholder="<spring:message code="post.create.modal.tagsPlaceholder"/>">
                     <button id="add-tag-button" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
                             type="button"><spring:message code="post.create.modal.addButton"/></button>
+                </div>
+                <div>
+                    <p id="tag-counter" class="uk-text-muted uk-align-left">0/${tagMaxLength}</p>
                 </div>
             </div>
 
