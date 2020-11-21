@@ -37,7 +37,7 @@
         <div class="uk-grid-small uk-flex uk-flex-row uk-flex-between uk-margin-bottom" uk-grid>
             <div class="uk-flex uk-flex-column uk-width-expand">
                 <div class="uk-flex uk-flex-between uk-margin-bottom" uk-grid>
-                    <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-width-4-5">
+                    <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-width-4-5 uk-text-break">
                         <sec:authorize access="hasRole('USER')">
                             <c:set var="bookmarked" value="${customTag:hasUserBookmarkedPost(loggedUser, post)}"/>
                             <c:choose>
@@ -53,6 +53,7 @@
                                 </c:otherwise>
                             </c:choose>
                         </sec:authorize>
+                        <c:out value="-"/>
                         <c:out value="${post.title}"/>
                     </h1>
                     <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
