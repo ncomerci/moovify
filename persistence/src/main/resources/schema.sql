@@ -112,7 +112,9 @@ CREATE TABLE IF NOT EXISTS MOVIES
     overview                TEXT            NOT NULL,
     popularity              FLOAT           NOT NULL,
     runtime                 FLOAT           NOT NULL,
-    vote_average            FLOAT           NOT NULL
+    vote_average            FLOAT           NOT NULL,
+    poster_id               INTEGER,
+    FOREIGN KEY (poster_id) REFERENCES IMAGES (image_id)
 
 );
 
