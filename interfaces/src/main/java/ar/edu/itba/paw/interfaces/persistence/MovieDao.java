@@ -15,11 +15,11 @@ public interface MovieDao {
         NEWEST, OLDEST, TITLE, POST_COUNT
     }
 
+    Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage, String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Set<MovieCategory> genres);
+
     Optional<Movie> findMovieById(long movie_id);
 
     Collection<Movie> findMoviesById(Collection<Long> moviesId);
-
-    Movie register(String title, String originalTitle, long tmdbId, String imdbId, String originalLanguage, String overview, float popularity, float runtime, float voteAverage, LocalDate releaseDate, Set<MovieCategory> genres);
 
     PaginatedCollection<Movie> getAllMovies(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
