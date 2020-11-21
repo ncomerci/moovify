@@ -82,7 +82,6 @@ public class MovieController {
         return mv;
     }
 
-    // TODO: Admin
     @RequestMapping(path = "/movie/{movieId}/poster/update", method = RequestMethod.GET)
     public ModelAndView showUpdatePoster(@PathVariable final long movieId,
                                          @ModelAttribute("updateMoviePosterForm") UpdateMoviePosterForm updateMoviePosterForm) {
@@ -96,7 +95,6 @@ public class MovieController {
         return mv;
     }
 
-    // TODO: Admin
     @RequestMapping(path = "/movie/{movieId}/poster/update", method = RequestMethod.POST)
     public ModelAndView updatePoster(@PathVariable final long movieId,
                                      @ModelAttribute("updateMoviePosterForm") UpdateMoviePosterForm updateMoviePosterForm,
@@ -106,8 +104,6 @@ public class MovieController {
             LOGGER.warn("Errors were found in the form updateMoviePosterForm updating movie poster in /movie/{}/poster/update", movieId);
             return showUpdatePoster(movieId, updateMoviePosterForm);
         }
-
-
 
         final Movie movie = movieService.findMovieById(movieId).orElseThrow(MovieNotFoundException::new);
 

@@ -17,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface MoviePoster {
 
-    String message() default "{javax.validation.constraints.Avatar.message}"; //TODO: Add correct message
+    String message() default "{javax.validation.constraints.MoviePoster.message}";
 
     Class<?>[] groups() default {};
 
