@@ -164,3 +164,15 @@ a.anchor {
     top: -260px;
     visibility: hidden;
 }
+
+.movie-poster {
+
+    width:300px; /*container-width*/
+    overflow:hidden; /*hide bounds of image */
+    margin: 0;   /*reset margin of figure tag*/
+}
+
+.movie-poster img{
+    display:block; /*remove inline-block spaces*/
+    width:100%; /*make image streatch*/
+}
