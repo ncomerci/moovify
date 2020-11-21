@@ -88,6 +88,12 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(MoviePosterNotFoundException.class)
+    public void handleMoviePosterNotFound() {
+        LOGGER.error("MoviePosterNotFoundException was thrown. Responding with Http Status 404");
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
     public ModelAndView handleError404() {
 

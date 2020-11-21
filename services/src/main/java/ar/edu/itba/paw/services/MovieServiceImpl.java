@@ -2,6 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.MovieCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.MovieDao;
+import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
@@ -22,11 +23,17 @@ public class MovieServiceImpl implements MovieService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieServiceImpl.class);
 
+    private static final String DEFAULT_POSTER_PATH = "";
+    private static final String POSTER_SECURITY_TAG = "POSTER";
+
     @Autowired
     private MovieDao movieDao;
 
     @Autowired
     private MovieCategoryDao movieCategoryDao;
+
+    @Autowired
+    private ImageService imageService;
 
     @Transactional
     @Override
@@ -41,6 +48,19 @@ public class MovieServiceImpl implements MovieService {
         LOGGER.info("Created Movie {}", movie.getId());
 
         return movie;
+    }
+
+    @Transactional
+    @Override
+    public Optional<byte[]> getPoster(long posterId) {
+
+        LOGGER.info("Accessing Movie Poster {}. (Default {})", posterId, posterId == Movie.DEFAULT_POSTER_ID);
+
+        if(posterId == Movie.DEFAULT_POSTER_ID)
+            return Optional.of(imageService.getImage(DEFAULT_POSTER_PATH));
+
+        else
+            return imageService.getImage(posterId, POSTER_SECURITY_TAG);
     }
 
     @Transactional(readOnly = true)

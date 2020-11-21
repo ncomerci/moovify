@@ -4,15 +4,14 @@ import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.MoviePosterNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
@@ -78,5 +77,13 @@ public class MovieController {
         mv.addObject("posts", postService.findPostsByMovie(movie, pageNumber, pageSize));
 
         return mv;
+    }
+
+    @RequestMapping(path = "/movie/poster/{posterId}", method = RequestMethod.GET, produces = { MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
+    public @ResponseBody
+    byte[] getPoster(@PathVariable long posterId) {
+
+        LOGGER.info("Accessed /movie/poster/{}", posterId);
+        return movieService.getPoster(posterId).orElseThrow(MoviePosterNotFoundException::new);
     }
 }
