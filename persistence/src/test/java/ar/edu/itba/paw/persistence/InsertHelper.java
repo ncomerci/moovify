@@ -45,6 +45,8 @@ public class InsertHelper {
     private final SimpleJdbcInsert postsLikesInsert;
     private final SimpleJdbcInsert postsMoviesInsert;
     private final SimpleJdbcInsert postsInsert;
+    private final SimpleJdbcInsert favoritePostsInsert;
+    private final SimpleJdbcInsert userFollowInsert;
 
     public InsertHelper(JdbcTemplate jdbcTemplate) {
 
@@ -76,9 +78,16 @@ public class InsertHelper {
 
         this.movieToMovieInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(Movie.MOVIE_TO_MOVIE_CATEGORY_TABLE_NAME);
+
+        this.favoritePostsInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(User.USER_FAV_POST);
+
+        this.userFollowInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName(User.USERS_FOLLOWS);
+
     }
 
-    public long insertUser(String username, String name, LocalDateTime creationDate,  String email, boolean enabled){
+    public long insertUser(String username, String name, LocalDateTime creationDate, String email, boolean enabled, String role){
 
         JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, User.TABLE_NAME, "username = ?", username);
 
@@ -99,11 +108,11 @@ public class InsertHelper {
 
         usersInsert.execute(user);
 
-        HashMap<String, Object> role = new HashMap<>();
-        role.put("user_id", id);
-        role.put("role_name", "ADMIN");
+        HashMap<String, Object> roleMap = new HashMap<>();
+        roleMap.put("user_id", id);
+        roleMap.put("role_name", role);
 
-        usersRolesInsert.execute(role);
+        usersRolesInsert.execute(roleMap);
 
         return id;
     }
@@ -202,6 +211,24 @@ public class InsertHelper {
         postsMoviesInsert.execute(map);
     }
 
+    public void insertFavoritePost(long postId, long userId) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("post_id", postId);
+        map.put("user_id", userId);
+
+        favoritePostsInsert.execute(map);
+    }
+
+    public void insertFollowingUser(long followId, long userId) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("user_follow_id", followId);
+        map.put("user_id", userId);
+
+        userFollowInsert.execute(map);
+    }
+
     public long insertPost(String title, long userId, LocalDateTime creationDate, long categoryId, int wordCount, String body, boolean enable) {
 
         final long postId = ++postIdCount;
@@ -223,5 +250,4 @@ public class InsertHelper {
         return postId;
 
     }
-
 }

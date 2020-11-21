@@ -15,7 +15,7 @@
         <div class="uk-navbar-right">
             <ul class="uk-navbar-nav">
                 <li class="uk-visible@s">
-                    <a id="nav-search-toggle" class="uk-navbar-toggle">
+                    <a id="nav-search-toggle" class="uk-navbar-toggle" title="<spring:message code="search.title"/>">
                         <span uk-icon="icon: search; ratio: 1.7"></span>
                     </a>
                     <div class="uk-drop" data-uk-drop="mode: click; pos: right-center; offset: 0; boundary: #navbar">
@@ -44,7 +44,7 @@
                             <img src="<c:url value="/user/avatar/${loggedUser.avatarId}" />" class="uk-comment-avatar circle-navbar" width="45" height="45" alt="User Avatar">
                             <span class="uk-text-bold uk-margin-small-left">${loggedUser.username}</span>
                             <c:if test="${loggedUser.admin}">
-                                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
                             </c:if>
                         </a>
                         <div class="uk-navbar-dropdown m-bg-primary-lighter-5 m-rounded-bottom-10">

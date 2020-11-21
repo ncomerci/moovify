@@ -93,13 +93,13 @@
                                         <a href="<c:url value="/user/${user.id}"/>" class="${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
                                             <c:out value="${user.username}"/>
                                             <c:if test="${user.admin}">
-                                                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
                                             </c:if>
                                             <sec:authorize access="isAuthenticated()">
                                                 <c:set var="followed" value="${customTag:hasUserFollowed(loggedUser,user)}"/>
                                                 <c:if test="${followed}">
                                                     <c:out value="-"/>
-                                                    <span class="iconify small-iconify" data-icon="ri:user-follow-line" data-inline="false"></span>
+                                                    <span class="iconify small-iconify" data-icon="ri:user-follow-line" data-inline="false" title="<spring:message code="user.followed"/>"></span>
                                                 </c:if>
                                             </sec:authorize>
                                         </a>

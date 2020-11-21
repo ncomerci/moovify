@@ -42,14 +42,10 @@
                             <c:set var="bookmarked" value="${customTag:hasUserBookmarkedPost(loggedUser, post)}"/>
                             <c:choose>
                                 <c:when test="${bookmarked}">
-                                    <a id="bookmark" title="<spring:message code="post.remove.bookmark"/>">
-                                        <span class="iconify" data-icon="mdi-bookmark-check" data-inline="false"></span>
-                                    </a>
+                                    <a id="bookmark" title="<spring:message code="post.remove.bookmark"/>"><span class="iconify" data-icon="mdi-bookmark-check" data-inline="false"></span></a>
                                 </c:when>
                                 <c:otherwise>
-                                    <a id="no-bookmark" title="<spring:message code="post.add.bookmark"/>">
-                                        <span class="iconify" data-icon="mdi-bookmark-check-outline" data-inline="false"></span>
-                                    </a>
+                                    <a id="no-bookmark" title="<spring:message code="post.add.bookmark"/>"><span class="iconify" data-icon="mdi-bookmark-check-outline" data-inline="false"></span></a>
                                 </c:otherwise>
                             </c:choose>
                         </sec:authorize>
@@ -72,7 +68,7 @@
                             <a href="<c:url value="/user/${post.user.id}"/>">
                                 <c:out value="${post.user.username}"/>
                                 <c:if test="${post.user.admin}">
-                                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
                                 </c:if>
                             </a>
                         </c:when>

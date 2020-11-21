@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS USERS
     avatar_id       INTEGER,
     description     VARCHAR(400) NOT NULL,
     enabled         BOOLEAN      NOT NULL,
+    language         VARCHAR(15)  NOT NULL,
 
     FOREIGN KEY (avatar_id) REFERENCES IMAGES (image_id) ON DELETE SET NULL
 );
@@ -38,12 +39,6 @@ CREATE TABLE IF NOT EXISTS PASSWORD_RESET_TOKEN
     expiry      TIMESTAMP    NOT NULL,
 
     FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
-);
-
-CREATE TABLE IF NOT EXISTS ROLES
-(
-    role_id SERIAL      PRIMARY KEY,
-    role    VARCHAR(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS USER_ROLE
@@ -71,6 +66,8 @@ CREATE TABLE IF NOT EXISTS POSTS
     word_count    INTEGER      NOT NULL,
     body          TEXT         NOT NULL,
     enabled       BOOLEAN      NOT NULL,
+    edited        BOOLEAN      NOT NULL,
+    last_edited   TIMESTAMP,
 
     FOREIGN KEY (category_id) REFERENCES POST_CATEGORY (category_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id)     REFERENCES USERS (user_id) ON DELETE CASCADE
@@ -147,6 +144,8 @@ CREATE TABLE IF NOT EXISTS COMMENTS
     creation_date TIMESTAMP    NOT NULL,
     body          TEXT         NOT NULL,
     enabled       BOOLEAN      NOT NULL,
+    edited        BOOLEAN      NOT NULL,
+    last_edited   TIMESTAMP,
 
     FOREIGN KEY (parent_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
     FOREIGN KEY (post_id) REFERENCES POSTS (post_id) ON DELETE CASCADE,

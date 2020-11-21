@@ -43,7 +43,7 @@
         <div class="uk-width-2-3@m uk-padding-remove">
             <h3 class="uk-card-title uk-margin-remove-bottom userTitle">
                 <c:out value="${loggedUser.username}"/>
-                <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1"  data-inline="false" uk-toggle="target: #edit-username-modal"></a>
+                <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1" title="<spring:message code="edit.title"/>" data-inline="false" uk-toggle="target: #edit-username-modal"></a>
             </h3>
             <p class="uk-text-meta uk-margin-remove-top">
                 <fmt:parseDate value="${loggedUser.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
@@ -54,11 +54,14 @@
             <ul class="uk-list uk-list-bullet">
                 <li class="userTitle">
                     <spring:message code="user.profile.Name" arguments="${loggedUser.name}"/>
-                    <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1"  data-inline="false" uk-toggle="target: #edit-name-modal"></a>
+                    <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1" title="<spring:message code="edit.title"/>"  data-inline="false" uk-toggle="target: #edit-name-modal"></a>
                 </li>
                 <li class="userTitle"><spring:message code="user.profile.Email" arguments="${loggedUser.email}"/></li>
                 <c:if test="${loggedUser.admin}" >
-                    <li class="userTitle"><spring:message code="user.profile.Administrator"/></li>
+                    <li class="userTitle">
+                        <spring:message code="user.profile.Administrator"/>
+                        <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
+                    </li>
                 </c:if>
                 <c:if test="${fn:length(loggedUser.description) == 0}">
                     <li class="userTitle">
@@ -68,7 +71,7 @@
                 <c:if test="${fn:length(loggedUser.description) != 0}">
                     <li class="userTitle m-long-text">
                         <spring:message code="user.profile.Description" arguments="${loggedUser.description}"/>
-                        <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1"  data-inline="false" uk-toggle="target: #edit-description-modal"></a></li>
+                        <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1" title="<spring:message code="edit.title"/>"  data-inline="false" uk-toggle="target: #edit-description-modal"></a></li>
                 </c:if>
             </ul>
             <c:if test="${loggedUser.validated}">
