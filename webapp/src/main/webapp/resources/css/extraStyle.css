@@ -65,9 +65,19 @@
     height: 24px !important;
 }
 
+.large-iconify {
+    width: 40px !important;
+    height: 40px !important;
+}
+
 .small {
     font-size: 16px;
     line-height: 20px;
+}
+
+.text-lead{
+    font-size: 1.5rem;
+    line-height: 1.5;
 }
 
 .margin-user-display{

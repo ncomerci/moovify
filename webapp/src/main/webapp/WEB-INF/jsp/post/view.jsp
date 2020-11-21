@@ -42,14 +42,14 @@
                             <c:set var="bookmarked" value="${customTag:hasUserBookmarkedPost(loggedUser, post)}"/>
                             <c:choose>
                                 <c:when test="${bookmarked}">
-                                    <a id="bookmark" title="<spring:message code="post.remove.bookmark"/>"><span class="iconify" data-icon="mdi-bookmark-check" data-inline="false"></span></a>
+                                    <a id="bookmark" title="<spring:message code="post.remove.bookmark"/>"><span class="iconify large-iconify" data-icon="mdi-bookmark-check" data-inline="false"></span></a>
                                 </c:when>
                                 <c:otherwise>
-                                    <a id="no-bookmark" title="<spring:message code="post.add.bookmark"/>"><span class="iconify" data-icon="mdi-bookmark-check-outline" data-inline="false"></span></a>
+                                    <a id="no-bookmark" title="<spring:message code="post.add.bookmark"/>"><span class="iconify large-iconify" data-icon="mdi-bookmark-check-outline" data-inline="false"></span></a>
                                 </c:otherwise>
                             </c:choose>
+                            <c:out value="-"/>
                         </sec:authorize>
-                        <c:out value="-"/>
                         <c:out value="${post.title}"/>
                     </h1>
                     <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">

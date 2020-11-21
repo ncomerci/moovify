@@ -27,16 +27,16 @@
                         </c:choose>
                         <c:choose>
                             <c:when test="${post.category.name eq 'watchlist'}">
-                                <span uk-icon="icon: list; ratio: 0.8"></span>
+                                <span class="iconify small-iconify" data-icon="bi:list-ol" data-inline="false"></span>
                             </c:when>
                             <c:when test="${post.category.name eq 'critique'}">
-                                <span uk-icon="icon: check; ratio: 0.8"></span>
+                                <span class="iconify small-iconify" data-icon="ic:outline-rate-review" data-inline="false"></span>
                             </c:when>
                             <c:when test="${post.category.name eq 'news'}">
-                                <span uk-icon="icon: warning; ratio: 0.8"></span>
+                                <span class="iconify small-iconify" data-icon="fa:newspaper-o" data-inline="false"></span>
                             </c:when>
                             <c:when test="${post.category.name eq 'debate'}">
-                                <span uk-icon="icon: users; ratio: 0.8"></span>
+                                <span class="iconify small-iconify" data-icon="octicon:comment-discussion-24" data-inline="false"></span>
                             </c:when>
                         </c:choose>
                         <spring:message code="${post.category.name}" var="category"/>
@@ -48,12 +48,12 @@
                         <span uk-icon="icon: <c:out value="${post.totalLikes >= 0 ? 'chevron-up':'chevron-down'}"/>; ratio: 0.8"></span>
                     </p>
 
-                    <a href="<c:url value="/post/${post.id}"/>">
+                    <a class="text-lead" href="<c:url value="/post/${post.id}"/>">
                         <sec:authorize access="isAuthenticated()">
                             <c:set var="bookmarked" value="${customTag:hasUserBookmarkedPost(loggedUser, post)}"/>
                             <c:if test="${bookmarked}">
-                                <c:out value="-"/>
                                 <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false" title="<spring:message code="post.bookmarked"/>"></span>
+                                <c:out value="-"/>
                             </c:if>
                         </sec:authorize>
                         <c:out value="${post.title}"/>

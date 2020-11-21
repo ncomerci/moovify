@@ -21,7 +21,7 @@
                     </button>
                 </c:if>
                 <div class="uk-width-expand uk-margin-small-top">
-                    <a class="uk-text-italic" href="<c:url value="/comment/${comment.id}"/>">
+                    <a class="uk-text-italic text-lead" href="<c:url value="/comment/${comment.id}"/>">
                         <c:set var="maxLength" value="${80}"/>
                         <c:set var="length" value="${fn:length(comment.body)}"/>
                         <c:out value="\"${fn:substring(comment.body, 0, maxLength)}${length > maxLength ? '[...]':''}\""/>

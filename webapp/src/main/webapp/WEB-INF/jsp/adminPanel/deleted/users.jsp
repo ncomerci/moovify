@@ -42,7 +42,7 @@
                                 </button>
                             </c:if>
                             <div class="uk-width-expand uk-margin-small-top">
-                                <p class="uk-margin-remove ${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
+                                <p class="uk-margin-remove text-lead ${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
                                     <c:out value="${user.username}"/>
                                     <c:if test="${user.admin}">
                                         <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>

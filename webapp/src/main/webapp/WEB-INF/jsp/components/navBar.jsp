@@ -18,7 +18,7 @@
                     <a id="nav-search-toggle" class="uk-navbar-toggle" title="<spring:message code="search.title"/>">
                         <span uk-icon="icon: search; ratio: 1.7"></span>
                     </a>
-                    <div class="uk-drop" data-uk-drop="mode: click; pos: right-center; offset: 0; boundary: #navbar">
+                    <div class="uk-drop" data-uk-drop="mode: click; pos: left-center; offset: 0; boundary: #navbar">
                         <form action="<c:url value="/search/posts"/>" class="uk-search uk-search-navbar uk-width-1-1">
                             <label for="nav-search"></label>
                             <input autofocus id="nav-search" name="query" class="uk-search-input" type="search" placeholder="<spring:message code="navbar.searchDots"/>" >
