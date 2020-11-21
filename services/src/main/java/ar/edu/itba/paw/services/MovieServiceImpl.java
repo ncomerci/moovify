@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.persistence.MovieCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MovieService;
+import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
 import ar.edu.itba.paw.models.PaginatedCollection;
@@ -23,7 +24,7 @@ public class MovieServiceImpl implements MovieService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieServiceImpl.class);
 
-    private static final String DEFAULT_POSTER_PATH = "";
+    private static final String DEFAULT_POSTER_PATH = "/images/defaultPoster.jpg";
     private static final String POSTER_SECURITY_TAG = "POSTER";
 
     @Autowired
@@ -51,6 +52,20 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Transactional
+    @Override
+    public void updatePoster(Movie movie, byte[] newPoster) {
+
+        Image poster = null;
+
+        if(newPoster.length > 0)
+            poster = imageService.uploadImage(newPoster, POSTER_SECURITY_TAG);
+
+        movie.setPoster(poster);
+
+        LOGGER.info("Movie's {} Poster was Updated to {}", movie.getId(), poster == null ? 0 : poster.getId());
+    }
+
+    @Transactional(readOnly = true)
     @Override
     public Optional<byte[]> getPoster(long posterId) {
 

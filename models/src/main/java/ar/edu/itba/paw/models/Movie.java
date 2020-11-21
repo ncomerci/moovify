@@ -174,6 +174,10 @@ public class Movie implements Serializable {
         return poster.getId();
     }
 
+    public void setPoster(Image poster) {
+        this.poster = poster;
+    }
+
     public Collection<Post> getPosts() {
         return posts;
     }

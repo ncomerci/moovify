@@ -121,7 +121,7 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("User's {} Avatar was Updated to {}", user.getId(), avatar == null ? 0 : avatar.getId());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Optional<byte[]> getAvatar(long avatarId) {
 
