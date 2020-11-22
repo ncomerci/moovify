@@ -10,11 +10,6 @@
     <short-name>customTag</short-name>
     <uri>http://www.paw.itba.edu.ar/moovify/tags</uri>
 
-    <!--<function>
-        <name>totalComments</name>
-        <function-class>ar.edu.itba.paw.models.Comment</function-class>
-        <function-signature>int getTotalComments(java.util.Collection)</function-signature>
-    </function>-->
     <function>
         <name>descendantCount</name>
         <function-class>ar.edu.itba.paw.models.Comment</function-class>
@@ -26,9 +21,28 @@
         <function-class>ar.edu.itba.paw.models.Comment</function-class>
         <function-signature>int getLikeValue(ar.edu.itba.paw.models.Comment,ar.edu.itba.paw.models.User)</function-signature>
     </function>
+
     <function>
         <name>getPostLikeValue</name>
         <function-class>ar.edu.itba.paw.models.Post</function-class>
-        <function-signature>int getLikeValueByUser(ar.edu.itba.paw.models.Post,ar.edu.itba.paw.models.User)</function-signature>
+        <function-signature>int getLikeValue(ar.edu.itba.paw.models.Post,ar.edu.itba.paw.models.User)</function-signature>
+    </function>
+
+    <function>
+        <name>hasUserBookmarkedPost</name>
+        <function-class>ar.edu.itba.paw.models.User</function-class>
+        <function-signature>boolean hasUserBookmarkedPost(ar.edu.itba.paw.models.User,ar.edu.itba.paw.models.Post)</function-signature>
+    </function>
+
+    <function>
+        <name>hasUserFollowed</name>
+        <function-class>ar.edu.itba.paw.models.User</function-class>
+        <function-signature>boolean hasUserFollowed(ar.edu.itba.paw.models.User, ar.edu.itba.paw.models.User)</function-signature>
+    </function>
+
+    <function>
+        <name>hasDescription</name>
+        <function-class>ar.edu.itba.paw.models.User</function-class>
+        <function-signature>boolean hasDescription(ar.edu.itba.paw.models.User)</function-signature>
     </function>
 </taglib>

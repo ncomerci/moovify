@@ -27,14 +27,17 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
 
         em.persist(userVerificationToken);
 
+        LOGGER.info("Created UserVerificationToken: {}", userVerificationToken.getId());
+
         return userVerificationToken;
     }
 
     @Override
     public Optional<UserVerificationToken> getVerificationToken(String token) {
 
-        return em
-                .createQuery(
+        LOGGER.info("Get User Verification Token: {}", token);
+
+        return em.createQuery(
                         "SELECT uvt FROM UserVerificationToken uvt WHERE uvt.token = :token",
                         UserVerificationToken.class)
                 .setParameter("token", token)
@@ -45,8 +48,9 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
     @Override
     public Optional<UserVerificationToken> findVerificationTokenByUser(User user) {
 
-        return em
-                .createQuery(
+        LOGGER.info("Find User Verification Token By User: {}", user.getId());
+
+        return em.createQuery(
                         "SELECT uvt FROM UserVerificationToken uvt WHERE uvt.user.id = :id",
                         UserVerificationToken.class)
                 .setParameter("id", user.getId())
@@ -56,6 +60,7 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
 
     @Override
     public void deleteVerificationToken(UserVerificationToken token) {
+        LOGGER.info("Delete User Verification Reset Token: {}", token.getId());
         em.remove(token);
     }
 }

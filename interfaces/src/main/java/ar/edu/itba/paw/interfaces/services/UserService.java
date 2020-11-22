@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Locale;
@@ -11,6 +13,8 @@ public interface UserService {
 
     User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate, Locale locale) throws DuplicateUniqueUserAttributeException;
 
+    void generalUserUpdate(User user, String name, String username, String description) throws DuplicateUniqueUserAttributeException;
+
     void updateName(User user, String name);
 
     void updateUsername(User user, String username) throws DuplicateUniqueUserAttributeException;
@@ -19,11 +23,15 @@ public interface UserService {
 
     void updatePassword(User user, String password);
 
-    void deleteUser(User user);
+    void deleteUser(User user) throws DeletedDisabledModelException;
 
-    void restoreUser(User user);
+    void restoreUser(User user) throws RestoredEnabledModelException;
 
-    void promoteUserToAdmin(User user);
+    void promoteUserToAdmin(User user) throws InvalidUserPromotionException;
+
+    void followUser(User user, User userFollowed) throws IllegalUserFollowException;
+
+    void unfollowUser(User user, User userUnfollowed) throws IllegalUserUnfollowException;
 
     Optional<User> confirmRegistration(String token);
 
@@ -39,6 +47,10 @@ public interface UserService {
 
     void updateAvatar(User user, byte[] newAvatar);
 
+    void addFavouritePost(User user, Post post);
+
+    void removeFavouritePost(User user, Post post);
+
     Optional<User> findUserById(long id);
 
     Optional<User> findDeletedUserById(long id);
@@ -48,4 +60,7 @@ public interface UserService {
     Optional<User> findUserByEmail(String email);
 
     PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize);
+
+    PaginatedCollection<User> getFollowedUsers(User user, int pageNumber, int pageSize);
+
 }

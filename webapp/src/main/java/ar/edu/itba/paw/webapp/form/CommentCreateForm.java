@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 
 public class CommentCreateForm {
 
-    @Size( min = 1, max = 100000)
+    @Size(min = 1, max = 400)
     @SpacesNormalization
     private String commentBody;
 

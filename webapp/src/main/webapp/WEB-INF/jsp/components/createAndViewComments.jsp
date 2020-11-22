@@ -21,13 +21,15 @@
     <c:set var="parentId" value="${null}"/>
 </c:if>
 
+<c:set var="commentMaxLength" value="400"/>
+
 <section id="post-comments" class="uk-container uk-container-small">
     <h1 class="uk-h2"><spring:message code="post.view.comments.title" arguments="${comments.totalCount}"/></h1>
     <c:if test="${not empty loggedUser and loggedUser.validated and enableReplies}">
         <div class="uk-padding uk-padding-remove-horizontal uk-padding-remove-top">
             <c:url value="/comment/create" var="action"/>
-            <%--@elvariable id="CommentCreateForm" type="ar.edu.itba.paw.webapp.form.CommentCreateForm"--%>
-            <form:form id="spring-form" modelAttribute="CommentCreateForm" action="${action}" method="post">
+            <%--@elvariable id="commentCreateForm" type="ar.edu.itba.paw.webapp.form.CommentCreateForm"--%>
+            <form:form id="spring-form" modelAttribute="commentCreateForm" action="${action}" method="post">
                 <c:set var="placeholder"><spring:message code="comment.create.writeCommentPlaceholder"/></c:set>
                 <div class="uk-margin">
                     <form:label path="postId">
@@ -37,15 +39,17 @@
                         <form:hidden path="parentId" value="${parentId}"/>
                     </form:label>
                     <form:label path="commentBody">
-                        <form:textarea class="uk-textarea" rows="5" path="commentBody" placeholder="${placeholder}" />
+                        <form:textarea class="uk-textarea" rows="5" path="commentBody" data-maxlength="${commentMaxLength}" placeholder="${placeholder}"/>
                     </form:label>
                 </div>
+                <p id="body-counter" class="uk-text-muted uk-align-left">0/${commentMaxLength}</p>
                 <div class="uk-margin-large-bottom uk-align-right">
-                    <input class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
+                    <input id="submitBtn" class="uk-button uk-button-primary uk-border-rounded" type="submit" value="<spring:message code="comment.create.button"/>" />
                 </div>
             </form:form>
         </div>
     </c:if>
+
     <c:if test="${not empty loggedUser and !loggedUser.validated}">
         <div class="uk-text-bold uk-text-italic uk-text-secondary uk-text-center">
             <spring:message code="comment.create.not_validated"/>
@@ -84,8 +88,9 @@
         <fieldset class="uk-fieldset">
             <div class="uk-margin">
                 <label for="textarea"></label>
-                <textarea id="textarea" class="uk-textarea" rows="5" placeholder="<spring:message code="comment.create.replyPlaceholder"/>" autofocus></textarea>
+                <textarea id="textarea" class="uk-textarea" rows="5" data-maxlength="${commentMaxLength}" placeholder="<spring:message code="comment.create.replyPlaceholder"/>" autofocus></textarea>
             </div>
+            <p id="reply-counter" class="uk-text-muted uk-align-left">0/${commentMaxLength}</p>
             <div class="uk-align-right">
                 <button id="send-bt" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.create.replyBtn"/></button>
             </div>
@@ -113,7 +118,7 @@
     <div id="delete-comment-modal" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
             <h2 class="uk-modal-title"><spring:message code="comment.delete.confirmTitle"/></h2>
-            <p id="modal-body" class="uk-text-italic"></p>
+            <p id="modal-body" class="uk-text-italic uk-text-break"></p>
             <p class="uk-text-right">
                 <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="comment.delete.cancelButton"/></button>
                 <button id="modal-comment-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.delete.confirmButton"/></button>

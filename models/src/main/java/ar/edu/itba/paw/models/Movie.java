@@ -15,6 +15,8 @@ public class Movie implements Serializable {
     public static final String TABLE_NAME = "movies";
     public static final String MOVIE_TO_MOVIE_CATEGORY_TABLE_NAME = "movie_to_movie_category";
 
+    public static final long DEFAULT_POSTER_ID = 0L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "movies_movie_id_seq")
     @SequenceGenerator(sequenceName = "movies_movie_id_seq", name = "movies_movie_id_seq", allocationSize = 1)
@@ -69,6 +71,10 @@ public class Movie implements Serializable {
     @Basic(optional = false)
     private LocalDate releaseDate;
 
+    @OneToOne(optional = true, fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
+    @JoinColumn(name = "poster_id", referencedColumnName = "image_id")
+    private Image poster;
+
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "movies")
     private Set<Post> posts;
 
@@ -77,16 +83,16 @@ public class Movie implements Serializable {
 
     public Movie(long id, LocalDateTime creationDate, String title, String originalTitle, long tmdbId,
                  String imdbId, String originalLanguage, String overview, float popularity, float runtime,
-                 float voteAverage, LocalDate releaseDate, Set<Post> posts, Set<MovieCategory> categories) {
+                 float voteAverage, LocalDate releaseDate, Image poster, Set<Post> posts, Set<MovieCategory> categories) {
 
         this(creationDate, title, originalTitle, tmdbId, imdbId, originalLanguage, overview, popularity, runtime,
-        voteAverage, releaseDate, posts, categories);
+        voteAverage, releaseDate, poster, posts, categories);
         this.id = id;
     }
 
     public Movie(LocalDateTime creationDate, String title, String originalTitle, long tmdbId,
                  String imdbId, String originalLanguage, String overview, float popularity, float runtime,
-                 float voteAverage, LocalDate releaseDate, Set<Post> posts, Set<MovieCategory> categories) {
+                 float voteAverage, LocalDate releaseDate, Image poster, Set<Post> posts, Set<MovieCategory> categories) {
         this.creationDate = creationDate;
         this.title = title;
         this.originalTitle = originalTitle;
@@ -98,6 +104,7 @@ public class Movie implements Serializable {
         this.runtime = runtime;
         this.voteAverage = voteAverage;
         this.releaseDate = releaseDate;
+        this.poster = poster;
         this.posts = posts;
         this.categories = categories;
     }
@@ -158,6 +165,17 @@ public class Movie implements Serializable {
 
     public LocalDate getReleaseDate() {
         return releaseDate;
+    }
+
+    public long getPosterId() {
+        if(poster == null)
+            return DEFAULT_POSTER_ID;
+
+        return poster.getId();
+    }
+
+    public void setPoster(Image poster) {
+        this.poster = poster;
     }
 
     public Collection<Post> getPosts() {

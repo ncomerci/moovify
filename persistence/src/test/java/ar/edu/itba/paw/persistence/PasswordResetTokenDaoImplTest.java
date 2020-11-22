@@ -3,80 +3,149 @@ package ar.edu.itba.paw.persistence;
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.models.PasswordResetToken;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.UserVerificationToken;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.Optional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 @Transactional
 public class PasswordResetTokenDaoImplTest {
 
-    private static final long USER_ID = 1L;
+    private static final long USER1_ID = InsertHelper.USER1_ID;
+    private static final long USER2_ID = InsertHelper.USER2_ID;
+    private static final long TOKEN_ID = 1L;
+    private static final String TOKEN = "XeRUE6wVBX8D8ETYLghHN44VBLcvSIJrtSNJwsGjxMGbArkljlgKPtw1auDsbPKmuPAuJNRLHghP2coHhJe2XkBqlqElp3XIWXttR453gGH3KWq0kVLJo6zPHvHNq8isU6AyQUNqE1tEkiA7labxfr345f2VDnj7QxjsVIMrfHco00H5HM5STlGxIWNQp6kzixCklaId4v9BHx6wYgSLbuixTOk37l9BLpsrja7Bue9RIo6tsDpIQPM0fv";
+    private static final String INVALID_TOKEN = "Invalid Token";
+    private static final LocalDateTime EXPIRATORY_DATE = LocalDateTime.of(2021,8,6,8,6);
+
     @Autowired
     private PasswordResetTokenDao passwordResetTokenDao;
 
     @Autowired
     private DataSource ds;
 
-    private JdbcTemplate jdbcTemplate;
+    @PersistenceContext
+    private EntityManager em;
 
-    private SimpleJdbcInsert tokenInsert;
+    private JdbcTemplate jdbcTemplate;
 
     @Before
     public void testSetUp() {
         this.jdbcTemplate = new JdbcTemplate(ds);
-        this.tokenInsert = new SimpleJdbcInsert(ds)
-                .withTableName(PasswordResetToken.TABLE_NAME)
-                .usingGeneratedKeyColumns("token_id");
     }
 
     @Test
-    public void createPasswordResetToken() {
+    @Sql("classpath:user1.sql")
+    public void testCreatePasswordResetToken() {
 
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, PasswordResetToken.TABLE_NAME);
+        // Pre conditions
+        JdbcTestUtils.deleteFromTables(jdbcTemplate, UserVerificationToken.TABLE_NAME);
 
-        passwordResetTokenDao.createPasswordResetToken(
-                UUID.randomUUID().toString(),
-                LocalDateTime.now().plusDays(1),
-                Mockito.when(Mockito.mock(User.class).getId()).thenReturn(USER_ID).getMock());
+        User user = em.find(User.class, USER1_ID);
 
-        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PasswordResetToken.TABLE_NAME, String.format("user_id = %d", USER_ID));
+        // Exercise
+        PasswordResetToken passwordRT = passwordResetTokenDao.createPasswordResetToken(TOKEN, EXPIRATORY_DATE, user);
 
+        em.flush();
+
+        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PasswordResetToken.TABLE_NAME, String.format("user_id = %d", USER1_ID));
+
+        // Post conditions
         Assert.assertEquals(1, count);
+        Assert.assertEquals(TOKEN, passwordRT.getToken());
+        Assert.assertEquals(user, passwordRT.getUser());
     }
 
+    @Test
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:password-reset-token.sql")
+    public void testGetVerificationToken() {
+
+        // Exercise
+        Optional<PasswordResetToken> passwordRT = passwordResetTokenDao.getResetPasswordToken(TOKEN);
+
+        // Post conditions
+        Assert.assertTrue(passwordRT.isPresent());
+        Assert.assertEquals(TOKEN, passwordRT.get().getToken());
+    }
 
     @Test
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:password-reset-token.sql")
+    public void testGetVerificationTokenWithInvalidToken() {
+
+        // Exercise
+        Optional<PasswordResetToken> passwordRT = passwordResetTokenDao.getResetPasswordToken(INVALID_TOKEN);
+
+        // Post conditions
+        Assert.assertFalse(passwordRT.isPresent());
+    }
+
+    @Test
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:password-reset-token.sql")
+    public void testFindVerificationTokenByUser() {
+
+        // Pre conditions
+        User user = em.find(User.class, USER1_ID);
+
+        // Exercise
+        Optional<PasswordResetToken> passwordRT = passwordResetTokenDao.findPasswordTokenByUser(user);
+
+        // Post conditions
+        Assert.assertTrue(passwordRT.isPresent());
+        Assert.assertEquals(TOKEN, passwordRT.get().getToken());
+        Assert.assertEquals(user, passwordRT.get().getUser());
+    }
+
+    @Test
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:user2.sql")
+    @Sql("classpath:password-reset-token.sql")
+    public void testFindVerificationTokenByInvalidUser() {
+
+        // Pre conditions
+        User user = em.find(User.class, USER2_ID);
+
+        // Post conditions
+        Optional<PasswordResetToken> passwordRT = passwordResetTokenDao.findPasswordTokenByUser(user);
+
+        // Post conditions
+        Assert.assertFalse(passwordRT.isPresent());
+    }
+
+    @Test
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:password-reset-token.sql")
     public void testDeletePasswordResetToken() {
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("user_id", USER_ID);
-        map.put("token", UUID.randomUUID());
-        map.put("expiry", Timestamp.valueOf(LocalDateTime.now().plusDays(1)));
+        // Pre conditions
+        PasswordResetToken passwordRT = em.find(PasswordResetToken.class, TOKEN_ID);
 
-        tokenInsert.execute(map);
+        // Exercise
+        passwordResetTokenDao.deletePasswordResetToken(passwordRT);
 
-        passwordResetTokenDao.deletePasswordResetToken(Mockito.when(Mockito.mock(User.class).getId()).thenReturn(USER_ID).getMock());
+        em.flush();
 
-        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PasswordResetToken.TABLE_NAME, String.format("user_id = %d", USER_ID));
+        final int count = JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, PasswordResetToken.TABLE_NAME, String.format("user_id = %d", USER1_ID));
 
+        // Post conditions
         Assert.assertEquals(0, count);
     }
 }

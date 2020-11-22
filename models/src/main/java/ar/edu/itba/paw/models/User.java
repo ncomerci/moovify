@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -13,8 +14,22 @@ public class User {
 
     public static final String TABLE_NAME = "users";
     public static final String USER_ROLE_TABLE_NAME = "user_role";
+    public static final String USER_FAV_POST = "user_fav_post";
+    public static final String USERS_FOLLOWS = "users_follows";
 
     public static final long DEFAULT_AVATAR_ID = 0;
+
+    public static boolean hasUserBookmarkedPost(User user, Post post) {
+        return user.isPostBookmarked(post);
+    }
+
+    static public boolean hasUserFollowed(User user, User followedUser) {
+        return user.getFollowing().contains(followedUser);
+    }
+
+    static public boolean hasDescription(User user){
+        return user.getDescription().isEmpty();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_user_id_seq")
@@ -46,6 +61,10 @@ public class User {
     @Basic(optional = false)
     private String description;
 
+    @Column(nullable = false, length = 15)
+    @Basic(optional = false)
+    private String language;
+
     @OneToOne(optional = true, fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "avatar_id", referencedColumnName = "image_id")
     private Image avatar;
@@ -60,7 +79,7 @@ public class User {
     private Long totalLikes;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role",
+    @CollectionTable(name = USER_ROLE_TABLE_NAME,
             joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role_name", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -70,23 +89,40 @@ public class User {
     private Set<Post> posts;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Collection<Comment> comments;
+    private Set<Comment> comments;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_follows",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_follow_id")
+    )
+    private Set<User> following;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = USER_FAV_POST,
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    private Set<Post> favouritePosts;
 
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments) {
-        this(creationDate, username, password, name, email, description, avatar, roles, enabled, postLikes, commentLikes, posts, comments);
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> favouritePosts) {
+        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postLikes, commentLikes, posts, comments, following, favouritePosts);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> favouritePosts) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
         this.description = description;
+        this.language = language;
         this.avatar = avatar;
         this.roles = roles;
         this.enabled = enabled;
@@ -94,6 +130,8 @@ public class User {
         this.commentLikes = commentLikes;
         this.posts = posts;
         this.comments = comments;
+        this.following = following;
+        this.favouritePosts = favouritePosts;
     }
 
     protected User() {
@@ -149,6 +187,10 @@ public class User {
         return description;
     }
 
+    public String getLanguage() {
+        return language;
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -185,6 +227,10 @@ public class User {
         return commentLikes;
     }
 
+    public Set<User> getFollowing() {
+        return following;
+    }
+
     public void removeCommentLike(CommentLike like) {
         getCommentLikes().remove(like);
     }
@@ -207,6 +253,34 @@ public class User {
 
     public boolean hasRole(Role role) {
         return getRoles().stream().anyMatch(r -> r.equals(role));
+    }
+
+    public Collection<Post> getFavouritePosts() {
+        return favouritePosts;
+    }
+
+    public boolean isPostBookmarked(Post post) {
+        return favouritePosts.contains(post);
+    }
+
+    public void addFavouritePost(Post post) {
+        favouritePosts.add(post);
+    }
+
+    public void removeFavouritePost(Post post) {
+        favouritePosts.remove(post);
+    }
+
+    public Collection<User> getFollowingUsers() {
+        return following;
+    }
+
+    public void followUser(User user) {
+        getFollowing().add(user);
+    }
+
+    public void unfollowUser(User user) {
+        getFollowing().remove(user);
     }
 
     public Duration getTimeSinceCreation() {

@@ -30,6 +30,7 @@ public class UserDaoImpl implements UserDao {
     private static final String POSTS_LIKES = PostLike.TABLE_NAME;
     private static final String COMMENTS_LIKES = CommentLike.TABLE_NAME;
     private static final String COMMENTS = Comment.TABLE_NAME;
+    private static final String USERS_FOLLOWS = User.USERS_FOLLOWS;
 
     private static final String NATIVE_BASE_USER_FROM = "FROM " + USERS;
 
@@ -95,7 +96,7 @@ public class UserDaoImpl implements UserDao {
     private EntityManager em;
 
     @Override
-    public User register(String username, String password, String name, String email, String description, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateUniqueUserAttributeException {
+    public User register(String username, String password, String name, String email, String description, String language, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateUniqueUserAttributeException {
 
         final List<Tuple> userIntegrityViolators =
                 em.createQuery(
@@ -128,11 +129,13 @@ public class UserDaoImpl implements UserDao {
             throw new DuplicateUniqueUserAttributeException(duplicatedUniqueAttributes);
         }
 
-        final User user = new User(LocalDateTime.now(), username, password, name, email, description, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        final User user = new User(LocalDateTime.now(), username, password, name, email, description, language, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
 
         em.persist(user);
 
         user.setTotalLikes(0L);
+
+        LOGGER.info("Created User: {}", user.getId());
 
         return user;
     }
@@ -151,6 +154,8 @@ public class UserDaoImpl implements UserDao {
             throw new DuplicateUniqueUserAttributeException(EnumSet.of(DuplicateUniqueUserAttributeException.UniqueAttributes.USERNAME));
 
         user.setUsername(username);
+
+        LOGGER.info("Updating user {} username from {} to {}", user.getId(), user.getUsername(), username);
 
         em.persist(user);
     }
@@ -178,7 +183,24 @@ public class UserDaoImpl implements UserDao {
     @Override
     public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
+        LOGGER.info("Search All Users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
+
         return queryUsers("", sortCriteria, pageNumber, pageSize, null);
+    }
+
+    @Override
+    public PaginatedCollection<User> getFollowedUsers(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get All followed users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
+
+        return queryUsers(
+                "WHERE " +
+                        USERS + ".user_id IN ( " +
+                        "SELECT " + USERS_FOLLOWS + ".user_follow_id " +
+                        "FROM " + USERS_FOLLOWS +
+                        " WHERE " + USERS_FOLLOWS + ".user_id = ?)" +
+                        " AND " + NATIVE_ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override
@@ -206,6 +228,8 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search All Deleted Users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
 
         return queryUsers(
                 "WHERE " + NATIVE_SEARCH_BY_USERNAME +
@@ -285,6 +309,10 @@ public class UserDaoImpl implements UserDao {
                 "GROUP BY u " +
                 "%s", HQLOrderBy);
 
+        LOGGER.debug("QueryUsers nativeCountQuery: {}", nativeCountQuery);
+        LOGGER.debug("QueryUsers nativeQuery: {}", nativeQuery);
+        LOGGER.debug("QueryUsers fetchQuery: {}", fetchQuery);
+
         // Calculate Total User Count Disregarding Pagination (To Calculate Pages Later)
         final Query totalUsersNativeQuery = em.createNativeQuery(nativeCountQuery);
 
@@ -292,8 +320,10 @@ public class UserDaoImpl implements UserDao {
 
         final long totalUsers = ((Number) totalUsersNativeQuery.getSingleResult()).longValue();
 
-        if(totalUsers == 0)
+        if(totalUsers == 0) {
+            LOGGER.debug("QueryUsers Total Count == 0");
             return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalUsers);
+        }
 
         // Calculate Which Users To Load And Load Their Ids
         final Query userIdsNativeQuery = em.createNativeQuery(nativeQuery);
@@ -304,6 +334,11 @@ public class UserDaoImpl implements UserDao {
         final Collection<Long> userIds =
                 ((List<Number>)userIdsNativeQuery.getResultList())
                 .stream().map(Number::longValue).collect(Collectors.toList());
+
+        if(userIds.isEmpty()) {
+            LOGGER.debug("QueryUsers Empty Page");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalUsers);
+        }
 
         // Get Users Based on Ids
         final Collection<Tuple> fetchQueryResult = em.createQuery(fetchQuery, Tuple.class)
@@ -322,6 +357,9 @@ public class UserDaoImpl implements UserDao {
     }
 
     private <T> Optional<User> findByCriteria(String field, T value, boolean enabled) {
+
+        LOGGER.info("Find User By {}: {} and enabled = {}", field, value, enabled);
+
         CriteriaBuilder cb = em.getCriteriaBuilder();
 
         CriteriaQuery<User> q = cb.createQuery(User.class);

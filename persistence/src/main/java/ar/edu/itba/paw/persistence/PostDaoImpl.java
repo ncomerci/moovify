@@ -24,6 +24,8 @@ public class PostDaoImpl implements PostDao {
     private static final String POSTS_LIKES = PostLike.TABLE_NAME;
     private static final String TAGS = Post.TAGS_TABLE_NAME;
     private static final String POST_CATEGORY = PostCategory.TABLE_NAME;
+    private static final String USER_FAV_POST = User.USER_FAV_POST;
+    private static final String USERS_FOLLOWS = User.USERS_FOLLOWS;
 
     @PersistenceContext
     private EntityManager em;
@@ -89,11 +91,13 @@ public class PostDaoImpl implements PostDao {
     @Override
     public Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Movie> movies, boolean enabled) {
 
-        final Post post = new Post(LocalDateTime.now(), title, body, wordCount, category, user, tags, enabled, Collections.emptySet(), movies, Collections.emptySet());
+        final Post post = new Post(LocalDateTime.now(), title, body, wordCount, category, user, tags, false, null, enabled, Collections.emptySet(), movies, Collections.emptySet());
 
         em.persist(post);
 
         post.setTotalLikes(0L);
+
+        LOGGER.info("Created Post: {}", post.getId());
 
         return post;
     }
@@ -123,6 +127,8 @@ public class PostDaoImpl implements PostDao {
 
     @Override
     public PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get All Posts Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
 
         return queryPosts("WHERE " + NATIVE_ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
     }
@@ -160,6 +166,36 @@ public class PostDaoImpl implements PostDao {
         return queryPosts(
                 "WHERE " + POSTS + ".enabled = false",
                 sortCriteria, pageNumber, pageSize, null);
+    }
+
+    @Override
+    public PaginatedCollection<Post> getFollowedUsersPosts(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get User {} Followed Users Posts Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
+
+        return queryPosts(
+                "WHERE " +
+                        POSTS + ".user_id IN ( " +
+                        "SELECT " + USERS_FOLLOWS + ".user_follow_id " +
+                        "FROM " + USERS_FOLLOWS +
+                        " WHERE " + USERS_FOLLOWS + ".user_id = ?)" +
+                        " AND " + NATIVE_ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
+    }
+
+    @Override
+    public PaginatedCollection<Post> getUserFavouritePosts(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get User {} Favourite Posts Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
+
+        return queryPosts(
+                "WHERE " +
+                        POSTS + ".post_id IN ( " +
+                        "SELECT " + USER_FAV_POST + ".post_id " +
+                        "FROM " + USER_FAV_POST +
+                        " WHERE " + USER_FAV_POST + ".user_id = ?)" +
+                        " AND " + NATIVE_ENABLED_FILTER,
+                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override
@@ -293,6 +329,10 @@ public class PostDaoImpl implements PostDao {
                         "GROUP BY p " +
                         "%s", HQLOrderBy);
 
+        LOGGER.debug("QueryPosts nativeCountQuery: {}", nativeCountQuery);
+        LOGGER.debug("QueryPosts nativeQuery: {}", nativeQuery);
+        LOGGER.debug("QueryPosts fetchQuery: {}", fetchQuery);
+
         // Calculate Total Posts Count Disregarding Pagination (To Calculate Pages Later)
         final Query totalPostsNativeQuery = em.createNativeQuery(nativeCountQuery);
 
@@ -300,8 +340,10 @@ public class PostDaoImpl implements PostDao {
 
         final long totalPosts = ((Number) totalPostsNativeQuery.getSingleResult()).longValue();
 
-        if(totalPosts == 0)
+        if(totalPosts == 0) {
+            LOGGER.debug("QueryPosts Total Count == 0");
             return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalPosts);
+        }
 
         // Calculate Which Posts To Load And Load Their Ids
         final Query postIdsNativeQuery = em.createNativeQuery(nativeQuery);
@@ -312,6 +354,11 @@ public class PostDaoImpl implements PostDao {
         final Collection<Long> postIds =
                 ((List<Number>)postIdsNativeQuery.getResultList())
                         .stream().map(Number::longValue).collect(Collectors.toList());
+
+        if(postIds.isEmpty()) {
+            LOGGER.debug("QueryPosts Empty Page");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalPosts);
+        }
 
         // Get Posts Based on Ids
         final Collection<Tuple> fetchQueryResult = em.createQuery(fetchQuery, Tuple.class)

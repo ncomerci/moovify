@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="customTag" uri="http://www.paw.itba.edu.ar/moovify/tags" %>
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 
@@ -14,27 +15,59 @@
     <c:forEach items="${posts.results}" var="post">
         <div class="uk-width-1-1">
             <div class="uk-flex">
-                <div class="uk-width-expand uk-margin-small-top">
-                    <a href="<c:url value="/post/${post.id}"/>">
-                        <c:out value="${post.title}"/>
-                    </a>
+                <div class="uk-width-expand uk-margin-small-top uk-margin-small-bottom uk-text-truncate">
                     <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
                         <c:choose>
                             <c:when test="${post.user.enabled}">
-                                <c:set var="name" value="${post.user.name}"/>
+                                <c:set var="name" value="${post.user.username}"/>
                             </c:when>
                             <c:otherwise>
                                 <c:set var="name"><spring:message code="user.notEnabled.name"/></c:set>
                             </c:otherwise>
                         </c:choose>
+                        <c:choose>
+                            <c:when test="${post.category.name eq 'watchlist'}">
+                                <span class="iconify small-iconify" data-icon="bi:list-ol" data-inline="false"></span>
+                            </c:when>
+                            <c:when test="${post.category.name eq 'critique'}">
+                                <span class="iconify small-iconify" data-icon="ic:outline-rate-review" data-inline="false"></span>
+                            </c:when>
+                            <c:when test="${post.category.name eq 'news'}">
+                                <span class="iconify small-iconify" data-icon="fa:newspaper-o" data-inline="false"></span>
+                            </c:when>
+                            <c:when test="${post.category.name eq 'debate'}">
+                                <span class="iconify small-iconify" data-icon="octicon:comment-discussion-24" data-inline="false"></span>
+                            </c:when>
+                        </c:choose>
                         <spring:message code="${post.category.name}" var="category"/>
                         <spring:message code="postDisplay.meta.description" arguments="${category}, ${name}"/>
                         <c:if test="${post.user.admin && post.user.enabled}">
-                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
                         </c:if>
                         <spring:message code="postDisplay.meta.votes" arguments="${post.totalLikes}"/>
-
                         <span uk-icon="icon: <c:out value="${post.totalLikes >= 0 ? 'chevron-up':'chevron-down'}"/>; ratio: 0.8"></span>
+                    </p>
+
+                    <a class="text-lead" href="<c:url value="/post/${post.id}"/>">
+                        <sec:authorize access="isAuthenticated()">
+                            <c:set var="bookmarked" value="${customTag:hasUserBookmarkedPost(loggedUser, post)}"/>
+                            <c:if test="${bookmarked}">
+                                <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false" title="<spring:message code="post.bookmarked"/>"></span>
+                                <c:out value="-"/>
+                            </c:if>
+                        </sec:authorize>
+                        <c:out value="${post.title}"/>
+                    </a>
+
+
+                    <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
+                        <spring:message code="postDisplay.meta.moviesDiscussed"/>
+                        <c:forEach items="${post.movies}" var="movie">
+                            <a
+                                    href="<c:url value="/movie/${movie.id}"/>">
+                                <spring:message code="postDisplay.meta.list" arguments="${movie.title}"/>
+                            </a>
+                        </c:forEach>
                     </p>
                 </div>
                 <div class="uk-width-auto">

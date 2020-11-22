@@ -42,10 +42,10 @@
                                 </button>
                             </c:if>
                             <div class="uk-width-expand uk-margin-small-top">
-                                <p class="uk-margin-remove ${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
+                                <p class="uk-margin-remove text-lead uk-text-truncate ${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
                                     <c:out value="${user.username}"/>
                                     <c:if test="${user.admin}">
-                                        <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                        <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
                                     </c:if>
                                 </p>
                                 <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
@@ -82,6 +82,15 @@
     </form>
 
     <form id="restore-form" method="post" action="<c:url value="/user/restore"/>">
+        <label>
+            <input hidden name="query" type="text" value="${query}"/>
+        </label>
+        <label>
+            <input hidden name="pageSize" type="text" value="${collection.pageSize}"/>
+        </label>
+        <label>
+            <input hidden name = "pageNumber" value = "${collection.pageNumber}"/>
+        </label>
     </form>
 </main>
 </body>

@@ -4,10 +4,16 @@ import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
+import ar.edu.itba.paw.interfaces.services.exceptions.InvalidUserPromotionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.exceptions.*;
+import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
+import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 
 
@@ -90,7 +97,7 @@ public class AdminController {
     //    ================ COMMENTS PRIVILEGES ================
 
     @RequestMapping(path = "/comment/delete/{commentId}", method = RequestMethod.POST)
-    public ModelAndView deleteComment(@PathVariable final long commentId) {
+    public ModelAndView deleteComment(@PathVariable final long commentId, HttpServletRequest request) {
 
         LOGGER.info("Accessed /comment/delete/{} to delete comment. Redirecting to /comment/{}", commentId, commentId);
 
@@ -98,35 +105,32 @@ public class AdminController {
 
         commentService.deleteComment(comment);
 
-        return new ModelAndView("redirect:/comment/" + comment.getId());
+        return new ModelAndView("redirect:" + request.getHeader("Referer") + "#comment-" + comment.getId());
     }
 
     @RequestMapping(path = "/comment/restore/{commentId}", method = RequestMethod.POST)
-    public ModelAndView restoreComment(@PathVariable final long commentId) {
+    public ModelAndView restoreComment(@PathVariable final long commentId,
+                                       @RequestParam(defaultValue = "") final String query,
+                                       @RequestParam(defaultValue = "10") final int pageSize,
+                                       @RequestParam(defaultValue = "0") final int pageNumber) throws RestoredEnabledModelException {
 
         LOGGER.info("Accessed /comment/restore/{} to restore comment. Redirecting to /comment/{}", commentId, commentId);
 
         final Comment comment = commentService.findCommentById(commentId).orElseThrow(CommentNotFoundException::new);
 
-        if(comment.isEnabled())
-            throw new RestoredEnabledModelException();
-
         commentService.restoreComment(comment);
 
-        return new ModelAndView("redirect:/comment/" + comment.getId());
+        return deletedComments(query, pageSize, pageNumber);
     }
 
     //    ================ POSTS PRIVILEGES ================
 
     @RequestMapping(path = "/post/delete/{postId}", method = RequestMethod.POST)
-    public ModelAndView deletePost(@PathVariable final long postId) {
+    public ModelAndView deletePost(@PathVariable final long postId) throws DeletedDisabledModelException {
 
         LOGGER.info("Accessed /post/delete/{} to delete post. Redirecting to /", postId);
 
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
-
-        if(!post.isEnabled())
-            throw new DeletedDisabledModelException();
 
         postService.deletePost(post);
 
@@ -134,31 +138,28 @@ public class AdminController {
     }
 
     @RequestMapping(path = "/post/restore/{postId}", method = RequestMethod.POST)
-    public ModelAndView restorePost(@PathVariable final long postId) {
+    public ModelAndView restorePost(@PathVariable final long postId,
+                                    @RequestParam(defaultValue = "") final String query,
+                                    @RequestParam(defaultValue = "10") final int pageSize,
+                                    @RequestParam(defaultValue = "0") final int pageNumber) throws RestoredEnabledModelException {
 
         LOGGER.info("Accessed /post/restore/{} to restore post. Redirecting to /post/{}", postId, postId);
 
         final Post post = postService.findDeletedPostById(postId).orElseThrow(PostNotFoundException::new);
 
-        if(post.isEnabled())
-            throw new RestoredEnabledModelException();
-
         postService.restorePost(post);
 
-        return new ModelAndView("redirect:/post/" + post.getId());
+        return deletedPosts(query, pageSize, pageNumber);
     }
 
     //    ================ USERS PRIVILEGES ================
 
     @RequestMapping(path = "/user/promote/{userId}", method = RequestMethod.POST)
-    public ModelAndView promoteUser(@PathVariable long userId, RedirectAttributes redirectAttributes) {
+    public ModelAndView promoteUser(@PathVariable long userId, RedirectAttributes redirectAttributes) throws InvalidUserPromotionException {
 
         LOGGER.info("Accessed /user/promote/{} to promote user to admin. Redirecting to /user/{}", userId, userId);
 
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
-
-        if(!user.isEnabled() || user.isAdmin() || !user.isValidated())
-            throw new InvalidUserPromotionException();
 
         userService.promoteUserToAdmin(user);
 
@@ -168,14 +169,11 @@ public class AdminController {
     }
 
     @RequestMapping(path = "/user/delete/{userId}", method = RequestMethod.POST)
-    public ModelAndView deleteUser(@PathVariable long userId, final Principal principal) {
+    public ModelAndView deleteUser(@PathVariable long userId, final Principal principal) throws DeletedDisabledModelException {
 
         LOGGER.info("Accessed /user/delete/{} to delete user. Redirecting to /", userId);
 
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
-
-        if(!user.isEnabled())
-            throw new DeletedDisabledModelException();
 
         userService.deleteUser(user);
 
@@ -187,17 +185,17 @@ public class AdminController {
     }
 
     @RequestMapping(path = "/user/restore/{userId}", method = RequestMethod.POST)
-    public ModelAndView restoreUser(@PathVariable long userId) {
+    public ModelAndView restoreUser(@PathVariable long userId,
+                                    @RequestParam(defaultValue = "") final String query,
+                                    @RequestParam(defaultValue = "10") final int pageSize,
+                                    @RequestParam(defaultValue = "0") final int pageNumber) throws RestoredEnabledModelException {
 
         LOGGER.info("Accessed /user/restore/{} to restore user. Redirecting to /user/{}", userId, userId);
 
         final User user = userService.findDeletedUserById(userId).orElseThrow(UserNotFoundException::new);
 
-        if(user.isEnabled())
-            throw new RestoredEnabledModelException();
-
         userService.restoreUser(user);
 
-        return new ModelAndView("redirect:/user/" + user.getId());
+        return deletedUsers(query, pageSize, pageNumber);
     }
 }

@@ -37,13 +37,6 @@ public class MailServiceImpl implements MailService {
 
     private static final String MOOVIFY_EMAIL_ADDRESS = "moovifyCo@gmail.com";
 
-    // Send image reference
-
-    // Add the inline image, referenced from the HTML code as "cid:${imageResourceName}"
-    // final InputStreamSource imageSource = new ByteArrayResource(imageBytes);
-    // message.addInline(imageResourceName, imageSource, imageContentType);
-    // message.addAttachment("logo.png", new ClassPathResource("memorynotfound-logo.png"));
-
     @Async
     @Override
     public void sendEmail(String destination, String subject, String template, Map<String, Object> variables, Locale locale) {

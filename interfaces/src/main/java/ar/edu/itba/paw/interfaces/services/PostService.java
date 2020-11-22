@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.interfaces.services;
 
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
 
 import java.util.Collection;
@@ -10,11 +11,15 @@ public interface PostService {
 
     Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> movies);
 
-    void deletePost(Post post);
+    void deletePost(Post post) throws DeletedDisabledModelException;
 
-    void restorePost(Post post);
+    void restorePost(Post post) throws RestoredEnabledModelException;
 
-    void likePost(Post post, User user, int value);
+    void likePost(Post post, User user, int value) throws IllegalPostLikeException;
+
+    void editPost(User editor, Post post, String newBody) throws MissingPostEditPermissionException, IllegalPostEditionException;
+
+    void guaranteePostEditionPermissions(User editor, Post post) throws IllegalPostEditionException, MissingPostEditPermissionException;
 
     Optional<Post> findPostById(long id);
 
@@ -29,6 +34,10 @@ public interface PostService {
     PaginatedCollection<Post> getAllPostsOrderByOldest(int pageNumber, int pageSize);
 
     PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> getFollowedUsersPosts(User user, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> getUserFavouritePosts(User user, int pageNumber, int pageSize);
 
     Collection<PostCategory> getAllPostCategories();
 

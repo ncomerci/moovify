@@ -7,7 +7,10 @@ import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttr
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
+import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.models.Role;
+import ar.edu.itba.paw.models.User;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,11 +21,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 
@@ -32,14 +31,17 @@ public class UserServiceTest {
     private static final long ID = 1L;
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
+    private static final String ENCODED_PASSWORD = "encoded";
     private static final String NAME = "name";
     private static final String EMAIL = "email";
     private static final String DESCRIPTION = "description";
     private static final String TOKEN = "token";
+    private static final byte[] IMAGE = new byte[10];
     private static final int PAGE_NUMBER = 0;
     private static final int PAGE_SIZE = 2;
     private static final int TOTAL_COUNT = 4;
-    private static final long AVATAR_ID = 0;
+    private static final long AVATAR_ID = 6;
+    private static final long DEFAULT_AVATAR_ID = 0;
 
     @Mock
     private UserDao dao;
@@ -62,232 +64,320 @@ public class UserServiceTest {
     @InjectMocks
     private final UserServiceImpl userService = new UserServiceImpl();
 
+    /*
+     * - register                   -> 0 (tested)
+     * - updateAvatar               -> 1
+     * - getAvatar                  -> 1
+     * - createConfirmationEmail    -> 2
+     * - createPasswordResetEmail   -> 2
+     * - confirmRegistration        -> 1
+     * - validatePasswordResetToken -> 1
+     * - updatePassword             -> 2
+     */
 
-    @Test
-    public void testRegister() throws DuplicateUniqueUserAttributeException {
-//        1. Setup: Establezco las pre-condiciones
-
-        User user = Mockito.mock(User.class);
-        UserService userServiceMock = Mockito.mock(UserService.class);
-
-
-        Mockito.when(dao.register(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.eq(null), Mockito.eq(true)))
-                .thenReturn(user);
-        Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
-        Mockito.doNothing().when(userServiceMock).createConfirmationEmail(Mockito.isA(User.class),Mockito.anyString(), Locale.ENGLISH);
-
-
-//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        User user1 = userService.register(USERNAME,PASSWORD, NAME, EMAIL, DESCRIPTION, new byte[]{}, "", Locale.ENGLISH);
-
-//        3. Validaciones: Confirmo las postcondiciones
-
-        Assert.assertNotNull(user1);
-        Assert.assertEquals(user, user1);
-    }
-
+    // Verifico que el service retorne el user que le dio el DAO y para generarlo haya utilizado la imagen que subio
     @Test
     public void testRegisterWithAvatar() throws DuplicateUniqueUserAttributeException {
-//        1. Setup: Establezco las pre-condiciones
-        User user = Mockito.mock(User.class);
-        UserService userServiceMock = Mockito.mock(UserService.class);
 
+        User userMock = Mockito.when(Mockito.mock(User.class).getAvatarId()).thenReturn(AVATAR_ID).getMock();
 
-//        Mockito.when(dao.register(Mockito.anyString(),Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.any(), Mockito.anyCollection(), Mockito.anyLong(), Mockito.anyBoolean()))
-//                .thenReturn(user);
+        UserService userServiceSpy = Mockito.spy(userService);
+
+        Image imgMock = Mockito.when(Mockito.mock(Image.class).getId()).thenReturn(AVATAR_ID).getMock();
+
+        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(imgMock);
+
+        Mockito.when(dao.register(
+                Mockito.anyString(), // username
+                Mockito.anyString(), // password
+                Mockito.anyString(), // name
+                Mockito.anyString(), // email
+                Mockito.anyString(), // description
+                Mockito.anyString(), // language
+                Mockito.anySet(),    // roles
+                Mockito.any(Image.class), // image
+                Mockito.anyBoolean() // enabled
+            )).thenReturn(userMock);
+
         Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
-//        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(AVATAR_ID);
-        Mockito.doNothing().when(userServiceMock).createConfirmationEmail(Mockito.isA(User.class),Mockito.anyString(), Locale.ENGLISH);
 
-//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        User user1 = userService.register(USERNAME,PASSWORD, NAME, EMAIL, DESCRIPTION, new byte[]{8}, "", Locale.ENGLISH);
+        Mockito.doNothing().when(userServiceSpy).createConfirmationEmail(
+                Mockito.any(User.class),
+                Mockito.anyString(),
+                Mockito.any(Locale.class)
+        );
 
-//        3. Validaciones: Confirmo las postcondiciones
-        Assert.assertNotNull(user1);
-        Assert.assertEquals(user, user1);
-        Assert.assertEquals(AVATAR_ID, user1.getId());
+        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, IMAGE, "", Locale.ENGLISH);
+
+        // Quiero revisar que el register haya utilizado el mock que le da el image service
+        Mockito.verify(dao).register(Mockito.anyString(), // username
+                Mockito.anyString(), // password
+                Mockito.anyString(), // name
+                Mockito.anyString(), // email
+                Mockito.anyString(), // description
+                Mockito.anyString(), // language
+                Mockito.anySet(),    // roles
+                Mockito.eq(imgMock), // image mock
+                Mockito.anyBoolean() // enabled
+        );
+        Assert.assertEquals(AVATAR_ID, user.getAvatarId());
     }
 
     @Test
-    public void testUpdateName() {
-        userService.updateName(Mockito.mock(User.class), NAME);
+    public void testRegisterWithoutAvatar() throws DuplicateUniqueUserAttributeException {
+
+        User userMock = Mockito.when(Mockito.mock(User.class).getAvatarId()).thenReturn(DEFAULT_AVATAR_ID).getMock();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+
+        Mockito.when(dao.register(
+                Mockito.anyString(),    // username
+                Mockito.anyString(),    // password
+                Mockito.anyString(),    // name
+                Mockito.anyString(),    // email
+                Mockito.anyString(),    // description
+                Mockito.anyString(),    // language
+                Mockito.anySet(),       // roles
+                Mockito.any(),       // image
+                Mockito.anyBoolean()    // enabled
+        )).thenReturn(userMock);
+
+        Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
+
+        Mockito.doNothing().when(userServiceSpy).createConfirmationEmail(
+                Mockito.any(User.class),
+                Mockito.anyString(),
+                Mockito.any(Locale.class));
+
+        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, new byte[]{}, "", Locale.ENGLISH);
+
+        Mockito.verify(dao).register(Mockito.anyString(), // username
+                Mockito.anyString(),    // password
+                Mockito.anyString(),    // name
+                Mockito.anyString(),    // email
+                Mockito.anyString(),    // description
+                Mockito.anyString(),    // language
+                Mockito.anySet(),       // roles
+                Mockito.isNull(),       // no hay img -> null
+                Mockito.anyBoolean()    // enabled
+        );
+
+        Assert.assertEquals(DEFAULT_AVATAR_ID, user.getAvatarId());
     }
 
     @Test
-    public void testUpdateUsername() throws DuplicateUniqueUserAttributeException {
-        userService.updateUsername(Mockito.mock(User.class), USERNAME);
+    public void testRegisterPasswordEncoded() throws DuplicateUniqueUserAttributeException {
+
+        User userMock = Mockito.when(Mockito.mock(User.class).getPassword()).thenReturn(ENCODED_PASSWORD).getMock();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+
+        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(Mockito.mock(Image.class));
+
+        Mockito.when(dao.register(
+                Mockito.anyString(),    // username
+                Mockito.anyString(),    // password
+                Mockito.anyString(),    // name
+                Mockito.anyString(),    // email
+                Mockito.anyString(),    // description
+                Mockito.anyString(),    // language
+                Mockito.anySet(),       // roles
+                Mockito.any(),          // image
+                Mockito.anyBoolean()    // enabled
+        )).thenReturn(userMock);
+
+        Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(ENCODED_PASSWORD);
+
+        Mockito.doNothing().when(userServiceSpy).createConfirmationEmail(
+                Mockito.any(User.class),
+                Mockito.anyString(),
+                Mockito.any(Locale.class)
+        );
+
+        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, IMAGE, "", Locale.ENGLISH);
+
+
+        Mockito.verify(dao).register(
+                Mockito.anyString(),            // username
+                Mockito.eq(ENCODED_PASSWORD),   // password
+                Mockito.anyString(),            // name
+                Mockito.anyString(),            // email
+                Mockito.anyString(),            // description
+                Mockito.anyString(),            // language
+                Mockito.anySet(),               // roles
+                Mockito.any(),                  // image
+                Mockito.anyBoolean()            // enabled
+        );
+        Assert.assertEquals(ENCODED_PASSWORD, user.getPassword());
     }
 
     @Test
-    public void testUpdateDescription() {
-        userService.updateDescription(Mockito.mock(User.class), DESCRIPTION);
-    }
+    public void testGeneralUserUpdateAll() throws DuplicateUniqueUserAttributeException {
 
-    @Test()
-    public void updatePassword() {
+        String username = "testUsername";
+        String name = "testName";
+        String description = "testDescription";
 
-        userService.updatePassword(Mockito.mock(User.class), PASSWORD);
-    }
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn("");
+        Mockito.when(user.getName()).thenReturn("");
+        Mockito.when(user.getDescription()).thenReturn("");
 
-    @Test
-    public void testDeleteUser() {
-        userService.deleteUser(Mockito.mock(User.class));
-    }
+        userService.generalUserUpdate(user, name, username, description);
 
-
-    @Test
-    public void restoreUser() {
-        userService.restoreUser(Mockito.mock(User.class));
+        Mockito.verify(dao).updateUsername(user, username);
+        Mockito.verify(user).setName(name);
+        Mockito.verify(user).setDescription(description);
     }
 
     @Test
-    public void testPromoteUserToAdmin() {
-        List<Role> roles = new ArrayList<>();
-        roles.add(Role.USER);
+    public void testGeneralUserUpdateNone() throws DuplicateUniqueUserAttributeException {
 
-        User user = Mockito.when(Mockito.mock(User.class).getRoles()).thenReturn(roles).getMock();
+        String username = "testUsername";
+        String name = "testName";
+        String description = "testDescription";
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn(username);
+        Mockito.when(user.getName()).thenReturn(name);
+        Mockito.when(user.getDescription()).thenReturn(description);
+
+        userService.generalUserUpdate(user, name, username, description);
+
+        Mockito.verify(dao, Mockito.never()).updateUsername(user, username);
+        Mockito.verify(user, Mockito.never()).setName(name);
+        Mockito.verify(user, Mockito.never()).setDescription(description);
+    }
+
+    @Test
+    public void testUpdateAvatarEmptyByteArray() {
+
+        User user = Mockito.mock(User.class);
+
+        userService.updateAvatar(user, new byte[0]);
+
+        Mockito.verify(imageService, Mockito.never()).uploadImage(Mockito.any(byte[].class), Mockito.anyString());
+        Mockito.verify(user).setAvatar(null);
+    }
+
+    @Test
+    public void testUpdateAvatar() {
+
+        Image image = Mockito.mock(Image.class);
+
+        User user = Mockito.mock(User.class);
+        byte[] data = new byte[10];
+
+        Mockito.when(imageService.uploadImage(Mockito.eq(data), Mockito.anyString())).thenReturn(image);
+
+        userService.updateAvatar(user, data);
+
+        Mockito.verify(imageService).uploadImage(Mockito.eq(data), Mockito.anyString());
+        Mockito.verify(user).setAvatar(image);
+    }
+
+    @Test
+    public void testGetDefaultAvatar() {
+
+        Mockito.when(imageService.getImage(Mockito.anyString())).thenReturn(new byte[10]);
+
+        userService.getAvatar(User.DEFAULT_AVATAR_ID);
+
+        Mockito.verify(imageService).getImage(Mockito.anyString());
+    }
+
+    @Test
+    public void testGetAvatar() {
+
+        long avatarId = 5L;
+
+        userService.getAvatar(avatarId);
+
+        Mockito.verify(imageService).getImage(Mockito.eq(avatarId), Mockito.anyString());
+    }
+
+    @Test(expected = DeletedDisabledModelException.class)
+    public void testDeleteDisabledUser() throws DeletedDisabledModelException {
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(false);
+
+        userService.deleteUser(user);
+    }
+
+    @Test(expected = RestoredEnabledModelException.class)
+    public void testRestoreEnabledUser() throws RestoredEnabledModelException {
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(true);
+
+        userService.restoreUser(user);
+    }
+
+    @Test(expected = InvalidUserPromotionException.class)
+    public void testPromoteUserToAdminDisabledUser() throws InvalidUserPromotionException {
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(false);
+
+        userService.promoteUserToAdmin(user);
+    }
+
+    @Test(expected = InvalidUserPromotionException.class)
+    public void testPromoteUserToAdminAdminUser() throws InvalidUserPromotionException {
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(false);
+        Mockito.when(user.isAdmin()).thenReturn(true);
+
+        userService.promoteUserToAdmin(user);
+    }
+
+    @Test(expected = InvalidUserPromotionException.class)
+    public void testPromoteUserToAdminNotValidated() throws InvalidUserPromotionException {
+
+        User user = Mockito.mock(User.class);
+
+        Mockito.when(user.isEnabled()).thenReturn(true);
+        Mockito.when(user.isAdmin()).thenReturn(false);
+        Mockito.when(user.isValidated()).thenReturn(false);
+
+        userService.promoteUserToAdmin(user);
+    }
+
+    @Test
+    public void testPromoteUserToAdminValid() throws InvalidUserPromotionException {
+
+        User user = Mockito.mock(User.class);
+
+        Mockito.when(user.isEnabled()).thenReturn(true);
+        Mockito.when(user.isAdmin()).thenReturn(false);
+        Mockito.when(user.isValidated()).thenReturn(true);
+
         userService.promoteUserToAdmin(user);
 
-        Assert.assertTrue(user.getRoles().stream().anyMatch(role -> role.name().equals(Role.ADMIN.name())));
+        Mockito.verify(user).addRole(Role.ADMIN);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testPromoteUserToAdminNull() {
-
-        userService.promoteUserToAdmin(null);
-    }
-
-//    @Test
-//    public void testConfirmRegistration() {
-//
-//        UserVerificationToken userVerificationToken = Mockito.mock(UserVerificationToken.class);
-//        List<Role> roles = new ArrayList<>();
-//        roles.add(Role.NOT_VALIDATED);
-//        User user = Mockito.when(Mockito.mock(User.class).getRoles()).thenReturn(roles).getMock();
-//
-//        Mockito.when(userVerificationToken.isValid()).thenReturn(true);
-//        Mockito.when(userVerificationTokenDao.getVerificationToken(Mockito.anyString())).thenReturn(Optional.of(userVerificationToken));
-//        Mockito.when(userVerificationToken.getUser()).thenReturn( user);
-//        Mockito.doNothing().when(userVerificationTokenDao).deleteVerificationToken(user);
-//
-//        final Optional<User> user1 = userService.confirmRegistration(TOKEN);
-//
-//        Assert.assertTrue(user1.isPresent());
-//        Assert.assertTrue(user1.get().getRoles().stream().anyMatch(role -> role.name().equals(Role.USER.name())));
-//    }
-
-    @Test
-    public void testCreateConfirmationEmail() {
-
-        //        1. Setup: Establezco las pre-condiciones
+    @Test(expected = IllegalUserFollowException.class)
+    public void testFollowDisabledUser() throws IllegalUserFollowException {
 
         User user = Mockito.mock(User.class);
-        UserVerificationToken userVerificationToken = Mockito.mock(UserVerificationToken.class);
 
-        Mockito.when(userVerificationTokenDao.createVerificationToken(Mockito.anyString(),Mockito.isA(LocalDateTime.class), Mockito.isA(User.class))).thenReturn(userVerificationToken);
-        Mockito.doNothing().when(mailService).sendEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyMap(), Locale.ENGLISH);
+        User followedUser = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(false);
 
-
-//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        userService.createConfirmationEmail(user," ", Locale.ENGLISH);
+        userService.followUser(user, followedUser);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void testCreateConfirmationEmailNull() {
-
-        userService.createConfirmationEmail(null," ", Locale.ENGLISH);
-    }
-
-    @Test
-    public void testCreatePasswordResetEmail() {
-
-        //        1. Setup: Establezco las pre-condiciones
+    @Test(expected = IllegalUserUnfollowException.class)
+    public void testUnfollowDisabledUser() throws IllegalUserUnfollowException {
 
         User user = Mockito.mock(User.class);
-        PasswordResetToken passwordResetToken = Mockito.mock(PasswordResetToken.class);
 
-        Mockito.when(passwordResetTokenDao.createPasswordResetToken(Mockito.anyString(),Mockito.isA(LocalDateTime.class), Mockito.isA(User.class))).thenReturn(passwordResetToken);
-        Mockito.doNothing().when(mailService).sendEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyMap(), Locale.ENGLISH);
+        User followedUser = Mockito.mock(User.class);
+        Mockito.when(user.isEnabled()).thenReturn(false);
 
-//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        userService.createPasswordResetEmail(user, " ", Locale.ENGLISH);
-
-    }
-    @Test(expected = NullPointerException.class)
-    public void testCreatePasswordResetEmailNull() {
-        userService.createPasswordResetEmail(null, " ", Locale.ENGLISH);
-    }
-
-
-//    @Test
-//    public void testUpdatePassword() {
-//        PasswordResetToken passwordResetToken = Mockito.mock(PasswordResetToken.class);
-//        User user = Mockito.when(Mockito.mock(User.class).getPassword()).thenReturn(PASSWORD).getMock();
-//
-//        Mockito.when(passwordResetToken.isValid()).thenReturn(true);
-//        Mockito.when(passwordResetTokenDao.getResetPasswordToken(Mockito.anyString())).thenReturn(Optional.of(passwordResetToken));
-//        Mockito.when(passwordResetToken.getUser()).thenReturn(user);
-//        Mockito.doNothing().when(passwordResetTokenDao).deletePasswordResetToken(user);
-//
-//        final Optional<User> user1 = userService.updatePassword("password2", TOKEN);
-//
-//        Assert.assertTrue(user1.isPresent());
-//    }
-    /*TODO testear get avatar*/
-
-    @Test
-    public void findUserById() {
-        User user = Mockito.mock(User.class);
-
-        Mockito.when(dao.findUserById(Mockito.longThat(e -> e > 0))).thenReturn(Optional.of(user));
-
-//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        Optional<User> user1 = userService.findUserById(ID);
-
-//        3. Validaciones: Confirmo las postcondiciones
-        Assert.assertTrue(user1.isPresent());
-        Assert.assertEquals(user, user1.get());
-    }
-
-    @Test
-    public void findUserByUsername() {
-        User user = Mockito.mock(User.class);
-
-        Mockito.when(dao.findUserByUsername(Mockito.anyString())).thenReturn(Optional.of(user));
-
-//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        Optional<User> user1 = userService.findUserByUsername(USERNAME);
-
-//        3. Validaciones: Confirmo las postcondiciones
-        Assert.assertTrue(user1.isPresent());
-        Assert.assertEquals(user, user1.get());
-    }
-
-    @Test
-    public void findUserByEmail() {
-        User user = Mockito.mock(User.class);
-
-        Mockito.when(dao.findUserByEmail(Mockito.anyString())).thenReturn(Optional.of(user));
-
-//        2. Ejercito la class under test -> ÚNICA INVOCACIÓN
-        Optional<User> user1 = userService.findUserByEmail(EMAIL);
-
-//        3. Validaciones: Confirmo las postcondiciones
-        Assert.assertTrue(user1.isPresent());
-        Assert.assertEquals(user, user1.get());
-    }
-
-    @Test
-    public void getAllUsers() {
-        PaginatedCollection<User> users = new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT );
-        Mockito.when(dao.getAllUsers(
-                Mockito.any(),
-                Mockito.intThat(e -> e >= 0),
-                Mockito.intThat(e -> e > 0))
-        ).thenReturn(users);
-
-        PaginatedCollection<User> users1 = userService.getAllUsers(PAGE_NUMBER, PAGE_SIZE);
-
-        Assert.assertEquals(users, users1);
+        userService.unfollowUser(user, followedUser);
     }
 }

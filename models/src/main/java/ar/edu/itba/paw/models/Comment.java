@@ -20,10 +20,7 @@ public class Comment {
     public static final String TABLE_NAME = "comments";
 
     static public int getLikeValue(Comment comment, User user) {
-        return comment.getLikes().stream()
-                .filter(commentLike -> commentLike.getUser().getId() == user.getId())
-                .map(CommentLike::getValue)
-                .findFirst().orElse(0);
+        return comment.getLikeValue(user);
     }
 
     public static int getDescendantCount(Comment comment, long maxDepth) {
@@ -49,11 +46,18 @@ public class Comment {
     private Comment parent;
 
     @OneToMany(fetch = FetchType.LAZY, orphanRemoval = false, mappedBy = "parent")
-    private Collection<Comment> children;
+    private Set<Comment> children;
 
     @Column(nullable = false, length = 1000)
     @Basic(optional = false, fetch = FetchType.LAZY)
     private String body;
+
+    @Column(nullable = false)
+    private boolean edited;
+
+    @Column(name = "last_edited", nullable = true)
+    @Basic(optional = true)
+    private LocalDateTime lastEditDate;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="user_id", nullable = false)
@@ -68,22 +72,23 @@ public class Comment {
     @Column(nullable = false)
     private boolean enabled;
 
-    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Collection<Comment> children, String body, User user, boolean enabled, Set<CommentLike> likes) {
-        this(creationDate, post, parent, children, body, user, enabled, likes);
+    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, boolean edited, LocalDateTime lastEditDate, User user, boolean enabled, Set<CommentLike> likes) {
+        this(creationDate, post, parent, children, body, edited, lastEditDate, user, enabled, likes);
         this.id = id;
     }
 
-    public Comment(LocalDateTime creationDate, Post post, Comment parent, Collection<Comment> children, String body, User user, boolean enabled, Set<CommentLike> likes) {
+    public Comment(LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, boolean edited, LocalDateTime lastEditDate, User user, boolean enabled, Set<CommentLike> likes) {
         this.creationDate = creationDate;
         this.post = post;
         this.parent = parent;
         this.children = children;
         this.body = body;
+        this.edited = edited;
+        this.lastEditDate = lastEditDate;
         this.user = user;
         this.enabled = enabled;
         this.likes = likes;
     }
-
 
     protected Comment() {
         //Hibernate
@@ -113,12 +118,26 @@ public class Comment {
         return parent;
     }
 
-    public Collection<Comment> getChildren() {
+    public Set<Comment> getChildren() {
         return children;
     }
 
     public String getBody() {
         return body;
+    }
+
+    public void setBody(String body) {
+        edited = true;
+        lastEditDate = LocalDateTime.now();
+        this.body = body;
+    }
+
+    public boolean isEdited() {
+        return edited;
+    }
+
+    public LocalDateTime getLastEditDate() {
+        return lastEditDate;
     }
 
     public User getUser() {
@@ -135,6 +154,13 @@ public class Comment {
 
     public void setTotalLikes(long totalLikes) {
         this.totalLikes = totalLikes;
+    }
+
+    public int getLikeValue(User user) {
+        return getLikes().stream()
+                .filter(commentLike -> commentLike.getUser().getId() == user.getId())
+                .map(CommentLike::getValue)
+                .findFirst().orElse(0);
     }
 
     public int getDescendantCount(long maxDepth) {
@@ -220,6 +246,7 @@ public class Comment {
                 ", creationDate=" + creationDate +
                 ", children=" + children +
                 ", enabled=" + enabled +
+                ", parent=" + (parent != null ? parent.getId() : 0) +
                 '}';
     }
 }

@@ -18,13 +18,17 @@ public interface PostDao {
 
     Optional<Post> findDeletedPostById(long id);
 
-    PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
-
     PaginatedCollection<Post> findPostsByMovie(Movie movie, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> findPostsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
+    PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
+
     PaginatedCollection<Post> getDeletedPosts(SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> getFollowedUsersPosts(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<Post> getUserFavouritePosts(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 

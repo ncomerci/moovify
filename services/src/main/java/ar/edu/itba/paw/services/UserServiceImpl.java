@@ -7,10 +7,12 @@ import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttr
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +42,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private MessageSource messageSource;
+
     // All users are created with NOT_VALIDATED_ROLE by default
 
     private static final String DEFAULT_AVATAR_PATH = "/images/avatar.jpg";
@@ -54,15 +59,28 @@ public class UserServiceImpl implements UserService {
         if(avatar.length > 0)
             image = imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
 
-
         final User user = userDao.register(username, passwordEncoder.encode(password),
-                name, email, description, Collections.singleton(Role.NOT_VALIDATED), image, true);
+                name, email, description, locale.getLanguage(), Collections.singleton(Role.NOT_VALIDATED), image, true);
 
         createConfirmationEmail(user, confirmationMailTemplate, locale);
 
         LOGGER.info("Created User {}", user.getId());
 
         return user;
+    }
+
+    @Transactional
+    @Override
+    public void generalUserUpdate(User user, String name, String username, String description) throws DuplicateUniqueUserAttributeException {
+
+        if(!user.getUsername().equals(username))
+            updateUsername(user, username);
+
+        if(!user.getName().equals(name))
+            updateName(user, name);
+
+        if(!user.getDescription().equals(description))
+            updateDescription(user, description);
     }
 
     @Transactional
@@ -93,16 +111,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateAvatar(User user, byte[] newAvatar) {
 
-        Objects.requireNonNull(user);
+        Image avatar = null;
 
-        final Image avatar = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
+        if(newAvatar.length > 0)
+            avatar = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
 
         user.setAvatar(avatar);
 
         LOGGER.info("User's {} Avatar was Updated to {}", user.getId(), avatar == null ? 0 : avatar.getId());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
     public Optional<byte[]> getAvatar(long avatarId) {
 
@@ -117,21 +136,30 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void deleteUser(User user) {
+    public void deleteUser(User user) throws DeletedDisabledModelException {
+
+        if(!user.isEnabled())
+            throw new DeletedDisabledModelException();
+
         user.setEnabled(false);
     }
 
     @Transactional
     @Override
-    public void restoreUser(User user) {
+    public void restoreUser(User user) throws RestoredEnabledModelException {
+
+        if(user.isEnabled())
+            throw new RestoredEnabledModelException();
+
         user.setEnabled(true);
     }
 
     @Transactional
     @Override
-    public void promoteUserToAdmin(User user) {
+    public void promoteUserToAdmin(User user) throws InvalidUserPromotionException {
 
-        Objects.requireNonNull(user);
+        if(!user.isEnabled() || user.isAdmin() || !user.isValidated())
+            throw new InvalidUserPromotionException();
 
         user.addRole(Role.ADMIN);
 
@@ -140,9 +168,27 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale) {
+    public void followUser(User user, User userFollowed) throws IllegalUserFollowException {
 
-        Objects.requireNonNull(user);
+        if(!userFollowed.isEnabled())
+            throw new IllegalUserFollowException();
+
+        user.followUser(userFollowed);
+    }
+
+    @Transactional
+    @Override
+    public void unfollowUser(User user, User userUnfollowed) throws IllegalUserUnfollowException {
+
+        if(!userUnfollowed.isEnabled())
+            throw new IllegalUserUnfollowException();
+
+        user.unfollowUser(userUnfollowed);
+    }
+
+    @Transactional
+    @Override
+    public void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale) {
 
         final String token = UUID.randomUUID().toString();
 
@@ -160,7 +206,7 @@ public class UserServiceImpl implements UserService {
 
         emailVariables.put("token", token);
 
-        mailService.sendEmail(user.getEmail(), "Moovify - Confirmation Email", confirmationMailTemplate, emailVariables, locale);
+        mailService.sendEmail(user.getEmail(), messageSource.getMessage("mail.confirmation.subject", null, locale), confirmationMailTemplate, emailVariables, locale);
 
         LOGGER.info("Created and sent email confirmation token {} to User {}", token, user.getId());
     }
@@ -169,8 +215,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createPasswordResetEmail(User user, String passwordResetMailTemplate, Locale locale) {
 
-        Objects.requireNonNull(user);
-        
         final String token = UUID.randomUUID().toString();
 
         final Optional<PasswordResetToken> optToken = passwordResetTokenDao.findPasswordTokenByUser(user);
@@ -185,7 +229,7 @@ public class UserServiceImpl implements UserService {
         final Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("token", token);
 
-        mailService.sendEmail(user.getEmail(), "Moovify - Password Reset", passwordResetMailTemplate, emailVariables, locale);
+        mailService.sendEmail(user.getEmail(), messageSource.getMessage("mail.passwordReset.subject", null, locale), passwordResetMailTemplate, emailVariables, locale);
 
         LOGGER.info("Created and sent email confirmation token {} to User {}", token, user.getId());
     }
@@ -252,6 +296,18 @@ public class UserServiceImpl implements UserService {
         return Optional.of(user);
     }
 
+    @Transactional
+    @Override
+    public void addFavouritePost(User user, Post post) {
+        user.addFavouritePost(post);
+    }
+
+    @Transactional
+    @Override
+    public void removeFavouritePost(User user, Post post) {
+        user.removeFavouritePost(post);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Optional<User> findUserById(long id) {
@@ -280,5 +336,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize) {
         return userDao.getAllUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedCollection<User> getFollowedUsers(User user, int pageNumber, int pageSize) {
+        return userDao.getFollowedUsers(user, UserDao.SortCriteria.USERNAME, pageNumber, pageSize);
     }
 }

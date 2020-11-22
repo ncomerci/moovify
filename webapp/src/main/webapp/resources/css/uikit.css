@@ -6900,6 +6900,10 @@ ul.uk-nav-sub {
 .uk-width-auto {
   width: auto;
 }
+/* Max content */
+.uk-width-max-content {
+  width: max-content;
+}
 /* Expand */
 .uk-width-expand {
   flex: 1;

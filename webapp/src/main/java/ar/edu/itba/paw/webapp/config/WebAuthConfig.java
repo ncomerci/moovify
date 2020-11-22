@@ -64,13 +64,21 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/user/profile",
                                             "/user/profile/posts",
                                             "/user/profile/comments",
+                                            "/user/profile/followed/users",
                                             "/user/profile/edit",
                                             "/user/changePassword").authenticated()
                     .antMatchers(HttpMethod.POST,
-                             "/user/edit/name",
-                                        "/user/edit/username",
-                                        "/user/edit/description",
-                                        "/user/profile/avatar").authenticated()
+                            "/user/edit/name",
+                            "/user/edit/username",
+                            "/user/edit/description",
+                            "/user/profile/avatar",
+                            "/user/follow/{userId:[\\d]+}",
+                            "/user/unfollow/{userId:[\\d]+}",
+                            "/user/favourite/posts/add",
+                            "/user/favourite/posts/remove"
+                    ).authenticated()
+
+
                     .antMatchers("/user/resendConfirmation").hasRole("NOT_VALIDATED")
                     .antMatchers(
                             "/user/resetPassword",
@@ -80,11 +88,13 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Post Controller
                         // "/post/{postId}"
                     .antMatchers("/post/create").hasRole("USER")
+                    .antMatchers("/post/edit/{postId:[\\d]+}").hasRole("USER")
                     .antMatchers(HttpMethod.POST, "/post/like").hasRole("USER")
 
                     // Movie Controller
                         // "/movies/{movieId}
                     .antMatchers("/movie/create").hasRole("ADMIN")
+                    .antMatchers("/movie/{movieId:[\\d]+}/poster/update").hasRole("ADMIN")
 
                     // Comment Controller
                         // "/comment/{commentId:[\\d]+}"

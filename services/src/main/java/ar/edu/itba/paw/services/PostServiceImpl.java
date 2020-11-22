@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.interfaces.persistence.PostCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,14 +32,6 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> moviesId) {
 
-        Objects.requireNonNull(body);
-
-        Objects.requireNonNull(title, "PostDao: register: title can't be null");
-        Objects.requireNonNull(body);
-        Objects.requireNonNull(moviesId);
-        Objects.requireNonNull(category);
-        Objects.requireNonNull(user);
-
         final Collection<Movie> movies = movieDao.findMoviesById(moviesId);
 
         final Post post = postDao.register(title, body.trim(),
@@ -51,25 +44,67 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void deletePost(Post post) {
+    public void deletePost(Post post) throws DeletedDisabledModelException {
+
+        if(!post.isEnabled())
+            throw new DeletedDisabledModelException();
+
+        LOGGER.info("Delete Post {}", post.getId());
+
         post.delete();
     }
 
     @Transactional
     @Override
-    public void restorePost(Post post) {
+    public void restorePost(Post post) throws RestoredEnabledModelException {
+
+        if(post.isEnabled())
+            throw new RestoredEnabledModelException();
+
+        LOGGER.info("Restore Post {}", post.getId());
+
         post.restore();
     }
 
     @Transactional
     @Override
-    public void likePost(Post post, User user, int value) {
+    public void likePost(Post post, User user, int value) throws IllegalPostLikeException {
 
-        if(value == 0)
+        if(!post.isEnabled())
+            throw new IllegalPostLikeException();
+
+        if(post.getLikeValue(user) == value)
+            return;
+
+        if(value == 0) {
+            LOGGER.info("Delete Like: User {} Post {}", user.getId(), post.getId());
             post.removeLike(user);
+        }
 
-        else if(value == -1 || value == 1)
+        else if(value == -1 || value == 1) {
+            LOGGER.info("Like: User {} Post {} Value {}", user.getId(), post.getId(), value);
             post.like(user, value);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void editPost(User editor, Post post, String newBody) throws MissingPostEditPermissionException, IllegalPostEditionException {
+        Objects.requireNonNull(newBody);
+
+        guaranteePostEditionPermissions(editor, post);
+
+        post.setBody(newBody.trim());
+    }
+
+    @Override
+    public void guaranteePostEditionPermissions(User editor, Post post) throws IllegalPostEditionException, MissingPostEditPermissionException {
+
+        if(!post.isEnabled())
+            throw new IllegalPostEditionException();
+
+        if(!editor.equals(post.getUser()))
+            throw new MissingPostEditPermissionException();
     }
 
     @Transactional(readOnly = true)
@@ -112,6 +147,18 @@ public class PostServiceImpl implements PostService {
     @Override
     public PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize) {
         return postDao.getAllPosts(PostDao.SortCriteria.HOTTEST, pageNumber, pageSize);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedCollection<Post> getFollowedUsersPosts(User user, int pageNumber, int pageSize) {
+        return postDao.getFollowedUsersPosts(user, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public PaginatedCollection<Post> getUserFavouritePosts(User user, int pageNumber, int pageSize) {
+        return postDao.getUserFavouritePosts(user, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)

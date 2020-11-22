@@ -3,6 +3,10 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MailService;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
+import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
@@ -10,6 +14,7 @@ import ar.edu.itba.paw.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +37,12 @@ public class CommentServiceImpl implements CommentService {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+    private MessageSource messageSource;
+
     @Transactional
     @Override
-    public Comment register(Post post, Comment parent, String body, User user, String mailTemplate, Locale locale) {
+    public Comment register(Post post, Comment parent, String body, User user, String mailTemplate) {
 
         final Comment comment = commentDao.register(post, parent,
                 body.trim().replaceAll("[ \t]+", " ")
@@ -45,8 +53,10 @@ public class CommentServiceImpl implements CommentService {
         map.put("post", post);
         map.put("comment", comment);
 
+        final Locale mailLocale = new Locale(post.getUser().getLanguage());
+
         mailService.sendEmail(post.getUser().getEmail(),
-                "New comment on your post " + post.getTitle(), mailTemplate, map, locale);
+                messageSource.getMessage("mail.newComment.subject", new Object[]{ post.getTitle() }, mailLocale), mailTemplate, map, mailLocale);
 
         LOGGER.info("Created Comment: {}", comment.getId());
 
@@ -55,24 +65,58 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void likeComment(Comment comment, User user, int value) {
+    public void editComment(User editor, Comment comment, String newBody) throws IllegalCommentEditionException, MissingCommentEditPermissionException {
 
-        if(value == 0)
+        if(!comment.isEnabled())
+            throw new IllegalCommentEditionException();
+
+        if(!editor.equals(comment.getUser()))
+            throw new MissingCommentEditPermissionException();
+
+        comment.setBody(
+                newBody.trim().replaceAll("[ \t]+", " ")
+                .replaceAll("(\r\n)+", "\n")
+                .replaceAll("^[ \r\n]+|[ \r\n]+$", "")
+        );
+    }
+
+    @Transactional
+    @Override
+    public void likeComment(Comment comment, User user, int value) throws IllegalCommentLikeException {
+
+        if(!comment.isEnabled())
+            throw new IllegalCommentLikeException();
+
+        if(comment.getLikeValue(user) == value)
+            return;
+
+        if(value == 0) {
+            LOGGER.info("Delete Like: User {} Comment {}", user.getId(), comment.getId());
             comment.removeLike(user);
+        }
 
-        else if(value == -1 || value == 1)
+        else if(value == -1 || value == 1) {
+            LOGGER.info("Like: User {} Comment {} Value {}", user.getId(), comment.getId(), value);
             comment.like(user, value);
+        }
     }
 
     @Transactional
     @Override
     public void deleteComment(Comment comment) {
+        LOGGER.info("Delete Comment {}", comment.getId());
         comment.setEnabled(false);
     }
 
     @Transactional
     @Override
-    public void restoreComment(Comment comment) {
+    public void restoreComment(Comment comment) throws RestoredEnabledModelException {
+
+        if(comment.isEnabled())
+            throw new RestoredEnabledModelException();
+
+        LOGGER.info("Restore Comment {}", comment.getId());
+
         comment.setEnabled(true);
     }
 

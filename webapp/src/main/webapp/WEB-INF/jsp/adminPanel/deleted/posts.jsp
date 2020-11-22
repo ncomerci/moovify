@@ -41,11 +41,11 @@
                                     <spring:message code="adminPanel.restore"/>
                                 </button>
                             <div class="uk-width-expand uk-margin-small-top">
-                                <p class="uk-margin-remove"><c:out value="${post.title}"/></p>
+                                <p class="uk-margin-remove text-lead uk-text-truncate"><c:out value="${post.title}"/></p>
                                 <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
                                     <c:choose>
                                         <c:when test="${post.user.enabled}">
-                                            <c:set var="name" value="${post.user.name}"/>
+                                            <c:set var="name" value="${post.user.username}"/>
                                         </c:when>
                                         <c:otherwise>
                                             <c:set var="name"><spring:message code="user.notEnabled.name"/></c:set>
@@ -53,7 +53,7 @@
                                     </c:choose>
                                     <spring:message code="postDisplay.meta.description" arguments="${post.category.name}, ${name}"/>
                                     <c:if test="${post.user.admin && post.user.enabled}">
-                                        <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
+                                        <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
                                     </c:if>
                                     <spring:message code="postDisplay.meta.votes" arguments="${post.totalLikes}"/>
 
@@ -89,7 +89,16 @@
         </c:if>
     </form>
 
-    <form id="restore-form" method="post" action="<c:url value="/post/restore"/>">
+    <form id="restore-form" action="<c:url value="/post/restore"/>" method="post">
+    <label>
+            <input hidden name="query" type="text" value="${query}"/>
+        </label>
+        <label>
+            <input hidden name="pageSize" type="text" value="${collection.pageSize}"/>
+        </label>
+        <label>
+            <input hidden name = "pageNumber" value = "${collection.pageNumber}"/>
+        </label>
     </form>
 </main>
 </body>

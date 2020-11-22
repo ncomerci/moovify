@@ -32,73 +32,108 @@
 <jsp:include page="/WEB-INF/jsp/components/navBar.jsp" />
 
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
-    <div id="post-metadata" >
-        <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom" uk-grid>
-            <div class="uk-width-5-6">
-                <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent "><c:out value="${post.title}"/></h1>
-            </div>
-            <div class="uk-width-1-6 uk-margin-top">
-                <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
+
+    <div id="post-metadata" class="uk-child-width-expand" uk-grid>
+        <div class="uk-grid-small uk-flex uk-flex-row uk-flex-between uk-margin-bottom" uk-grid>
+            <div class="uk-flex uk-flex-column uk-width-expand">
+                <div class="uk-flex uk-flex-between uk-margin-bottom" uk-grid>
+                    <h1 class="uk-text-bold uk-h1 uk-margin-remove-adjacent uk-width-4-5 uk-text-break">
+                        <sec:authorize access="hasRole('USER')">
+                            <c:set var="bookmarked" value="${customTag:hasUserBookmarkedPost(loggedUser, post)}"/>
+                            <c:choose>
+                                <c:when test="${bookmarked}">
+                                    <a id="bookmark" title="<spring:message code="post.remove.bookmark"/>"><span class="iconify large-iconify" data-icon="mdi-bookmark-check" data-inline="false"></span></a>
+                                </c:when>
+                                <c:otherwise>
+                                    <a id="no-bookmark" title="<spring:message code="post.add.bookmark"/>"><span class="iconify large-iconify" data-icon="mdi-bookmark-check-outline" data-inline="false"></span></a>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:out value="-"/>
+                        </sec:authorize>
+                        <c:out value="${post.title}"/>
+                    </h1>
                     <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')">
-                        <div class="uk-text-center uk-padding-remove uk-margin-remove">
-                            <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
+                        <div class="uk-text-center uk-padding-remove uk-margin-remove uk-flex uk-flex-middle">
+                            <p class="uk-text-center uk-align-center uk-text-lead">
                                 <spring:message code="post.view.votes" arguments="${post.totalLikes}"/>
                             </p>
                         </div>
                     </sec:authorize>
-                    <c:if test="${not empty loggedUser and loggedUser.validated}">
-                        <c:set var="likeValue" value="${ customTag:getPostLikeValue(post, loggedUser) }" />
-                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                            <a class="like-post-button" data-value="${ likeValue == 1 ? 0 : 1 }">
-                                <span class="iconify" data-icon="<c:out value="${ likeValue == 1 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
+                </div>
+                <div class="uk-flex uk-flex-between uk-margin-remove uk-margin-bottom" uk-grid>
+                <span id="post-author" class="uk-article-meta uk-align-right uk-margin-remove uk-padding-remove">
+                    <spring:message code="post.view.writtenBy"/>
+                    <c:choose>
+                        <c:when test="${post.user.enabled}">
+                            <a href="<c:url value="/user/${post.user.id}"/>">
+                                <c:out value="${post.user.username}"/>
+                                <c:if test="${post.user.admin}">
+                                    <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
+                                </c:if>
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="uk-text-italic">
+                                <spring:message code="user.notEnabled.name"/>
+                            </span>
+                        </c:otherwise>
+                    </c:choose>
+                    <spring:message code="post.view.writtenSeparator"/>
+                    <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                    <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                    <c:out value="-"/>
+                    <span data-uk-icon="icon: future"></span>
+                    <spring:message code="post.view.minReading" arguments="${post.readingTimeMinutes}"/>
+                </span>
+                    <span>
+                        <c:set var="editable" value="${not empty loggedUser and loggedUser.validated and post.user.id == loggedUser.id}"/>
+                        <c:choose>
+                            <c:when test="${editable}" >
+                        <div class="uk-flex uk-flex-middle">
+                            <a href="<c:url value="/post/edit/${post.id}"/>">
+                                <span uk-icon="icon: pencil; ratio: 1.2"  data-inline="false"></span><spring:message code="post.view.edit"/>
                             </a>
                         </div>
-
-                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-margin-small-left uk-margin-small-right">
-                            <p class="like-post-button uk-text-center uk-align-center uk-text-lead">
-                                <c:out value="${post.totalLikes}"/>
-                            </p>
-                        </div>
-
-                        <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-remove">
-                            <a class=" like-post-button"  data-value="${ likeValue == -1 ? 0 : -1 }">
-                                <span class="iconify" data-icon="<c:out value="${ likeValue == -1 ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
-                            </a>
-                        </div>
+                            </c:when>
+                            <c:otherwise>
+                                <c:if test="${post.edited}">
+                                    <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.lastEdited"/>
+                                            <fmt:parseDate value="${post.lastEditDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                                            <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                                    </span>
+                                </c:if>
+                            </c:otherwise>
+                        </c:choose>
+                    </span>
+                </div>
+                <div class="uk-flex uk-flex-right uk-margin-remove uk-margin-bottom" uk-grid>
+                    <c:if test="${editable and post.edited}">
+                    <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.lastEdited"/>
+                            <fmt:parseDate value="${post.lastEditDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
+                            <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
+                    </span>
                     </c:if>
                 </div>
             </div>
         </div>
-        <span id="post-creation-date" class="uk-article-meta"> <spring:message code="post.view.written"/>
-<%--                We convert LocalDateTime to Date parsing it like a String. Then formatDate formats the Date correctly.    --%>
-                <fmt:parseDate value="${post.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
-                <fmt:formatDate pattern="dd/MM/yyyy HH:mm" value="${parsedDateTime}" />
-        </span>
-        <span id="post-reading-time" class="uk-article-meta uk-align-right uk-margin-remove-bottom">
-                <span data-uk-icon="icon: future" class="uk-margin-small-right"></span>
-                <spring:message code="post.view.minReading" arguments="${post.readingTimeMinutes}"/>
-            </span>
-        <span id="post-author" class="uk-article-meta uk-align-right uk-margin-remove-bottom">
-            <spring:message code="post.view.writtenBy"/>
-
-            <c:choose>
-                <c:when test="${post.user.enabled}">
-                    <a href="<c:url value="/user/${post.user.id}"/>">
-                        <c:out value="${post.user.name}"/>
-                        <c:if test="${post.user.admin}">
-                            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false"></span>
-                        </c:if>
+        <c:if test="${not empty loggedUser and loggedUser.validated}">
+            <c:set var="likeValue" value="${ customTag:getPostLikeValue(post, loggedUser) }" />
+            <div class="uk-width-auto uk-text-center uk-padding-remove uk-align-right uk-margin-left uk-flex uk-flex-middle">
+                <div class="uk-flex uk-flex-column uk-width-expand">
+                    <a class="like-post-button" data-value="${ likeValue == 1 ? 0 : 1 }">
+                        <span class="iconify" data-icon="<c:out value="${ likeValue == 1 ? 'el:chevron-up' : 'cil:chevron-top' }" />" data-inline="false"></span>
                     </a>
-                </c:when>
-                <c:otherwise>
-                    <span class="uk-text-italic">
-                        <spring:message code="user.notEnabled.name"/>
-                    </span>
-                </c:otherwise>
-            </c:choose>
-        </span>
+                    <p class="uk-text-center uk-align-center uk-text-lead uk-margin-remove"><c:out value="${post.totalLikes}"/></p>
+                    <a class=" like-post-button"  data-value="${ likeValue == -1 ? 0 : -1 }">
+                        <span class="iconify" data-icon="<c:out value="${ likeValue == -1 ? 'el:chevron-down' : 'cil:chevron-bottom' }" />" data-inline="true"></span>
+                    </a>
+                </div>
+            </div>
+        </c:if>
     </div>
-    <hr>
+
+    <%--    TODO: Arreglar -Tobi :)--%>
+    <hr class="uk-margin-remove-top">
     <article id="post-body">
         <noscript id="unparsedBody" class="m-long-text">
             <c:out value="${post.body}"/>
@@ -160,18 +195,32 @@
     </label>
 </form>
 
-<c:if test="${not empty loggedUser and loggedUser.admin}">
-    <%--  Delete form  --%>
-    <form method="post" action="<c:url value="/"/>" id="delete-post-form"></form>
+<c:if test="${not empty loggedUser}">
+    <c:if test="${loggedUser.admin}">
+        <%--  Delete form  --%>
+        <form method="post" action="<c:url value="/"/>" id="delete-post-form"></form>
 
-    <!-- delete confirmation modal -->
-    <div id="delete-post-modal" uk-modal>
-        <div class="uk-modal-dialog uk-modal-body">
-            <h2 class="uk-modal-title"><spring:message code="post.delete.modalTitle"/></h2>
-            <p class="uk-text-right">
-                <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="comment.delete.cancelButton"/></button>
-                <button id="modal-post-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.delete.confirmButton"/></button>
-            </p>
+        <!-- delete confirmation modal -->
+        <div id="delete-post-modal" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body">
+                <h2 class="uk-modal-title"><spring:message code="post.delete.modalTitle"/></h2>
+                <p class="uk-text-right">
+                    <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="comment.delete.cancelButton"/></button>
+                    <button id="modal-post-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.delete.confirmButton"/></button>
+                </p>
+            </div>
         </div>
-    </div>
+    </c:if>
+
+    <form method="post" action="<c:url value="/user/favourite/posts/add"/>" id="add-bookmark-form">
+        <label>
+            <input hidden name="postId" type="number" value="${post.id}">
+        </label>
+    </form>
+
+    <form method="post" action="<c:url value="/user/favourite/posts/remove"/>" id="remove-bookmark-form">
+        <label>
+            <input hidden name="postId" type="number" value="${post.id}">
+        </label>
+    </form>
 </c:if>

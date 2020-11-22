@@ -13,6 +13,11 @@
 .m-text-red {
     color: #EA5455 !important;
 }
+
+.m-text-white{
+    color: #ffffff; !important;
+}
+
 .m-width-max-content {
     width: max-content;
 }
@@ -55,6 +60,50 @@
     background-color: #900d0d;
 }
 
+.small-iconify {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.large-iconify {
+    width: 40px !important;
+    height: 40px !important;
+}
+
+.small {
+    font-size: 16px;
+    line-height: 20px;
+}
+
+.text-lead{
+    font-size: 1.5rem;
+    line-height: 1.5;
+}
+
+.margin-user-display{
+    margin-top: 40px !important;
+}
+
+.edit-icon-button:hover,
+.edit-icon-button:focus {
+    background: rgba(170, 170, 170, 0.55)
+}
+.edit-icon-button {
+    box-sizing: border-box;
+    width: 32px;
+    height: 32px;
+    border-radius: 400px;
+    background: rgba(170, 170, 170, 0.25);
+    color: #fa8a32;
+    vertical-align: middle;
+    /* 1 */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.1s ease-in-out;
+    transition-property: color, background-color;
+}
+
 .circle {
     display: block;
     width: 230px;
@@ -78,7 +127,17 @@
     -webkit-border-radius: 99em;
     -moz-border-radius: 99em;
 }
-
+.image-user-display{
+    display: block;
+    width: 100px;
+    height:100px;
+    margin: 1em auto;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    -webkit-border-radius: 99em;
+    -moz-border-radius: 99em;
+}
 .circle-navbar {
     display: block;
     width: 45px;
@@ -93,4 +152,27 @@
 
 .m-long-text {
     word-break: break-all;
+}
+
+.extra-margin-small-top {
+    margin-top: 5px !important;
+}
+
+a.anchor {
+    display: block;
+    position: relative;
+    top: -260px;
+    visibility: hidden;
+}
+
+.movie-poster {
+
+    width:300px; /*container-width*/
+    overflow:hidden; /*hide bounds of image */
+    margin: 0;   /*reset margin of figure tag*/
+}
+
+.movie-poster img{
+    display:block; /*remove inline-block spaces*/
+    width:100%; /*make image streatch*/
 }

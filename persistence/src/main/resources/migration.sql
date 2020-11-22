@@ -56,3 +56,18 @@ alter table comments_likes add column comments_likes_id serial primary key;
 alter table comments_likes add constraint comments_likes_unique unique (comment_id, user_id);
 
 alter table comments_likes add constraint comments_likes_pkey primary key (comments_likes_id);
+
+-- User Locale --
+ALTER TABLE users ADD COLUMN language VARCHAR(15) NOT NULL default 'en';
+
+-- Edit Post --
+ALTER TABLE posts ADD COLUMN edited BOOLEAN NOT NULL default false;
+ALTER TABLE posts ADD COLUMN last_edited TIMESTAMP default NULL;
+
+-- Edit Comment --
+ALTER TABLE comments ADD COLUMN edited BOOLEAN NOT NULL default false;
+ALTER TABLE comments ADD COLUMN last_edited TIMESTAMP default NULL;
+
+-- Movie Images --
+ALTER TABLE movies ADD COLUMN poster_id INTEGER default NULL;
+ALTER TABLE movies ADD CONSTRAINT fk_movie_poster FOREIGN KEY (poster_id) REFERENCES IMAGES (image_id);
