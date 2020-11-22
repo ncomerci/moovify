@@ -118,7 +118,6 @@ public class Post {
         //Hibernate
     }
 
-    @PostLoad
     public void calculateTotalLikes() {
         if(totalLikes == null)
             totalLikes = likes.stream()
@@ -126,6 +125,9 @@ public class Post {
     }
 
     public long getTotalLikes() {
+        if(totalLikes == null)
+            calculateTotalLikes();
+
         return totalLikes;
     }
 

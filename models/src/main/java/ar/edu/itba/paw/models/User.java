@@ -5,7 +5,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -138,14 +137,13 @@ public class User {
         //JPA
     }
 
-    @PostLoad
     public void calculateTotalLikes() {
         if(totalLikes == null) {
-            final long totalPostLikes = postLikes.stream()
-                    .reduce(0L, (acum, postLike) -> acum += (long) postLike.getValue(), Long::sum);
+            final long totalPostLikes = posts.stream()
+                    .reduce(0L, (acum, post) -> acum += post.getTotalLikes(), Long::sum);
 
-            final long totalCommentLikes = commentLikes.stream()
-                    .reduce(0L, (acum, commentLike) -> acum += (long) commentLike.getValue(), Long::sum);
+            final long totalCommentLikes = comments.stream()
+                    .reduce(0L, (acum, comment) -> acum += comment.getTotalLikes(), Long::sum);
 
             totalLikes = totalPostLikes + totalCommentLikes;
         }
@@ -216,6 +214,9 @@ public class User {
     }
 
     public long getTotalLikes() {
+        if(totalLikes == null)
+            calculateTotalLikes();
+
         return totalLikes;
     }
 
