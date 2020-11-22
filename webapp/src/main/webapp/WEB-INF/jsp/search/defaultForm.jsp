@@ -16,9 +16,6 @@
         <button class="uk-button uk-button-default uk-border-rounded search-button extended-button" type="submit"><spring:message code="navbar.search"/></button>
     </div>
 </div>
-<p class="uk-text-meta">
-    <spring:message code="search.searchResults"/>
-</p>
 <div class="uk-margin-medium-top">
     <ul class="uk-child-width-expand uk-tab">
         <li class="${currentSearch == 0 ? 'uk-active' : ''}">

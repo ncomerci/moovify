@@ -108,6 +108,7 @@
     display: block;
     width: 230px;
     height: 230px;
+    object-fit: cover;
     margin: 1em auto;
     background-size: cover;
     background-repeat: no-repeat;
@@ -120,6 +121,7 @@
     display: block;
     width: 80px;
     height: 80px;
+    object-fit: cover;
     margin: 1em auto;
     background-size: cover;
     background-repeat: no-repeat;
@@ -131,6 +133,7 @@
     display: block;
     width: 100px;
     height:100px;
+    object-fit: cover;
     margin: 1em auto;
     background-size: cover;
     background-repeat: no-repeat;

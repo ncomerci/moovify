@@ -9,7 +9,9 @@
 <c:forEach items="${users.results}" var="user">
     <div class="uk-grid-small" uk-grid>
         <div class="uk-width-1-6 uk-margin-remove">
-            <img class="image-user-display" src="<c:url value="/user/avatar/${user.avatarId}"/>" alt="">
+            <a href="<c:url value="/user/${user.id}"/>">
+                <img class="image-user-display" src="<c:url value="/user/avatar/${user.avatarId}"/>" alt="">
+            </a>
         </div>
         <div class="uk-width-3-5 margin-user-display uk-padding-remove-left">
             <div class="uk-flex">

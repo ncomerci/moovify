@@ -65,7 +65,9 @@
                     <c:if test="${user.enabled}">
                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
                             <div class="uk-width-1-3">
-                                <img class="circle-comment uk-comment-avatar" src="<c:url value="/user/avatar/${user.avatarId}"/>" alt="">
+                                <a href="<c:url value="/user/${user.id}"/>">
+                                    <img class="circle-comment uk-comment-avatar" src="<c:url value="/user/avatar/${user.avatarId}"/>" alt="">
+                                </a>
                             </div>
                             <div class="uk-width-2-3 uk-margin-top">
                                 <div class="uk-flex">

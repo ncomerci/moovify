@@ -31,7 +31,9 @@
                                                 <c:set var="avatarUrl"><c:url value="/resources/images/avatar.jpg"/></c:set>
                                             </c:otherwise>
                                         </c:choose>
-                                        <img class="circle-comment uk-comment-avatar" src="${avatarUrl}" alt="">
+                                        <a href="<c:url value="/user/${comment.user.id}"/>">
+                                            <img class="circle-comment uk-comment-avatar" src="${avatarUrl}" alt="">
+                                        </a>
                                     </div>
                                     <div class="uk-width-auto">
                                         <c:if test="${comment.enabled}">

@@ -54,7 +54,9 @@
                                             <c:set var="avatarUrl"><c:url value="/resources/images/avatar.jpg"/></c:set>
                                         </c:otherwise>
                                     </c:choose>
-                                    <img class="circle-comment uk-comment-avatar" src="${avatarUrl}" alt="">
+                                    <a href="<c:url value="/user/${comment.user.id}"/>">
+                                        <img class="circle-comment uk-comment-avatar" src="${avatarUrl}" alt="">
+                                    </a>
                                 </div>
                             </c:if>
                             <div class="uk-width-3-5" >
@@ -91,7 +93,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="uk-width-1-6 uk-text-center uk-padding-remove">
+                    <div class="uk-width-1-6 uk-margin-top uk-text-center uk-padding-remove">
                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
                             <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')" var="notAbleToLike"/>
                             <c:if test="${notAbleToLike or not comment.enabled}">
