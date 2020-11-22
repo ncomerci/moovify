@@ -44,6 +44,7 @@
             <h3 class="uk-card-title uk-margin-remove-bottom userTitle">
                 <c:out value="${loggedUser.username}"/>
                 <a class="edit-icon-button uk-margin-small-left" uk-icon="icon: pencil; ratio: 1" title="<spring:message code="edit.title"/>" data-inline="false" uk-toggle="target: #edit-username-modal"></a>
+                <spring:message code="user.view.followers" arguments="${followers}, ${loggedUser.totalLikes}"/>
             </h3>
             <p class="uk-text-meta uk-margin-remove-top">
                 <fmt:parseDate value="${loggedUser.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />

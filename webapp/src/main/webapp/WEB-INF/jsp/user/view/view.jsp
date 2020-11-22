@@ -54,6 +54,7 @@
                 <c:if test="${user.admin}">
                     <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="<spring:message code="admin.title"/>"></span>
                 </c:if>
+                <spring:message code="user.view.followers" arguments="${followers}, ${user.totalLikes}"/>
             </h3>
             <p class="uk-text-meta uk-margin-remove-top">
                 <fmt:parseDate value="${user.creationDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
