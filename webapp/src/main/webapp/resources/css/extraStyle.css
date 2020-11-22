@@ -79,7 +79,9 @@
     font-size: 1.5rem;
     line-height: 1.5;
 }
-
+.margin-user-home-display{
+    margin-top: 26px !important;
+}
 .margin-user-display{
     margin-top: 40px !important;
 }
