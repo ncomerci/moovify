@@ -129,7 +129,7 @@ public class UserController {
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("user", user);
-
+        mv.addObject("followers", userService.getFollowerCount(user));
         mv.addObject("posts", postService.findPostsByUser(user, pageNumber, pageSize));
 
         return mv;
@@ -147,7 +147,7 @@ public class UserController {
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("user", user);
-
+        mv.addObject("followers", userService.getFollowerCount(user));
         mv.addObject("comments", commentService.findCommentsByUser(user, pageNumber, pageSize));
 
         return mv;
@@ -165,7 +165,7 @@ public class UserController {
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
         mv.addObject("user", user);
-
+        mv.addObject("followers", userService.getFollowerCount(user));
         mv.addObject("followedUsers", userService.getFollowedUsers(user, pageNumber, pageSize));
 
         return mv;
@@ -187,6 +187,7 @@ public class UserController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
+        mv.addObject("followers", userService.getFollowerCount(user));
         mv.addObject("posts", postService.findPostsByUser(user, pageNumber, pageSize));
 
         return mv;
@@ -208,6 +209,7 @@ public class UserController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
+        mv.addObject("followers", userService.getFollowerCount(user));
         mv.addObject("posts", postService.getUserFavouritePosts(user, pageNumber, pageSize));
 
         return mv;
@@ -228,6 +230,7 @@ public class UserController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
+        mv.addObject("followers", userService.getFollowerCount(user));
         mv.addObject("followedUsers", userService.getFollowedUsers(user, pageNumber, pageSize));
 
         return mv;
@@ -249,6 +252,7 @@ public class UserController {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
+        mv.addObject("followers", userService.getFollowerCount(user));
         mv.addObject("comments", commentService.findCommentsByUser(user, pageNumber, pageSize));
 
         return mv;

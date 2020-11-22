@@ -14,7 +14,7 @@
         <div class="uk-width-3-5 margin-user-display uk-padding-remove-left">
             <div class="uk-flex">
                 <div class="uk-width-expand">
-                    <a class="text-lead" href="<c:url value="/user/${user.id}"/>" class="${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
+                    <a href="<c:url value="/user/${user.id}"/>" class="${user.admin ? 'uk-text-primary uk-text-middle text-lead' : 'text-lead'}">
                         <sec:authorize access="isAuthenticated()">
                             <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
                             <c:set var="followed" value="${customTag:hasUserFollowed(loggedUser,user)}"/>
