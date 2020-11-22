@@ -58,10 +58,6 @@ public class TestConfig {
         jpaProperties.setProperty("hibernate.hbm2ddl.auto", "update");
         jpaProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
 
-        // TODO Si ponen esto en prod, hay tabla!!!
-        jpaProperties.setProperty("hibernate.show_sql", "true");
-        jpaProperties.setProperty("format_sql", "true");
-
         factoryBean.setJpaProperties(jpaProperties);
 
         return factoryBean;
