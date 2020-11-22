@@ -313,8 +313,11 @@ public class UserDaoImpl implements UserDao {
                 nativeSelect, nativeFrom, nativeWhereStatement, nativeOrderBy, nativePagination);
 
         final String fetchQuery = String.format(
-                "SELECT u, sum(coalesce(commentLikes.value, 0) + coalesce(postLikes.value, 0)) AS totalLikes " +
-                "FROM User u LEFT OUTER JOIN u.commentLikes commentLikes LEFT OUTER JOIN u.postLikes postLikes " +
+                "SELECT u, " +
+                "coalesce((SELECT sum(postLikes.value) from u.posts posts left outer join posts.likes postLikes), 0) + " +
+                "coalesce((SELECT sum(commentLikes.value) from u.comments comments left outer join comments.likes commentLikes), 0)" +
+                        " AS totalLikes " +
+                "FROM User u " +
                 "WHERE u.id IN :userIds " +
                 "GROUP BY u " +
                 "%s", HQLOrderBy);
