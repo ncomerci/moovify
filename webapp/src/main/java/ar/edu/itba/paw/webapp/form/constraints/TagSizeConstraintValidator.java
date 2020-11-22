@@ -16,7 +16,9 @@ public class TagSizeConstraintValidator implements ConstraintValidator<TagSize, 
 
     @Override
     public boolean isValid(Set<String> value, ConstraintValidatorContext context) {
-
+        if (value == null){
+            return true;
+        }
         for (String tag: value) {
             if(tag.length() > max)
                 return false;
