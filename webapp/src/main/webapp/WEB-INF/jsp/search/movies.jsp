@@ -67,7 +67,7 @@
                 <div class="uk-width-1-1">
                     <div class="uk-flex">
                         <div class="uk-width-expand uk-margin-small-top">
-                            <a href="<c:url value="/movie/${movie.id}"/>">
+                            <a class="text-lead" href="<c:url value="/movie/${movie.id}"/>">
                                 <c:out value="${movie.title}"/>
                             </a>
                             <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">

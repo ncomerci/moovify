@@ -20,13 +20,13 @@
                         <spring:message code="adminPanel.restore"/>
                     </button>
                 </c:if>
-                <div class="uk-width-expand uk-margin-small-top">
+                <div class="uk-width-expand uk-margin-small-top uk-text-truncate">
                     <a class="uk-text-italic text-lead" href="<c:url value="/comment/${comment.id}"/>">
                         <c:set var="maxLength" value="${80}"/>
                         <c:set var="length" value="${fn:length(comment.body)}"/>
                         <c:out value="\"${fn:substring(comment.body, 0, maxLength)}${length > maxLength ? '[...]':''}\""/>
                     </a>
-                    <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
+                    <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical uk-text-truncate">
                         <c:choose>
                             <c:when test="${comment.user.enabled}">
                                 <c:set var="name" value="${comment.user.username}"/>

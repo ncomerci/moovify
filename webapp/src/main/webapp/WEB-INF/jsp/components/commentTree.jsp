@@ -135,7 +135,9 @@
                                 <span class="pre-line"><c:out value="${comment.body}"/></span>
                             </c:when>
                             <c:when test="${not empty loggedUser and loggedUser.admin}">
-                                <div class="uk-text-italic"><c:out value="[${comment.user.username}: ${comment.body}]"/></div>
+                                <div class="uk-text-italic">
+                                    <spring:message code="comment.notEnabled.comment.body" arguments="${comment.user.username}, ${comment.body}"/>
+                                </div>
                             </c:when>
                         </c:choose>
                     </div>

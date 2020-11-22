@@ -118,7 +118,7 @@
     <div id="delete-comment-modal" uk-modal>
         <div class="uk-modal-dialog uk-modal-body">
             <h2 class="uk-modal-title"><spring:message code="comment.delete.confirmTitle"/></h2>
-            <p id="modal-body" class="uk-text-italic"></p>
+            <p id="modal-body" class="uk-text-italic uk-text-break"></p>
             <p class="uk-text-right">
                 <button class="uk-button uk-button-default uk-modal-close uk-border-rounded" type="button"><spring:message code="comment.delete.cancelButton"/></button>
                 <button id="modal-comment-confirm" class="uk-button uk-button-primary uk-border-rounded" type="button"><spring:message code="comment.delete.confirmButton"/></button>

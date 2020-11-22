@@ -41,7 +41,7 @@
                                     <spring:message code="adminPanel.restore"/>
                                 </button>
                             <div class="uk-width-expand uk-margin-small-top">
-                                <p class="uk-margin-remove text-lead"><c:out value="${post.title}"/></p>
+                                <p class="uk-margin-remove text-lead uk-text-truncate"><c:out value="${post.title}"/></p>
                                 <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
                                     <c:choose>
                                         <c:when test="${post.user.enabled}">

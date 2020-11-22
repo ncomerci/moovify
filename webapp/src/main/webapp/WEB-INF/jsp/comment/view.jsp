@@ -28,7 +28,7 @@
 <main class="uk-article uk-container uk-container-small uk-margin-medium-top">
     <c:if test="${comment.post.enabled}">
         <c:url value="/post/${comment.post.id}" var="postURL"/>
-        <a class="uk-text-bold uk-h1" href="${postURL}">
+        <a class="uk-text-bold uk-h1 uk-text-break" href="${postURL}">
             <c:out value="${comment.post.title}"/>
         </a>
     </c:if>
@@ -83,7 +83,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="uk-width-1-6 uk-text-center uk-padding-remove uk-margin-top">
+                    <div class="uk-width-1-6 uk-text-center uk-padding-remove">
                         <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
                             <sec:authorize access="isAnonymous() or hasRole('NOT_VALIDATED')" var="notAbleToLike"/>
                             <c:if test="${notAbleToLike or not comment.enabled}">

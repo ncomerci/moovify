@@ -16,7 +16,7 @@
                 <div class="uk-width-expand">
                     <a class="text-lead" href="<c:url value="/user/${user.id}"/>" class="${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
                         <sec:authorize access="isAuthenticated()">
-                            <jsp:useBean id="loggedUser" scope="request" type=""/>
+                            <jsp:useBean id="loggedUser" scope="request" type="ar.edu.itba.paw.models.User"/>
                             <c:set var="followed" value="${customTag:hasUserFollowed(loggedUser,user)}"/>
                             <c:if test="${followed}">
                                 <span class="iconify small-iconify" data-icon="ri:user-follow-line" data-inline="false" title="<spring:message code="user.followed"/>"></span>
