@@ -36,63 +36,58 @@ public class UserTest {
     @Test
     public void testCalculateTotalLikes() {
 
-        Set<CommentLike> commentLikes = new HashSet<>();
-        CommentLike commentLike;
+        Set<Comment> comments = new HashSet<>();
+        Comment comment;
 
-        Set<PostLike> postLikes = new HashSet<>();
-        PostLike postLike;
+        Set<Post> posts = new HashSet<>();
+        Post post;
 
-        // Add 40 likes: 20 positive 20 negative (20 post, 20 comment)
+        // Add 50 likes: 350 positive 300 negative
         for (int i = 0; i < 10; i++) {
 
             // Comment Likes
-            commentLike = Mockito.mock(CommentLike.class);
-            Mockito.when(commentLike.getValue()).thenReturn(1);
+            comment = Mockito.mock(Comment.class);
+            Mockito.when(comment.getTotalLikes()).thenReturn(15L);
 
-            commentLikes.add(commentLike);
+            comments.add(comment);
 
-            commentLike = Mockito.mock(CommentLike.class);
-            Mockito.when(commentLike.getValue()).thenReturn(-1);
+            comment = Mockito.mock(Comment.class);
+            Mockito.when(comment.getTotalLikes()).thenReturn(-12L);
 
-            commentLikes.add(commentLike);
+            comments.add(comment);
 
             // Post Likes
-            postLike = Mockito.mock(PostLike.class);
-            Mockito.when(postLike.getValue()).thenReturn(1);
+            post = Mockito.mock(Post.class);
+            Mockito.when(post.getTotalLikes()).thenReturn(20L);
 
-            postLikes.add(postLike);
+            posts.add(post);
 
-            postLike = Mockito.mock(PostLike.class);
-            Mockito.when(postLike.getValue()).thenReturn(-1);
+            post = Mockito.mock(Post.class);
+            Mockito.when(post.getTotalLikes()).thenReturn(-18L);
 
-            postLikes.add(postLike);
+            posts.add(post);
         }
 
-        // Add 2 positive comment likes
-        commentLike = Mockito.mock(CommentLike.class);
-        Mockito.when(commentLike.getValue()).thenReturn(1);
+        // Add 50 positive comment likes
+        comment = Mockito.mock(Comment.class);
+        Mockito.when(comment.getTotalLikes()).thenReturn(50L);
 
-        commentLikes.add(commentLike);
+        comments.add(comment);
 
-        commentLike = Mockito.mock(CommentLike.class);
-        Mockito.when(commentLike.getValue()).thenReturn(1);
+        // Add 50 negative post like
+        post = Mockito.mock(Post.class);
+        Mockito.when(post.getTotalLikes()).thenReturn(-50L);
 
-        commentLikes.add(commentLike);
-
-        // Add 1 positive post like
-        postLike = Mockito.mock(PostLike.class);
-        Mockito.when(postLike.getValue()).thenReturn(1);
-
-        postLikes.add(postLike);
+        posts.add(post);
 
         User user = new User(DEFAULT_ID, DEFAULT_CREATION_DATE, DEFAULT_USERNAME, DEFAULT_PASSWORD, DEFAULT_NAME,
                 DEFAULT_EMAIL, DEFAULT_DESCRIPTION, DEFAULT_LANGUAGE, DEFAULT_AVATAR, DEFAULT_ROLES, DEFAULT_ENABLED,
-                postLikes, commentLikes, DEFAULT_POSTS, DEFAULT_COMMENTS, DEFAULT_FOLLOWING,
+                DEFAULT_POST_LIKES, DEFAULT_COMMENT_LIKES, posts, comments, DEFAULT_FOLLOWING,
                 DEFAULT_FAVOURITE_POSTS);
 
         // Exercise
         user.calculateTotalLikes();
 
-        Assert.assertEquals(3L, user.getTotalLikes());
+        Assert.assertEquals(50L, user.getTotalLikes());
     }
 }
