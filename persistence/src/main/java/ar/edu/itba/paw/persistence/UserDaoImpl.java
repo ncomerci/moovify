@@ -181,6 +181,16 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public long getFollowerCount(User user) {
+
+        LOGGER.info("Get Follower Total Count of user {}", user.getId());
+
+        return (long) em.createQuery("SELECT COUNT(DISTINCT u) FROM User u INNER JOIN u.following WHERE :user IN elements(u.following)")
+                .setParameter("user", user)
+                .getSingleResult();
+    }
+
+    @Override
     public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Search All Users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);

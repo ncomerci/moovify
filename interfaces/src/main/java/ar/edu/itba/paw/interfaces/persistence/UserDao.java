@@ -27,6 +27,8 @@ public interface UserDao {
 
     Optional<User> findUserByEmail(String email);
 
+    long getFollowerCount(User user);
+
     PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<User> getFollowedUsers(User user, UserDao.SortCriteria sortCriteria, int pageNumber, int pageSize);

@@ -104,8 +104,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         jpaProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL92Dialect");
 
         // Configuration Only For Develop
-//        jpaProperties.setProperty("hibernate.show_sql", "true");
-//        jpaProperties.setProperty("format_sql", "true");
+        jpaProperties.setProperty("hibernate.show_sql", "true");
+        jpaProperties.setProperty("format_sql", "true");
 
         factoryBean.setJpaProperties(jpaProperties);
 

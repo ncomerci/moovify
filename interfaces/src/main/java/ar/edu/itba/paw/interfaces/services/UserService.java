@@ -51,6 +51,8 @@ public interface UserService {
 
     void removeFavouritePost(User user, Post post);
 
+    long getFollowerCount(User user);
+
     Optional<User> findUserById(long id);
 
     Optional<User> findDeletedUserById(long id);

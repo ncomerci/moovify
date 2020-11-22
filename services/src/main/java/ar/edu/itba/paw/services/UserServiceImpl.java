@@ -310,6 +310,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
+    public long getFollowerCount(User user) {
+        return userDao.getFollowerCount(user);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public Optional<User> findUserById(long id) {
         return userDao.findUserById(id);
     }
