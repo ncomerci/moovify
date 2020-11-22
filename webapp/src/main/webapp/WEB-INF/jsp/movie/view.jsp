@@ -21,10 +21,10 @@
                                 argumentSeparator=";"/></h1>
         </div>
 
-        <figure class="movie-poster uk-width-max-content">
-            <img src="<c:url value="/movie/poster/${movie.posterId}"/>"
+        <div class="uk-width-max-content">
+            <img class="movie-poster" src="<c:url value="/movie/poster/${movie.posterId}"/>"
                  alt="<spring:message code="movie.view.poster.altText"/>"/>
-        </figure>
+        </div>
         <div class="uk-width-expand uk-padding-large uk-padding-remove-top uk-padding-remove-bottom">
 
             <dl class="uk-description-list uk-margin-small-top">
