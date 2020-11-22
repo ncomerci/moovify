@@ -89,7 +89,7 @@
                                     <img class="circle-comment uk-comment-avatar" src="<c:url value="/user/avatar/${user.avatarId}"/>" alt="">
                                 </a>
                             </div>
-                            <div class="uk-width-2-3 uk-margin-top">
+                            <div class="uk-width-2-3 margin-user-home-display">
                                 <div class="uk-flex">
                                     <div class="uk-width-expand">
                                         <a href="<c:url value="/user/${user.id}"/>" class="${user.admin ? 'uk-text-primary uk-text-middle' : ''}">
