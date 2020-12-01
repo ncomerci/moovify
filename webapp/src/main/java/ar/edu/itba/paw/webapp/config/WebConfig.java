@@ -21,12 +21,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -36,7 +30,6 @@ import java.util.Properties;
 @EnableScheduling
 @EnableAsync
 @EnableTransactionManagement
-@EnableWebMvc
 @ComponentScan({
         "ar.edu.itba.paw.webapp.controller",
         "ar.edu.itba.paw.services",
@@ -45,21 +38,21 @@ import java.util.Properties;
 @Configuration
 @PropertySource({ "classpath:/config/web-config-develop.properties" })
 //@PropertySource({ "classpath:/config/web-config-production.properties" })
-public class WebConfig extends WebMvcConfigurerAdapter {
+public class WebConfig {
 
     @Autowired
     private Environment env;
 
-    @Bean
-    public ViewResolver viewResolver() {
-        final InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-
-        viewResolver.setViewClass(JstlView.class); // Es el default, pero lo aclaramos
-        viewResolver.setSuffix(".jsp");
-        viewResolver.setPrefix("/WEB-INF/jsp/");
-
-        return viewResolver;
-    }
+//    @Bean
+//    public ViewResolver viewResolver() {
+//        final InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+//
+//        viewResolver.setViewClass(JstlView.class); // Es el default, pero lo aclaramos
+//        viewResolver.setSuffix(".jsp");
+//        viewResolver.setPrefix("/WEB-INF/jsp/");
+//
+//        return viewResolver;
+//    }
 
     @Bean(name = "applicationBasePath")
     public String applicationBasePath() {
@@ -67,11 +60,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         return env.getProperty("app.base_path");
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/resources/**")
-                .addResourceLocations("/resources/");
-    }
+//    @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        registry.addResourceHandler("/resources/**")
+//                .addResourceLocations("/resources/");
+//    }
 
     @Bean
     public DataSource dataSource() {

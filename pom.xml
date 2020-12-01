@@ -22,9 +22,12 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
-<!--   Spring Dependencies -->
+<!--  Spring Dependencies -->
     <org.springframework.version>4.2.5.RELEASE</org.springframework.version>
     <spring-security.version>4.0.4.RELEASE</spring-security.version>
+
+<!--  Jersey Dependencies -->
+    <jersey.version>3.0-SNAPSHOT</jersey.version>
 
 <!--  Mail Dependencies  -->
     <javax-mail.version>1.4.7</javax-mail.version>
@@ -33,24 +36,24 @@
 <!--  File Upload Dependency  -->
     <commons-fileupload.version>1.3.1</commons-fileupload.version>
 
-<!--   JDBC Dependencies -->
+<!--  JDBC Dependencies -->
     <org.postgresql.version>42.2.16</org.postgresql.version>
 
-<!--   Testing Dependencies -->
+<!--  Testing Dependencies -->
     <mockito.version>2.25.1</mockito.version>
     <junit.version>4.12</junit.version>
     <hsqldb.version>2.4.1</hsqldb.version>
 
-<!--   Logging Dependencies -->
+<!--  Logging Dependencies -->
     <org.slf4j.version>1.7.5</org.slf4j.version>
     <logback.version>1.1.2</logback.version>
     <logback-ext-spring.version>0.1.1</logback-ext-spring.version>
 
-    <!--Hibernate Dependencies-->
+<!--  Hibernate Dependencies-->
     <org.hibernate.version>5.1.0.Final</org.hibernate.version>
     <org.hibernate.jpa.version>1.0.0.Final</org.hibernate.jpa.version>
 
-<!--   Dependencies Needed for compatibility with older Apache Versions  -->
+<!--  Dependencies Needed for compatibility with older Apache Versions  -->
     <servlet-api.version>2.5</servlet-api.version>
     <jstl.version>1.2</jstl.version>
 
@@ -63,10 +66,77 @@
   <dependencyManagement>
     <dependencies>
 
+<!--   TODO: Delete     -->
+<!--      <dependency>-->
+<!--        <groupId>org.springframework</groupId>-->
+<!--        <artifactId>spring-webmvc</artifactId>-->
+<!--        <version>${org.springframework.version}</version>-->
+<!--      </dependency>-->
+
+<!-- All Jersey Dependencies -->
       <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-webmvc</artifactId>
-        <version>${org.springframework.version}</version>
+        <groupId>org.glassfish.jersey.containers</groupId>
+        <artifactId>jersey-container-servlet-core</artifactId>
+        <version>${jersey.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.jersey.ext</groupId>
+        <artifactId>jersey-spring4</artifactId>
+        <version>${jersey.version}</version>
+        <exclusions>
+          <!-- La versión incluida requiere Java 9+ -->
+        <exclusion>
+          <groupId>org.glassfish.hk2</groupId>
+          <artifactId>hk2</artifactId>
+        </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- última versión compatible con Java 8 -->
+      <dependency>
+        <groupId>org.glassfish.hk2</groupId>
+        <artifactId>hk2</artifactId>
+        <version>2.5.0-b05</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.jersey.core</groupId>
+        <artifactId>jersey-server</artifactId>
+        <version>${jersey.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- JERSEY JSON -->
+      <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-moxy</artifactId>
+        <version>${jersey.version}</version>
+        <exclusions>
+          <!-- Not Java 10 compliant -->
+          <exclusion>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- Java 10 compatible -->
+      <dependency>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.moxy</artifactId>
+        <version>2.7.2</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-jaxb</artifactId>
+        <version>${jersey.version}</version>
       </dependency>
 
       <dependency>
@@ -282,7 +352,7 @@
   </dependencyManagement>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults -->
       <plugins>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
@@ -316,6 +386,18 @@
       </plugins>
     </pluginManagement>
   </build>
+
+
+  <repositories>
+      <repository>
+          <id>jersey-snapshot</id>
+          <url>https://maven.java.net/content/repositories/snapshots/</url>
+          <name>Jersey Snapshots</name>
+          <snapshots>
+              <enabled>true</enabled>
+          </snapshots>
+      </repository>
+  </repositories>
           
   <modules>
     <module>webapp</module>
