@@ -86,10 +86,10 @@
         <version>${jersey.version}</version>
         <exclusions>
           <!-- La versión incluida requiere Java 9+ -->
-        <exclusion>
-          <groupId>org.glassfish.hk2</groupId>
-          <artifactId>hk2</artifactId>
-        </exclusion>
+          <exclusion>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
 
@@ -98,6 +98,13 @@
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2</artifactId>
         <version>2.5.0-b05</version>
+        <exclusions>
+<!--      El bean-validator incluye jboss.logging que colisiona con el hibernate    -->
+          <exclusion>
+            <groupId>org.glassfish.hk2.external</groupId>
+            <artifactId>bean-validator</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>

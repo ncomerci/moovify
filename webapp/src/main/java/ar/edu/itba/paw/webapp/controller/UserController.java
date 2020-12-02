@@ -24,7 +24,7 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response listUsers() {
-        final PaginatedCollection<User> users = userService.getAllUsers(0, 0);
+        final PaginatedCollection<User> users = userService.getAllUsers(0, 5);
 
         if(users.getResults().isEmpty())
             return Response.noContent().build();
