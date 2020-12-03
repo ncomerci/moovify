@@ -27,15 +27,21 @@
   <build>
     <finalName>webapp</finalName>
 
-<!--    <plugins>-->
-<!--      <plugin>-->
-<!--        <groupId>org.apache.maven.plugins</groupId>-->
-<!--        <artifactId>maven-war-plugin</artifactId>-->
-<!--        <configuration>-->
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
 <!--          <packagingExcludes>**/logback-test.xml</packagingExcludes>-->
-<!--        </configuration>-->
-<!--      </plugin>-->
-<!--    </plugins>-->
+          <webResources>
+            <resource>
+              <directory>${project.parent.basedir}/frontend/dist/</directory>
+              <targetPath>resources</targetPath>
+            </resource>
+          </webResources>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 
   <dependencies>
@@ -156,32 +162,8 @@
     </dependency>
 
     <dependency>
-      <groupId>ar.edu.itba.paw</groupId>
-      <artifactId>interfaces</artifactId>
-      <version>${project.parent.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>ar.edu.itba.paw</groupId>
-      <artifactId>services</artifactId>
-      <version>${project.parent.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
-    </dependency>
-
-    <!-- This dependencies are needed because we are working with an older version of Apache Tomcat -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>jstl</artifactId>
     </dependency>
 
     <dependency>
@@ -197,6 +179,37 @@
     <dependency>
       <groupId>org.passay</groupId>
       <artifactId>passay</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>ar.edu.itba.paw</groupId>
+      <artifactId>interfaces</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ar.edu.itba.paw</groupId>
+      <artifactId>frontend</artifactId>
+      <version>${project.parent.version}</version>
+      <type>pom</type>
+    </dependency>
+
+    <dependency>
+      <groupId>ar.edu.itba.paw</groupId>
+      <artifactId>services</artifactId>
+      <version>${project.parent.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- This dependencies are needed because we are working with an older version of Apache Tomcat -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
     </dependency>
 
   </dependencies>

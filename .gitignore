@@ -21,9 +21,11 @@ target/
 .factorypath
 .factorypath/
 
-# Exclude Frontend Libraries
+# Exclude Frontend Package Generated Files
+/frontend/node
 /frontend/node_modules/
 /frontend/bower_components/
+/frontend/etc
 
 # Frontend Build Generated Files
 /frontend/.tmp/

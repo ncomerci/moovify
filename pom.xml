@@ -361,6 +361,14 @@
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults -->
       <plugins>
+
+<!--    Plugin To Integrate Frontend Module    -->
+        <plugin>
+          <groupId>com.github.eirslett</groupId>
+          <artifactId>frontend-maven-plugin</artifactId>
+          <version>1.9.1</version>
+        </plugin>
+
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
@@ -394,7 +402,6 @@
     </pluginManagement>
   </build>
 
-
   <repositories>
       <repository>
           <id>jersey-snapshot</id>
@@ -411,7 +418,8 @@
     <module>services</module>
     <module>persistence</module>
     <module>models</module>
-    <module>interfaces</module> 
+    <module>interfaces</module>
+    <module>frontend</module>
   </modules>
         
 </project>

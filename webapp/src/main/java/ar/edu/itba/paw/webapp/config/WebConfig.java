@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
+import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +39,7 @@ import java.util.Properties;
 @Configuration
 @PropertySource({ "classpath:/config/web-config-develop.properties" })
 //@PropertySource({ "classpath:/config/web-config-production.properties" })
-public class WebConfig {
+public class WebConfig extends ResourceConfig {
 
     @Autowired
     private Environment env;

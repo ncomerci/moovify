@@ -5,6 +5,7 @@
   "devDependencies": {
     "bower": "^1.3.12",
     "grunt": "^0.4.1",
+    "grunt-cli": "",
     "grunt-autoprefixer": "^0.7.3",
     "grunt-bower-requirejs": "^1.1.0",
     "grunt-concurrent": "^0.5.0",
@@ -31,11 +32,5 @@
     "load-grunt-tasks": "^0.4.0",
     "requirejs": "^2.1.11",
     "time-grunt": "^0.3.1"
-  },
-  "scripts": {
-    "preinstall": "npx npm-force-resolutions"
-  },
-  "resolutions": {
-    "graceful-fs": "^4.2.4"
   }
 }
