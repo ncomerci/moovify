@@ -24,3 +24,10 @@ target/
 # Exclude Frontend Libraries
 /frontend/node_modules/
 /frontend/bower_components/
+
+# Frontend Build Generated Files
+/frontend/.tmp/
+/frontend/.sass-cache/
+
+# Frontend Build Target
+/frontend/dist/
