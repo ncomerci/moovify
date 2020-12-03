@@ -20,3 +20,6 @@ target/
 .vscode/
 .factorypath
 .factorypath/
+
+# Exclude Frontend Library Modules
+/frontend/node_modules/
