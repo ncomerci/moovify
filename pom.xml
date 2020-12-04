@@ -66,13 +66,6 @@
   <dependencyManagement>
     <dependencies>
 
-<!--   TODO: Delete     -->
-<!--      <dependency>-->
-<!--        <groupId>org.springframework</groupId>-->
-<!--        <artifactId>spring-webmvc</artifactId>-->
-<!--        <version>${org.springframework.version}</version>-->
-<!--      </dependency>-->
-
 <!-- All Jersey Dependencies -->
       <dependency>
         <groupId>org.glassfish.jersey.containers</groupId>
