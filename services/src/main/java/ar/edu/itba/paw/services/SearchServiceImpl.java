@@ -3,6 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.*;
 import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
 import ar.edu.itba.paw.interfaces.services.SearchService;
+import ar.edu.itba.paw.interfaces.services.exceptions.InvalidSortCriteriaException;
 import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-//@DependsOn({"PostCategoryDao", "MovieCategoryDao"})
 public class SearchServiceImpl implements SearchService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchServiceImpl.class);
@@ -236,16 +236,11 @@ public class SearchServiceImpl implements SearchService {
             return Optional.empty();
 
         final EnumSet<UserSearchOptions> options = EnumSet.noneOf(UserSearchOptions.class);
-        final UserDao.SortCriteria sc;
+
+        final UserDao.SortCriteria sc = getUserSortCriteria(sortCriteria);
 
         if(role != null && userRoleOptionsMap.containsKey(role))
             options.add(UserSearchOptions.BY_ROLE);
-
-        if(sortCriteria != null && userSortCriteriaMap.containsKey(sortCriteria))
-            sc = userSortCriteriaMap.get(sortCriteria);
-
-        else
-            sc = DEFAULT_USER_SORT_CRITERIA;
 
         LOGGER.debug("Search Users using Filter Options {} and Sort Criteria {}", options, sc);
 
@@ -286,6 +281,15 @@ public class SearchServiceImpl implements SearchService {
             return Optional.empty();
 
         return Optional.of(userDao.searchDeletedUsers(query, UserDao.SortCriteria.NEWEST, pageNumber, pageSize));
+    }
+
+    @Override
+    public UserDao.SortCriteria getUserSortCriteria(String sortCriteriaName) {
+        if(sortCriteriaName != null && userSortCriteriaMap.containsKey(sortCriteriaName))
+            return userSortCriteriaMap.get(sortCriteriaName);
+
+        else
+            throw new InvalidSortCriteriaException();
     }
 
     @Override

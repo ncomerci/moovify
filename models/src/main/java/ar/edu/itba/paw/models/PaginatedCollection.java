@@ -36,6 +36,14 @@ public class PaginatedCollection<T> {
         return (totalCount - 1) / pageSize;
     }
 
+    public boolean isEmpty() {
+        return results.isEmpty();
+    }
+
+    public boolean isLastPage() {
+        return getPageNumber() == getLastPageNumber();
+    }
+
     @Override
     public String toString() {
         return "PaginatedCollection{" +

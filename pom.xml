@@ -62,7 +62,6 @@
     <org.passay.version>1.0</org.passay.version>
   </properties>
 
-
   <dependencyManagement>
     <dependencies>
 

@@ -26,24 +26,39 @@ public class UserController {
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listUsers(@QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+    public Response listUsers(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                              @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                               @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final UriBuilder uriBuilder = uriInfo.getAbsolutePathBuilder();
+        final PaginatedCollection<User> users = userService.getAllUsers(orderBy, pageNumber, pageSize);
 
-        final PaginatedCollection<User> users = userService.getAllUsers(pageNumber, pageSize);
+        if(users.isEmpty()) {
+            if(pageNumber == 0)
+                return Response.noContent().build();
 
-        if(users.getResults().isEmpty())
-            return Response.noContent().build();
+            else
+                return Response.status(Response.Status.NOT_FOUND).build();
+        }
 
-        return Response.ok(new GenericEntity<Collection<UserDto>>(UserDto.mapUsersToDto(users.getResults(), uriInfo)) {})
-                .link(
-                        uriBuilder
-                                .queryParam("pageNumber", pageNumber + 1)
-                                .queryParam("pageSize", pageSize)
-                        .build(),
-                        "next")
-                .build();
+        final Response.ResponseBuilder responseBuilder =
+                Response.ok(new GenericEntity<Collection<UserDto>>(UserDto.mapUsersToDto(users.getResults(), uriInfo)) {});
+
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", pageSize)
+                .queryParam("orderBy", orderBy);
+
+        responseBuilder.link(linkUriBuilder.clone().queryParam("pageNumber", 0).build(), "first");
+
+        responseBuilder.link(linkUriBuilder.clone().queryParam("pageNumber", users.getLastPageNumber()).build(), "last");
+
+        if(pageNumber != 0)
+            responseBuilder.link(linkUriBuilder.clone().queryParam("pageNumber", pageNumber - 1).build(), "prev");
+
+        if(pageNumber != users.getLastPageNumber())
+            responseBuilder.link(linkUriBuilder.clone().queryParam("pageNumber", pageNumber + 1).build(), "next");
+
+        return responseBuilder.build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -56,6 +71,7 @@ public class UserController {
         return Response.ok(new UserDto(user, uriInfo)).build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     public Response createUser(final UserDto userDto, @Context HttpServletRequest request) {
@@ -71,7 +87,7 @@ public class UserController {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
 
-        return Response.ok(new UserDto(user, uriInfo)).build();
+        return Response.created(UserDto.getUserUriBuilder(user, uriInfo).build()).build();
     }
 
 }

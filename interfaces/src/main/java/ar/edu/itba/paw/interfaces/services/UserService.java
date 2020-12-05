@@ -61,7 +61,7 @@ public interface UserService {
 
     Optional<User> findUserByEmail(String email);
 
-    PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize);
+    PaginatedCollection<User> getAllUsers(String sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<User> getFollowedUsers(User user, int pageNumber, int pageSize);
 

@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.interfaces.services;
 
+import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.models.*;
 
 import java.util.Collection;
@@ -24,6 +25,8 @@ public interface SearchService {
     Optional<PaginatedCollection<Comment>> searchDeletedComments(String query, int pageNumber, int pageSize);
 
     Optional<PaginatedCollection<User>> searchDeletedUsers(String query, int pageNumber, int pageSize);
+
+    UserDao.SortCriteria getUserSortCriteria(String sortCriteriaName);
 
     /**
      * Available options for search methods

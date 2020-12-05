@@ -6,6 +6,7 @@ import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
+import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
@@ -32,6 +33,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private SearchService searchService;
 
     @Autowired
     private UserVerificationTokenDao userVerificationTokenDao;
@@ -340,8 +344,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<User> getAllUsers(int pageNumber, int pageSize) {
-        return userDao.getAllUsers(UserDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<User> getAllUsers(String sortCriteria, int pageNumber, int pageSize) {
+        return userDao.getAllUsers(searchService.getUserSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)

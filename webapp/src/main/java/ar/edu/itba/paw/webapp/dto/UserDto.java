@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.dto;
 
 import ar.edu.itba.paw.models.User;
 
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -11,6 +12,10 @@ public class UserDto {
 
     public static Collection<UserDto> mapUsersToDto(Collection<User> users, UriInfo uriInfo) {
         return users.stream().map(u -> new UserDto(u, uriInfo)).collect(Collectors.toList());
+    }
+
+    public static UriBuilder getUserUriBuilder(User user, UriInfo uriInfo) {
+        return uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(user.getId()));
     }
 
     private long id;
@@ -43,7 +48,7 @@ public class UserDto {
         totalLikes = user.getTotalLikes();
         enabled = user.isEnabled();
 
-        url = uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(id)).build().toString();
+        url = getUserUriBuilder(user, uriInfo).build().toString();
     }
 
     public long getId() {
