@@ -56,15 +56,10 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User register(String username, String password, String name, String email, String description, byte[] avatar, String confirmationMailTemplate, Locale locale) throws DuplicateUniqueUserAttributeException {
-
-        Image image = null;
-
-        if(avatar.length > 0)
-            image = imageService.uploadImage(avatar, AVATAR_SECURITY_TAG);
+    public User register(String username, String password, String name, String email, String description, String confirmationMailTemplate, Locale locale) throws DuplicateUniqueUserAttributeException {
 
         final User user = userDao.register(username, passwordEncoder.encode(password),
-                name, email, description, locale.getLanguage(), Collections.singleton(Role.NOT_VALIDATED), image, true);
+                name, email, description, locale.getLanguage(), Collections.singleton(Role.NOT_VALIDATED), null, true);
 
         createConfirmationEmail(user, confirmationMailTemplate, locale);
 

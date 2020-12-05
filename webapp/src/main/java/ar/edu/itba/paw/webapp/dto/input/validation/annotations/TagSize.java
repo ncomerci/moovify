@@ -1,6 +1,7 @@
-package ar.edu.itba.paw.webapp.form.annotations;
+package ar.edu.itba.paw.webapp.dto.input.validation.annotations;
 
-import ar.edu.itba.paw.webapp.form.constraints.AvatarConstraintValidator;
+
+import ar.edu.itba.paw.webapp.dto.input.validation.constraints.TagSizeConstraintValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -12,15 +13,17 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = AvatarConstraintValidator.class)
-@Target({ TYPE, FIELD, ANNOTATION_TYPE })
+@Constraint(validatedBy = TagSizeConstraintValidator.class)
+@Target({ FIELD, METHOD, PARAMETER, ANNOTATION_TYPE })
 @Retention(RUNTIME)
-public @interface Avatar {
+public @interface TagSize {
 
-    String message() default "{javax.validation.constraints.Avatar.message}";
+    String message() default "{javax.validation.constraints.TagSize.message}" ;
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    int max();
 
 }

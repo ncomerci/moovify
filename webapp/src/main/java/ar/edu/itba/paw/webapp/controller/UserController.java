@@ -2,9 +2,12 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.UserDto;
+import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
+import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.security.Principal;
 import java.util.Collection;
 
 @Path("users")
@@ -61,6 +65,28 @@ public class UserController {
         return responseBuilder.build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public Response createUser(final UserCreateDto userCreateDto, @Context HttpServletRequest request) {
+
+        final User user;
+
+        try {
+            user = userService.register(userCreateDto.getUsername(), userCreateDto.getPassword(), userCreateDto.getName(),
+                    userCreateDto.getEmail(), userCreateDto.getDescription(), "confirmEmail",
+                    request.getLocale());
+        }
+        catch(DuplicateUniqueUserAttributeException e) {
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(new DuplicateUniqueUserAttributeErrorDto(e))
+                    .build();
+        }
+
+        return Response.created(UserDto.getUserUriBuilder(user, uriInfo).build()).build();
+    }
+
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/{id}")
@@ -73,22 +99,33 @@ public class UserController {
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @POST
-    public Response createUser(final UserDto userDto, @Context HttpServletRequest request) {
+    @PUT
+    @Path("/{id}")
+    public Response updateUser(@PathParam("id") long id) {
 
-        final User user;
+        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
-        try {
-            user = userService.register(userDto.getUsername(), userDto.getPassword(), userDto.getName(), userDto.getEmail(),
-                    userDto.getDescription(), new byte[0], "confirmEmail", request.getLocale());
-        }
-        catch(DuplicateUniqueUserAttributeException e) {
-            // TODO
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
-
-        return Response.created(UserDto.getUserUriBuilder(user, uriInfo).build()).build();
+        return Response.ok(new UserDto(user, uriInfo)).build();
     }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @DELETE
+    @Path("/{id}")
+    public Response deleteUser(@PathParam("id") long id, @Context Principal principal) throws DeletedDisabledModelException {
+
+        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        userService.deleteUser(user);
+
+        // TODO: Revisar logout url
+        if(user.getUsername().equals(principal.getName()))
+            return Response.temporaryRedirect(uriInfo.getBaseUriBuilder().path("/logout").build()).build();
+
+        return Response.ok().build();
+    }
+
+
 
 }
 

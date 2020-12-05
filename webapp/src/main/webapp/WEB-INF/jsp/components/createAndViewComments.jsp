@@ -28,7 +28,7 @@
     <c:if test="${not empty loggedUser and loggedUser.validated and enableReplies}">
         <div class="uk-padding uk-padding-remove-horizontal uk-padding-remove-top">
             <c:url value="/comment/create" var="action"/>
-            <%--@elvariable id="commentCreateForm" type="ar.edu.itba.paw.webapp.form.CommentCreateForm"--%>
+                <%--@elvariable id="commentCreateForm" type="ar.edu.itba.paw.webapp.dto.input.CommentCreateForm"--%>
             <form:form id="spring-form" modelAttribute="commentCreateForm" action="${action}" method="post">
                 <c:set var="placeholder"><spring:message code="comment.create.writeCommentPlaceholder"/></c:set>
                 <div class="uk-margin">

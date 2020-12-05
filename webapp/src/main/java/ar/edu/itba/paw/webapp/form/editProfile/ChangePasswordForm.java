@@ -1,8 +1,8 @@
 package ar.edu.itba.paw.webapp.form.editProfile;
 
-import ar.edu.itba.paw.webapp.form.MatchingPasswordForm;
-import ar.edu.itba.paw.webapp.form.annotations.MatchingPasswords;
-import ar.edu.itba.paw.webapp.form.annotations.ValidPassword;
+import ar.edu.itba.paw.webapp.dto.input.MatchingPasswordForm;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.MatchingPasswords;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.ValidPassword;
 
 import javax.validation.constraints.Size;
 

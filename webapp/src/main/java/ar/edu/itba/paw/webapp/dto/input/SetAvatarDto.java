@@ -1,9 +1,9 @@
-package ar.edu.itba.paw.webapp.form.editProfile;
+package ar.edu.itba.paw.webapp.dto.input;
 
-import ar.edu.itba.paw.webapp.form.annotations.Avatar;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.Avatar;
 import org.springframework.web.multipart.MultipartFile;
 
-public class AvatarEditForm {
+public class SetAvatarDto {
 
     @Avatar
     private MultipartFile avatar;

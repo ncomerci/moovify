@@ -76,55 +76,55 @@ public class UserServiceTest {
      */
 
     // Verifico que el service retorne el user que le dio el DAO y para generarlo haya utilizado la imagen que subio
+//    @Test
+//    public void testRegisterWithAvatar() throws DuplicateUniqueUserAttributeException {
+//
+//        User userMock = Mockito.when(Mockito.mock(User.class).getAvatarId()).thenReturn(AVATAR_ID).getMock();
+//
+//        UserService userServiceSpy = Mockito.spy(userService);
+//
+//        Image imgMock = Mockito.when(Mockito.mock(Image.class).getId()).thenReturn(AVATAR_ID).getMock();
+//
+//        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(imgMock);
+//
+//        Mockito.when(dao.register(
+//                Mockito.anyString(), // username
+//                Mockito.anyString(), // password
+//                Mockito.anyString(), // name
+//                Mockito.anyString(), // email
+//                Mockito.anyString(), // description
+//                Mockito.anyString(), // language
+//                Mockito.anySet(),    // roles
+//                Mockito.any(Image.class), // image
+//                Mockito.anyBoolean() // enabled
+//            )).thenReturn(userMock);
+//
+//        Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
+//
+//        Mockito.doNothing().when(userServiceSpy).createConfirmationEmail(
+//                Mockito.any(User.class),
+//                Mockito.anyString(),
+//                Mockito.any(Locale.class)
+//        );
+//
+//        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, IMAGE, "", Locale.ENGLISH);
+//
+//        // Quiero revisar que el register haya utilizado el mock que le da el image service
+//        Mockito.verify(dao).register(Mockito.anyString(), // username
+//                Mockito.anyString(), // password
+//                Mockito.anyString(), // name
+//                Mockito.anyString(), // email
+//                Mockito.anyString(), // description
+//                Mockito.anyString(), // language
+//                Mockito.anySet(),    // roles
+//                Mockito.eq(imgMock), // image mock
+//                Mockito.anyBoolean() // enabled
+//        );
+//        Assert.assertEquals(AVATAR_ID, user.getAvatarId());
+//    }
+
     @Test
-    public void testRegisterWithAvatar() throws DuplicateUniqueUserAttributeException {
-
-        User userMock = Mockito.when(Mockito.mock(User.class).getAvatarId()).thenReturn(AVATAR_ID).getMock();
-
-        UserService userServiceSpy = Mockito.spy(userService);
-
-        Image imgMock = Mockito.when(Mockito.mock(Image.class).getId()).thenReturn(AVATAR_ID).getMock();
-
-        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(imgMock);
-
-        Mockito.when(dao.register(
-                Mockito.anyString(), // username
-                Mockito.anyString(), // password
-                Mockito.anyString(), // name
-                Mockito.anyString(), // email
-                Mockito.anyString(), // description
-                Mockito.anyString(), // language
-                Mockito.anySet(),    // roles
-                Mockito.any(Image.class), // image
-                Mockito.anyBoolean() // enabled
-            )).thenReturn(userMock);
-
-        Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
-
-        Mockito.doNothing().when(userServiceSpy).createConfirmationEmail(
-                Mockito.any(User.class),
-                Mockito.anyString(),
-                Mockito.any(Locale.class)
-        );
-
-        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, IMAGE, "", Locale.ENGLISH);
-
-        // Quiero revisar que el register haya utilizado el mock que le da el image service
-        Mockito.verify(dao).register(Mockito.anyString(), // username
-                Mockito.anyString(), // password
-                Mockito.anyString(), // name
-                Mockito.anyString(), // email
-                Mockito.anyString(), // description
-                Mockito.anyString(), // language
-                Mockito.anySet(),    // roles
-                Mockito.eq(imgMock), // image mock
-                Mockito.anyBoolean() // enabled
-        );
-        Assert.assertEquals(AVATAR_ID, user.getAvatarId());
-    }
-
-    @Test
-    public void testRegisterWithoutAvatar() throws DuplicateUniqueUserAttributeException {
+    public void testRegister() throws DuplicateUniqueUserAttributeException {
 
         User userMock = Mockito.when(Mockito.mock(User.class).getAvatarId()).thenReturn(DEFAULT_AVATAR_ID).getMock();
 
@@ -149,7 +149,7 @@ public class UserServiceTest {
                 Mockito.anyString(),
                 Mockito.any(Locale.class));
 
-        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, new byte[]{}, "", Locale.ENGLISH);
+        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, "", Locale.ENGLISH);
 
         Mockito.verify(dao).register(Mockito.anyString(), // username
                 Mockito.anyString(),    // password
@@ -194,7 +194,7 @@ public class UserServiceTest {
                 Mockito.any(Locale.class)
         );
 
-        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, IMAGE, "", Locale.ENGLISH);
+        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, "", Locale.ENGLISH);
 
 
         Mockito.verify(dao).register(

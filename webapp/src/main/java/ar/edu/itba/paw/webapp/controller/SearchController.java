@@ -2,9 +2,9 @@
 //
 //import ar.edu.itba.paw.interfaces.services.SearchService;
 //import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
-//import ar.edu.itba.paw.webapp.form.SearchMoviesForm;
-//import ar.edu.itba.paw.webapp.form.SearchPostsForm;
-//import ar.edu.itba.paw.webapp.form.SearchUsersForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.SearchMoviesForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.SearchPostsForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.SearchUsersForm;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.springframework.beans.factory.annotation.Autowired;

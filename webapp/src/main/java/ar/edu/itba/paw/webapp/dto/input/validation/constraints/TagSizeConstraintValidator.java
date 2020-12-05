@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.webapp.form.constraints;
+package ar.edu.itba.paw.webapp.dto.input.validation.constraints;
 
-import ar.edu.itba.paw.webapp.form.annotations.TagSize;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.TagSize;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

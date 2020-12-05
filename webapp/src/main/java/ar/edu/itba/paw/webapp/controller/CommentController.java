@@ -12,8 +12,8 @@
 //import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
 //import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 //import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
-//import ar.edu.itba.paw.webapp.form.CommentCreateForm;
-//import ar.edu.itba.paw.webapp.form.CommentEditForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.CommentCreateForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.CommentEditForm;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.springframework.beans.factory.annotation.Autowired;

@@ -5,7 +5,7 @@
 //import ar.edu.itba.paw.models.Movie;
 //import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
 //import ar.edu.itba.paw.webapp.exceptions.MoviePosterNotFoundException;
-//import ar.edu.itba.paw.webapp.form.UpdateMoviePosterForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.UpdateMoviePosterForm;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.springframework.beans.factory.annotation.Autowired;

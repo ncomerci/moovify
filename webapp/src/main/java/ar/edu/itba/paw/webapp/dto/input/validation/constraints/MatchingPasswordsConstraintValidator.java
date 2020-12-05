@@ -1,7 +1,7 @@
-package ar.edu.itba.paw.webapp.form.constraints;
+package ar.edu.itba.paw.webapp.dto.input.validation.constraints;
 
-import ar.edu.itba.paw.webapp.form.MatchingPasswordForm;
-import ar.edu.itba.paw.webapp.form.annotations.MatchingPasswords;
+import ar.edu.itba.paw.webapp.dto.input.MatchingPasswordForm;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.MatchingPasswords;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

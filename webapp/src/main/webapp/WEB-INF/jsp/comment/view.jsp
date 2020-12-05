@@ -129,7 +129,7 @@
 
                         <div id="comment-edit-form" class="hidden">
                             <c:url value="/comment/edit/${comment.id}" var="action"/>
-                                <%--@elvariable id="commentEditForm" type="ar.edu.itba.paw.webapp.form.CommentEditForm"--%>
+                                <%--@elvariable id="commentEditForm" type="ar.edu.itba.paw.webapp.dto.input.CommentEditForm"--%>
                             <form:form id="spring-form" modelAttribute="commentEditForm" action="${action}" method="post">
                                 <div class="uk-margin">
                                     <form:label path="commentBody">

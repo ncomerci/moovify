@@ -1,18 +1,16 @@
-package ar.edu.itba.paw.webapp.form;
+package ar.edu.itba.paw.webapp.dto.input;
 
-import ar.edu.itba.paw.webapp.form.annotations.Avatar;
-import ar.edu.itba.paw.webapp.form.annotations.MatchingPasswords;
-import ar.edu.itba.paw.webapp.form.annotations.SpacesNormalization;
-import ar.edu.itba.paw.webapp.form.annotations.ValidPassword;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.MatchingPasswords;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.SpacesNormalization;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 @MatchingPasswords()
-public class UserCreateForm implements MatchingPasswordForm {
+public class UserCreateDto implements MatchingPasswordForm {
 
     @Size(min = 6, max = 50)
     @Pattern(regexp = "[a-zA-Z0-9#_]+")
@@ -36,8 +34,8 @@ public class UserCreateForm implements MatchingPasswordForm {
     @Size(max=400)
     private String description;
 
-    @Avatar
-    private MultipartFile avatar;
+//    @Avatar
+//    private MultipartFile avatar;
 
     public String getUsername() {
         return username;
@@ -87,11 +85,11 @@ public class UserCreateForm implements MatchingPasswordForm {
         this.description = description;
     }
 
-    public MultipartFile getAvatar() {
-        return avatar;
-    }
-
-    public void setAvatar(MultipartFile avatar) {
-        this.avatar = avatar;
-    }
+//    public MultipartFile getAvatar() {
+//        return avatar;
+//    }
+//
+//    public void setAvatar(MultipartFile avatar) {
+//        this.avatar = avatar;
+//    }
 }

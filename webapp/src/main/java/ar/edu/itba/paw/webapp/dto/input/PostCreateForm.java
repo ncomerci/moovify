@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.webapp.form;
+package ar.edu.itba.paw.webapp.dto.input;
 
-import ar.edu.itba.paw.webapp.form.annotations.TagSize;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.TagSize;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;

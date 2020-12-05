@@ -104,17 +104,17 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "post_id")
     )
-    private Set<Post> favouritePosts;
+    private Set<Post> bookmarkedPosts;
 
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> favouritePosts) {
-        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postLikes, commentLikes, posts, comments, following, favouritePosts);
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> bookmarkedPosts) {
+        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postLikes, commentLikes, posts, comments, following, bookmarkedPosts);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> favouritePosts) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> bookmarkedPosts) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
@@ -130,7 +130,7 @@ public class User {
         this.posts = posts;
         this.comments = comments;
         this.following = following;
-        this.favouritePosts = favouritePosts;
+        this.bookmarkedPosts = bookmarkedPosts;
     }
 
     protected User() {
@@ -256,20 +256,20 @@ public class User {
         return getRoles().stream().anyMatch(r -> r.equals(role));
     }
 
-    public Collection<Post> getFavouritePosts() {
-        return favouritePosts;
+    public Collection<Post> getBookmarkedPosts() {
+        return bookmarkedPosts;
     }
 
     public boolean isPostBookmarked(Post post) {
-        return favouritePosts.contains(post);
+        return bookmarkedPosts.contains(post);
     }
 
     public void addFavouritePost(Post post) {
-        favouritePosts.add(post);
+        bookmarkedPosts.add(post);
     }
 
     public void removeFavouritePost(Post post) {
-        favouritePosts.remove(post);
+        bookmarkedPosts.remove(post);
     }
 
     public Collection<User> getFollowingUsers() {

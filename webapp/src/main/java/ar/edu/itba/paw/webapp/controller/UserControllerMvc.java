@@ -13,10 +13,10 @@
 //import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
 //import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 //import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
-//import ar.edu.itba.paw.webapp.form.ResetPasswordForm;
-//import ar.edu.itba.paw.webapp.form.UpdatePasswordForm;
-//import ar.edu.itba.paw.webapp.form.UserCreateForm;
-//import ar.edu.itba.paw.webapp.form.editProfile.AvatarEditForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.ResetPasswordForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.UpdatePasswordForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.UserCreateForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.AvatarEditForm;
 //import ar.edu.itba.paw.webapp.form.editProfile.ChangePasswordForm;
 //import ar.edu.itba.paw.webapp.form.editProfile.UserEditForm;
 //import org.slf4j.Logger;

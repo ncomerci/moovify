@@ -19,7 +19,7 @@
     <div class="uk-position-cover uk-overlay uk-overlay-default uk-flex uk-flex-center uk-flex-middle">
         <div class="uk-width-1-4@m uk-flex-first uk-text-center">
             <c:url value="/user/profile/avatar" var="action"/>
-            <%--@elvariable id="avatarEditForm" type="ar.edu.itba.paw.webapp.form.editProfile.AvatarEditForm"--%>
+            <%--@elvariable id="avatarEditForm" type="ar.edu.itba.paw.webapp.dto.input.SetAvatarDto"--%>
             <form:form modelAttribute="avatarEditForm" action="${action}" method="post" enctype="multipart/form-data">
                 <div class="uk-inline-clip uk-transition-toggle" tabindex="0">
                     <img class="circle uk-background-cover" alt="user-avatar" data-src="<c:url value="/user/avatar/${loggedUser.avatarId}"/>" uk-img>

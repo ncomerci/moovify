@@ -13,9 +13,9 @@
 //import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
 //import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 //import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
-//import ar.edu.itba.paw.webapp.form.CommentCreateForm;
-//import ar.edu.itba.paw.webapp.form.PostCreateForm;
-//import ar.edu.itba.paw.webapp.form.PostEditForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.CommentCreateForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.PostCreateForm;
+//import ar.edu.itba.paw.webapp.dto.inputDto.PostEditForm;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.springframework.beans.factory.annotation.Autowired;

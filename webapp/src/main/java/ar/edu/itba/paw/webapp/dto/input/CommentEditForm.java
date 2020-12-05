@@ -1,6 +1,6 @@
-package ar.edu.itba.paw.webapp.form;
+package ar.edu.itba.paw.webapp.dto.input;
 
-import ar.edu.itba.paw.webapp.form.annotations.SpacesNormalization;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.SpacesNormalization;
 
 import javax.validation.constraints.Size;
 

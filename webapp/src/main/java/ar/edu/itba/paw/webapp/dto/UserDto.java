@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.dto;
 
+import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
 import javax.ws.rs.core.UriBuilder;
@@ -27,9 +28,14 @@ public class UserDto {
     private String language;
     private long totalLikes;
     private boolean enabled;
+    private Collection<Role> roles;
 
-    // Not sent
-    private String password;
+    // Relations
+    private String avatar;
+    private String posts;
+    private String comments;
+    private String following;
+    private String bookmarkedPosts;
 
     private String url;
 
@@ -47,8 +53,17 @@ public class UserDto {
         language = user.getLanguage();
         totalLikes = user.getTotalLikes();
         enabled = user.isEnabled();
+        roles = user.getRoles();
 
-        url = getUserUriBuilder(user, uriInfo).build().toString();
+        final UriBuilder userUriBuilder = getUserUriBuilder(user, uriInfo);
+
+        avatar = userUriBuilder.clone().path("/avatar").build().toString();
+        posts = userUriBuilder.clone().path("/posts").build().toString();
+        comments = userUriBuilder.clone().path("/comments").build().toString();
+        following = userUriBuilder.clone().path("/following").build().toString();
+        bookmarkedPosts = userUriBuilder.clone().path("/bookmarked").build().toString();
+
+        url = userUriBuilder.build().toString();
     }
 
     public long getId() {
@@ -131,11 +146,51 @@ public class UserDto {
         this.url = url;
     }
 
-    public String getPassword() {
-        return password;
+    public Collection<Role> getRoles() {
+        return roles;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getPosts() {
+        return posts;
+    }
+
+    public void setPosts(String posts) {
+        this.posts = posts;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public String getFollowing() {
+        return following;
+    }
+
+    public void setFollowing(String following) {
+        this.following = following;
+    }
+
+    public String getBookmarkedPosts() {
+        return bookmarkedPosts;
+    }
+
+    public void setBookmarkedPosts(String bookmarkedPosts) {
+        this.bookmarkedPosts = bookmarkedPosts;
     }
 }
