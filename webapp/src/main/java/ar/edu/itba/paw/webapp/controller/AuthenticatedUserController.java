@@ -24,6 +24,7 @@ import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
@@ -82,7 +83,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/avatar")
-    public Response updateAvatar(@Context Principal principal, final UpdateAvatarDto updateAvatarDto) throws IOException {
+    public Response updateAvatar(@Context Principal principal, @Valid final UpdateAvatarDto updateAvatarDto) throws IOException {
 
         final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
 
