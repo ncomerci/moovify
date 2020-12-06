@@ -9,6 +9,10 @@ public class DuplicateUniqueUserAttributeErrorDto {
     private String message;
     private EnumSet<DuplicateUniqueUserAttributeException.UniqueAttributes> duplicatedAttributes;
 
+    public DuplicateUniqueUserAttributeErrorDto() {
+        //For jersey - do not use
+    }
+
     public DuplicateUniqueUserAttributeErrorDto(DuplicateUniqueUserAttributeException e) {
 
         // TODO: Descablear String
