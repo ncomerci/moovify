@@ -3,10 +3,7 @@ package ar.edu.itba.paw.services;
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MailService;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
-import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
-import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
@@ -18,10 +15,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -39,6 +33,18 @@ public class CommentServiceImpl implements CommentService {
 
     @Autowired
     private MessageSource messageSource;
+
+    private final static Map<String, CommentDao.SortCriteria> sortCriteriaMap = initializeSortCriteriaMap();
+
+    private static Map<String, CommentDao.SortCriteria> initializeSortCriteriaMap() {
+        final Map<String, CommentDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
+
+        sortCriteriaMap.put("newest", CommentDao.SortCriteria.NEWEST);
+        sortCriteriaMap.put("oldest", CommentDao.SortCriteria.OLDEST);
+        sortCriteriaMap.put("hottest", CommentDao.SortCriteria.HOTTEST);
+
+        return sortCriteriaMap;
+    }
 
     @Transactional
     @Override
@@ -128,36 +134,50 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Comment> findCommentChildren(Comment comment, int pageNumber, int pageSize) {
-        return commentDao.findCommentChildren(comment, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Comment> findCommentChildren(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.findCommentChildren(comment, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Comment> findCommentDescendants(Comment comment, int pageNumber, int pageSize) {
-        return commentDao.findCommentDescendants(comment, MAX_COMMENT_TREE_DEPTH, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
+    public PaginatedCollection<Comment> findCommentDescendants(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.findCommentDescendants(comment, MAX_COMMENT_TREE_DEPTH, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Comment> findPostCommentDescendants(Post post, int pageNumber, int pageSize) {
-        return commentDao.findPostCommentDescendants(post, MAX_COMMENT_TREE_DEPTH, CommentDao.SortCriteria.HOTTEST, pageNumber, pageSize);
+    public PaginatedCollection<Comment> findPostCommentDescendants(Post post, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.findPostCommentDescendants(post, MAX_COMMENT_TREE_DEPTH, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Comment> findCommentsByPost(Post post, int pageNumber, int pageSize) {
-        return commentDao.findCommentsByPost(post, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Comment> findCommentsByPost(Post post, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.findCommentsByPost(post, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Comment> findCommentsByUser(User user, int pageNumber, int pageSize) {
-        return commentDao.findCommentsByUser(user, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Comment> findCommentsByUser(User user, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.findCommentsByUser(user, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Override
     public long getMaxCommentTreeDepth() {
         return MAX_COMMENT_TREE_DEPTH;
+    }
+
+    @Override
+    public CommentDao.SortCriteria getCommentSortCriteria(String sortCriteriaName) {
+        if (sortCriteriaName != null && sortCriteriaMap.containsKey(sortCriteriaName))
+            return sortCriteriaMap.get(sortCriteriaName);
+
+        else
+            throw new InvalidSortCriteriaException();
+    }
+
+    @Override
+    public Collection<String> getCommentSortOptions() {
+        return sortCriteriaMap.keySet();
     }
 }

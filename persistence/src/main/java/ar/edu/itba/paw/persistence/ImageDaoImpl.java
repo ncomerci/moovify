@@ -19,13 +19,13 @@ public class ImageDaoImpl implements ImageDao {
     private EntityManager em;
 
     @Override
-    public Image uploadImage(byte[] data, String securityTag) {
+    public Image uploadImage(byte[] data) {
 
-        final Image image = new Image(data, securityTag);
+        final Image image = new Image(data);
 
         em.persist(image);
 
-        LOGGER.info("Created Image {} with Security Tag {}", image.getId(), securityTag);
+        LOGGER.info("Created Image {}", image.getId());
 
         return image;
     }
@@ -36,20 +36,5 @@ public class ImageDaoImpl implements ImageDao {
         LOGGER.info("Get Image by Id {}", imageId);
 
         return Optional.ofNullable(em.find(Image.class, imageId));
-    }
-
-    @Override
-    public Optional<Image> getImage(long imageId, String securityTag) {
-
-        LOGGER.info("Get Image {} with Security Tag {}", imageId, securityTag);
-
-        final Image image = em.find(Image.class, imageId);
-
-        if(image != null && !image.getTag().equals(securityTag)) {
-            LOGGER.error("Attempted access to image {} with incorrect security tag {}", imageId, securityTag);
-            return Optional.empty();
-        }
-
-        return Optional.ofNullable(image);
     }
 }

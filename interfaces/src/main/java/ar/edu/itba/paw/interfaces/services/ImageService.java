@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public interface ImageService {
 
-    Image uploadImage(byte[] image, String securityTag);
+    Image uploadImage(byte[] image);
 
-    Optional<byte[]> getImage(long imageId, String securityTag);
+    Optional<byte[]> findImageById(long imageId);
 
-    byte[] getImage(String imagePath);
+    byte[] findImageByPath(String imagePath);
 }

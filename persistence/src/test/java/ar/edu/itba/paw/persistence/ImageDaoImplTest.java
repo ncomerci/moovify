@@ -30,8 +30,6 @@ public class ImageDaoImplTest {
     private static final int BYTE_ARRAY_SIZE = 100;
     private static final int IMG_ID = 6;
     private static final byte[] IMG_DATA = new byte[BYTE_ARRAY_SIZE];
-    private static final String TAG = "tag";
-    private static final String OTHER_TAG = "alter_tag";
 
     @Autowired
     private ImageDaoImpl imageDao;
@@ -61,7 +59,7 @@ public class ImageDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
 
         // Exercise
-        imageDao.uploadImage(new byte[BYTE_ARRAY_SIZE], TAG);
+        imageDao.uploadImage(new byte[BYTE_ARRAY_SIZE]);
 
         em.flush();
 
@@ -80,7 +78,6 @@ public class ImageDaoImplTest {
         Map<String, Object> imgMap = new HashMap<>();
         imgMap.put("image_id", IMG_ID);
         imgMap.put("image", IMG_DATA);
-        imgMap.put("security_tag", TAG);
 
         imageInsert.execute(imgMap);
 
@@ -90,7 +87,6 @@ public class ImageDaoImplTest {
         // Post conditions
         Assert.assertTrue(img.isPresent());
         Assert.assertEquals(IMG_ID, img.get().getId());
-        Assert.assertEquals(TAG, img.get().getTag());
         Assert.assertArrayEquals(IMG_DATA, img.get().getData());
     }
 
@@ -116,17 +112,15 @@ public class ImageDaoImplTest {
         Map<String, Object> imgMap = new HashMap<>();
         imgMap.put("image_id", IMG_ID);
         imgMap.put("image", IMG_DATA);
-        imgMap.put("security_tag", TAG);
 
         imageInsert.execute(imgMap);
 
         // Exercise
-        Optional<Image> img = imageDao.getImage(IMG_ID, TAG);
+        Optional<Image> img = imageDao.findImageById(IMG_ID);
 
         // Post exercise
         Assert.assertTrue(img.isPresent());
         Assert.assertEquals(IMG_ID, img.get().getId());
-        Assert.assertEquals(TAG, img.get().getTag());
         Assert.assertArrayEquals(IMG_DATA, img.get().getData());
     }
 
@@ -137,27 +131,7 @@ public class ImageDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
 
         // Exercise
-        Optional<Image> img = imageDao.getImage(IMG_ID, TAG);
-
-        // Post conditions
-        Assert.assertFalse(img.isPresent());
-    }
-
-    @Test
-    public void testGetImageByIdNonMatchingTag() {
-
-        // Pre conditions
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
-
-        Map<String, Object> imgMap = new HashMap<>();
-        imgMap.put("image_id", IMG_ID);
-        imgMap.put("image", IMG_DATA);
-        imgMap.put("security_tag", TAG);
-
-        imageInsert.execute(imgMap);
-
-        // Exercise
-        Optional<Image> img = imageDao.getImage(IMG_ID, OTHER_TAG);
+        Optional<Image> img = imageDao.findImageById(IMG_ID);
 
         // Post conditions
         Assert.assertFalse(img.isPresent());

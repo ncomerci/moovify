@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.interfaces.services;
 
+import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
 import ar.edu.itba.paw.models.PaginatedCollection;
@@ -19,9 +20,13 @@ public interface MovieService {
 
     Optional<byte[]> getPoster(long posterId);
 
-    PaginatedCollection<Movie> getAllMovies(int pageNumber, int pageSize);
+    PaginatedCollection<Movie> getAllMovies(String sortCriteria, int pageNumber, int pageSize);
 
     Collection<Movie> getAllMoviesNotPaginated();
 
     Collection<MovieCategory> getAvailableCategories();
+
+    MovieDao.SortCriteria getMovieSortCriteria(String sortCriteriaName);
+
+    Collection<String> getMovieSortOptions();
 }

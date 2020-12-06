@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.interfaces.services;
 
+import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
 import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
@@ -9,6 +10,7 @@ import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public interface CommentService {
@@ -25,15 +27,19 @@ public interface CommentService {
 
     Optional<Comment> findCommentById(long id);
 
-    PaginatedCollection<Comment> findCommentChildren(Comment comment, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentChildren(Comment comment, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentDescendants(Comment comment, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentDescendants(Comment comment, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findPostCommentDescendants(Post post, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findPostCommentDescendants(Post post, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByPost(Post post, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByPost(Post post, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByUser(User user, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByUser(User user, String sortCriteria, int pageNumber, int pageSize);
 
     long getMaxCommentTreeDepth();
+
+    CommentDao.SortCriteria getCommentSortCriteria(String sortCriteriaName);
+
+    Collection<String> getCommentSortOptions();
 }
