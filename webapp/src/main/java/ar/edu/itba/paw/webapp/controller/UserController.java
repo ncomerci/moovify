@@ -5,6 +5,8 @@ import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalUserFollowException;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalUserUnfollowException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
@@ -225,6 +227,38 @@ public class UserController {
 
         return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
     }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/{id}/follow")
+    public Response followUser(@PathParam("id") long id, @Context Principal principal) throws IllegalUserFollowException {
+
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        final User followedUser = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        userService.followUser(user, followedUser);
+
+        return Response.noContent().build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/{id}/unfollow")
+    public Response unfollowUser(@PathParam("id") long id, @Context Principal principal) throws IllegalUserUnfollowException {
+
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        final User unfollowedUser = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        userService.unfollowUser(user, unfollowedUser);
+
+        return Response.noContent().build();
+    }
+
+//    TODO: Add /posts/{id}/bookmark and /posts/{id}/unbookmark
+
+
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
                                                                   Collection<Dto> resultsDto, UriInfo uriInfo,
