@@ -172,7 +172,7 @@ public class UserServiceTest {
 
         UserService userServiceSpy = Mockito.spy(userService);
 
-        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(Mockito.mock(Image.class));
+        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class))).thenReturn(Mockito.mock(Image.class));
 
         Mockito.when(dao.register(
                 Mockito.anyString(),    // username
@@ -260,7 +260,7 @@ public class UserServiceTest {
 
         userService.updateAvatar(user, new byte[0]);
 
-        Mockito.verify(imageService, Mockito.never()).uploadImage(Mockito.any(byte[].class), Mockito.anyString());
+        Mockito.verify(imageService, Mockito.never()).uploadImage(Mockito.any(byte[].class));
         Mockito.verify(user).setAvatar(null);
     }
 
@@ -272,32 +272,40 @@ public class UserServiceTest {
         User user = Mockito.mock(User.class);
         byte[] data = new byte[10];
 
-        Mockito.when(imageService.uploadImage(Mockito.eq(data), Mockito.anyString())).thenReturn(image);
+        Mockito.when(imageService.uploadImage(Mockito.eq(data))).thenReturn(image);
 
         userService.updateAvatar(user, data);
 
-        Mockito.verify(imageService).uploadImage(Mockito.eq(data), Mockito.anyString());
+        Mockito.verify(imageService).uploadImage(Mockito.eq(data));
         Mockito.verify(user).setAvatar(image);
     }
 
     @Test
     public void testGetDefaultAvatar() {
 
-        Mockito.when(imageService.getImage(Mockito.anyString())).thenReturn(new byte[10]);
+        Mockito.when(imageService.findImageByPath(Mockito.anyString())).thenReturn(new byte[10]);
 
-        userService.getAvatar(User.DEFAULT_AVATAR_ID);
+        User user = Mockito.mock(User.class);
 
-        Mockito.verify(imageService).getImage(Mockito.anyString());
+        Mockito.when(user.getAvatarId()).thenReturn(User.DEFAULT_AVATAR_ID);
+
+        userService.getAvatar(user);
+
+        Mockito.verify(imageService).findImageByPath(Mockito.anyString());
     }
 
     @Test
     public void testGetAvatar() {
 
-        long avatarId = 5L;
+        final long avatarId = 5L;
 
-        userService.getAvatar(avatarId);
+        User user = Mockito.mock(User.class);
 
-        Mockito.verify(imageService).getImage(Mockito.eq(avatarId), Mockito.anyString());
+        Mockito.when(user.getAvatarId()).thenReturn(avatarId);
+
+        userService.getAvatar(user);
+
+        Mockito.verify(imageService).findImageById(Mockito.eq(avatarId));
     }
 
     @Test(expected = DeletedDisabledModelException.class)

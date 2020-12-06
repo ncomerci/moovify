@@ -25,7 +25,6 @@ public class MovieServiceImpl implements MovieService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieServiceImpl.class);
 
     private static final String DEFAULT_POSTER_PATH = "/images/defaultPoster.jpg";
-    private static final String POSTER_SECURITY_TAG = "POSTER";
 
     @Autowired
     private MovieDao movieDao;
@@ -58,7 +57,7 @@ public class MovieServiceImpl implements MovieService {
         Image poster = null;
 
         if(newPoster.length > 0)
-            poster = imageService.uploadImage(newPoster, POSTER_SECURITY_TAG);
+            poster = imageService.uploadImage(newPoster);
 
         movie.setPoster(poster);
 
@@ -72,10 +71,10 @@ public class MovieServiceImpl implements MovieService {
         LOGGER.info("Accessing Movie Poster {}. (Default {})", posterId, posterId == Movie.DEFAULT_POSTER_ID);
 
         if(posterId == Movie.DEFAULT_POSTER_ID)
-            return Optional.of(imageService.getImage(DEFAULT_POSTER_PATH));
+            return Optional.of(imageService.findImageByPath(DEFAULT_POSTER_PATH));
 
         else
-            return imageService.getImage(posterId, POSTER_SECURITY_TAG);
+            return imageService.findImageById(posterId);
     }
 
     @Transactional(readOnly = true)

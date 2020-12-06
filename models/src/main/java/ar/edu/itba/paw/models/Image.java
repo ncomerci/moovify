@@ -18,10 +18,6 @@ public class Image {
     @Basic(fetch = FetchType.LAZY, optional = false)
     private byte[] data;
 
-    @Column(name = "security_tag", nullable = false)
-    @Basic(optional = false)
-    private String tag;
-
     public long getId() {
         return id;
     }
@@ -30,21 +26,16 @@ public class Image {
         return data;
     }
 
-    public String getTag() {
-        return tag;
-    }
-
     protected Image() {
         // Hibernate
     }
 
-    public Image(byte[] data, String tag) {
+    public Image(byte[] data) {
         this.data = data;
-        this.tag = tag;
     }
 
-    public Image(Long id, byte[] data, String tag) {
-        this(data, tag);
+    public Image(Long id, byte[] data) {
+        this(data);
         this.id = id;
     }
 }

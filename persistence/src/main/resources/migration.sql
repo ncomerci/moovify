@@ -71,3 +71,7 @@ ALTER TABLE comments ADD COLUMN last_edited TIMESTAMP default NULL;
 -- Movie Images --
 ALTER TABLE movies ADD COLUMN poster_id INTEGER default NULL;
 ALTER TABLE movies ADD CONSTRAINT fk_movie_poster FOREIGN KEY (poster_id) REFERENCES IMAGES (image_id);
+
+-- Api Migration --
+-- Image no longer has security tag --
+ALTER TABLE images DROP COLUMN security_tag;

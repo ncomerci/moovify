@@ -52,7 +52,6 @@ public class UserServiceImpl implements UserService {
     // All users are created with NOT_VALIDATED_ROLE by default
 
     private static final String DEFAULT_AVATAR_PATH = "/images/avatar.jpg";
-    private static final String AVATAR_SECURITY_TAG = "AVATAR";
 
     @Transactional
     @Override
@@ -119,7 +118,7 @@ public class UserServiceImpl implements UserService {
         Image avatar = null;
 
         if(newAvatar.length > 0)
-            avatar = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
+            avatar = imageService.uploadImage(newAvatar);
 
         user.setAvatar(avatar);
 
@@ -128,15 +127,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<byte[]> getAvatar(long avatarId) {
+    public Optional<byte[]> getAvatar(User user) {
+
+        final long avatarId = user.getAvatarId();
 
         LOGGER.info("Accessing avatar {}. (Default {})", avatarId, avatarId == User.DEFAULT_AVATAR_ID);
 
         if(avatarId == User.DEFAULT_AVATAR_ID)
-            return Optional.of(imageService.getImage(DEFAULT_AVATAR_PATH));
+            return Optional.of(imageService.findImageByPath(DEFAULT_AVATAR_PATH));
 
         else
-            return imageService.getImage(avatarId, AVATAR_SECURITY_TAG);
+            return imageService.findImageById(avatarId);
     }
 
     @Transactional

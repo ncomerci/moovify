@@ -7,8 +7,10 @@ import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
+import ar.edu.itba.paw.webapp.dto.input.UpdateAvatarDto;
 import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.UserEditDto;
+import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
 
@@ -117,7 +120,7 @@ public class UserController {
                     .build();
         }
 
-        return Response.ok()
+        return Response.noContent()
                 .location(UserDto.getUserUriBuilder(user, uriInfo).build())
                 .build();
     }
@@ -138,5 +141,34 @@ public class UserController {
 
         return Response.ok().build();
     }
+
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/{id}/avatar")
+    public Response updateUser(@PathParam("id") long id, final UpdateAvatarDto updateAvatarDto) throws IOException {
+
+        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        userService.updateAvatar(user, updateAvatarDto.getAvatar().getBytes());
+
+        return Response.noContent()
+                .location(UserDto.getUserUriBuilder(user, uriInfo).path("/avatar").build())
+                .build();
+    }
+
+    @Produces("image/*")
+    @GET
+    @Path("/{id}/avatar")
+    public Response updateUser(@PathParam("id") long id) {
+
+        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        final byte[] imageData = userService.getAvatar(user).orElseThrow(AvatarNotFoundException::new);
+
+        // TODO: Set conditional cache?
+        return Response.ok(imageData).build();
+    }
+
 }
 

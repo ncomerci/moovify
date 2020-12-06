@@ -43,7 +43,7 @@ public interface UserService {
 
     Optional<User> updatePassword(String password, String token);
 
-    Optional<byte[]> getAvatar(long avatarId);
+    Optional<byte[]> getAvatar(User user);
 
     void updateAvatar(User user, byte[] newAvatar);
 
