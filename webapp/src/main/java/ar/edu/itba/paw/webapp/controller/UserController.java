@@ -5,16 +5,12 @@ import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalUserFollowException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalUserUnfollowException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
-import ar.edu.itba.paw.webapp.dto.input.UpdateAvatarDto;
 import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
-import ar.edu.itba.paw.webapp.dto.input.UserEditDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
@@ -26,7 +22,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
 
@@ -93,30 +88,6 @@ public class UserController {
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @PUT
-    @Path("/{id}")
-    public Response updateUser(@PathParam("id") long id, final UserEditDto userEditDto) {
-
-        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
-
-        try {
-            userService.updateUser(user, userEditDto.getName(), userEditDto.getUsername(), userEditDto.getDescription(),
-                    userEditDto.getPassword());
-        }
-        catch(DuplicateUniqueUserAttributeException e) {
-            return Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(new DuplicateUniqueUserAttributeErrorDto(e))
-                    .build();
-        }
-
-        return Response.noContent()
-                .location(UserDto.getUserUriBuilder(user, uriInfo).build())
-                .build();
-    }
-
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/{id}")
     public Response deleteUser(@PathParam("id") long id, @Context Principal principal) throws DeletedDisabledModelException {
@@ -132,25 +103,10 @@ public class UserController {
         return Response.ok().build();
     }
 
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.APPLICATION_JSON)
-    @PUT
-    @Path("/{id}/avatar")
-    public Response updateUser(@PathParam("id") long id, final UpdateAvatarDto updateAvatarDto) throws IOException {
-
-        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
-
-        userService.updateAvatar(user, updateAvatarDto.getAvatar().getBytes());
-
-        return Response.noContent()
-                .location(UserDto.getUserUriBuilder(user, uriInfo).path("/avatar").build())
-                .build();
-    }
-
     @Produces("image/*")
     @GET
     @Path("/{id}/avatar")
-    public Response updateUser(@PathParam("id") long id) {
+    public Response getAvatar(@PathParam("id") long id) {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
@@ -227,38 +183,6 @@ public class UserController {
 
         return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
     }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @PUT
-    @Path("/{id}/follow")
-    public Response followUser(@PathParam("id") long id, @Context Principal principal) throws IllegalUserFollowException {
-
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-
-        final User followedUser = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
-
-        userService.followUser(user, followedUser);
-
-        return Response.noContent().build();
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @PUT
-    @Path("/{id}/unfollow")
-    public Response unfollowUser(@PathParam("id") long id, @Context Principal principal) throws IllegalUserUnfollowException {
-
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-
-        final User unfollowedUser = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
-
-        userService.unfollowUser(user, unfollowedUser);
-
-        return Response.noContent().build();
-    }
-
-//    TODO: Add /posts/{id}/bookmark and /posts/{id}/unbookmark
-
-
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
                                                                   Collection<Dto> resultsDto, UriInfo uriInfo,
