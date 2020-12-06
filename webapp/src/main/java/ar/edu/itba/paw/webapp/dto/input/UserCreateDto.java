@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.webapp.dto.input;
 
-import ar.edu.itba.paw.webapp.dto.input.validation.annotations.MatchingPasswords;
 import ar.edu.itba.paw.webapp.dto.input.validation.annotations.SpacesNormalization;
 import ar.edu.itba.paw.webapp.dto.input.validation.annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
@@ -9,8 +8,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-@MatchingPasswords()
-public class UserCreateDto implements MatchingPasswordForm {
+public class UserCreateDto {
 
     @Size(min = 6, max = 50)
     @Pattern(regexp = "[a-zA-Z0-9#_]+")
@@ -19,8 +17,6 @@ public class UserCreateDto implements MatchingPasswordForm {
     @ValidPassword
     @Size(min=12, max=30)
     private String password;
-
-    private String repeatPassword;
 
     @Pattern(regexp = "[a-zA-Z ]+")
     @SpacesNormalization
@@ -33,9 +29,6 @@ public class UserCreateDto implements MatchingPasswordForm {
 
     @Size(max=400)
     private String description;
-
-//    @Avatar
-//    private MultipartFile avatar;
 
     public String getUsername() {
         return username;
@@ -51,14 +44,6 @@ public class UserCreateDto implements MatchingPasswordForm {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getRepeatPassword() {
-        return repeatPassword;
-    }
-
-    public void setRepeatPassword(String repeatPassword) {
-        this.repeatPassword = repeatPassword;
     }
 
     public String getName() {
@@ -84,12 +69,4 @@ public class UserCreateDto implements MatchingPasswordForm {
     public void setDescription(String description) {
         this.description = description;
     }
-
-//    public MultipartFile getAvatar() {
-//        return avatar;
-//    }
-//
-//    public void setAvatar(MultipartFile avatar) {
-//        this.avatar = avatar;
-//    }
 }

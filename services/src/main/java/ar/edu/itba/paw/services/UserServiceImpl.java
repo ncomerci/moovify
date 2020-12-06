@@ -70,40 +70,46 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void generalUserUpdate(User user, String name, String username, String description) throws DuplicateUniqueUserAttributeException {
+    public void updateUser(User user, String name, String username, String description, String password) throws DuplicateUniqueUserAttributeException {
 
-        if(!user.getUsername().equals(username))
-            updateUsername(user, username);
+        updateUsername(user, username);
 
-        if(!user.getName().equals(name))
-            updateName(user, name);
+        updateName(user, name);
 
-        if(!user.getDescription().equals(description))
-            updateDescription(user, description);
+        updateDescription(user, description);
+
+        updatePassword(user, password);
     }
 
     @Transactional
     @Override
     public void updateName(User user, String name) {
-        user.setName(name);
+        if(!user.getName().equals(name))
+            user.setName(name);
     }
 
     @Transactional
     @Override
     public void updateUsername(User user, String username) throws DuplicateUniqueUserAttributeException {
-        userDao.updateUsername(user, username);
+        if(!user.getUsername().equals(username))
+            userDao.updateUsername(user, username);
     }
 
     @Transactional
     @Override
     public void updateDescription(User user, String description) {
-        user.setDescription(description);
+        if(!user.getDescription().equals(description))
+            user.setDescription(description);
     }
 
     @Transactional
     @Override
     public void updatePassword(User user, String password) {
-        user.setPassword(passwordEncoder.encode(password));
+
+        final String encodedPassword = passwordEncoder.encode(password);
+
+        if(!user.getPassword().equals(encodedPassword))
+            user.setPassword(encodedPassword);
     }
 
     @Transactional

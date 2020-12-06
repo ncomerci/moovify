@@ -18,7 +18,7 @@
 //import ar.edu.itba.paw.webapp.dto.inputDto.UserCreateForm;
 //import ar.edu.itba.paw.webapp.dto.inputDto.AvatarEditForm;
 //import ar.edu.itba.paw.webapp.form.editProfile.ChangePasswordForm;
-//import ar.edu.itba.paw.webapp.form.editProfile.UserEditForm;
+//import ar.edu.itba.paw.webapp.dto.input.UserEditForm;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 //import org.springframework.beans.factory.annotation.Autowired;

@@ -8,6 +8,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
 import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
+import ar.edu.itba.paw.webapp.dto.input.UserEditDto;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -101,11 +102,24 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}")
-    public Response updateUser(@PathParam("id") long id) {
+    public Response updateUser(@PathParam("id") long id, final UserEditDto userEditDto) {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
-        return Response.ok(new UserDto(user, uriInfo)).build();
+        try {
+            userService.updateUser(user, userEditDto.getName(), userEditDto.getUsername(), userEditDto.getDescription(),
+                    userEditDto.getPassword());
+        }
+        catch(DuplicateUniqueUserAttributeException e) {
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity(new DuplicateUniqueUserAttributeErrorDto(e))
+                    .build();
+        }
+
+        return Response.ok()
+                .location(UserDto.getUserUriBuilder(user, uriInfo).build())
+                .build();
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -118,14 +132,11 @@ public class UserController {
 
         userService.deleteUser(user);
 
-        // TODO: Revisar logout url
+        // TODO: Revisar como hacer logout
         if(user.getUsername().equals(principal.getName()))
             return Response.temporaryRedirect(uriInfo.getBaseUriBuilder().path("/logout").build()).build();
 
         return Response.ok().build();
     }
-
-
-
 }
 

@@ -217,13 +217,15 @@ public class UserServiceTest {
         String username = "testUsername";
         String name = "testName";
         String description = "testDescription";
+        String password = "testPassword";
 
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("");
         Mockito.when(user.getName()).thenReturn("");
         Mockito.when(user.getDescription()).thenReturn("");
+        Mockito.when(user.getPassword()).thenReturn("");
 
-        userService.generalUserUpdate(user, name, username, description);
+        userService.updateUser(user, name, username, description, password);
 
         Mockito.verify(dao).updateUsername(user, username);
         Mockito.verify(user).setName(name);
@@ -236,13 +238,15 @@ public class UserServiceTest {
         String username = "testUsername";
         String name = "testName";
         String description = "testDescription";
+        String password = "testPassword";
 
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn(username);
         Mockito.when(user.getName()).thenReturn(name);
         Mockito.when(user.getDescription()).thenReturn(description);
+        Mockito.when(user.getPassword()).thenReturn(password);
 
-        userService.generalUserUpdate(user, name, username, description);
+        userService.updateUser(user, name, username, description, password);
 
         Mockito.verify(dao, Mockito.never()).updateUsername(user, username);
         Mockito.verify(user, Mockito.never()).setName(name);
