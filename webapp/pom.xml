@@ -28,11 +28,11 @@
     <finalName>webapp</finalName>
 
     <plugins>
-      <!--<plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-&lt;!&ndash;          <packagingExcludes>**/logback-test.xml</packagingExcludes>&ndash;&gt;
+<!--          <packagingExcludes>**/logback-test.xml</packagingExcludes>-->
           <webResources>
             <resource>
               <directory>${project.parent.basedir}/frontend/dist/</directory>
@@ -40,7 +40,7 @@
             </resource>
           </webResources>
         </configuration>
-      </plugin>-->
+      </plugin>
     </plugins>
   </build>
 
@@ -182,6 +182,13 @@
       <artifactId>services</artifactId>
       <version>${project.parent.version}</version>
       <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>ar.edu.itba.paw</groupId>
+      <artifactId>frontend</artifactId>
+      <version>${project.parent.version}</version>
+      <type>pom</type>
     </dependency>
 
     <!-- This dependencies are needed because we are working with an older version of Apache Tomcat -->
