@@ -12,8 +12,13 @@ import ar.edu.itba.paw.webapp.dto.input.UserEditDto;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.security.Principal;
@@ -47,7 +52,6 @@ public class UserController {
 
         final Response.ResponseBuilder responseBuilder =
                 Response.ok(new GenericEntity<Collection<UserDto>>(UserDto.mapUsersToDto(users.getResults(), uriInfo)) {});
-
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
                 .queryParam("pageSize", pageSize)
@@ -68,8 +72,10 @@ public class UserController {
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @ResponseBody
+    @Validated
     @POST
-    public Response createUser(final UserCreateDto userCreateDto, @Context HttpServletRequest request) {
+    public Response createUser(@RequestBody @Valid UserCreateDto userCreateDto, @Context HttpServletRequest request) {
 
         final User user;
 

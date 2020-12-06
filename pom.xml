@@ -329,6 +329,19 @@
         <artifactId>validation-api</artifactId>
         <version>${javax.validation-api.version}</version>
       </dependency>
+
+      <dependency>
+          <groupId>org.glassfish.jersey.ext</groupId>
+          <artifactId>jersey-bean-validation</artifactId>
+          <version>${jersey.version}</version>
+          <exclusions>
+            <exclusion>
+              <groupId>org.hibernate</groupId>
+              <artifactId>hibernate-validator</artifactId>
+            </exclusion>
+          </exclusions>
+      </dependency>
+
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
@@ -411,7 +424,7 @@
     <module>persistence</module>
     <module>models</module>
     <module>interfaces</module>
-    <module>frontend</module>
+    <!--<module>frontend</module>-->
   </modules>
         
 </project>

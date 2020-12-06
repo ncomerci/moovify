@@ -5,24 +5,29 @@ import ar.edu.itba.paw.webapp.dto.input.validation.annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class UserCreateDto {
 
+    @Valid
     @Size(min = 6, max = 50)
     @Pattern(regexp = "[a-zA-Z0-9#_]+")
     private String username;
 
+    @Valid
     @ValidPassword
     @Size(min=12, max=30)
     private String password;
 
+    @Valid
     @Pattern(regexp = "[a-zA-Z ]+")
     @SpacesNormalization
     @Size(min = 2, max = 50)
     private String name;
 
+    @Valid
     @Email
     @NotEmpty
     private String email;

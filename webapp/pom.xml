@@ -28,11 +28,11 @@
     <finalName>webapp</finalName>
 
     <plugins>
-      <plugin>
+      <!--<plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-<!--          <packagingExcludes>**/logback-test.xml</packagingExcludes>-->
+&lt;!&ndash;          <packagingExcludes>**/logback-test.xml</packagingExcludes>&ndash;&gt;
           <webResources>
             <resource>
               <directory>${project.parent.basedir}/frontend/dist/</directory>
@@ -40,7 +40,7 @@
             </resource>
           </webResources>
         </configuration>
-      </plugin>
+      </plugin>-->
     </plugins>
   </build>
 
@@ -167,6 +167,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.glassfish.jersey.ext</groupId>
+      <artifactId>jersey-bean-validation</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
     </dependency>
@@ -182,12 +187,12 @@
       <version>${project.parent.version}</version>
     </dependency>
 
-    <dependency>
+    <!--<dependency>
       <groupId>ar.edu.itba.paw</groupId>
       <artifactId>frontend</artifactId>
       <version>${project.parent.version}</version>
       <type>pom</type>
-    </dependency>
+    </dependency>-->
 
     <dependency>
       <groupId>ar.edu.itba.paw</groupId>
