@@ -7,14 +7,64 @@
 
   <!-- build:css(.tmp) styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/uikit.css">
+  <link rel="stylesheet" href="styles/navBar.css">
+<!--  <link rel="stylesheet" href="styles/extraStyle.css">-->
   <!-- endbuild -->
 
 </head>
-<body ng-controller="IndexCtrl">
+<body class="uk-padding-remove" ng-controller="IndexCtrl">
   <!--[if lt IE 7]>
   <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
   <!-- Add your site or application content here -->
+  <!--<div id="navbar" class="uk-flex uk-flex-between uk-navbar-container">
+    <a class="uk-logo" href="/"><img id="nav-logo" src="images/logo.png" alt="Moovify"></a>
+      <ul class="uk-navbar-nav">
+        <li class="uk-navbar-item">
+          <a id="nav-search-toggle" class="uk-navbar-toggle">
+&lt;!&ndash;            <span uk-icon="icon: search; ratio: 1.7"></span>&ndash;&gt;
+            <span class="iconify" data-icon="bx:bx-search" data-inline="false"></span>
+          </a>
+          <div class="uk-drop" data-uk-drop="mode: click; pos: left-center; offset: 0; boundary: #navbar">
+            <form action="/search/posts" class="uk-search uk-search-navbar uk-width-1-1">
+            <label for="nav-search"></label>
+            <input autofocus id="nav-search" name="query" class="uk-search-input" type="search" placeholder="search" >
+            <button id="submit-navbar-search-button" class="uk-button uk-button-default uk-border-rounded search-button" type="submit"></button>
+            </form>
+          </div>
+        </li>
+        <li class="uk-navbar-item">
+          <a href="/login">LOGIN</a>
+        </li>
+        <li>
+          <a class="uk-text-center" href="/user/create">
+          <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-text-primary" type="button">SIGNUP</button>
+          </a>
+        </li>
+      </ul>
+  </div>-->
+
+  <nav class="uk-navbar-container" uk-navbar>
+    <a class="uk-logo" href="/"><img id="nav-logo" src="images/logo.png" alt="Moovify"></a>
+    <div class="uk-navbar-right">
+      <ul class="uk-navbar-nav">
+        <li class="uk-visible@s">
+          <a id="nav-search-toggle" class="uk-navbar-toggle">
+          <span uk-icon="icon: search; ratio: 1.7"></span>
+          </a>
+          <div class="uk-drop" data-uk-drop="mode: click; pos: left-center; offset: 0; boundary: #navbar">
+            <form action="/search/posts" class="uk-search uk-search-navbar uk-width-1-1">
+            <label for="nav-search"></label>
+            <input autofocus id="nav-search" name="query" class="uk-search-input" type="search" placeholder="search" >
+            <button id="submit-navbar-search-button" class="uk-button uk-button-default uk-border-rounded search-button" type="submit">SEARCH</button>
+            </form>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
   <div class="container">
     <div class="header">
       <ul class="nav nav-pills pull-right">
@@ -31,17 +81,6 @@
     </div>
   </div>
 
-  <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
-  <script>
-   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-   ga('create', 'UA-XXXXX-X');
-   ga('send', 'pageview');
- </script>
-
  <!-- build:js(.) scripts/oldieshim.js -->
   <!--[if lt IE 9]>
   <script src="bower_components/es5-shim/es5-shim.js"></script>
@@ -50,5 +89,9 @@
   <!-- endbuild -->
   <script src="/scripts/paths.js"></script>
   <script src="bower_components/requirejs/require.js" data-main="/scripts/build.js"></script>
+  <script src="/scripts/uikit/uikit.js"></script>
+  <script src="/scripts/uikit/uikit-icons.js"></script>
+  <script src="/scripts/uikit/iconify.js"></script>
+
 </body>
 </html>
