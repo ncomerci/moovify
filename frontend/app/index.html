@@ -7,9 +7,6 @@
 
   <!-- build:css(.tmp) styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
-  <link rel="stylesheet" href="styles/uikit.css">
-  <link rel="stylesheet" href="styles/navBar.css">
-<!--  <link rel="stylesheet" href="styles/extraStyle.css">-->
   <!-- endbuild -->
 
 </head>
@@ -18,13 +15,13 @@
   <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
   <!-- Add your site or application content here -->
-  <!--<div id="navbar" class="uk-flex uk-flex-between uk-navbar-container">
+  <nav id="navbar" class="uk-flex uk-flex-between uk-navbar-container">
     <a class="uk-logo" href="/"><img id="nav-logo" src="images/logo.png" alt="Moovify"></a>
       <ul class="uk-navbar-nav">
         <li class="uk-navbar-item">
           <a id="nav-search-toggle" class="uk-navbar-toggle">
-&lt;!&ndash;            <span uk-icon="icon: search; ratio: 1.7"></span>&ndash;&gt;
-            <span class="iconify" data-icon="bx:bx-search" data-inline="false"></span>
+            <span data-uk-icon="icon: search; ratio: 1.7" class="uk-icon"></span>
+            <!-- <span class="iconify" data-icon="bx:bx-search" data-inline="false"></span> -->
           </a>
           <div class="uk-drop" data-uk-drop="mode: click; pos: left-center; offset: 0; boundary: #navbar">
             <form action="/search/posts" class="uk-search uk-search-navbar uk-width-1-1">
@@ -37,15 +34,15 @@
         <li class="uk-navbar-item">
           <a href="/login">LOGIN</a>
         </li>
-        <li>
-          <a class="uk-text-center" href="/user/create">
-          <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-text-primary" type="button">SIGNUP</button>
+        <li class="uk-navbar-item">
+          <a class="uk-text-center uk-padding-remove" href="/user/create">
+            <span class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-text-secondary">SIGNUP</span>
           </a>
         </li>
       </ul>
-  </div>-->
+    </nav>
 
-  <nav class="uk-navbar-container" uk-navbar>
+  <!-- <nav class="uk-navbar-container" uk-navbar>
     <a class="uk-logo" href="/"><img id="nav-logo" src="images/logo.png" alt="Moovify"></a>
     <div class="uk-navbar-right">
       <ul class="uk-navbar-nav">
@@ -63,7 +60,7 @@
         </li>
       </ul>
     </div>
-  </nav>
+  </nav> -->
 
   <div class="container">
     <div class="header">
@@ -89,9 +86,6 @@
   <!-- endbuild -->
   <script src="/scripts/paths.js"></script>
   <script src="bower_components/requirejs/require.js" data-main="/scripts/build.js"></script>
-  <script src="/scripts/uikit/uikit.js"></script>
-  <script src="/scripts/uikit/uikit-icons.js"></script>
-  <script src="/scripts/uikit/iconify.js"></script>
 
 </body>
 </html>

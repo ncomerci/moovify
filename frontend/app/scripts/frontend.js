@@ -2,11 +2,16 @@
 define(['routes',
 	'services/dependencyResolverFor',
 	'i18n/i18nLoader!',
+	'uikit',
+	'uikiticons',
 	'angular',
 	'angular-route',
-	'bootstrap',
 	'angular-translate'],
-	function(config, dependencyResolverFor, i18n) {
+	function(config, dependencyResolverFor, i18n, UIkit, icons) {
+		
+		// Wire UIkit icons to UIkit handler.
+		icons(UIkit);
+		
 		var frontend = angular.module('frontend', [
 			'ngRoute',
 			'pascalprecht.translate'
@@ -39,6 +44,7 @@ define(['routes',
 					$translateProvider.translations('preferredLanguage', i18n);
 					$translateProvider.preferredLanguage('preferredLanguage');
 				}]);
+
 		return frontend;
 	}
 );
