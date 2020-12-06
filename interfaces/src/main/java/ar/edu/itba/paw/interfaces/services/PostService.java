@@ -34,7 +34,7 @@ public interface PostService {
 
     PaginatedCollection<Post> getFollowedUsersPosts(User user, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> getUserFavouritePosts(User user, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Post> getUserBookmarkedPosts(User user, String sortCriteria, int pageNumber, int pageSize);
 
     Collection<PostCategory> getAllPostCategories();
 

@@ -157,7 +157,7 @@ public class PostServiceImpl implements PostService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> getUserFavouritePosts(User user, String sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> getUserBookmarkedPosts(User user, String sortCriteria, int pageNumber, int pageSize) {
         return postDao.getUserFavouritePosts(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 

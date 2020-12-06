@@ -1,9 +1,11 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
+import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
+import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
@@ -11,6 +13,7 @@ import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
 import ar.edu.itba.paw.webapp.dto.input.UpdateAvatarDto;
 import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.UserEditDto;
+import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
@@ -38,6 +41,9 @@ public class UserController {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private CommentService commentService;
+
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response listUsers(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
@@ -46,15 +52,9 @@ public class UserController {
 
         final PaginatedCollection<User> users = userService.getAllUsers(orderBy, pageNumber, pageSize);
 
-        if(users.isEmpty())
-            return getEmptyPaginationCollectionResponse(users);
+        final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
 
-        final Response.ResponseBuilder responseBuilder =
-                Response.ok(new GenericEntity<Collection<UserDto>>(UserDto.mapUsersToDto(users.getResults(), uriInfo)) {});
-
-        setPaginationLinks(responseBuilder, uriInfo, users, orderBy);
-
-        return responseBuilder.build();
+        return buildGenericPaginationResponse(users, usersDto, uriInfo, orderBy);
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -170,23 +170,80 @@ public class UserController {
 
         final PaginatedCollection<Post> posts = postService.findPostsByUser(user, orderBy, pageNumber, pageSize);
 
-        if(posts.isEmpty())
-            return getEmptyPaginationCollectionResponse(posts);
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        final Response.ResponseBuilder responseBuilder =
-                Response.ok(new GenericEntity<Collection<PostDto>>(PostDto.mapPostsToDto(posts.getResults(), uriInfo)) {});
-
-        setPaginationLinks(responseBuilder, uriInfo, posts, orderBy);
-
-        return responseBuilder.build();
+        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
     }
 
-    private <T> Response getEmptyPaginationCollectionResponse(PaginatedCollection<T> results) {
-        if(results.getPageNumber() == 0)
-            return Response.noContent().build();
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}/comments")
+    public Response getUserComments(@PathParam("id") long id,
+                                 @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                                 @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        else
-            return Response.status(Response.Status.NOT_FOUND).build();
+        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        final PaginatedCollection<Comment> comments = commentService.findCommentsByUser(user, orderBy, pageNumber, pageSize);
+
+        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
+
+        return buildGenericPaginationResponse(comments, commentsDto, uriInfo, orderBy);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}/following")
+    public Response getFollowedUsers(@PathParam("id") long id,
+                                    @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                                    @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                                    @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+
+        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        final PaginatedCollection<User> users = userService.getFollowedUsers(user, orderBy, pageNumber, pageSize);
+
+        final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
+
+        return buildGenericPaginationResponse(users, usersDto, uriInfo, orderBy);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}/bookmarked")
+    public Response getBookmarkedPosts(@PathParam("id") long id,
+                                     @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                                     @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                                     @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+
+        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        final PaginatedCollection<Post> posts = postService.getUserBookmarkedPosts(user, orderBy, pageNumber, pageSize);
+
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+
+        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
+    }
+
+    private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
+                                                                  Collection<Dto> resultsDto, UriInfo uriInfo,
+                                                                  String orderBy) {
+
+        if(paginatedResults.isEmpty()) {
+            if(paginatedResults.getPageNumber() == 0)
+                return Response.noContent().build();
+
+            else
+                return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        final Response.ResponseBuilder responseBuilder =
+                Response.ok(new GenericEntity<Collection<Dto>>(resultsDto) {});
+
+        setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
+
+        return responseBuilder.build();
     }
 
     private <T> void setPaginationLinks(Response.ResponseBuilder response, UriInfo uriInfo,
