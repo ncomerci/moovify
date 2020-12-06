@@ -1,15 +1,18 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
+import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
 import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
-import ar.edu.itba.paw.webapp.dto.UserDto;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
 import ar.edu.itba.paw.webapp.dto.input.UpdateAvatarDto;
 import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.UserEditDto;
+import ar.edu.itba.paw.webapp.dto.output.PostDto;
+import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private PostService postService;
+
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response listUsers(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
@@ -40,31 +46,13 @@ public class UserController {
 
         final PaginatedCollection<User> users = userService.getAllUsers(orderBy, pageNumber, pageSize);
 
-        if(users.isEmpty()) {
-            if(pageNumber == 0)
-                return Response.noContent().build();
-
-            else
-                return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        if(users.isEmpty())
+            return getEmptyPaginationCollectionResponse(users);
 
         final Response.ResponseBuilder responseBuilder =
                 Response.ok(new GenericEntity<Collection<UserDto>>(UserDto.mapUsersToDto(users.getResults(), uriInfo)) {});
 
-        final UriBuilder linkUriBuilder = uriInfo
-                .getAbsolutePathBuilder()
-                .queryParam("pageSize", pageSize)
-                .queryParam("orderBy", orderBy);
-
-        responseBuilder.link(linkUriBuilder.clone().queryParam("pageNumber", 0).build(), "first");
-
-        responseBuilder.link(linkUriBuilder.clone().queryParam("pageNumber", users.getLastPageNumber()).build(), "last");
-
-        if(pageNumber != 0)
-            responseBuilder.link(linkUriBuilder.clone().queryParam("pageNumber", pageNumber - 1).build(), "prev");
-
-        if(pageNumber != users.getLastPageNumber())
-            responseBuilder.link(linkUriBuilder.clone().queryParam("pageNumber", pageNumber + 1).build(), "next");
+        setPaginationLinks(responseBuilder, uriInfo, users, orderBy);
 
         return responseBuilder.build();
     }
@@ -170,5 +158,62 @@ public class UserController {
         return Response.ok(imageData).build();
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}/posts")
+    public Response getUserPosts(@PathParam("id") long id,
+                                 @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                                 @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+
+        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        final PaginatedCollection<Post> posts = postService.findPostsByUser(user, orderBy, pageNumber, pageSize);
+
+        if(posts.isEmpty())
+            return getEmptyPaginationCollectionResponse(posts);
+
+        final Response.ResponseBuilder responseBuilder =
+                Response.ok(new GenericEntity<Collection<PostDto>>(PostDto.mapPostsToDto(posts.getResults(), uriInfo)) {});
+
+        setPaginationLinks(responseBuilder, uriInfo, posts, orderBy);
+
+        return responseBuilder.build();
+    }
+
+    private <T> Response getEmptyPaginationCollectionResponse(PaginatedCollection<T> results) {
+        if(results.getPageNumber() == 0)
+            return Response.noContent().build();
+
+        else
+            return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
+    private <T> void setPaginationLinks(Response.ResponseBuilder response, UriInfo uriInfo,
+                                        PaginatedCollection<T> results, String orderBy) {
+
+        final int pageNumber = results.getPageNumber();
+        final String pageNumberParamName = "pageNumber";
+
+        final int first = 0;
+        final int last = results.getLastPageNumber();
+        final int prev = pageNumber - 1;
+        final int next = pageNumber + 1;
+
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", results.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, first).build(), "first");
+
+        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, last).build(), "last");
+
+        if(pageNumber != first)
+            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, prev).build(), "prev");
+
+        if(pageNumber != last)
+            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, next).build(), "next");
+    }
 }
 

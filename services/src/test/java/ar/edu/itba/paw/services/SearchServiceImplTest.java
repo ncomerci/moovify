@@ -329,7 +329,7 @@ public class SearchServiceImplTest {
                 Mockito.anyInt())
         ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
 
-        Optional<PaginatedCollection<Post>> posts = searchService.searchDeletedPosts(QUERY,  PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<Post>> posts = searchService.searchDeletedPosts(QUERY, "newest",  PAGE_NUMBER, PAGE_SIZE);
 
         Mockito.verify(postDao).searchDeletedPosts(
                 Mockito.anyString(),
@@ -344,7 +344,7 @@ public class SearchServiceImplTest {
     @Test
     public void testSearchDeletedPostsFail() {
 
-        Optional<PaginatedCollection<Post>> posts = searchService.searchDeletedPosts(null,  PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<Post>> posts = searchService.searchDeletedPosts(null, "newest",  PAGE_NUMBER, PAGE_SIZE);
 
         Assert.assertFalse(posts.isPresent());
     }
@@ -359,7 +359,7 @@ public class SearchServiceImplTest {
                 Mockito.anyInt())
         ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
 
-        Optional<PaginatedCollection<Comment>> comments = searchService.searchDeletedComments(QUERY,  PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<Comment>> comments = searchService.searchDeletedComments(QUERY, "newest",  PAGE_NUMBER, PAGE_SIZE);
 
         Mockito.verify(commentDao).searchDeletedComments(
                 Mockito.anyString(),
@@ -374,7 +374,7 @@ public class SearchServiceImplTest {
     @Test
     public void testSearchDeletedCommentsFail() {
 
-        Optional<PaginatedCollection<Comment>> comments = searchService.searchDeletedComments(null,  PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<Comment>> comments = searchService.searchDeletedComments(null, "newest",  PAGE_NUMBER, PAGE_SIZE);
 
         Assert.assertFalse(comments.isPresent());
     }
@@ -389,7 +389,7 @@ public class SearchServiceImplTest {
                 Mockito.anyInt())
         ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
 
-        Optional<PaginatedCollection<User>> users = searchService.searchDeletedUsers(QUERY,  PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<User>> users = searchService.searchDeletedUsers(QUERY, "newest",  PAGE_NUMBER, PAGE_SIZE);
 
         Mockito.verify(userDao).searchDeletedUsers(
                 Mockito.anyString(),
@@ -404,7 +404,7 @@ public class SearchServiceImplTest {
     @Test
     public void testSearchDeletedUsersFail() {
 
-        Optional<PaginatedCollection<User>> users = searchService.searchDeletedUsers(null,  PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<User>> users = searchService.searchDeletedUsers(null, "newest",  PAGE_NUMBER, PAGE_SIZE);
 
         Assert.assertFalse(users.isPresent());
     }

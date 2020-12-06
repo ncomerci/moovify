@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.interfaces.services;
 
+import ar.edu.itba.paw.interfaces.persistence.PostDao;
 import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
 
@@ -25,21 +26,21 @@ public interface PostService {
 
     Optional<Post> findDeletedPostById(long id);
 
-    PaginatedCollection<Post> findPostsByMovie(Movie movie, int pageNumber, int pageSize);
+    PaginatedCollection<Post> getAllPosts(String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> findPostsByUser(User user, int pageNumber, int pageSize);
+    PaginatedCollection<Post> findPostsByMovie(Movie movie, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> getAllPostsOrderByNewest(int pageNumber, int pageSize);
+    PaginatedCollection<Post> findPostsByUser(User user, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> getAllPostsOrderByOldest(int pageNumber, int pageSize);
+    PaginatedCollection<Post> getFollowedUsersPosts(User user, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize);
-
-    PaginatedCollection<Post> getFollowedUsersPosts(User user, int pageNumber, int pageSize);
-
-    PaginatedCollection<Post> getUserFavouritePosts(User user, int pageNumber, int pageSize);
+    PaginatedCollection<Post> getUserFavouritePosts(User user, String sortCriteria, int pageNumber, int pageSize);
 
     Collection<PostCategory> getAllPostCategories();
 
     Optional<PostCategory> findCategoryById(long categoryId);
+
+    PostDao.SortCriteria getPostSortCriteria(String sortCriteriaName);
+
+    Collection<String> getPostSortOptions();
 }

@@ -1,9 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.*;
-import ar.edu.itba.paw.interfaces.persistence.PostDao.SortCriteria;
-import ar.edu.itba.paw.interfaces.services.SearchService;
-import ar.edu.itba.paw.interfaces.services.exceptions.InvalidSortCriteriaException;
+import ar.edu.itba.paw.interfaces.services.*;
 import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +18,18 @@ import java.util.stream.Collectors;
 public class SearchServiceImpl implements SearchService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchServiceImpl.class);
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PostService postService;
+
+    @Autowired
+    private MovieService movieService;
+
+    @Autowired
+    private CommentService commentService;
 
     @Autowired
     private PostDao postDao;
@@ -45,30 +55,13 @@ public class SearchServiceImpl implements SearchService {
         BY_ROLE
     }
 
-    private static final PostDao.SortCriteria DEFAULT_POST_SORT_CRITERIA = PostDao.SortCriteria.NEWEST;
-    private static final MovieDao.SortCriteria DEFAULT_MOVIE_SORT_CRITERIA = MovieDao.SortCriteria.TITLE;
-    private static final UserDao.SortCriteria DEFAULT_USER_SORT_CRITERIA = UserDao.SortCriteria.USERNAME;
-
     private final List<String> postCategoriesOptions;
-    private final static Map<String, PostDao.SortCriteria> postSortCriteriaMap = getPostSortCriteriaMap();
     private final static Map<String, LocalDateTime> postPeriodOptionsMap = getPostPeriodOptionsMap();
 
     private final List<String> movieCategoriesOptions;
-    private final static Map<String, MovieDao.SortCriteria> movieSortCriteriaMap = getMovieSortCriteriaMap();
     private final static Map<String, LocalDate> movieDecadeMap = getMovieDecadeMap();
 
-    private final static Map<String, UserDao.SortCriteria> userSortCriteriaMap = getUserSortCriteriaMap();
     private final static Map<String, Role> userRoleOptionsMap = getUserRoleOptionsMap();
-
-    private static Map<String, PostDao.SortCriteria> getPostSortCriteriaMap() {
-        final Map<String, PostDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
-
-        sortCriteriaMap.put("newest", PostDao.SortCriteria.NEWEST);
-        sortCriteriaMap.put("oldest", PostDao.SortCriteria.OLDEST);
-        sortCriteriaMap.put("hottest", PostDao.SortCriteria.HOTTEST);
-
-        return sortCriteriaMap;
-    }
 
     private static Map<String, LocalDateTime> getPostPeriodOptionsMap() {
         final Map<String, LocalDateTime> periodOptions = new LinkedHashMap<>();
@@ -79,17 +72,6 @@ public class SearchServiceImpl implements SearchService {
         periodOptions.put("pastDay", LocalDateTime.now().minusDays(1));
 
         return periodOptions;
-    }
-
-    private static Map<String, MovieDao.SortCriteria> getMovieSortCriteriaMap() {
-        final Map<String, MovieDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
-
-        sortCriteriaMap.put("title", MovieDao.SortCriteria.TITLE);
-        sortCriteriaMap.put("newest", MovieDao.SortCriteria.NEWEST);
-        sortCriteriaMap.put("oldest", MovieDao.SortCriteria.OLDEST);
-        sortCriteriaMap.put("mostPosts", MovieDao.SortCriteria.POST_COUNT);
-
-        return sortCriteriaMap;
     }
 
     private static Map<String, LocalDate> getMovieDecadeMap() {
@@ -109,17 +91,6 @@ public class SearchServiceImpl implements SearchService {
         return decadeMap;
     }
 
-    private static Map<String, UserDao.SortCriteria> getUserSortCriteriaMap() {
-        final Map<String, UserDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
-
-        sortCriteriaMap.put("username", UserDao.SortCriteria.USERNAME);
-        sortCriteriaMap.put("newest", UserDao.SortCriteria.NEWEST);
-//        sortCriteriaMap.put("oldest", UserDao.SortCriteria.OLDEST);
-        sortCriteriaMap.put("likes", UserDao.SortCriteria.LIKES);
-
-        return sortCriteriaMap;
-    }
-
     private static Map<String, Role> getUserRoleOptionsMap() {
         final Map<String, Role> roleOptions = new LinkedHashMap<>();
 
@@ -131,8 +102,6 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     public SearchServiceImpl(PostCategoryDao postCategoryDao, MovieCategoryDao movieCategoryDao) {
-        //postCategoriesOptions = Collections.emptyList();
-        //movieCategoriesOptions = Collections.emptyList();
         postCategoriesOptions = postCategoryDao.getAllPostCategories().stream().map(PostCategory::getName).collect(Collectors.toList());
         movieCategoriesOptions = movieCategoryDao.getAllCategories().stream().map(MovieCategory::getName).collect(Collectors.toList());
     }
@@ -145,7 +114,8 @@ public class SearchServiceImpl implements SearchService {
             return Optional.empty();
 
         final EnumSet<PostSearchOptions> options = EnumSet.noneOf(PostSearchOptions.class);
-        final PostDao.SortCriteria sc;
+
+        final PostDao.SortCriteria sc = postService.getPostSortCriteria(sortCriteria);
 
         if(category != null && postCategoriesOptions.contains(category))
             options.add(PostSearchOptions.BY_CATEGORY);
@@ -153,13 +123,6 @@ public class SearchServiceImpl implements SearchService {
 
         if(period != null && postPeriodOptionsMap.containsKey(period))
             options.add(PostSearchOptions.OLDER_THAN);
-
-
-        if(sortCriteria != null && postSortCriteriaMap.containsKey(sortCriteria))
-            sc = postSortCriteriaMap.get(sortCriteria);
-
-        else
-            sc = DEFAULT_POST_SORT_CRITERIA;
 
         LOGGER.debug("Search Posts using Filter Options {} and Sort Criteria {}", options, sc);
 
@@ -189,7 +152,9 @@ public class SearchServiceImpl implements SearchService {
             return Optional.empty();
 
         final EnumSet<MovieSearchOptions> options = EnumSet.noneOf(MovieSearchOptions.class);
-        final MovieDao.SortCriteria sc;
+
+        final MovieDao.SortCriteria sc = movieService.getMovieSortCriteria(sortCriteria);
+
         LocalDate since = LocalDate.ofYearDay(1900,1);
         LocalDate upTo = LocalDate.ofYearDay(2100, 1);
 
@@ -201,12 +166,6 @@ public class SearchServiceImpl implements SearchService {
             since = movieDecadeMap.get(decade);
             upTo = since.plusYears(10);
         }
-
-        if (sortCriteria != null && movieSortCriteriaMap.containsKey(sortCriteria))
-            sc = movieSortCriteriaMap.get(sortCriteria);
-
-        else
-            sc = DEFAULT_MOVIE_SORT_CRITERIA;
 
         LOGGER.debug("Search Movies using Filter Options {} and Sort Criteria {}", options, sc);
 
@@ -237,7 +196,7 @@ public class SearchServiceImpl implements SearchService {
 
         final EnumSet<UserSearchOptions> options = EnumSet.noneOf(UserSearchOptions.class);
 
-        final UserDao.SortCriteria sc = getUserSortCriteria(sortCriteria);
+        final UserDao.SortCriteria sc = userService.getUserSortCriteria(sortCriteria);
 
         if(role != null && userRoleOptionsMap.containsKey(role))
             options.add(UserSearchOptions.BY_ROLE);
@@ -255,56 +214,38 @@ public class SearchServiceImpl implements SearchService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<PaginatedCollection<Post>> searchDeletedPosts(String query, int pageNumber, int pageSize) {
+    public Optional<PaginatedCollection<Post>> searchDeletedPosts(String query, String sortCriteria, int pageNumber, int pageSize) {
 
         if(query == null)
             return Optional.empty();
 
-        return Optional.of(postDao.searchDeletedPosts(query, SortCriteria.NEWEST, pageNumber, pageSize));
+        final PostDao.SortCriteria sc = postService.getPostSortCriteria(sortCriteria);
+
+        return Optional.of(postDao.searchDeletedPosts(query, sc, pageNumber, pageSize));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<PaginatedCollection<Comment>> searchDeletedComments(String query, int pageNumber, int pageSize) {
+    public Optional<PaginatedCollection<Comment>> searchDeletedComments(String query, String sortCriteria, int pageNumber, int pageSize) {
 
         if(query == null)
             return Optional.empty();
 
-        return Optional.of(commentDao.searchDeletedComments(query, CommentDao.SortCriteria.NEWEST, pageNumber, pageSize));
+        final CommentDao.SortCriteria sc = commentService.getCommentSortCriteria(sortCriteria);
+
+        return Optional.of(commentDao.searchDeletedComments(query, sc, pageNumber, pageSize));
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<PaginatedCollection<User>> searchDeletedUsers(String query, int pageNumber, int pageSize) {
+    public Optional<PaginatedCollection<User>> searchDeletedUsers(String query, String sortCriteria, int pageNumber, int pageSize) {
 
         if(query == null)
             return Optional.empty();
 
-        return Optional.of(userDao.searchDeletedUsers(query, UserDao.SortCriteria.NEWEST, pageNumber, pageSize));
-    }
+        final UserDao.SortCriteria sc = userService.getUserSortCriteria(sortCriteria);
 
-    @Override
-    public UserDao.SortCriteria getUserSortCriteria(String sortCriteriaName) {
-        if(sortCriteriaName != null && userSortCriteriaMap.containsKey(sortCriteriaName))
-            return userSortCriteriaMap.get(sortCriteriaName);
-
-        else
-            throw new InvalidSortCriteriaException();
-    }
-
-    @Override
-    public Collection<String> getAllPostSortCriteria() {
-        return postSortCriteriaMap.keySet();
-    }
-
-    @Override
-    public Collection<String> getAllMoviesSortCriteria() {
-        return movieSortCriteriaMap.keySet();
-    }
-
-    @Override
-    public Collection<String> getAllUserSortCriteria() {
-        return userSortCriteriaMap.keySet();
+        return Optional.of(userDao.searchDeletedUsers(query, sc, pageNumber, pageSize));
     }
 
     @Override

@@ -1,6 +1,5 @@
 package ar.edu.itba.paw.interfaces.services;
 
-import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.models.*;
 
 import java.util.Collection;
@@ -11,6 +10,7 @@ public interface SearchService {
     /**
      * Search methods required a query, at least an empty string.
      * pageSize should be > 0 and pageNumber >= 0.
+     * A valid sortCriteria name for the entity must be provided.
      * Every other field can be null and the default behaviour will be used.
      */
 
@@ -20,23 +20,15 @@ public interface SearchService {
 
     Optional<PaginatedCollection<User>> searchUsers(String query, String role, String sortCriteria, int pageNumber, int pageSize);
 
-    Optional<PaginatedCollection<Post>> searchDeletedPosts(String query, int pageNumber, int pageSize);
+    Optional<PaginatedCollection<Post>> searchDeletedPosts(String query, String sortCriteria, int pageNumber, int pageSize);
 
-    Optional<PaginatedCollection<Comment>> searchDeletedComments(String query, int pageNumber, int pageSize);
+    Optional<PaginatedCollection<Comment>> searchDeletedComments(String query, String sortCriteria, int pageNumber, int pageSize);
 
-    Optional<PaginatedCollection<User>> searchDeletedUsers(String query, int pageNumber, int pageSize);
-
-    UserDao.SortCriteria getUserSortCriteria(String sortCriteriaName);
+    Optional<PaginatedCollection<User>> searchDeletedUsers(String query, String sortCriteria, int pageNumber, int pageSize);
 
     /**
      * Available options for search methods
      */
-
-    Collection<String> getAllPostSortCriteria();
-
-    Collection<String> getAllMoviesSortCriteria();
-
-    Collection<String> getAllUserSortCriteria();
 
     Collection<String> getPostPeriodOptions();
 

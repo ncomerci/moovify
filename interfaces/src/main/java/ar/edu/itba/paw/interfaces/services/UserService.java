@@ -1,11 +1,13 @@
 package ar.edu.itba.paw.interfaces.services;
 
+import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -63,6 +65,9 @@ public interface UserService {
 
     PaginatedCollection<User> getAllUsers(String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<User> getFollowedUsers(User user, int pageNumber, int pageSize);
+    PaginatedCollection<User> getFollowedUsers(User user, String sortCriteria, int pageNumber, int pageSize);
 
+    UserDao.SortCriteria getUserSortCriteria(String sortCriteriaName);
+
+    Collection<String> getUserSortOptions();
 }

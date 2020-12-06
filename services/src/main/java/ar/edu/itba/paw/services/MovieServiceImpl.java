@@ -4,6 +4,7 @@ import ar.edu.itba.paw.interfaces.persistence.MovieCategoryDao;
 import ar.edu.itba.paw.interfaces.persistence.MovieDao;
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MovieService;
+import ar.edu.itba.paw.interfaces.services.exceptions.InvalidSortCriteriaException;
 import ar.edu.itba.paw.models.Image;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.MovieCategory;
@@ -15,9 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class MovieServiceImpl implements MovieService {
@@ -34,6 +33,19 @@ public class MovieServiceImpl implements MovieService {
 
     @Autowired
     private ImageService imageService;
+
+    private final static Map<String, MovieDao.SortCriteria> sortCriteriaMap = initializeSortCriteriaMap();
+
+    private static Map<String, MovieDao.SortCriteria> initializeSortCriteriaMap() {
+        final Map<String, MovieDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
+
+        sortCriteriaMap.put("title", MovieDao.SortCriteria.TITLE);
+        sortCriteriaMap.put("newest", MovieDao.SortCriteria.NEWEST);
+        sortCriteriaMap.put("oldest", MovieDao.SortCriteria.OLDEST);
+        sortCriteriaMap.put("mostPosts", MovieDao.SortCriteria.POST_COUNT);
+
+        return sortCriteriaMap;
+    }
 
     @Transactional
     @Override
@@ -85,8 +97,8 @@ public class MovieServiceImpl implements MovieService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Movie> getAllMovies(int pageNumber, int pageSize) {
-        return movieDao.getAllMovies(MovieDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Movie> getAllMovies(String sortCriteria, int pageNumber, int pageSize) {
+        return movieDao.getAllMovies(getMovieSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
@@ -100,4 +112,19 @@ public class MovieServiceImpl implements MovieService {
     public Collection<MovieCategory> getAvailableCategories() {
         return movieCategoryDao.getAllCategories();
     }
+
+    @Override
+    public MovieDao.SortCriteria getMovieSortCriteria(String sortCriteriaName) {
+        if (sortCriteriaName != null && sortCriteriaMap.containsKey(sortCriteriaName))
+            return sortCriteriaMap.get(sortCriteriaName);
+
+        else
+            throw new InvalidSortCriteriaException();
+    }
+
+    @Override
+    public Collection<String> getMovieSortOptions() {
+        return sortCriteriaMap.keySet();
+    }
+
 }

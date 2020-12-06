@@ -28,6 +28,18 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private MovieDao movieDao;
 
+    private final static Map<String, PostDao.SortCriteria> sortCriteriaMap = initializeSortCriteriaMap();
+
+    private static Map<String, PostDao.SortCriteria> initializeSortCriteriaMap() {
+        final Map<String, PostDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
+
+        sortCriteriaMap.put("newest", PostDao.SortCriteria.NEWEST);
+        sortCriteriaMap.put("oldest", PostDao.SortCriteria.OLDEST);
+        sortCriteriaMap.put("hottest", PostDao.SortCriteria.HOTTEST);
+
+        return sortCriteriaMap;
+    }
+
     @Transactional
     @Override
     public Post register(String title, String body, PostCategory category, User user, Set<String> tags, Set<Long> moviesId) {
@@ -121,44 +133,32 @@ public class PostServiceImpl implements PostService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> findPostsByMovie(Movie movie, int pageNumber, int pageSize) {
-        return postDao.findPostsByMovie(movie, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Post> getAllPosts(String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.getAllPosts(getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> findPostsByUser(User user, int pageNumber, int pageSize) {
-        return postDao.findPostsByUser(user, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Post> findPostsByMovie(Movie movie, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.findPostsByMovie(movie, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> getAllPostsOrderByNewest(int pageNumber, int pageSize) {
-        return postDao.getAllPosts(PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Post> findPostsByUser(User user, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.findPostsByUser(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> getAllPostsOrderByOldest(int pageNumber, int pageSize) {
-        return postDao.getAllPosts(PostDao.SortCriteria.OLDEST, pageNumber, pageSize);
+    public PaginatedCollection<Post> getFollowedUsersPosts(User user, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.getFollowedUsersPosts(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> getAllPostsOrderByHottest(int pageNumber, int pageSize) {
-        return postDao.getAllPosts(PostDao.SortCriteria.HOTTEST, pageNumber, pageSize);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public PaginatedCollection<Post> getFollowedUsersPosts(User user, int pageNumber, int pageSize) {
-        return postDao.getFollowedUsersPosts(user, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public PaginatedCollection<Post> getUserFavouritePosts(User user, int pageNumber, int pageSize) {
-        return postDao.getUserFavouritePosts(user, PostDao.SortCriteria.NEWEST, pageNumber, pageSize);
+    public PaginatedCollection<Post> getUserFavouritePosts(User user, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.getUserFavouritePosts(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
@@ -172,4 +172,19 @@ public class PostServiceImpl implements PostService {
     public Optional<PostCategory> findCategoryById(long categoryId) {
         return categoryDao.findPostCategoryById(categoryId);
     }
+
+    @Override
+    public PostDao.SortCriteria getPostSortCriteria(String sortCriteriaName) {
+        if(sortCriteriaName != null && sortCriteriaMap.containsKey(sortCriteriaName))
+            return sortCriteriaMap.get(sortCriteriaName);
+
+        else
+            throw new InvalidSortCriteriaException();
+    }
+
+    @Override
+    public Collection<String> getPostSortOptions() {
+        return sortCriteriaMap.keySet();
+    }
+
 }
