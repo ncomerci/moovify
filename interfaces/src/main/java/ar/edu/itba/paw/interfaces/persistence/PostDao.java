@@ -14,7 +14,7 @@ public interface PostDao {
 
     Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Movie> movies, boolean enabled);
 
-    int getLikeValue(Post post, User user);
+    int getVoteValue(Post post, User user);
 
     Optional<Post> findPostById(long id);
 

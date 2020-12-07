@@ -123,6 +123,9 @@ public class PostController {
 //
 //        final PaginatedCollection<PostLike> postLikes = postService.getPostLikes(post, orderBy, pageNumber, pageSize);
 //
+//        final Collection<PostLikeDto> postLikesDto = PostLikeDto.mapPostsLikeToDto(postLikes.getResults(), uriInfo);
+//
+//        return buildGenericPaginationResponse(postLikes, new GenericEntity<Collection<PostLikeDto>>(postLikesDto) {}, uriInfo, orderBy);
 //    }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -132,14 +135,13 @@ public class PostController {
                                  @PathParam("userId") long userId,
                                  @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                  @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
-                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize,
-                                 @Context UriInfo uriInfo) {
+                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
-        int value = postService.getLikeValue(post, user);
+        int value = postService.getVoteValue(post, user);
 
         return Response.ok(new PostLikeDto(new PostLike(user, post, value), uriInfo)).build();
     }
