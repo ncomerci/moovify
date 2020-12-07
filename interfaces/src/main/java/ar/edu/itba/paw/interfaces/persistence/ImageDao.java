@@ -6,9 +6,7 @@ import java.util.Optional;
 
 public interface ImageDao {
 
-    Image uploadImage(byte[] data, String securityTag);
+    Image uploadImage(byte[] data);
 
     Optional<Image> findImageById(long imageId);
-
-    Optional<Image> getImage(long imageId, String securityTag);
 }

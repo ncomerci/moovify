@@ -1,164 +1,173 @@
-//package ar.edu.itba.paw.webapp.controller;
-//
-//import ar.edu.itba.paw.interfaces.services.CommentService;
-//import ar.edu.itba.paw.interfaces.services.MovieService;
-//import ar.edu.itba.paw.interfaces.services.PostService;
-//import ar.edu.itba.paw.interfaces.services.UserService;
-//import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostEditionException;
-//import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostLikeException;
-//import ar.edu.itba.paw.interfaces.services.exceptions.MissingPostEditPermissionException;
-//import ar.edu.itba.paw.models.Post;
-//import ar.edu.itba.paw.models.PostCategory;
-//import ar.edu.itba.paw.models.User;
-//import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
-//import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
-//import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
-//import ar.edu.itba.paw.webapp.dto.inputDto.CommentCreateForm;
-//import ar.edu.itba.paw.webapp.dto.inputDto.PostCreateForm;
-//import ar.edu.itba.paw.webapp.dto.inputDto.PostEditForm;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Controller;
-//import org.springframework.validation.BindingResult;
-//import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.servlet.ModelAndView;
-//
-//import javax.validation.Valid;
-//import java.security.Principal;
-//import java.util.Collections;
-//
-//
-//@Controller
-//public class PostController {
-//
-//    private static final Logger LOGGER = LoggerFactory.getLogger(PostController.class);
-//
-//    @Autowired
-//    private PostService postService;
-//
-//    @Autowired
-//    private MovieService movieService;
-//
-//    @Autowired
-//    private CommentService commentService;
-//
-//    @Autowired
-//    private UserService userService;
-//
-//
-//    @RequestMapping(path = "/post/{postId}", method = RequestMethod.GET)
-//    public ModelAndView view(@PathVariable final long postId,
-//                             @RequestParam(defaultValue = "10") final int pageSize,
-//                             @RequestParam(defaultValue = "0") final int pageNumber,
-//                             @ModelAttribute("commentCreateForm") final CommentCreateForm commentCreateForm) {
-//
-//        LOGGER.info("Accessed /post/{}", postId);
-//
-//        final ModelAndView mv = new ModelAndView("post/view");
-//
-//        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
-//
-//        mv.addObject("post", post);
-//        mv.addObject("comments", commentService.findPostCommentDescendants(post, pageNumber, pageSize));
-//        mv.addObject("maxDepth", commentService.getMaxCommentTreeDepth());
-//
-//        return mv;
-//    }
-//
-//    @RequestMapping(path = "/post/like", method = RequestMethod.POST)
-//    public ModelAndView likePost(@RequestParam final long postId,
-//                                 @RequestParam(defaultValue = "0") final int value,
-//                                 final Principal principal) throws IllegalPostLikeException {
-//
-//        LOGGER.info("Accessed /post/like");
-//
-//        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-//
-//        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
-//
-//        postService.likePost(post, user, value);
-//
-//        return new ModelAndView("redirect:/post/" + postId);
-//    }
-//
-//    @RequestMapping(path = "/post/create", method = RequestMethod.GET)
-//    public ModelAndView showPostCreateForm(@ModelAttribute("postCreateForm") final PostCreateForm postCreateForm) {
-//
-//        LOGGER.info("Accessed /post/create");
-//
-//        final ModelAndView mv = new ModelAndView("post/create");
-//
-//        mv.addObject("movies", movieService.getAllMoviesNotPaginated());
-//        mv.addObject("categories", postService.getAllPostCategories());
-//
-//        return mv;
-//    }
-//
-//    @RequestMapping(path = "/post/create", method = RequestMethod.POST)
-//    public ModelAndView showPostCreateForm(@Valid @ModelAttribute("postCreateForm") final PostCreateForm postCreateForm,
-//                                           final BindingResult errors,
-//                                           final Principal principal) {
-//
-//        if (errors.hasErrors()) {
-//            LOGGER.warn("Errors were found in the form postCreateForm creating a Post");
-//            return showPostCreateForm(postCreateForm);
-//        }
-//
-//        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-//
-//        final PostCategory postCategory = postService.findCategoryById(postCreateForm.getCategory())
-//                .orElseThrow(InvalidPostCategoryException::new);
-//
-//        final Post post = postService.register(postCreateForm.getTitle(), postCreateForm.getBody(),
-//                    postCategory, user,
-//                    postCreateForm.getTags() == null ? Collections.emptySet() : postCreateForm.getTags(),
-//                    postCreateForm.getMovies());
-//
-//        LOGGER.info("Accessed /post/create to create Post. Redirecting to /post/{}", post.getId());
-//
-//        return new ModelAndView("redirect:/post/" + post.getId());
-//    }
-//
-//    @RequestMapping(path = "/post/edit/{postId}", method = RequestMethod.GET)
-//    public ModelAndView showPostEditForm(@PathVariable long postId, @ModelAttribute("postEditForm") final PostEditForm postEditForm,
-//                                         Principal principal) throws MissingPostEditPermissionException, IllegalPostEditionException {
-//
-//        LOGGER.info("Accessed /post/edit/{}", postId);
-//
-//        final ModelAndView mv = new ModelAndView("post/edit");
-//
-//        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
-//
-//        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-//
-//        postService.guaranteePostEditionPermissions(user, post);
-//
-//        mv.addObject("post", post);
-//
-//        if(postEditForm.getBody() == null)
-//            postEditForm.setBody(post.getBody());
-//
-//        return mv;
-//    }
-//
-//    @RequestMapping(path = "/post/edit/{postId}", method = RequestMethod.POST)
-//    public ModelAndView editPost(@PathVariable long postId, @Valid @ModelAttribute("postEditForm") final PostEditForm postEditForm,
-//                                           final BindingResult errors, final Principal principal) throws MissingPostEditPermissionException, IllegalPostEditionException {
-//
-//        if(errors.hasErrors()) {
-//            LOGGER.warn("Errors were found in the form postEditForm editing a Post");
-//            return showPostEditForm(postId, postEditForm, principal);
-//        }
-//
-//        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
-//
-//        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
-//
-//        postService.editPost(user, post, postEditForm.getBody());
-//
-//        LOGGER.info("Accessed /post/edit to edit Post. Redirecting to /post/{}", post.getId());
-//
-//        return new ModelAndView("redirect:/post/" + post.getId());
-//    }
-//}
+package ar.edu.itba.paw.webapp.controller;
+
+import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostEditionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostLikeException;
+import ar.edu.itba.paw.interfaces.services.exceptions.MissingPostEditPermissionException;
+import ar.edu.itba.paw.models.PaginatedCollection;
+import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.PostCategory;
+import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.dto.input.PostCreateDto;
+import ar.edu.itba.paw.webapp.dto.input.PostEditDto;
+import ar.edu.itba.paw.webapp.dto.output.PostDto;
+import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
+import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.security.Principal;
+import java.util.Collection;
+
+@Path("posts")
+@Component
+public class PostController {
+
+    @Context
+    private UriInfo uriInfo;
+
+    @Autowired
+    private PostService postService;
+
+    @Autowired
+    private UserService userService;
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Response listPosts(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                              @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                              @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+
+        final PaginatedCollection<Post> posts = postService.getAllPosts(orderBy, pageNumber, pageSize);
+
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+
+        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public Response createPost(@Valid final PostCreateDto postCreateDto, @Context Principal principal, @Context HttpServletRequest request){
+
+        final Post post;
+
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        final PostCategory postCategory = postService.findCategoryById(postCreateDto.getCategory()).orElseThrow(InvalidPostCategoryException::new);
+
+        post = postService.register(postCreateDto.getTitle(), postCreateDto.getBody(), postCategory, user, postCreateDto.getTags(), postCreateDto.getMovies());
+
+        return Response.created(PostDto.getPostUriBuilder(post, uriInfo).build()).build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}")
+    public Response getPost(@PathParam("id") long id) {
+
+        final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+
+        return Response.ok(new PostDto(post,uriInfo)).build();
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/{id}")
+    public Response editPost(@PathParam("id") long id, @Valid final PostEditDto postEditDto, @Context Principal principal) throws MissingPostEditPermissionException, IllegalPostEditionException {
+
+        final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        postService.editPost(user, post, postEditDto.getBody());
+
+        return Response.noContent()
+                .location(PostDto.getPostUriBuilder(post, uriInfo).build())
+                .build();
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @DELETE
+    @Path("/{id}")
+    public Response deletePost(@PathParam("id") long id, @Context Principal principal) throws DeletedDisabledModelException {
+
+        final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+
+        postService.deletePost(post);
+
+        return Response.ok().build();
+    }
+
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/{id}/vote")
+    public Response editPost(@PathParam("id") long id, @QueryParam("value") @DefaultValue("0") final int value, @Context Principal principal) throws IllegalPostLikeException {
+
+        final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+
+        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+
+        postService.likePost(post, user, value);
+
+        return Response.noContent().build();
+    }
+
+    private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
+                                                                  Collection<Dto> resultsDto, UriInfo uriInfo,
+                                                                  String orderBy) {
+
+        if(paginatedResults.isEmpty()) {
+            if(paginatedResults.getPageNumber() == 0)
+                return Response.noContent().build();
+
+            else
+                return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        final Response.ResponseBuilder responseBuilder =
+                Response.ok(new GenericEntity<Collection<Dto>>(resultsDto) {});
+
+        setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
+
+        return responseBuilder.build();
+    }
+
+    private <T> void setPaginationLinks(Response.ResponseBuilder response, UriInfo uriInfo,
+                                        PaginatedCollection<T> results, String orderBy) {
+
+        final int pageNumber = results.getPageNumber();
+        final String pageNumberParamName = "pageNumber";
+
+        final int first = 0;
+        final int last = results.getLastPageNumber();
+        final int prev = pageNumber - 1;
+        final int next = pageNumber + 1;
+
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", results.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, first).build(), "first");
+
+        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, last).build(), "last");
+
+        if(pageNumber != first)
+            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, prev).build(), "prev");
+
+        if(pageNumber != last)
+            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, next).build(), "next");
+    }
+}

@@ -264,11 +264,11 @@ public class User {
         return bookmarkedPosts.contains(post);
     }
 
-    public void addFavouritePost(Post post) {
+    public void bookmarkPost(Post post) {
         bookmarkedPosts.add(post);
     }
 
-    public void removeFavouritePost(Post post) {
+    public void unbookmarkPost(Post post) {
         bookmarkedPosts.remove(post);
     }
 

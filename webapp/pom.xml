@@ -162,13 +162,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.validation</groupId>
-      <artifactId>validation-api</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
+      <groupId>org.glassfish.jersey.ext</groupId>
+      <artifactId>jersey-bean-validation</artifactId>
     </dependency>
 
     <dependency>
@@ -184,16 +179,16 @@
 
     <dependency>
       <groupId>ar.edu.itba.paw</groupId>
-      <artifactId>frontend</artifactId>
+      <artifactId>services</artifactId>
       <version>${project.parent.version}</version>
-      <type>pom</type>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>
       <groupId>ar.edu.itba.paw</groupId>
-      <artifactId>services</artifactId>
+      <artifactId>frontend</artifactId>
       <version>${project.parent.version}</version>
-      <scope>runtime</scope>
+      <type>pom</type>
     </dependency>
 
     <!-- This dependencies are needed because we are working with an older version of Apache Tomcat -->

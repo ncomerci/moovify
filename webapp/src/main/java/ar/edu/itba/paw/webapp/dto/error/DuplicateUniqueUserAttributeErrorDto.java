@@ -9,10 +9,14 @@ public class DuplicateUniqueUserAttributeErrorDto {
     private String message;
     private EnumSet<DuplicateUniqueUserAttributeException.UniqueAttributes> duplicatedAttributes;
 
+    public DuplicateUniqueUserAttributeErrorDto() {
+        //For jersey - do not use
+    }
+
     public DuplicateUniqueUserAttributeErrorDto(DuplicateUniqueUserAttributeException e) {
 
         // TODO: Descablear String
-        message = "The user you tried to create or edit had duplicated unique attributes";
+        message = "The user you tried to create had duplicated unique attributes";
         duplicatedAttributes = e.getDuplicatedUniqueAttributes();
     }
 

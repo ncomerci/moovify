@@ -32,8 +32,8 @@ public class PaginatedCollection<T> {
         return totalCount;
     }
 
-    public long getLastPageNumber() {
-        return (totalCount - 1) / pageSize;
+    public int getLastPageNumber() {
+        return (int) ((totalCount - 1) / pageSize);
     }
 
     public boolean isEmpty() {

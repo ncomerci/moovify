@@ -6,7 +6,6 @@ import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.services.ImageService;
 import ar.edu.itba.paw.interfaces.services.MailService;
-import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
@@ -35,9 +34,6 @@ public class UserServiceImpl implements UserService {
     private ImageService imageService;
 
     @Autowired
-    private SearchService searchService;
-
-    @Autowired
     private UserVerificationTokenDao userVerificationTokenDao;
 
     @Autowired
@@ -52,7 +48,19 @@ public class UserServiceImpl implements UserService {
     // All users are created with NOT_VALIDATED_ROLE by default
 
     private static final String DEFAULT_AVATAR_PATH = "/images/avatar.jpg";
-    private static final String AVATAR_SECURITY_TAG = "AVATAR";
+
+    private final static Map<String, UserDao.SortCriteria> sortCriteriaMap = initializeSortCriteriaMap();
+
+    private static Map<String, UserDao.SortCriteria> initializeSortCriteriaMap() {
+        final Map<String, UserDao.SortCriteria> sortCriteriaMap = new LinkedHashMap<>();
+
+        sortCriteriaMap.put("username", UserDao.SortCriteria.USERNAME);
+        sortCriteriaMap.put("newest", UserDao.SortCriteria.NEWEST);
+        sortCriteriaMap.put("oldest", UserDao.SortCriteria.OLDEST);
+        sortCriteriaMap.put("likes", UserDao.SortCriteria.LIKES);
+
+        return sortCriteriaMap;
+    }
 
     @Transactional
     @Override
@@ -119,7 +127,7 @@ public class UserServiceImpl implements UserService {
         Image avatar = null;
 
         if(newAvatar.length > 0)
-            avatar = imageService.uploadImage(newAvatar, AVATAR_SECURITY_TAG);
+            avatar = imageService.uploadImage(newAvatar);
 
         user.setAvatar(avatar);
 
@@ -128,15 +136,17 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<byte[]> getAvatar(long avatarId) {
+    public Optional<byte[]> getAvatar(User user) {
+
+        final long avatarId = user.getAvatarId();
 
         LOGGER.info("Accessing avatar {}. (Default {})", avatarId, avatarId == User.DEFAULT_AVATAR_ID);
 
         if(avatarId == User.DEFAULT_AVATAR_ID)
-            return Optional.of(imageService.getImage(DEFAULT_AVATAR_PATH));
+            return Optional.of(imageService.findImageByPath(DEFAULT_AVATAR_PATH));
 
         else
-            return imageService.getImage(avatarId, AVATAR_SECURITY_TAG);
+            return imageService.findImageById(avatarId);
     }
 
     @Transactional
@@ -303,14 +313,22 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void addFavouritePost(User user, Post post) {
-        user.addFavouritePost(post);
+    public void bookmarkPost(User user, Post post) throws IllegalPostBookmarkException {
+
+        if(!post.isEnabled())
+            throw new IllegalPostBookmarkException();
+
+        user.bookmarkPost(post);
     }
 
     @Transactional
     @Override
-    public void removeFavouritePost(User user, Post post) {
-        user.removeFavouritePost(post);
+    public void unbookmarkPost(User user, Post post) throws IllegalPostUnbookmarkException {
+
+        if(!post.isEnabled())
+            throw new IllegalPostUnbookmarkException();
+
+        user.unbookmarkPost(post);
     }
 
     @Transactional(readOnly = true)
@@ -346,12 +364,26 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<User> getAllUsers(String sortCriteria, int pageNumber, int pageSize) {
-        return userDao.getAllUsers(searchService.getUserSortCriteria(sortCriteria), pageNumber, pageSize);
+        return userDao.getAllUsers(getUserSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<User> getFollowedUsers(User user, int pageNumber, int pageSize) {
-        return userDao.getFollowedUsers(user, UserDao.SortCriteria.USERNAME, pageNumber, pageSize);
+    public PaginatedCollection<User> getFollowedUsers(User user, String sortCriteria, int pageNumber, int pageSize) {
+        return userDao.getFollowedUsers(user, getUserSortCriteria(sortCriteria), pageNumber, pageSize);
+    }
+
+    @Override
+    public UserDao.SortCriteria getUserSortCriteria(String sortCriteriaName) {
+        if(sortCriteriaName != null && sortCriteriaMap.containsKey(sortCriteriaName))
+            return sortCriteriaMap.get(sortCriteriaName);
+
+        else
+            throw new InvalidSortCriteriaException();
+    }
+
+    @Override
+    public Collection<String> getUserSortOptions() {
+        return sortCriteriaMap.keySet();
     }
 }

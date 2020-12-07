@@ -26,18 +26,18 @@ public class ImageServiceImpl implements ImageService {
 
     @Transactional
     @Override
-    public Image uploadImage(byte[] image, String securityTag) {
-        return imageDao.uploadImage(image, securityTag);
+    public Image uploadImage(byte[] image) {
+        return imageDao.uploadImage(image);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<byte[]> getImage(long imageId, String securityTag) {
-        return imageDao.getImage(imageId, securityTag).map(Image::getData);
+    public Optional<byte[]> findImageById(long imageId) {
+        return imageDao.findImageById(imageId).map(Image::getData);
     }
 
     @Override
-    public byte[] getImage(String imagePath) {
+    public byte[] findImageByPath(String imagePath) {
         try {
             final byte[] ans = Files.readAllBytes(Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource(imagePath)).toURI()));
 
