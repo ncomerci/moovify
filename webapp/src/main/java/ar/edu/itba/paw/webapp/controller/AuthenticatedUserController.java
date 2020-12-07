@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
 
-@Path("users")
+@Path("user")
 @Component
 public class AuthenticatedUserController {
 

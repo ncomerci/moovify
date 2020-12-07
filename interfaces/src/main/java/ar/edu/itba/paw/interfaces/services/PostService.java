@@ -22,6 +22,8 @@ public interface PostService {
 
     void guaranteePostEditionPermissions(User editor, Post post) throws IllegalPostEditionException, MissingPostEditPermissionException;
 
+    int getLikeValue(Post post, User user);
+
     Optional<Post> findPostById(long id);
 
     Optional<Post> findDeletedPostById(long id);
@@ -35,6 +37,8 @@ public interface PostService {
     PaginatedCollection<Post> getFollowedUsersPosts(User user, String sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> getUserBookmarkedPosts(User user, String sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<PostLike> getPostLikes(Post post, String sortCriteria, int pageNumber, int pageSize);
 
     Collection<PostCategory> getAllPostCategories();
 

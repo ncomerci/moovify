@@ -1,24 +1,23 @@
 package ar.edu.itba.paw.webapp.controller;
 
+import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostEditionException;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostLikeException;
 import ar.edu.itba.paw.interfaces.services.exceptions.MissingPostEditPermissionException;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.PostCategory;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.dto.input.PostCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.PostEditDto;
+import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
+import ar.edu.itba.paw.webapp.dto.output.PostLikeDto;
 import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -39,6 +38,9 @@ public class PostController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CommentService commentService;
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -100,7 +102,7 @@ public class PostController {
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/{id}")
-    public Response deletePost(@PathParam("id") long id, @Context Principal principal) throws DeletedDisabledModelException {
+    public Response deletePost(@PathParam("id") long id) throws DeletedDisabledModelException {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
@@ -109,11 +111,44 @@ public class PostController {
         return Response.ok().build();
     }
 
+//    @Produces(MediaType.APPLICATION_JSON)
+//    @GET
+//    @Path("/{id}/votes")
+//    public Response getPostLikes(@PathParam("id") long id,
+//                                 @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+//                                 @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+//                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+//
+//        final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+//
+//        final PaginatedCollection<PostLike> postLikes = postService.getPostLikes(post, orderBy, pageNumber, pageSize);
+//
+//    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}/votes/{userId}")
+    public Response getPostLikes(@PathParam("id") long id,
+                                 @PathParam("userId") long userId,
+                                 @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                                 @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize,
+                                 @Context UriInfo uriInfo) {
+
+        final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+
+        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
+
+        int value = postService.getLikeValue(post, user);
+
+        return Response.ok(new PostLikeDto(new PostLike(user, post, value), uriInfo)).build();
+    }
+
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
-    @Path("/{id}/vote")
-    public Response editPost(@PathParam("id") long id, @QueryParam("value") @DefaultValue("0") final int value, @Context Principal principal) throws IllegalPostLikeException {
+    @Path("/{id}/votes")
+    public Response votePost(@PathParam("id") long id, @QueryParam("value") @DefaultValue("0") final int value, @Context Principal principal) throws IllegalPostLikeException {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
@@ -123,6 +158,25 @@ public class PostController {
 
         return Response.noContent().build();
     }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}/comments")
+    public Response getPostComments(@PathParam("id") long id,
+                                    @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                                    @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                                    @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+
+        final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+
+        final PaginatedCollection<Comment> comments = commentService.findCommentsByPost(post, orderBy, pageNumber, pageSize);
+
+        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
+
+        return buildGenericPaginationResponse(comments, commentsDto, uriInfo, orderBy);
+    }
+
+
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
                                                                   Collection<Dto> resultsDto, UriInfo uriInfo,

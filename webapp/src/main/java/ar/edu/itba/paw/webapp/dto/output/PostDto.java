@@ -30,10 +30,12 @@ public class PostDto {
     private PostCategory postCategory;
     private Collection<String> tags;
     private Collection<Movie> movies;
-    private Collection<Comment> comments;
-    private Collection<PostLike> likes;
     private boolean enabled;
     private Long totalLikes;
+
+    // Relations
+    private String comments;
+    private String votes;
 
     private String url;
 
@@ -53,12 +55,15 @@ public class PostDto {
         this.postCategory = post.getCategory();
         this.tags = post.getTags();
         this.movies = post.getMovies();
-        this.comments = post.getComments();
-        this.likes = post.getLikes();
         this.enabled = post.isEnabled();
         this.totalLikes = post.getTotalLikes();
 
-        url = uriInfo.getBaseUriBuilder().path("posts").path(String.valueOf(id)).build().toString();
+        final UriBuilder postUriBuilder = getPostUriBuilder(post, uriInfo);
+
+        comments = postUriBuilder.clone().path("/comments").build().toString();
+        votes = postUriBuilder.clone().path("/votes").build().toString();
+
+        url = postUriBuilder.build().toString();
     }
 
     public long getId() {
@@ -149,22 +154,6 @@ public class PostDto {
         this.movies = movies;
     }
 
-    public Collection<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(Collection<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public Collection<PostLike> getLikes() {
-        return likes;
-    }
-
-    public void setLikes(Collection<PostLike> likes) {
-        this.likes = likes;
-    }
-
     public boolean isEnabled() {
         return enabled;
     }
@@ -179,5 +168,29 @@ public class PostDto {
 
     public void setTotalLikes(Long totalLikes) {
         this.totalLikes = totalLikes;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public String getVotes() {
+        return votes;
+    }
+
+    public void setVotes(String votes) {
+        this.votes = votes;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

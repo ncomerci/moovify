@@ -3,7 +3,7 @@ package ar.edu.itba.paw.webapp.dto.input;
 import ar.edu.itba.paw.webapp.dto.input.validation.annotations.MoviePoster;
 import org.springframework.web.multipart.MultipartFile;
 
-public class UpdateMoviePosterForm {
+public class UpdateMoviePosterDto {
 
     @MoviePoster
     private MultipartFile poster;
