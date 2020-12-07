@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostEditionException;
@@ -42,13 +43,26 @@ public class PostController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private SearchService searchService;
+
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listPosts(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response listPosts(@QueryParam("query") String query,
+                              @QueryParam("postCategory") String postCategory,
+                              @QueryParam("postAge") String postAge,
+                              @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                               @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                               @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final PaginatedCollection<Post> posts = postService.getAllPosts(orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Post> posts;
+
+        if(query != null) {
+            posts = searchService.searchPosts(query, postCategory, postAge, orderBy, pageNumber, pageSize).orElseThrow(PostNotFoundException::new);
+        }
+        else {
+            posts = postService.getAllPosts(orderBy, pageNumber, pageSize);
+        }
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 

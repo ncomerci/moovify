@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
@@ -34,13 +35,26 @@ public class MovieController {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private SearchService searchService;
+
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listMovies(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response listMovies(@QueryParam("query") String query,
+                               @QueryParam("movieCategory") String movieCategory,
+                               @QueryParam("decade") String decade,
+                               @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                @QueryParam("pageSize") @DefaultValue("10") int pageSize){
 
-        final PaginatedCollection<Movie> movies = movieService.getAllMovies(orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Movie> movies;
+
+        if(query != null){
+            movies = searchService.searchMovies(query, movieCategory, decade, orderBy, pageNumber, pageSize).orElseThrow(MovieNotFoundException::new);
+        }
+        else {
+            movies = movieService.getAllMovies(orderBy, pageNumber, pageSize);
+        }
 
         final Collection<MovieDto> moviesDto = MovieDto.mapMoviesToDto(movies.getResults(), uriInfo);
 

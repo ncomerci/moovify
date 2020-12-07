@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.webapp.dto.input;
 
-public class SearchUsersForm {
+public class SearchUsersDto {
 
     private String query;
     private String role;

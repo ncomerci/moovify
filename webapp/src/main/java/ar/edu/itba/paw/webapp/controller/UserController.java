@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
 import ar.edu.itba.paw.models.Comment;
@@ -10,6 +11,7 @@ import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
+import ar.edu.itba.paw.webapp.dto.input.SearchUsersDto;
 import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
@@ -42,13 +44,27 @@ public class UserController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private SearchService searchService;
+
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listUsers(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response listUsers(@QueryParam("query") String query,
+                              @QueryParam("role") String role,
+                              @QueryParam("orderBy") @DefaultValue("username") String orderBy,
                               @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                               @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final PaginatedCollection<User> users = userService.getAllUsers(orderBy, pageNumber, pageSize);
+        final PaginatedCollection<User> users;
+
+        if(query != null) {
+            users = searchService.searchUsers(query, role, orderBy, pageNumber, pageSize).orElseThrow(UserNotFoundException::new);
+        }
+        else {
+            users = userService.getAllUsers(orderBy, pageNumber, pageSize);
+        }
+
 
         final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
 
