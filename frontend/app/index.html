@@ -33,23 +33,23 @@
             </form>
           </div>
         </li>
-        <li class="uk-navbar-item" ng-show="!loggedUser">
+        <li class="uk-navbar-item ng-cloak" ng-show="!loggedUser">
           <a ng-href="/login">LOGIN</a>
         </li>
         <li>
-          <a class="uk-text-center" ng-href="/user/create" ng-show="!loggedUser">
+          <a class="uk-text-center ng-cloak" ng-href="/user/create" ng-show="!loggedUser">
           <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-text-secondary" type="button">SIGNUP</button>
           </a>
         </li>
 
-        <li class="uk-navbar-item" ng-show="loggedUser">
+        <li class="uk-navbar-item ng-cloak" ng-show="loggedUser">
             <!-- This is a button toggling the modal -->
             <a ng-show="!loggedUser.validated" class="uk-padding-remove" href="#" uk-toggle="target: #confirm-email-modal">
               CREATE POST
             </a>
             <a ng-show="loggedUser.validated" class="uk-padding-remove" ng-href="/post/create">CREATE POST</a>
         </li>
-        <li ng-show="loggedUser">
+        <li ng-show="loggedUser" class="ng-cloak">
           <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" ng-href="/user/profile">
             <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
             <img src="/user/avatar/{{loggedUser.avatarId}}" class="uk-comment-avatar circle-navbar" width="45" height="45" alt="User Avatar">

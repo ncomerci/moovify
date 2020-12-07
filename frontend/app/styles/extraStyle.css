@@ -271,3 +271,6 @@ a.anchor {
 .delete-comment-button:focus {
   color: #900d0d !important;
 }
+
+
+.ng-cloak { display: none !important; }
