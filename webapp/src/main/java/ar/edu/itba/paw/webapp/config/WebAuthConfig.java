@@ -1,5 +1,8 @@
 package ar.edu.itba.paw.webapp.config;
 
+import ar.edu.itba.paw.webapp.auth.JwtAuthFilter;
+import ar.edu.itba.paw.webapp.auth.JwtUtil;
+import ar.edu.itba.paw.webapp.auth.UnauthorizedRequestHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -7,33 +10,39 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.FileCopyUtils;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.io.InputStreamReader;
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
 
 @EnableWebSecurity
 @ComponentScan({ "ar.edu.itba.paw.webapp.auth", })
 @Configuration
 public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("classpath:rememberMe.key")
-    private Resource rememberMeKeyResource;
-
     @Autowired
     private UserDetailsService userDetails;
+
+    @Autowired
+    private JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtUtil jwtUtil(@Value("classpath:jwtSecret.key") Resource secretResource) throws IOException {
+        return new JwtUtil(secretResource);
     }
 
     @Override
@@ -46,7 +55,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
             http
                 .sessionManagement()
-                    //.invalidSessionUrl("/")
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+                .and().exceptionHandling()
+                    .authenticationEntryPoint(new UnauthorizedRequestHandler())
 
                 .and().authorizeRequests()
 
@@ -119,32 +131,21 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Default
                     .antMatchers("/**").permitAll()
 
-                .and().formLogin()
-                    .loginPage("/login")
-                    .usernameParameter("username")
-                    .passwordParameter("password")
-                    .defaultSuccessUrl("/", false)
+                .and().csrf().disable()
 
-                .and().rememberMe()
-                    .userDetailsService(userDetails)
-                    .rememberMeParameter("remember-me")
-                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(30))
-                    .key(FileCopyUtils.copyToString(new InputStreamReader(rememberMeKeyResource.getInputStream())))
-
-                .and().logout()
-                    .logoutUrl("/logout")
-                    .logoutSuccessUrl("/")
-
-                .and().exceptionHandling()
-                    .accessDeniedPage("/403")
-
-                .and().csrf().disable();
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Override
     public void configure(final WebSecurity web) {
         web.ignoring()
                 .antMatchers("/resources/**", "/favicon.ico");
+    }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
 }

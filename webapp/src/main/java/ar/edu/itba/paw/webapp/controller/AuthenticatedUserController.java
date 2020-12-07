@@ -12,8 +12,11 @@ import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.webapp.auth.JwtUtil;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
+import ar.edu.itba.paw.webapp.dto.input.TokenDto;
 import ar.edu.itba.paw.webapp.dto.input.UpdateAvatarDto;
+import ar.edu.itba.paw.webapp.dto.input.UserAuthenticationDto;
 import ar.edu.itba.paw.webapp.dto.input.UserEditDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
@@ -22,14 +25,19 @@ import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.Collection;
+import java.util.Optional;
 
 @Path("user")
 @Component
@@ -47,21 +55,53 @@ public class AuthenticatedUserController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response getUser(@Context Principal principal) {
+    public Response getUser(@Context SecurityContext securityContext) {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         return Response.ok(new UserDto(user, uriInfo)).build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    public Response authenticateUser(final UserAuthenticationDto userAuthDto) {
+
+        try {
+            Authentication authenticate = authenticationManager
+                    .authenticate(
+                            new UsernamePasswordAuthenticationToken(
+                                    userAuthDto.getUsername(), userAuthDto.getPassword()
+                            )
+                    );
+
+            User user = userService.findUserByUsername(authenticate.getName()).orElseThrow(UserNotFoundException::new);
+
+            return Response.noContent()
+                    .header(
+                            HttpHeaders.AUTHORIZATION,
+                            jwtUtil.generateToken(user)
+                    )
+                    .build();
+
+        } catch (AuthenticationException e) {
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        }
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
-    public Response updateUser(@Context Principal principal, final UserEditDto userEditDto) {
+    public Response updateUser(@Context SecurityContext securityContext, final UserEditDto userEditDto) {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         try {
             userService.updateUser(user, userEditDto.getName(), userEditDto.getUsername(), userEditDto.getDescription(),
@@ -83,9 +123,9 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/avatar")
-    public Response updateAvatar(@Context Principal principal, @Valid final UpdateAvatarDto updateAvatarDto) throws IOException {
+    public Response updateAvatar(@Context SecurityContext securityContext, @Valid final UpdateAvatarDto updateAvatarDto) throws IOException {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateAvatar(user, updateAvatarDto.getAvatar().getBytes());
 
@@ -97,9 +137,9 @@ public class AuthenticatedUserController {
     @Produces("image/*")
     @GET
     @Path("/avatar")
-    public Response getAvatar(@Context Principal principal) {
+    public Response getAvatar(@Context SecurityContext securityContext) {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final byte[] imageData = userService.getAvatar(user).orElseThrow(AvatarNotFoundException::new);
 
@@ -110,12 +150,12 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/posts")
-    public Response getUserPosts(@Context Principal principal,
+    public Response getUserPosts(@Context SecurityContext securityContext,
                                  @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                  @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                  @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final PaginatedCollection<Post> posts = postService.findPostsByUser(user, orderBy, pageNumber, pageSize);
 
@@ -127,12 +167,12 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/comments")
-    public Response getUserComments(@Context Principal principal,
+    public Response getUserComments(@Context SecurityContext securityContext,
                                     @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                     @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                     @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final PaginatedCollection<Comment> comments = commentService.findCommentsByUser(user, orderBy, pageNumber, pageSize);
 
@@ -144,12 +184,12 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/following")
-    public Response getFollowedUsers(@Context Principal principal,
+    public Response getFollowedUsers(@Context SecurityContext securityContext,
                                      @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                      @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                      @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final PaginatedCollection<User> users = userService.getFollowedUsers(user, orderBy, pageNumber, pageSize);
 
@@ -161,9 +201,9 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/following/{userId}")
-    public Response followUser(@PathParam("userId") long userId, @Context Principal principal) throws IllegalUserFollowException {
+    public Response followUser(@PathParam("userId") long userId, @Context SecurityContext securityContext) throws IllegalUserFollowException {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final User followedUser = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
@@ -175,9 +215,9 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/following/{userId}")
-    public Response unfollowUser(@PathParam("userId") long userId, @Context Principal principal) throws IllegalUserUnfollowException {
+    public Response unfollowUser(@PathParam("userId") long userId, @Context SecurityContext securityContext) throws IllegalUserUnfollowException {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final User unfollowedUser = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
@@ -189,12 +229,12 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/bookmarked")
-    public Response getBookmarkedPosts(@Context Principal principal,
+    public Response getBookmarkedPosts(@Context SecurityContext securityContext,
                                        @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                        @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                        @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final PaginatedCollection<Post> posts = postService.getUserBookmarkedPosts(user, orderBy, pageNumber, pageSize);
 
@@ -206,9 +246,9 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/bookmarked/{postId}")
-    public Response bookmarkPost(@PathParam("postId") long postId, @Context Principal principal) throws IllegalPostBookmarkException {
+    public Response bookmarkPost(@PathParam("postId") long postId, @Context SecurityContext securityContext) throws IllegalPostBookmarkException {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final Post bookmarkedPost = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
@@ -220,9 +260,9 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/bookmarked/{postId}")
-    public Response unbookmarkPost(@PathParam("postId") long postId, @Context Principal principal) throws IllegalPostUnbookmarkException {
+    public Response unbookmarkPost(@PathParam("postId") long postId, @Context SecurityContext securityContext) throws IllegalPostUnbookmarkException {
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final Post unbookmarkedPost = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
@@ -232,10 +272,37 @@ public class AuthenticatedUserController {
     }
 
     // TODO: Add email flows
-    //  /user/verification/confirm
-    //  /user/verification/resend
-    //  /user/reset_password/send
-    //  /user/reset_password/confirm
+    //  /user/email_verification [POST] - confirm
+    //  /user/email_verification [PUT] - resend
+    //  /user/reset_password [PUT] - send
+    //  /user/reset_password [POST] - confirm
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/email_confirmation")
+    public Response resendConfirmationEmail(@Context SecurityContext securityContext, @Context HttpServletRequest request) {
+
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+
+        userService.createConfirmationEmail(user, "confirmEmail", request.getLocale());
+
+        return Response.noContent().build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/email_confirmation")
+    public Response confirmRegistration(final TokenDto tokenDto,
+                                        @Context SecurityContext securityContext, @Context HttpServletRequest request) {
+
+        final Optional<User> optUser = userService.confirmRegistration(tokenDto.getToken());
+
+        if(optUser.isPresent() && optUser.get().isEnabled()) {
+
+        }
+
+        return Response.noContent().build();
+    }
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
                                                                   GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
