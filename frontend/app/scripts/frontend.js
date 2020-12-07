@@ -27,11 +27,15 @@ define(['routes',
 				'$filterProvider',
 				'$provide',
 				'$translateProvider',
+				'$locationProvider',
 				'RestangularProvider',
-				function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $translateProvider, RestangularProvider) {
+				function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $translateProvider, $locationProvider, RestangularProvider) {
 
-					RestangularProvider.setBaseUrl('http://localhost/api');
-					  
+					RestangularProvider.setBaseUrl('http://localhost');
+					// RestangularProvider.setBaseUrl('https://significanoverte.free.beeceptor.com');
+					$locationProvider.html5Mode(true);
+
+
 					frontend.controller = $controllerProvider.register;
 					frontend.directive = $compileProvider.directive;
 					frontend.filter = $filterProvider.register;

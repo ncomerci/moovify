@@ -1,10 +1,10 @@
 <!doctype html>
-<html class="no-js">
+<html lang="en" class="no-js" >
 <head>
   <meta charset="utf-8">
   <title>frontend</title>
+  <base href="/">
   <meta name="description" content="">
-
   <!-- build:css(.tmp) styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
   <link rel="stylesheet" href="styles/extraStyle.css">
@@ -17,7 +17,7 @@
   <![endif]-->
   <!-- Add your site or application content here -->
 
-   <nav class="uk-navbar-container" uk-navbar>
+  <nav class="uk-navbar-container" uk-navbar>
     <a class="uk-logo" href="/"><img id="nav-logo" src="images/logo.png" alt="Moovify"></a>
     <div class="uk-navbar-right">
       <ul class="uk-navbar-nav">
@@ -47,7 +47,7 @@
             <a ng-show="!loggedUser.validated" class="uk-padding-remove" href="#" uk-toggle="target: #confirm-email-modal">
               CREATE POST
             </a>
-            <a  ng-show="loggedUser.validated" class="uk-padding-remove" ng-href="/post/create">CREATE POST</a>
+            <a ng-show="loggedUser.validated" class="uk-padding-remove" ng-href="/post/create">CREATE POST</a>
         </li>
         <li ng-show="loggedUser">
           <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" ng-href="/user/profile">
@@ -79,23 +79,10 @@
       </ul>
     </div>
   </nav>
-
-  <div class="container">
-    <div class="header">
-      <ul class="nav nav-pills pull-right">
-        <li class="active"><a ng-href="#">Home</a></li>
-        <li><a ng-href="#/about">About</a></li>
-        <li><a ng-href="#">Contact</a></li>
-      </ul>
-      <h3 class="text-muted">frontend</h3>
-    </div>
-    <div ng-view=""></div>
-
-    <div class="footer">
-      <p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p>
-    </div>
-  </div>
-
+  <a href="/search/posts?query=elPepe">SEARCH</a>
+  <a href="/search/movies?query=elPepe">SEARCH</a>
+  <a href="/search/users?query=elPepe">SEARCH</a>
+  <div ng-view=""></div>
 
   <!-- Confirm email modal -->
   <div ng-show="loggedUser && !loggedUser.validated" id="confirm-email-modal" uk-modal>

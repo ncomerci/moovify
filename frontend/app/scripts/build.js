@@ -14,7 +14,8 @@ require.config({
         requirejs: '../../bower_components/requirejs/require',
         restangular: '../../bower_components/restangular/dist/restangular',
         uikit: '../../bower_components/uikit/dist/js/uikit',
-        uikiticons: '../../bower_components/uikit/dist/js/uikit-icons'
+        uikiticons: '../../bower_components/uikit/dist/js/uikit-icons',
+        'uikit-icons': '../../bower_components/uikit/dist/js/uikit-icons'
     },
     shim: {
         angular: {
