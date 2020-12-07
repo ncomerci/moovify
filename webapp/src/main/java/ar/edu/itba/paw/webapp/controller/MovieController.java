@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.MovieService;
 import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
@@ -34,17 +35,30 @@ public class MovieController {
     @Autowired
     private PostService postService;
 
+    @Autowired
+    private SearchService searchService;
+
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listMovies(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response listMovies(@QueryParam("query") String query,
+                               @QueryParam("movieCategory") String movieCategory,
+                               @QueryParam("decade") String decade,
+                               @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                @QueryParam("pageSize") @DefaultValue("10") int pageSize){
 
-        final PaginatedCollection<Movie> movies = movieService.getAllMovies(orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Movie> movies;
+
+        if(query != null){
+            movies = searchService.searchMovies(query, movieCategory, decade, orderBy, pageNumber, pageSize).orElseThrow(MovieNotFoundException::new);
+        }
+        else {
+            movies = movieService.getAllMovies(orderBy, pageNumber, pageSize);
+        }
 
         final Collection<MovieDto> moviesDto = MovieDto.mapMoviesToDto(movies.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(movies, moviesDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(movies, new GenericEntity<Collection<MovieDto>>(moviesDto) {}, uriInfo, orderBy);
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -109,12 +123,12 @@ public class MovieController {
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
     }
 
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
-                                                                  Collection<Dto> resultsDto, UriInfo uriInfo,
+                                                                  GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
                                                                   String orderBy) {
 
         if(paginatedResults.isEmpty()) {
@@ -126,7 +140,7 @@ public class MovieController {
         }
 
         final Response.ResponseBuilder responseBuilder =
-                Response.ok(new GenericEntity<Collection<Dto>>(resultsDto) {});
+                Response.ok(resultsDto);
 
         setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
 

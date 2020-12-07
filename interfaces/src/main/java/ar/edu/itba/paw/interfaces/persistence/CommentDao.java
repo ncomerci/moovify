@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.interfaces.persistence;
 
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.util.Optional;
 
@@ -14,6 +11,8 @@ public interface CommentDao {
     }
 
     Comment register(Post post, Comment parent, String body, User user, boolean enabled);
+
+    int getVoteValue(Comment comment, User user);
 
     Optional<Comment> findCommentById(long id);
 
@@ -33,4 +32,6 @@ public interface CommentDao {
     PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize);
 }
