@@ -6,7 +6,9 @@ define(['routes',
 	'uikiticons',
 	'angular',
 	'angular-route',
-	'angular-translate'],
+	'angular-translate',
+	'restangular'
+	],
 	function(config, dependencyResolverFor, i18n, UIkit, icons) {
 		
 		// Wire UIkit icons to UIkit handler.
@@ -14,7 +16,8 @@ define(['routes',
 		
 		var frontend = angular.module('frontend', [
 			'ngRoute',
-			'pascalprecht.translate'
+			'pascalprecht.translate',
+			'restangular'
 		]);
 		frontend
 			.config(
@@ -24,8 +27,11 @@ define(['routes',
 				'$filterProvider',
 				'$provide',
 				'$translateProvider',
-				function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $translateProvider) {
+				'RestangularProvider',
+				function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $translateProvider, RestangularProvider) {
 
+					RestangularProvider.setBaseUrl('http://localhost/api');
+					  
 					frontend.controller = $controllerProvider.register;
 					frontend.directive = $compileProvider.directive;
 					frontend.filter = $filterProvider.register;

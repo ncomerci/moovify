@@ -7,9 +7,11 @@
     "angular-translate": "~2.4.2",
     "es5-shim": "~3.1.0",
     "json3": "~3.3.1",
+    "jquery": "~3.5.1",
     "moment": "~2.8.3",
     "requirejs": "~2.1.11",
-    "uikit": "git://github.com/uikit/uikit.git#3.x"
+    "uikit": "git://github.com/uikit/uikit.git#3.x",
+    "restangular": "~1.6.1"
   },
   "devDependencies": {
   }
