@@ -7,7 +7,7 @@ public class BeanValidationErrorDto {
     private String message;
 
     public BeanValidationErrorDto() {
-        //For Jersey - Do not use
+        // For Jersey - Do not use
     }
 
     public BeanValidationErrorDto(String attribute, String value, String message) {
@@ -31,7 +31,6 @@ public class BeanValidationErrorDto {
     public void setValue(String value) {
         this.value = value;
     }
-
 
     public String getMessage() {
         return message;

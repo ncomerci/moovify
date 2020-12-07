@@ -16,7 +16,7 @@ public class DuplicateUniqueUserAttributeErrorDto {
     public DuplicateUniqueUserAttributeErrorDto(DuplicateUniqueUserAttributeException e) {
 
         // TODO: Descablear String
-        message = "The user you tried to create or edit had duplicated unique attributes";
+        message = "The user you tried to create had duplicated unique attributes";
         duplicatedAttributes = e.getDuplicatedUniqueAttributes();
     }
 

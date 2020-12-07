@@ -49,9 +49,9 @@ public interface UserService {
 
     void updateAvatar(User user, byte[] newAvatar);
 
-    void addFavouritePost(User user, Post post);
+    void bookmarkPost(User user, Post post) throws IllegalPostBookmarkException;
 
-    void removeFavouritePost(User user, Post post);
+    void unbookmarkPost(User user, Post post) throws IllegalPostUnbookmarkException;
 
     long getFollowerCount(User user);
 

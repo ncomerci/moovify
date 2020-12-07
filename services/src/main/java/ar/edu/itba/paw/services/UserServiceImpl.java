@@ -313,14 +313,22 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void addFavouritePost(User user, Post post) {
-        user.addFavouritePost(post);
+    public void bookmarkPost(User user, Post post) throws IllegalPostBookmarkException {
+
+        if(!post.isEnabled())
+            throw new IllegalPostBookmarkException();
+
+        user.bookmarkPost(post);
     }
 
     @Transactional
     @Override
-    public void removeFavouritePost(User user, Post post) {
-        user.removeFavouritePost(post);
+    public void unbookmarkPost(User user, Post post) throws IllegalPostUnbookmarkException {
+
+        if(!post.isEnabled())
+            throw new IllegalPostUnbookmarkException();
+
+        user.unbookmarkPost(post);
     }
 
     @Transactional(readOnly = true)
