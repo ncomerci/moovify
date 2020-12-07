@@ -4,10 +4,7 @@ import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.exceptions.*;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +123,11 @@ public class CommentServiceImpl implements CommentService {
         comment.setEnabled(true);
     }
 
+    @Override
+    public int getVoteValue(Comment comment, User user) {
+        return commentDao.getVoteValue(comment, user);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Optional<Comment> findCommentById(long commentId) {
@@ -160,6 +162,11 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public PaginatedCollection<Comment> findCommentsByUser(User user, String sortCriteria, int pageNumber, int pageSize) {
         return commentDao.findCommentsByUser(user, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
+    }
+
+    @Override
+    public PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.getCommentVotes(comment, sortCriteria, pageNumber, pageSize);
     }
 
     @Override

@@ -102,6 +102,20 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
+    public int getVoteValue(Comment comment, User user) {
+        CommentLike commentLike = em.createQuery("SELECT c FROM CommentLike c WHERE c.comment = :comment and c.user = :user", CommentLike.class)
+                .setParameter("comment", comment)
+                .setParameter("user", user)
+                .getResultList().stream().findFirst().orElse(null);
+
+        if (commentLike == null) {
+            return 0;
+        }
+
+        return commentLike.getValue();
+    }
+
+    @Override
     public Optional<Comment> findCommentById(long id) {
 
         LOGGER.info("Find Comment By Id: {}", id);
@@ -172,6 +186,11 @@ public class CommentDaoImpl implements CommentDao {
         return queryComments(
                 "WHERE LOWER(" + COMMENTS + ".body) LIKE '%' || LOWER(?) || '%' AND " + COMMENTS + ".enabled = false",
                 sortCriteria, pageNumber, pageSize, new Object[]{ query });
+    }
+
+    @Override
+    public PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
+        return null;
     }
 
     private String buildNativeFromStatement() {

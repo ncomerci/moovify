@@ -6,7 +6,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
-public class PostCreateForm {
+public class PostCreateDto {
 
     @Size(min = 6, max = 200)
     private String title;

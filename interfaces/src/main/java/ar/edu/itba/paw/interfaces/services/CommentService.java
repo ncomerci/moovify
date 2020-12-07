@@ -5,10 +5,7 @@ import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionExcep
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
 import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
 import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -25,6 +22,8 @@ public interface CommentService {
 
     void restoreComment(Comment comment) throws RestoredEnabledModelException;
 
+    int getVoteValue(Comment comment, User user);
+
     Optional<Comment> findCommentById(long id);
 
     PaginatedCollection<Comment> findCommentChildren(Comment comment, String sortCriteria, int pageNumber, int pageSize);
@@ -36,6 +35,8 @@ public interface CommentService {
     PaginatedCollection<Comment> findCommentsByPost(Post post, String sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> findCommentsByUser(User user, String sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize);
 
     long getMaxCommentTreeDepth();
 

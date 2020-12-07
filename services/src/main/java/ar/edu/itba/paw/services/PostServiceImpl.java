@@ -119,6 +119,11 @@ public class PostServiceImpl implements PostService {
             throw new MissingPostEditPermissionException();
     }
 
+    @Override
+    public int getVoteValue(Post post, User user) {
+        return postDao.getVoteValue(post, user);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Optional<Post> findPostById(long id) {
@@ -159,6 +164,11 @@ public class PostServiceImpl implements PostService {
     @Override
     public PaginatedCollection<Post> getUserBookmarkedPosts(User user, String sortCriteria, int pageNumber, int pageSize) {
         return postDao.getUserFavouritePosts(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
+    }
+
+    @Override
+    public PaginatedCollection<PostLike> getPostLikes(Post post, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.getPostLikes(post, sortCriteria, pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)

@@ -2,7 +2,7 @@ package ar.edu.itba.paw.webapp.dto.input;
 
 import javax.validation.constraints.Size;
 
-public class PostEditForm {
+public class PostEditDto {
 
     @Size(min = 1, max = 100000)
     private String body;

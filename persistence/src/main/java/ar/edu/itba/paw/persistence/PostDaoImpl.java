@@ -103,6 +103,21 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
+    public int getVoteValue(Post post, User user) {
+        PostLike postLike = em.createQuery("SELECT p FROM PostLike p WHERE p.post = :post and p.user = :user", PostLike.class)
+                .setParameter("post", post)
+                .setParameter("user", user)
+                .getResultList().stream().findFirst().orElse(null);
+
+        if(postLike == null) {
+            return 0;
+        }
+
+        return postLike.getValue();
+
+    }
+
+    @Override
     public Optional<Post> findPostById(long id) {
 
         LOGGER.info("Find Post By Id {}", id);
@@ -196,6 +211,15 @@ public class PostDaoImpl implements PostDao {
                         " WHERE " + USER_FAV_POST + ".user_id = ?)" +
                         " AND " + NATIVE_ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
+    }
+
+    @Override
+    public PaginatedCollection<PostLike> getPostLikes(Post post, String sortCriteria, int pageNumber, int pageSize) {
+//        final TypedQuery<PostLike> postLikes = em.createQuery("SELECT p FROM PostLike p WHERE p.id = :id", PostLike.class)
+//                .setParameter("id", post.getId());
+//
+//        return new PaginatedCollection<>();
+        return null;
     }
 
     @Override
