@@ -52,7 +52,7 @@ public class PostController {
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -128,7 +128,7 @@ public class PostController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/{id}/votes/{userId}")
-    public Response getPostLikes(@PathParam("id") long id,
+    public Response getPostVotes(@PathParam("id") long id,
                                  @PathParam("userId") long userId,
                                  @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                  @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
@@ -173,13 +173,11 @@ public class PostController {
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(comments, commentsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, uriInfo, orderBy);
     }
 
-
-
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
-                                                                  Collection<Dto> resultsDto, UriInfo uriInfo,
+                                                                  GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
                                                                   String orderBy) {
 
         if(paginatedResults.isEmpty()) {
@@ -191,7 +189,7 @@ public class PostController {
         }
 
         final Response.ResponseBuilder responseBuilder =
-                Response.ok(new GenericEntity<Collection<Dto>>(resultsDto) {});
+                Response.ok(resultsDto);
 
         setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
 

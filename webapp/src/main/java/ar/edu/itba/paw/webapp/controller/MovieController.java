@@ -44,7 +44,7 @@ public class MovieController {
 
         final Collection<MovieDto> moviesDto = MovieDto.mapMoviesToDto(movies.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(movies, moviesDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(movies, new GenericEntity<Collection<MovieDto>>(moviesDto) {}, uriInfo, orderBy);
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -109,12 +109,12 @@ public class MovieController {
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
     }
 
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
-                                                                  Collection<Dto> resultsDto, UriInfo uriInfo,
+                                                                  GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
                                                                   String orderBy) {
 
         if(paginatedResults.isEmpty()) {
@@ -126,7 +126,7 @@ public class MovieController {
         }
 
         final Response.ResponseBuilder responseBuilder =
-                Response.ok(new GenericEntity<Collection<Dto>>(resultsDto) {});
+                Response.ok(resultsDto);
 
         setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
 

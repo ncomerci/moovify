@@ -121,7 +121,7 @@ public class AuthenticatedUserController {
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -138,7 +138,7 @@ public class AuthenticatedUserController {
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(comments, commentsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, uriInfo, orderBy);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -155,7 +155,7 @@ public class AuthenticatedUserController {
 
         final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(users, usersDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, uriInfo, orderBy);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -200,7 +200,7 @@ public class AuthenticatedUserController {
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -238,7 +238,7 @@ public class AuthenticatedUserController {
     //  /user/reset_password/confirm
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
-                                                                  Collection<Dto> resultsDto, UriInfo uriInfo,
+                                                                  GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
                                                                   String orderBy) {
 
         if(paginatedResults.isEmpty()) {
@@ -250,7 +250,7 @@ public class AuthenticatedUserController {
         }
 
         final Response.ResponseBuilder responseBuilder =
-                Response.ok(new GenericEntity<Collection<Dto>>(resultsDto) {});
+                Response.ok(resultsDto);
 
         setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
 
@@ -283,5 +283,4 @@ public class AuthenticatedUserController {
         if(pageNumber != last)
             response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, next).build(), "next");
     }
-
 }
