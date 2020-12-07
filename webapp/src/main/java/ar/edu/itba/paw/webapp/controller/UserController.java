@@ -107,14 +107,14 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/{id}")
-    public Response deleteUser(@PathParam("id") long id, @Context Principal principal) throws DeletedDisabledModelException {
+    public Response deleteUser(@PathParam("id") long id, @Context SecurityContext securityContext) throws DeletedDisabledModelException {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
         userService.deleteUser(user);
 
         // TODO: Revisar como hacer logout
-        if(user.getUsername().equals(principal.getName()))
+        if(user.getUsername().equals(securityContext.getUserPrincipal().getName()))
             return Response.temporaryRedirect(uriInfo.getBaseUriBuilder().path("/logout").build()).build();
 
         return Response.ok().build();

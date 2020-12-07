@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.security.Principal;
 import java.util.Collection;
 
 @Path("comments")
@@ -68,11 +67,11 @@ public class CommentController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}")
-    public Response editComment(@PathParam("id") long id, @Valid final CommentEditDto commentEditDto, @Context Principal principal) throws MissingCommentEditPermissionException, IllegalCommentEditionException {
+    public Response editComment(@PathParam("id") long id, @Valid final CommentEditDto commentEditDto, @Context SecurityContext securityContext) throws MissingCommentEditPermissionException, IllegalCommentEditionException {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         commentService.editComment(user, comment, commentEditDto.getCommentBody());
 
@@ -116,11 +115,11 @@ public class CommentController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}/votes")
-    public Response voteComment(@PathParam("id") long id, @QueryParam("value") @DefaultValue("0") final int value, @Context Principal principal) throws IllegalCommentLikeException {
+    public Response voteComment(@PathParam("id") long id, @QueryParam("value") @DefaultValue("0") final int value, @Context SecurityContext securityContext) throws IllegalCommentLikeException {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         commentService.likeComment(comment, user, value);
 

@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.security.Principal;
 import java.util.Collection;
 
 @Path("posts")
@@ -72,11 +71,11 @@ public class PostController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response createPost(@Valid final PostCreateDto postCreateDto, @Context Principal principal, @Context HttpServletRequest request){
+    public Response createPost(@Valid final PostCreateDto postCreateDto, @Context SecurityContext securityContext, @Context HttpServletRequest request){
 
         final Post post;
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final PostCategory postCategory = postService.findCategoryById(postCreateDto.getCategory()).orElseThrow(InvalidPostCategoryException::new);
 
@@ -99,11 +98,11 @@ public class PostController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}")
-    public Response editPost(@PathParam("id") long id, @Valid final PostEditDto postEditDto, @Context Principal principal) throws MissingPostEditPermissionException, IllegalPostEditionException {
+    public Response editPost(@PathParam("id") long id, @Valid final PostEditDto postEditDto, @Context SecurityContext securityContext) throws MissingPostEditPermissionException, IllegalPostEditionException {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         postService.editPost(user, post, postEditDto.getBody());
 
@@ -164,11 +163,11 @@ public class PostController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}/votes")
-    public Response votePost(@PathParam("id") long id, @QueryParam("value") @DefaultValue("0") final int value, @Context Principal principal) throws IllegalPostLikeException {
+    public Response votePost(@PathParam("id") long id, @QueryParam("value") @DefaultValue("0") final int value, @Context SecurityContext securityContext) throws IllegalPostLikeException {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         postService.likePost(post, user, value);
 
