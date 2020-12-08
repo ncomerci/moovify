@@ -9,11 +9,12 @@
 
 $button-primary-background:                 $moovify-primary-color-light;
 $button-primary-hover-background:           $moovify-primary-color-dark;
+$button-primary-active-background:          $moovify-primary-color-dark;
 $button-font-size:                          0.875rem;
 $button-padding-horizontal:                 30px;
 $button-default-background:                 transparent;
-$button-default-hover-background:           $button-default-background;
-$button-default-active-background:          $button-default-background;
+$button-default-hover-background:           $moovify-primary-color-dark;
+$button-default-active-background:          $moovify-primary-color-dark;
 $button-default-hover-color:                $moovify-primary-color-dark;
 $button-default-active-background:          $moovify-primary-color-dark;
 // $button-line-height:                             $global-control-height - ($button-border-width * 2) !default;

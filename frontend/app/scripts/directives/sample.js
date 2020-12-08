@@ -1,10 +1,10 @@
 'use strict';
 define(['frontend'], function(frontend) {
 
-	frontend.directive('navbar', function() {
+	frontend.directive('sample', function() {
 		return {
 			restrict: 'E',
-			templateUrl: 'views/navbar.html'
+			templateUrl: 'index.html'
 		};
 	});
 });

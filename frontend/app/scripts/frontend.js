@@ -10,10 +10,10 @@ define(['routes',
 	'restangular'
 	],
 	function(config, dependencyResolverFor, i18n, UIkit, icons) {
-		
+
 		// Wire UIkit icons to UIkit handler.
 		icons(UIkit);
-		
+
 		var frontend = angular.module('frontend', [
 			'ngRoute',
 			'pascalprecht.translate',
@@ -31,7 +31,10 @@ define(['routes',
 				'RestangularProvider',
 				function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $translateProvider, $locationProvider, RestangularProvider) {
 
-					RestangularProvider.setBaseUrl('http://localhost');
+					RestangularProvider.setBaseUrl('http://localhost/api');
+          // RestangularProvider.addResponseInterceptor(function(data, operation, what, url, response, deferred) {
+          //   return response;
+          // });
 					// RestangularProvider.setBaseUrl('https://significanoverte.free.beeceptor.com');
 					$locationProvider.html5Mode(true);
 
