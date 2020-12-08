@@ -13,6 +13,7 @@ import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,42 +45,76 @@ public class DisabledController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/comments")
-    public Response deletedComments(@QueryParam("query") @DefaultValue("") String query,
+    public Response getDeletedComments(@QueryParam("query") @DefaultValue("") String query,
                                     @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                     @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                     @QueryParam("pageSize") @DefaultValue("10") int pageSize){
 
-        final PaginatedCollection<Comment> comments = searchService.searchDeletedComments(query, orderBy, pageNumber, pageSize).orElseThrow(CommentNotFoundException::new);
+        final PaginatedCollection<Comment> comments = searchService.searchDeletedComments(query, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", pageSize)
+                .queryParam("orderBy", orderBy);
 
+        if(!query.equals(""))
+            linkUriBuilder.queryParam("query", query);
+
+        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/users")
-    public Response deletedUsers(@QueryParam("query") @DefaultValue("") String query,
+    public Response getDeletedUsers(@QueryParam("query") @DefaultValue("") String query,
                                     @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                     @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                     @QueryParam("pageSize") @DefaultValue("10") int pageSize){
 
-        final PaginatedCollection<User> users = searchService.searchDeletedUsers(query, orderBy, pageNumber, pageSize).orElseThrow(UserNotFoundException::new);
+        final PaginatedCollection<User> users = searchService.searchDeletedUsers(query, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", pageSize)
+                .queryParam("orderBy", orderBy);
 
+        if(!query.equals(""))
+            linkUriBuilder.queryParam("query", query);
+
+        return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, linkUriBuilder);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/posts")
+    public Response getDeletedPosts(@QueryParam("query") @DefaultValue("") String query,
+                                    @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                                    @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                                    @QueryParam("pageSize") @DefaultValue("10") int pageSize){
+
+        final PaginatedCollection<Post> posts = searchService.searchDeletedPosts(query, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
+
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", pageSize)
+                .queryParam("orderBy", orderBy);
+
+        if(!query.equals(""))
+            linkUriBuilder.queryParam("query", query);
+
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/posts/{id}")
-    public Response deletedPost( @PathParam("id") long id,
-                                 @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
-                                 @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
-                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize){
+    public Response getDeletedPost(@PathParam("id") long id){
 
         final Post post = postService.findDeletedPostById(id).orElseThrow(PostNotFoundException::new);
 
@@ -89,81 +124,62 @@ public class DisabledController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/comments/{id}")
-    public Response deletedComment( @PathParam("id") long id,
-                                    @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
-                                    @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
-                                    @QueryParam("pageSize") @DefaultValue("10") int pageSize){
+    public Response getDeletedComment(@PathParam("id") long id) {
 
         final Comment comment = commentService.findDeletedCommentById(id).orElseThrow(CommentNotFoundException::new);
 
         return Response.ok(new CommentDto(comment, uriInfo)).build();
-
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/users/{id}")
-    public Response deletedUser(@PathParam("id") long id,
-                                 @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
-                                 @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
-                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize){
+    public Response getDeletedUser(@PathParam("id") long id) {
 
         final User user = userService.findDeletedUserById(id).orElseThrow(UserNotFoundException::new);
 
         return Response.ok(new UserDto(user, uriInfo)).build();
-
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/posts/{id}")
-    public Response restorePost( @PathParam("id") long id,
-                                 @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
-                                 @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
-                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize) throws RestoredEnabledModelException {
+    public Response restorePost(@PathParam("id") long id) throws RestoredEnabledModelException {
 
         final Post post = postService.findDeletedPostById(id).orElseThrow(PostNotFoundException::new);
 
         postService.restorePost(post);
 
-        return Response.noContent().build();
+        return Response.noContent().contentLocation(PostDto.getPostUriBuilder(post, uriInfo).build()).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/comments/{id}")
-    public Response restoreComment( @PathParam("id") long id,
-                                    @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
-                                    @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
-                                    @QueryParam("pageSize") @DefaultValue("10") int pageSize) throws RestoredEnabledModelException {
+    public Response restoreComment(@PathParam("id") long id) throws RestoredEnabledModelException {
 
         final Comment comment = commentService.findDeletedCommentById(id).orElseThrow(CommentNotFoundException::new);
 
         commentService.restoreComment(comment);
 
-        return Response.noContent().build();
-
+        return Response.noContent().contentLocation(CommentDto.getCommentUriBuilder(comment, uriInfo).build()).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/users/{id}")
-    public Response restoreUser(@PathParam("id") long id,
-                                @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
-                                @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
-                                @QueryParam("pageSize") @DefaultValue("10") int pageSize) throws RestoredEnabledModelException {
+    public Response restoreUser(@PathParam("id") long id) throws RestoredEnabledModelException {
 
         final User user = userService.findDeletedUserById(id).orElseThrow(UserNotFoundException::new);
 
         userService.restoreUser(user);
 
-        return Response.noContent().build();
-
+        return Response.noContent().contentLocation(UserDto.getUserUriBuilder(user, uriInfo).build()).build();
     }
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
-                                                                  GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
-                                                                  String orderBy) {
+                                                                  GenericEntity<Collection<Dto>> resultsDto,
+                                                                  UriBuilder linkUriBuilder) {
 
         if(paginatedResults.isEmpty()) {
             if(paginatedResults.getPageNumber() == 0)
@@ -176,13 +192,12 @@ public class DisabledController {
         final Response.ResponseBuilder responseBuilder =
                 Response.ok(resultsDto);
 
-        setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
+        setPaginationLinks(responseBuilder, paginatedResults, linkUriBuilder);
 
         return responseBuilder.build();
     }
 
-    private <T> void setPaginationLinks(Response.ResponseBuilder response, UriInfo uriInfo,
-                                        PaginatedCollection<T> results, String orderBy) {
+    private <T> void setPaginationLinks(Response.ResponseBuilder response, PaginatedCollection<T> results, UriBuilder baseUri) {
 
         final int pageNumber = results.getPageNumber();
         final String pageNumberParamName = "pageNumber";
@@ -192,20 +207,15 @@ public class DisabledController {
         final int prev = pageNumber - 1;
         final int next = pageNumber + 1;
 
-        final UriBuilder linkUriBuilder = uriInfo
-                .getAbsolutePathBuilder()
-                .queryParam("pageSize", results.getPageSize())
-                .queryParam("orderBy", orderBy);
+        response.link(baseUri.clone().queryParam(pageNumberParamName, first).build(), "first");
 
-        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, first).build(), "first");
-
-        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, last).build(), "last");
+        response.link(baseUri.clone().queryParam(pageNumberParamName, last).build(), "last");
 
         if(pageNumber != first)
-            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, prev).build(), "prev");
+            response.link(baseUri.clone().queryParam(pageNumberParamName, prev).build(), "prev");
 
         if(pageNumber != last)
-            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, next).build(), "next");
+            response.link(baseUri.clone().queryParam(pageNumberParamName, next).build(), "next");
     }
 
 }

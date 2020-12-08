@@ -18,6 +18,7 @@ import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class UserController {
         final PaginatedCollection<User> users;
 
         if(query != null)
-            users = searchService.searchUsers(query, role, orderBy, pageNumber, pageSize).orElseThrow(UserNotFoundException::new);
+            users = searchService.searchUsers(query, role, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         else
             users = userService.getAllUsers(orderBy, pageNumber, pageSize);
@@ -70,7 +71,7 @@ public class UserController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", users.getPageSize())
+                .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
         if(query != null) {
@@ -169,7 +170,7 @@ public class UserController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", posts.getPageSize())
+                .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
         return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
@@ -191,7 +192,7 @@ public class UserController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", comments.getPageSize())
+                .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
         return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
@@ -250,7 +251,7 @@ public class UserController {
 
         final UriBuilder linkUriBuilder = uriInfo
         .getAbsolutePathBuilder()
-        .queryParam("pageSize", posts.getPageSize())
+        .queryParam("pageSize", pageSize)
         .queryParam("orderBy", orderBy);
 
         return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);

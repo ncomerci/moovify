@@ -11,6 +11,7 @@ import ar.edu.itba.paw.webapp.dto.input.UpdateMoviePosterDto;
 import ar.edu.itba.paw.webapp.dto.output.MovieDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
+import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.MoviePosterNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class MovieController {
         final PaginatedCollection<Movie> movies;
 
         if(query != null)
-            movies = searchService.searchMovies(query, movieCategory, decade, orderBy, pageNumber, pageSize).orElseThrow(MovieNotFoundException::new);
+            movies = searchService.searchMovies(query, movieCategory, decade, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         else
             movies = movieService.getAllMovies(orderBy, pageNumber, pageSize);
@@ -61,7 +62,7 @@ public class MovieController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", movies.getPageSize())
+                .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
         if(query != null) {
@@ -157,7 +158,7 @@ public class MovieController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", posts.getPageSize())
+                .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
         return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
