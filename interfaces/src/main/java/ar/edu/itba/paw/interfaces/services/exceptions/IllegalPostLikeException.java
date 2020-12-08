@@ -1,4 +1,11 @@
 package ar.edu.itba.paw.interfaces.services.exceptions;
 
-public class IllegalPostLikeException extends Exception {
+import ar.edu.itba.paw.interfaces.exceptions.CustomException;
+
+public class IllegalPostLikeException extends CustomException {
+
+    public IllegalPostLikeException() {
+        super("Illegal post like");
+        responseStatus = 400;
+    }
 }

@@ -1,4 +1,11 @@
 package ar.edu.itba.paw.interfaces.services.exceptions;
 
-public class DeletedDisabledModelException extends Exception {
+import ar.edu.itba.paw.interfaces.exceptions.CustomException;
+
+public class DeletedDisabledModelException extends CustomException {
+
+    public DeletedDisabledModelException() {
+        super("Deleted disabled model");
+        responseStatus = 400;
+    }
 }

@@ -1,8 +1,10 @@
 package ar.edu.itba.paw.interfaces.persistence.exceptions;
 
+import ar.edu.itba.paw.interfaces.exceptions.CustomException;
+
 import java.util.EnumSet;
 
-public class DuplicateUniqueUserAttributeException extends Exception {
+public class DuplicateUniqueUserAttributeException extends CustomException {
 
     public enum UniqueAttributes {
         USERNAME,
@@ -14,6 +16,7 @@ public class DuplicateUniqueUserAttributeException extends Exception {
     public DuplicateUniqueUserAttributeException(EnumSet<UniqueAttributes> attributes) {
         super();
         this.attributes = attributes;
+        responseStatus = 400;
     }
 
     public EnumSet<UniqueAttributes> getDuplicatedUniqueAttributes() {

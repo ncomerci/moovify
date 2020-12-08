@@ -31,4 +31,5 @@ public class SearchOptionDto {
     public void setOptions(Collection<String> options) {
         this.options = options;
     }
+
 }
