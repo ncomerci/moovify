@@ -14,8 +14,8 @@ import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
 import ar.edu.itba.paw.webapp.dto.generic.GenericBooleanResponseDto;
 import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
-import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
+import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
@@ -108,9 +108,10 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/options")
-    public Response getUserOptions(){
+    public Response getUserSearchOptions(){
 
         Collection<SearchOptionDto> options = new ArrayList<>();
+
         options.add(new SearchOptionDto("roles", searchService.getUserRoleOptions(), null));
         options.add(new SearchOptionDto("sortCriteria", userService.getUserSortOptions(), "newest"));
 

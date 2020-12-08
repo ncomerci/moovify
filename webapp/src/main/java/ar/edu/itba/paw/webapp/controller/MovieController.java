@@ -96,6 +96,7 @@ public class MovieController {
     public Response getMovieSearchOptions(){
 
         Collection<SearchOptionDto> options = new ArrayList<>();
+
         options.add(new SearchOptionDto("movieCategory", searchService.getMoviesCategories(), null));
         options.add(new SearchOptionDto("decades", searchService.getMoviesDecades(), null));
         options.add(new SearchOptionDto("sortCriteria", movieService.getMovieSortOptions(), "newest"));
