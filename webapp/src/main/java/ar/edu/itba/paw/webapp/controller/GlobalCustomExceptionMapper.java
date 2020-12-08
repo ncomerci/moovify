@@ -1,4 +1,6 @@
 package ar.edu.itba.paw.webapp.controller;
+
+import ar.edu.itba.paw.interfaces.exceptions.CustomException;
 import ar.edu.itba.paw.webapp.dto.error.GenericErrorDto;
 import org.springframework.stereotype.Component;
 
@@ -10,11 +12,11 @@ import javax.ws.rs.ext.Provider;
 @Singleton
 @Component
 @Provider
-public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
+public class GlobalCustomExceptionMapper implements ExceptionMapper<CustomException> {
 
 
     @Override
-    public Response toResponse(Exception exception) {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new GenericErrorDto(exception.getMessage())).build();
+    public Response toResponse(CustomException exception) {
+        return Response.status(exception.getResponseStatus()).entity(new GenericErrorDto(exception.getMessage())).build();
     }
 }

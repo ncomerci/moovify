@@ -274,15 +274,15 @@ public class CommentDaoImpl implements CommentDao {
     @Override
     public PaginatedCollection<CommentVote> getCommentVotes(Comment comment, int pageNumber, int pageSize) {
 
-        final String nativeSelect = "SELECT " + COMMENTS_LIKES + ".comment_likes_id";
+        final String nativeSelect = "SELECT " + COMMENTS_LIKES + ".comments_likes_id";
 
-        final String nativeCountSelect = "SELECT COUNT(DISTINCT " + COMMENTS_LIKES + ".comment_likes_id)";
+        final String nativeCountSelect = "SELECT COUNT(DISTINCT " + COMMENTS_LIKES + ".comments_likes_id)";
 
         final String nativeFrom = "FROM " + COMMENTS_LIKES;
 
         final String nativeWhere = "WHERE " + COMMENTS_LIKES + ".comment_id = :comment_id";
 
-        final String nativeOrderBy = "ORDER BY " + COMMENTS_LIKES + ".comment_likes_id";
+        final String nativeOrderBy = "ORDER BY " + COMMENTS_LIKES + ".comments_likes_id";
 
         final String nativePagination = buildNativePaginationStatement(pageNumber, pageSize);
 

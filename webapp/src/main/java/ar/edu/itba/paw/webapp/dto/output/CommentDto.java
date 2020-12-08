@@ -52,7 +52,12 @@ public class CommentDto {
 
         final UriBuilder commentUriBuilder = getCommentUriBuilder(comment, uriInfo);
 
-        parent = getCommentUriBuilder(comment.getParent(), uriInfo).build().toString();
+        if(comment.getParent() != null) {
+            parent = getCommentUriBuilder(comment.getParent(), uriInfo).build().toString();
+        }
+        else {
+            parent = null;
+        }
         children = commentUriBuilder.clone().path("/children").build().toString();
         votes = commentUriBuilder.clone().path("/votes").build().toString();
 

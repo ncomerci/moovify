@@ -12,7 +12,7 @@ import javax.ws.rs.ext.Provider;
 @Singleton
 @Component
 @Provider
-public class GlobalRuntimeExceptionMapper implements ExceptionMapper<CustomRuntimeException> {
+public class GlobalCustomRuntimeExceptionMapper implements ExceptionMapper<CustomRuntimeException> {
 
     @Override
     public Response toResponse(CustomRuntimeException exception) {
