@@ -78,15 +78,25 @@ public class MovieServiceImpl implements MovieService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<byte[]> getPoster(long posterId) {
+    public Optional<byte[]> getPoster(Movie movie) {
 
-        LOGGER.info("Accessing Movie Poster {}. (Default {})", posterId, posterId == Movie.DEFAULT_POSTER_ID);
+        final long movieId = movie.getPosterId();
 
-        if(posterId == Movie.DEFAULT_POSTER_ID)
-            return Optional.of(imageService.findImageByPath(DEFAULT_POSTER_PATH));
+        LOGGER.info("Accessing Movie Poster {}. (Default {})", movieId, movieId == Movie.DEFAULT_POSTER_ID);
+
+        final Optional<byte[]> poster;
+
+        if(movieId == Movie.DEFAULT_POSTER_ID) {
+            poster = imageService.findImageByPath(DEFAULT_POSTER_PATH);
+
+            if(!poster.isPresent())
+                throw new RuntimeException("Failed loading default movie poster");
+        }
 
         else
-            return imageService.findImageById(posterId);
+            poster = imageService.findImageById(movieId);
+
+        return poster;
     }
 
     @Transactional(readOnly = true)

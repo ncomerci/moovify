@@ -14,10 +14,11 @@ import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
 import ar.edu.itba.paw.webapp.dto.generic.GenericBooleanResponseDto;
 import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
-import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
+import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class UserController {
         final PaginatedCollection<User> users;
 
         if(query != null)
-            users = searchService.searchUsers(query, role, orderBy, pageNumber, pageSize).orElseThrow(UserNotFoundException::new);
+            users = searchService.searchUsers(query, role, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         else
             users = userService.getAllUsers(orderBy, pageNumber, pageSize);
@@ -70,7 +71,7 @@ public class UserController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", users.getPageSize())
+                .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
         if(query != null) {
@@ -108,11 +109,12 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/options")
-    public Response getUserOptions(){
+    public Response getUserSearchOptions(){
 
         Collection<SearchOptionDto> options = new ArrayList<>();
-        options.add(new SearchOptionDto("roles", searchService.getUserRoleOptions()));
-        options.add(new SearchOptionDto("sortCriteria", userService.getUserSortOptions()));
+
+        options.add(new SearchOptionDto("role", searchService.getUserRoleOptions()));
+        options.add(new SearchOptionDto("orderBy", userService.getUserSortOptions()));
 
         return Response.ok(new GenericEntity<Collection<SearchOptionDto>>(options) {}).build();
     }
@@ -168,7 +170,7 @@ public class UserController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", posts.getPageSize())
+                .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
         return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
@@ -190,7 +192,7 @@ public class UserController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", comments.getPageSize())
+                .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
         return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
@@ -249,7 +251,7 @@ public class UserController {
 
         final UriBuilder linkUriBuilder = uriInfo
         .getAbsolutePathBuilder()
-        .queryParam("pageSize", posts.getPageSize())
+        .queryParam("pageSize", pageSize)
         .queryParam("orderBy", orderBy);
 
         return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);

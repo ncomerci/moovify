@@ -10,5 +10,5 @@ public interface ImageService {
 
     Optional<byte[]> findImageById(long imageId);
 
-    byte[] findImageByPath(String imagePath);
+    Optional<byte[]> findImageByPath(String imagePath);
 }

@@ -142,11 +142,19 @@ public class UserServiceImpl implements UserService {
 
         LOGGER.info("Accessing avatar {}. (Default {})", avatarId, avatarId == User.DEFAULT_AVATAR_ID);
 
-        if(avatarId == User.DEFAULT_AVATAR_ID)
-            return Optional.of(imageService.findImageByPath(DEFAULT_AVATAR_PATH));
+        final Optional<byte[]> avatar;
+
+        if(avatarId == User.DEFAULT_AVATAR_ID) {
+            avatar = imageService.findImageByPath(DEFAULT_AVATAR_PATH);
+
+            if(!avatar.isPresent())
+                throw new RuntimeException("Failed loading user avatar");
+        }
 
         else
-            return imageService.findImageById(avatarId);
+            avatar = imageService.findImageById(avatarId);
+
+        return avatar;
     }
 
     @Transactional

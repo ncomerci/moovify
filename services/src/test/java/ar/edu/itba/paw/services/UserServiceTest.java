@@ -22,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
+import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 
@@ -283,7 +284,7 @@ public class UserServiceTest {
     @Test
     public void testGetDefaultAvatar() {
 
-        Mockito.when(imageService.findImageByPath(Mockito.anyString())).thenReturn(new byte[10]);
+        Mockito.when(imageService.findImageByPath(Mockito.anyString())).thenReturn(Optional.of(new byte[10]));
 
         User user = Mockito.mock(User.class);
 

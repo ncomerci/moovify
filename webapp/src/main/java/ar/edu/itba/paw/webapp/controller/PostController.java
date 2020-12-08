@@ -12,12 +12,9 @@ import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.dto.generic.GenericIntegerValueDto;
 import ar.edu.itba.paw.webapp.dto.input.PostCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.PostEditDto;
-import ar.edu.itba.paw.webapp.dto.output.CommentDto;
-import ar.edu.itba.paw.webapp.dto.output.PostCategoryDto;
-import ar.edu.itba.paw.webapp.dto.output.PostDto;
-import ar.edu.itba.paw.webapp.dto.output.PostVoteDto;
-import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
+import ar.edu.itba.paw.webapp.dto.output.*;
 import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
+import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +57,7 @@ public class PostController {
         final PaginatedCollection<Post> posts;
 
         if(query != null)
-            posts = searchService.searchPosts(query, postCategory, postAge, orderBy, pageNumber, pageSize).orElseThrow(PostNotFoundException::new);
+            posts = searchService.searchPosts(query, postCategory, postAge, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         else
             posts = postService.getAllPosts(orderBy, pageNumber, pageSize);
@@ -69,7 +66,7 @@ public class PostController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", posts.getPageSize())
+                .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
         if(query != null) {
@@ -106,9 +103,10 @@ public class PostController {
     public Response getUserOptions(){
 
         Collection<SearchOptionDto> options = new ArrayList<>();
+
         options.add(new SearchOptionDto("postCategory", searchService.getPostCategories()));
         options.add(new SearchOptionDto("postAge", searchService.getPostPeriodOptions()));
-        options.add(new SearchOptionDto("sortCriteria", postService.getPostSortOptions()));
+        options.add(new SearchOptionDto("orderBy", postService.getPostSortOptions()));
 
         return Response.ok(new GenericEntity<Collection<SearchOptionDto>>(options) {}).build();
     }
@@ -167,7 +165,7 @@ public class PostController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", postVotes.getPageSize());
+                .queryParam("pageSize", pageSize);
 
         return buildGenericPaginationResponse(postVotes, new GenericEntity<Collection<PostVoteDto>>(postVotesDto) {}, linkUriBuilder);
     }
@@ -218,7 +216,7 @@ public class PostController {
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", comments.getPageSize())
+                .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
         return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
