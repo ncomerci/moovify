@@ -18,7 +18,7 @@ public interface MovieService {
 
     void updatePoster(Movie movie, byte[] newPoster);
 
-    Optional<byte[]> getPoster(long posterId);
+    Optional<byte[]> getPoster(Movie movie);
 
     PaginatedCollection<Movie> getAllMovies(String sortCriteria, int pageNumber, int pageSize);
 
