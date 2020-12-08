@@ -22,7 +22,7 @@ public interface PostService {
 
     void guaranteePostEditionPermissions(User editor, Post post) throws IllegalPostEditionException, MissingPostEditPermissionException;
 
-    int getLikeValue(Post post, User user);
+    int getVoteValue(Post post, User user);
 
     Optional<Post> findPostById(long id);
 

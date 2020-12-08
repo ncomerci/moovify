@@ -4,7 +4,7 @@ import ar.edu.itba.paw.webapp.dto.input.validation.annotations.SpacesNormalizati
 
 import javax.validation.constraints.Size;
 
-public class CommentEditForm {
+public class CommentEditDto {
 
     @Size( min = 1, max = 400)
     @SpacesNormalization

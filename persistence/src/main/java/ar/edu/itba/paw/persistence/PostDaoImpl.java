@@ -103,13 +103,13 @@ public class PostDaoImpl implements PostDao {
     }
 
     @Override
-    public int getLikeValue(Post post, User user) {
+    public int getVoteValue(Post post, User user) {
         PostLike postLike = em.createQuery("SELECT p FROM PostLike p WHERE p.post = :post and p.user = :user", PostLike.class)
                 .setParameter("post", post)
                 .setParameter("user", user)
                 .getResultList().stream().findFirst().orElse(null);
 
-        if(postLike == null){
+        if(postLike == null) {
             return 0;
         }
 

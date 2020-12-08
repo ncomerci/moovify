@@ -3,9 +3,7 @@ package ar.edu.itba.paw.webapp.dto.input;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
-
-
-public class ResetPasswordForm {
+public class PasswordResetEmailDto {
 
     @Email
     @NotEmpty

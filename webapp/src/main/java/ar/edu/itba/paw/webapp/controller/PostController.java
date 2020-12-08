@@ -2,6 +2,7 @@ package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostEditionException;
@@ -23,7 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.security.Principal;
 import java.util.Collection;
 
 @Path("posts")
@@ -42,27 +42,40 @@ public class PostController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private SearchService searchService;
+
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listPosts(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response listPosts(@QueryParam("query") String query,
+                              @QueryParam("postCategory") String postCategory,
+                              @QueryParam("postAge") String postAge,
+                              @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                               @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                               @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final PaginatedCollection<Post> posts = postService.getAllPosts(orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Post> posts;
+
+        if(query != null) {
+            posts = searchService.searchPosts(query, postCategory, postAge, orderBy, pageNumber, pageSize).orElseThrow(PostNotFoundException::new);
+        }
+        else {
+            posts = postService.getAllPosts(orderBy, pageNumber, pageSize);
+        }
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response createPost(@Valid final PostCreateDto postCreateDto, @Context Principal principal, @Context HttpServletRequest request){
+    public Response createPost(@Valid final PostCreateDto postCreateDto, @Context SecurityContext securityContext, @Context HttpServletRequest request){
 
         final Post post;
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final PostCategory postCategory = postService.findCategoryById(postCreateDto.getCategory()).orElseThrow(InvalidPostCategoryException::new);
 
@@ -85,11 +98,11 @@ public class PostController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}")
-    public Response editPost(@PathParam("id") long id, @Valid final PostEditDto postEditDto, @Context Principal principal) throws MissingPostEditPermissionException, IllegalPostEditionException {
+    public Response editPost(@PathParam("id") long id, @Valid final PostEditDto postEditDto, @Context SecurityContext securityContext) throws MissingPostEditPermissionException, IllegalPostEditionException {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         postService.editPost(user, post, postEditDto.getBody());
 
@@ -123,23 +136,25 @@ public class PostController {
 //
 //        final PaginatedCollection<PostLike> postLikes = postService.getPostLikes(post, orderBy, pageNumber, pageSize);
 //
+//        final Collection<PostLikeDto> postLikesDto = PostLikeDto.mapPostsLikeToDto(postLikes.getResults(), uriInfo);
+//
+//        return buildGenericPaginationResponse(postLikes, new GenericEntity<Collection<PostLikeDto>>(postLikesDto) {}, uriInfo, orderBy);
 //    }
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/{id}/votes/{userId}")
-    public Response getPostLikes(@PathParam("id") long id,
+    public Response getPostVotes(@PathParam("id") long id,
                                  @PathParam("userId") long userId,
                                  @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                  @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
-                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize,
-                                 @Context UriInfo uriInfo) {
+                                 @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
-        int value = postService.getLikeValue(post, user);
+        int value = postService.getVoteValue(post, user);
 
         return Response.ok(new PostLikeDto(new PostLike(user, post, value), uriInfo)).build();
     }
@@ -148,11 +163,11 @@ public class PostController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}/votes")
-    public Response votePost(@PathParam("id") long id, @QueryParam("value") @DefaultValue("0") final int value, @Context Principal principal) throws IllegalPostLikeException {
+    public Response votePost(@PathParam("id") long id, @QueryParam("value") @DefaultValue("0") final int value, @Context SecurityContext securityContext) throws IllegalPostLikeException {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
-        final User user = userService.findUserByUsername(principal.getName()).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         postService.likePost(post, user, value);
 
@@ -173,13 +188,11 @@ public class PostController {
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(comments, commentsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, uriInfo, orderBy);
     }
 
-
-
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
-                                                                  Collection<Dto> resultsDto, UriInfo uriInfo,
+                                                                  GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
                                                                   String orderBy) {
 
         if(paginatedResults.isEmpty()) {
@@ -191,7 +204,7 @@ public class PostController {
         }
 
         final Response.ResponseBuilder responseBuilder =
-                Response.ok(new GenericEntity<Collection<Dto>>(resultsDto) {});
+                Response.ok(resultsDto);
 
         setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
 

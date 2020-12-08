@@ -120,8 +120,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public int getLikeValue(Post post, User user) {
-        return postDao.getLikeValue(post, user);
+    public int getVoteValue(Post post, User user) {
+        return postDao.getVoteValue(post, user);
     }
 
     @Transactional(readOnly = true)

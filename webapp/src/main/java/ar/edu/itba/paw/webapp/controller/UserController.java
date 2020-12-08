@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
 import ar.edu.itba.paw.models.Comment;
@@ -10,6 +11,7 @@ import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
+import ar.edu.itba.paw.webapp.dto.input.SearchUsersDto;
 import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
@@ -42,17 +44,31 @@ public class UserController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private SearchService searchService;
+
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listUsers(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response listUsers(@QueryParam("query") String query,
+                              @QueryParam("role") String role,
+                              @QueryParam("orderBy") @DefaultValue("username") String orderBy,
                               @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                               @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final PaginatedCollection<User> users = userService.getAllUsers(orderBy, pageNumber, pageSize);
+        final PaginatedCollection<User> users;
+
+        if(query != null) {
+            users = searchService.searchUsers(query, role, orderBy, pageNumber, pageSize).orElseThrow(UserNotFoundException::new);
+        }
+        else {
+            users = userService.getAllUsers(orderBy, pageNumber, pageSize);
+        }
+
 
         final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(users, usersDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, uriInfo, orderBy);
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -91,14 +107,14 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/{id}")
-    public Response deleteUser(@PathParam("id") long id, @Context Principal principal) throws DeletedDisabledModelException {
+    public Response deleteUser(@PathParam("id") long id, @Context SecurityContext securityContext) throws DeletedDisabledModelException {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
         userService.deleteUser(user);
 
         // TODO: Revisar como hacer logout
-        if(user.getUsername().equals(principal.getName()))
+        if(user.getUsername().equals(securityContext.getUserPrincipal().getName()))
             return Response.temporaryRedirect(uriInfo.getBaseUriBuilder().path("/logout").build()).build();
 
         return Response.ok().build();
@@ -131,7 +147,7 @@ public class UserController {
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -148,7 +164,7 @@ public class UserController {
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(comments, commentsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, uriInfo, orderBy);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -165,7 +181,7 @@ public class UserController {
 
         final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(users, usersDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, uriInfo, orderBy);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -182,11 +198,11 @@ public class UserController {
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(posts, postsDto, uriInfo, orderBy);
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
     }
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
-                                                                  Collection<Dto> resultsDto, UriInfo uriInfo,
+                                                                  GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
                                                                   String orderBy) {
 
         if(paginatedResults.isEmpty()) {
@@ -198,7 +214,7 @@ public class UserController {
         }
 
         final Response.ResponseBuilder responseBuilder =
-                Response.ok(new GenericEntity<Collection<Dto>>(resultsDto) {});
+                Response.ok(resultsDto);
 
         setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
 
