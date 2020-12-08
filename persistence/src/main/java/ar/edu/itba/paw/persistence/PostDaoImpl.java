@@ -118,7 +118,7 @@ public class PostDaoImpl implements PostDao {
 
     private Optional<Post> findPostByIdAndEnabled(long id, boolean enabled) {
 
-        TypedQuery<Post> query = em.createQuery("SELECT p FROM Post p WHERE p.id = :postId AND p.enabled = :enabled", Post.class)
+        final TypedQuery<Post> query = em.createQuery("SELECT p FROM Post p WHERE p.id = :postId AND p.enabled = :enabled", Post.class)
                 .setParameter("postId", id)
                 .setParameter("enabled", enabled);
 

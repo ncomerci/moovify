@@ -150,7 +150,7 @@ public class Comment {
         this.totalVotes = totalVotes;
     }
 
-    public int getLikeValue(User user) {
+    public int getVoteValue(User user) {
         return getVotes().stream()
                 .filter(commentLike -> commentLike.getUser().getId() == user.getId())
                 .map(CommentVote::getValue)

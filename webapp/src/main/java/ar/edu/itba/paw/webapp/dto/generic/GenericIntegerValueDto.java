@@ -8,15 +8,15 @@ public class GenericIntegerValueDto {
         // For Jersey - Do not use
     }
 
-    public GenericIntegerValueDto(int response) {
-        this.value = response;
+    public GenericIntegerValueDto(int value) {
+        this.value = value;
     }
 
-    public int getResponse() {
+    public int getValue() {
         return value;
     }
 
-    public void setResponse(int response) {
-        this.value = response;
+    public void setValue(int value) {
+        this.value = value;
     }
 }

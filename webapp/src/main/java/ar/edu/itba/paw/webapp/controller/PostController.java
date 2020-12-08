@@ -195,7 +195,7 @@ public class PostController {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        postService.likePost(post, user, valueDto.getResponse());
+        postService.likePost(post, user, valueDto.getValue());
 
         return Response.noContent().build();
     }

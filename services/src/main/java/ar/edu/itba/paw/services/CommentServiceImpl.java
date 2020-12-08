@@ -19,9 +19,6 @@ public class CommentServiceImpl implements CommentService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentServiceImpl.class);
 
-    // Max Depth The Comment Tree Has At Render Time
-    private static final Long MAX_COMMENT_TREE_DEPTH = 3L;
-
     @Autowired
     private CommentDao commentDao;
 
@@ -90,7 +87,7 @@ public class CommentServiceImpl implements CommentService {
         if(!comment.isEnabled())
             throw new IllegalCommentLikeException();
 
-        if(comment.getLikeValue(user) == value)
+        if(comment.getVoteValue(user) == value)
             return;
 
         if(value == 0) {
@@ -125,7 +122,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public int getVoteValue(Comment comment, User user) {
-        return commentDao.getVoteValue(comment, user);
+        return comment.getVoteValue(user);
     }
 
     @Transactional(readOnly = true)
@@ -141,20 +138,14 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional(readOnly = true)
     @Override
+    public PaginatedCollection<Comment> getAllComments(String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.getAllPosts(getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public PaginatedCollection<Comment> findCommentChildren(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
         return commentDao.findCommentChildren(comment, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public PaginatedCollection<Comment> findCommentDescendants(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
-        return commentDao.findCommentDescendants(comment, MAX_COMMENT_TREE_DEPTH, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public PaginatedCollection<Comment> findPostCommentDescendants(Post post, String sortCriteria, int pageNumber, int pageSize) {
-        return commentDao.findPostCommentDescendants(post, MAX_COMMENT_TREE_DEPTH, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
@@ -170,13 +161,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public PaginatedCollection<CommentVote> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
-        return commentDao.getCommentVotes(comment, sortCriteria, pageNumber, pageSize);
-    }
-
-    @Override
-    public long getMaxCommentTreeDepth() {
-        return MAX_COMMENT_TREE_DEPTH;
+    public PaginatedCollection<CommentVote> getCommentVotes(Comment comment, int pageNumber, int pageSize) {
+        return commentDao.getCommentVotes(comment, pageNumber, pageSize);
     }
 
     @Override

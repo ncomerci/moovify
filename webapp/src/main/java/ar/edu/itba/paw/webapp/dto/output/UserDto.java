@@ -44,6 +44,7 @@ public class UserDto {
     }
 
     public UserDto(User user, UriInfo uriInfo) {
+
         id = user.getId();
         creationDate = user.getCreationDate();
         username = user.getUsername();

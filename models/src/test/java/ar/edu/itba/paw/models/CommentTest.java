@@ -108,7 +108,7 @@ public class CommentTest {
                 DEFAULT_BODY, DEFAULT_EDITED, DEFAULT_LAST_EDITED, DEFAULT_USER, DEFAULT_ENABLED, likes);
 
         // Exercise
-        int value = comment.getLikeValue(realUser);
+        int value = comment.getVoteValue(realUser);
 
         Assert.assertEquals(likeValue, value);
     }
