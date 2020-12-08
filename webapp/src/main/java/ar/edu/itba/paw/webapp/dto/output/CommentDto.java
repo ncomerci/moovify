@@ -25,9 +25,9 @@ public class CommentDto {
     private PostDto post;
     private String body;
     private UserDto user;
-    private boolean edited;
+    private Boolean edited;
     private LocalDateTime lastEditTime;
-    private long totalVotes;
+    private Long totalVotes;
     private boolean enabled;
 
     private String parent;
@@ -119,11 +119,11 @@ public class CommentDto {
         this.user = user;
     }
 
-    public boolean isEdited() {
+    public Boolean isEdited() {
         return edited;
     }
 
-    public void setEdited(boolean edited) {
+    public void setEdited(Boolean edited) {
         this.edited = edited;
     }
 

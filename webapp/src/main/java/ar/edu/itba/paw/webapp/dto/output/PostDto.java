@@ -24,15 +24,15 @@ public class PostDto {
     private LocalDateTime creationDate;
     private String title;
     private String body;
-    private int wordCount;
-    private boolean edited;
+    private Integer wordCount;
+    private Boolean edited;
     private LocalDateTime lastEditDate;
     private UserDto user;
     private PostCategoryDto postCategory;
     private Collection<String> tags;
     private Collection<MovieDto> movies;
     private boolean enabled;
-    private long totalLikes;
+    private Long totalLikes;
 
     // Relations
     private String comments;
@@ -103,19 +103,19 @@ public class PostDto {
         this.body = body;
     }
 
-    public int getWordCount() {
+    public Integer getWordCount() {
         return wordCount;
     }
 
-    public void setWordCount(int wordCount) {
+    public void setWordCount(Integer wordCount) {
         this.wordCount = wordCount;
     }
 
-    public boolean isEdited() {
+    public Boolean isEdited() {
         return edited;
     }
 
-    public void setEdited(boolean edited) {
+    public void setEdited(Boolean edited) {
         this.edited = edited;
     }
 

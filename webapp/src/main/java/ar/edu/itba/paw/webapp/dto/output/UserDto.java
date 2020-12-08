@@ -27,7 +27,7 @@ public class UserDto {
     private String email;
     private String description;
     private String language;
-    private long totalLikes;
+    private Long totalLikes;
     private boolean enabled;
     private Collection<Role> roles;
 
@@ -127,11 +127,11 @@ public class UserDto {
         this.language = language;
     }
 
-    public long getTotalLikes() {
+    public Long getTotalLikes() {
         return totalLikes;
     }
 
-    public void setTotalLikes(long totalLikes) {
+    public void setTotalLikes(Long totalLikes) {
         this.totalLikes = totalLikes;
     }
 
