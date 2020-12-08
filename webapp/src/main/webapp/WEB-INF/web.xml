@@ -32,6 +32,12 @@
       <param-value>ar.edu.itba.paw.webapp.controller</param-value>
     </init-param>
 
+<!--  Don't send any HTML on error  -->
+    <init-param>
+      <param-name>jersey.config.server.response.setStatusOverSendError</param-name>
+      <param-value>true</param-value>
+    </init-param>
+
     <!-- This exception is handle by the applications like every other exception -->
     <init-param>
       <param-name>throwExceptionIfNoHandlerFound</param-name>
