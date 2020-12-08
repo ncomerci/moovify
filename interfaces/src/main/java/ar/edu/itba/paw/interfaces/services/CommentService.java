@@ -26,6 +26,8 @@ public interface CommentService {
 
     Optional<Comment> findCommentById(long id);
 
+    Optional<Comment> findDeletedCommentById(long id);
+
     PaginatedCollection<Comment> findCommentChildren(Comment comment, String sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> findCommentDescendants(Comment comment, String sortCriteria, int pageNumber, int pageSize);

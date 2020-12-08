@@ -47,7 +47,6 @@ public class UserController {
     @Autowired
     private SearchService searchService;
 
-    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response listUsers(@QueryParam("query") String query,

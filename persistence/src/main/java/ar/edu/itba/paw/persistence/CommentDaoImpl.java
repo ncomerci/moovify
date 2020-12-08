@@ -7,10 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -120,6 +117,18 @@ public class CommentDaoImpl implements CommentDao {
 
         LOGGER.info("Find Comment By Id: {}", id);
         return Optional.ofNullable(em.find(Comment.class, id));
+    }
+
+    @Override
+    public Optional<Comment> findDeletedCommentById(long id) {
+
+        LOGGER.info("Find Deleted Comment By Id: {}", id);
+
+        TypedQuery<Comment> query = em.createQuery("SELECT c FROM Comment c WHERE c.id = :commentId AND enabled = :enabled", Comment.class)
+                .setParameter("commentId", id)
+                .setParameter("enabled", false);
+
+        return query.getResultList().stream().findFirst();
     }
 
     @Override

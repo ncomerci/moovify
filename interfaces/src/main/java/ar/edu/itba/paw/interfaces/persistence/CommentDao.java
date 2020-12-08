@@ -6,6 +6,8 @@ import java.util.Optional;
 
 public interface CommentDao {
 
+
+
     enum SortCriteria {
         NEWEST, OLDEST, HOTTEST
     }
@@ -15,6 +17,8 @@ public interface CommentDao {
     int getVoteValue(Comment comment, User user);
 
     Optional<Comment> findCommentById(long id);
+
+    Optional<Comment> findDeletedCommentById(long commentId);
 
     /**
      * Get all direct children of a comment. Doesn't include sub children.

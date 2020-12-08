@@ -27,7 +27,7 @@ public class PostDto {
     private boolean edited;
     private LocalDateTime lastEditDate;
     private User user;
-    private PostCategory postCategory;
+    private String postCategory;
     private Collection<String> tags;
     private Collection<Movie> movies;
     private boolean enabled;
@@ -52,7 +52,7 @@ public class PostDto {
         this.edited = post.isEdited();
         this.lastEditDate = post.getLastEditDate();
         this.user = post.getUser();
-        this.postCategory = post.getCategory();
+        this.postCategory = post.getCategory().getName();
         this.tags = post.getTags();
         this.movies = post.getMovies();
         this.enabled = post.isEnabled();
@@ -130,11 +130,11 @@ public class PostDto {
         this.user = user;
     }
 
-    public PostCategory getPostCategory() {
+    public String getPostCategory() {
         return postCategory;
     }
 
-    public void setPostCategory(PostCategory postCategory) {
+    public void setPostCategory(String postCategory) {
         this.postCategory = postCategory;
     }
 

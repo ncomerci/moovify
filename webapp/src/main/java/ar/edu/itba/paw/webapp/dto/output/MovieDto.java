@@ -26,7 +26,7 @@ public class MovieDto {
     private String originalTitle;
     private long tmdbId;
     private String imdbId;
-    private Collection<MovieCategory> categories;
+    private Collection<String> categories;
     private String originalLanguage;
     private String overview;
     private float popularity;
@@ -49,7 +49,7 @@ public class MovieDto {
         this.originalTitle = movie.getOriginalTitle();
         this.tmdbId = movie.getTmdbId();
         this.imdbId = movie.getImdbId();
-        this.categories = movie.getCategories();
+        this.categories = movie.getCategories().stream().map(MovieCategory::getName).collect(Collectors.toList());
         this.originalLanguage = movie.getOriginalLanguage();
         this.overview = movie.getOverview();
         this.popularity = movie.getPopularity();
@@ -112,11 +112,11 @@ public class MovieDto {
         this.imdbId = imdbId;
     }
 
-    public Collection<MovieCategory> getCategories() {
+    public Collection<String> getCategories() {
         return categories;
     }
 
-    public void setCategories(Collection<MovieCategory> categories) {
+    public void setCategories(Collection<String> categories) {
         this.categories = categories;
     }
 

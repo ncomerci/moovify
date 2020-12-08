@@ -134,6 +134,11 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.findCommentById(commentId);
     }
 
+    @Override
+    public Optional<Comment> findDeletedCommentById(long commentId) {
+        return commentDao.findDeletedCommentById(commentId);
+    }
+
     @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<Comment> findCommentChildren(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
