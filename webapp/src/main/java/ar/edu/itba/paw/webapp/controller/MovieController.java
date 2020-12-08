@@ -10,6 +10,7 @@ import ar.edu.itba.paw.webapp.dto.input.MovieCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.UpdateMoviePosterDto;
 import ar.edu.itba.paw.webapp.dto.output.MovieDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
+import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.MoviePosterNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Path("movies")
@@ -70,6 +72,19 @@ public class MovieController {
                 movieCreateDto.getOverview(), movieCreateDto.getPopularity(), movieCreateDto.getRuntime(), movieCreateDto.getVoteAverage(),  movieCreateDto.getReleaseDate(),  movieCreateDto.getCategories());
 
         return Response.created(MovieDto.getMovieUriBuilder(movie, uriInfo).build()).build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/options")
+    public Response getMovieSearchOptions(){
+
+        Collection<SearchOptionDto> options = new ArrayList<>();
+        options.add(new SearchOptionDto("movieCategory", searchService.getMoviesCategories(), null));
+        options.add(new SearchOptionDto("decades", searchService.getMoviesDecades(), null));
+        options.add(new SearchOptionDto("sortCriteria", movieService.getMovieSortOptions(), "newest"));
+
+        return Response.ok(new GenericEntity<Collection<SearchOptionDto>>(options) {}).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)

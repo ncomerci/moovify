@@ -15,6 +15,7 @@ import ar.edu.itba.paw.webapp.dto.input.PostEditDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.PostVoteDto;
+import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Path("posts")
@@ -95,6 +97,19 @@ public class PostController {
                 user, postCreateDto.getTags(), postCreateDto.getMovies());
 
         return Response.created(PostDto.getPostUriBuilder(post, uriInfo).build()).build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/options")
+    public Response getUserOptions(){
+
+        Collection<SearchOptionDto> options = new ArrayList<>();
+        options.add(new SearchOptionDto("postCategory", searchService.getPostCategories(), null));
+        options.add(new SearchOptionDto("postAge", searchService.getPostPeriodOptions(), null));
+        options.add(new SearchOptionDto("sortCriteria", postService.getPostSortOptions(), "newest"));
+
+        return Response.ok(new GenericEntity<Collection<SearchOptionDto>>(options) {}).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
