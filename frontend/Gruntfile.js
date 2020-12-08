@@ -25,6 +25,7 @@ module.exports = function (grunt) {
           open: true,
           middleware: function (connect) {
             return [
+            // Rewrite request to always return index.html
             modRewrite(['!\\.html|\\.js|\\.svg|\\.css|\\.png$ /index.html [L]']),
             connect.static('.tmp'),
             connect().use('/bower_components', connect.static('./bower_components')),
