@@ -4,7 +4,7 @@
 module.exports = function (grunt) {
 
   require('load-grunt-tasks')(grunt);
-
+  var modRewrite = require('connect-modrewrite');
   require('time-grunt')(grunt);
 
   var appConfig = {
@@ -25,6 +25,8 @@ module.exports = function (grunt) {
           open: true,
           middleware: function (connect) {
             return [
+            // Rewrite request to always return index.html
+            modRewrite(['!\\.html|\\.js|\\.svg|\\.css|\\.png$ /index.html [L]']),
             connect.static('.tmp'),
             connect().use('/bower_components', connect.static('./bower_components')),
             connect.static(appConfig.app)
