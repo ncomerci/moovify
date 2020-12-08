@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.webapp.dto.output;
 
 import ar.edu.itba.paw.models.Comment;
+import ar.edu.itba.paw.models.Role;
 
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
@@ -10,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class CommentDto {
 
-    public static Collection<CommentDto> mapCommentsToDto(Collection<Comment> comments, UriInfo uriInfo) {
-        return comments.stream().map(c -> new CommentDto(c, uriInfo)).collect(Collectors.toList());
+    public static Collection<CommentDto> mapCommentsToDto(Collection<Comment> comments, UriInfo uriInfo, SecurityContext securityContext) {
+        return comments.stream().map(c -> new CommentDto(c, uriInfo, securityContext)).collect(Collectors.toList());
     }
 
     public static UriBuilder getCommentUriBuilder(Comment comment, UriInfo uriInfo) {
@@ -38,25 +40,29 @@ public class CommentDto {
         // For Jersey Reflection - Do not use
     }
 
-    public CommentDto(Comment comment, UriInfo uriInfo) {
-
-        id = comment.getId();
-        creationDateTime = comment.getCreationDate();
-        post = new PostDto(comment.getPost(), uriInfo);
-        body = comment.getBody();
-        user = new UserDto(comment.getUser(), uriInfo);
-        edited = comment.isEdited();
-        lastEditTime = comment.getLastEditDate();
-        totalVotes = comment.getTotalVotes();
-        enabled = comment.isEnabled();
+    public CommentDto(Comment comment, UriInfo uriInfo, SecurityContext securityContext) {
 
         final UriBuilder commentUriBuilder = getCommentUriBuilder(comment, uriInfo);
 
-        parent = getCommentUriBuilder(comment.getParent(), uriInfo).build().toString();
-        children = commentUriBuilder.clone().path("/children").build().toString();
-        votes = commentUriBuilder.clone().path("/votes").build().toString();
+        id = comment.getId();
+        enabled = comment.isEnabled();
 
+        children = commentUriBuilder.clone().path("/children").build().toString();
         url = commentUriBuilder.build().toString();
+
+        if(!enabled && !securityContext.isUserInRole(Role.ADMIN.name()))
+            return;
+
+        creationDateTime = comment.getCreationDate();
+        post = new PostDto(comment.getPost(), uriInfo, securityContext);
+        body = comment.getBody();
+        user = new UserDto(comment.getUser(), uriInfo, securityContext);
+        edited = comment.isEdited();
+        lastEditTime = comment.getLastEditDate();
+        totalVotes = comment.getTotalVotes();
+
+        parent = getCommentUriBuilder(comment.getParent(), uriInfo).build().toString();
+        votes = commentUriBuilder.clone().path("/votes").build().toString();
     }
 
     public Long getId() {

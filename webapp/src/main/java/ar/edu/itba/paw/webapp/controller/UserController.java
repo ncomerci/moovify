@@ -38,6 +38,9 @@ public class UserController {
     @Context
     private UriInfo uriInfo;
 
+    @Context
+    private SecurityContext securityContext;
+
     @Autowired
     private UserService userService;
 
@@ -67,7 +70,7 @@ public class UserController {
             users = userService.getAllUsers(orderBy, pageNumber, pageSize);
 
 
-        final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
+        final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -126,13 +129,13 @@ public class UserController {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
-        return Response.ok(new UserDto(user, uriInfo)).build();
+        return Response.ok(new UserDto(user, uriInfo, securityContext)).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/{id}")
-    public Response deleteUser(@PathParam("id") long id, @Context SecurityContext securityContext) throws DeletedDisabledModelException {
+    public Response deleteUser(@PathParam("id") long id) throws DeletedDisabledModelException {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
@@ -166,7 +169,7 @@ public class UserController {
 
         final PaginatedCollection<Post> posts = postService.findPostsByUser(user, orderBy, pageNumber, pageSize);
 
-        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -188,7 +191,7 @@ public class UserController {
 
         final PaginatedCollection<Comment> comments = commentService.findCommentsByUser(user, orderBy, pageNumber, pageSize);
 
-        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
+        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -210,7 +213,7 @@ public class UserController {
 
         final PaginatedCollection<User> users = userService.getFollowedUsers(user, orderBy, pageNumber, pageSize);
 
-        final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
+        final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -247,7 +250,7 @@ public class UserController {
 
         final PaginatedCollection<Post> posts = postService.getUserBookmarkedPosts(user, orderBy, pageNumber, pageSize);
 
-        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
         .getAbsolutePathBuilder()

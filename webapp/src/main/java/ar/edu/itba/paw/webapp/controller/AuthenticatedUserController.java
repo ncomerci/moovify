@@ -49,6 +49,9 @@ public class AuthenticatedUserController {
     @Context
     private UriInfo uriInfo;
 
+    @Context
+    private SecurityContext securityContext;
+
     @Autowired
     private UserService userService;
 
@@ -66,11 +69,11 @@ public class AuthenticatedUserController {
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response getUser(@Context SecurityContext securityContext) {
+    public Response getUser() {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        return Response.ok(new UserDto(user, uriInfo)).build();
+        return Response.ok(new UserDto(user, uriInfo, securityContext)).build();
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -103,7 +106,7 @@ public class AuthenticatedUserController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
-    public Response updateUser(@Context SecurityContext securityContext, final UserEditDto userEditDto) {
+    public Response updateUser(final UserEditDto userEditDto) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -127,7 +130,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/avatar")
-    public Response updateAvatar(@Context SecurityContext securityContext, @Valid final UpdateAvatarDto updateAvatarDto) throws IOException {
+    public Response updateAvatar(@Valid final UpdateAvatarDto updateAvatarDto) throws IOException {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -141,7 +144,7 @@ public class AuthenticatedUserController {
     @Produces("image/*")
     @GET
     @Path("/avatar")
-    public Response getAvatar(@Context SecurityContext securityContext) {
+    public Response getAvatar() {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -154,8 +157,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/posts")
-    public Response getUserPosts(@Context SecurityContext securityContext,
-                                 @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response getUserPosts(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                  @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                  @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
@@ -163,7 +165,7 @@ public class AuthenticatedUserController {
 
         final PaginatedCollection<Post> posts = postService.findPostsByUser(user, orderBy, pageNumber, pageSize);
 
-        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -176,8 +178,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/comments")
-    public Response getUserComments(@Context SecurityContext securityContext,
-                                    @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response getUserComments(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                     @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                     @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
@@ -185,7 +186,7 @@ public class AuthenticatedUserController {
 
         final PaginatedCollection<Comment> comments = commentService.findCommentsByUser(user, orderBy, pageNumber, pageSize);
 
-        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
+        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -198,8 +199,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/following")
-    public Response getFollowedUsers(@Context SecurityContext securityContext,
-                                     @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response getFollowedUsers(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                      @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                      @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
@@ -207,7 +207,7 @@ public class AuthenticatedUserController {
 
         final PaginatedCollection<User> users = userService.getFollowedUsers(user, orderBy, pageNumber, pageSize);
 
-        final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
+        final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -220,7 +220,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/following/{userId}")
-    public Response isFollowingUser(@Context SecurityContext securityContext, @PathParam("userId") long userId) {
+    public Response isFollowingUser(@PathParam("userId") long userId) {
 
         final User loggedUser = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -234,7 +234,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/following/{userId}")
-    public Response followUser(@PathParam("userId") long userId, @Context SecurityContext securityContext) throws IllegalUserFollowException {
+    public Response followUser(@PathParam("userId") long userId) throws IllegalUserFollowException {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -248,7 +248,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/following/{userId}")
-    public Response unfollowUser(@PathParam("userId") long userId, @Context SecurityContext securityContext) throws IllegalUserUnfollowException {
+    public Response unfollowUser(@PathParam("userId") long userId) throws IllegalUserUnfollowException {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -262,8 +262,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/bookmarked")
-    public Response getBookmarkedPosts(@Context SecurityContext securityContext,
-                                       @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response getBookmarkedPosts(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                        @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                        @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
@@ -271,7 +270,7 @@ public class AuthenticatedUserController {
 
         final PaginatedCollection<Post> posts = postService.getUserBookmarkedPosts(user, orderBy, pageNumber, pageSize);
 
-        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -284,7 +283,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/bookmarked/{postId}")
-    public Response hasUserBookmarkedPost(@Context SecurityContext securityContext, @PathParam("postId") long postId) {
+    public Response hasUserBookmarkedPost(@PathParam("postId") long postId) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -298,7 +297,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/bookmarked/{postId}")
-    public Response bookmarkPost(@PathParam("postId") long postId, @Context SecurityContext securityContext) throws IllegalPostBookmarkException {
+    public Response bookmarkPost(@PathParam("postId") long postId) throws IllegalPostBookmarkException {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -312,7 +311,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/bookmarked/{postId}")
-    public Response unbookmarkPost(@PathParam("postId") long postId, @Context SecurityContext securityContext) throws IllegalPostUnbookmarkException {
+    public Response unbookmarkPost(@PathParam("postId") long postId) throws IllegalPostUnbookmarkException {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -326,7 +325,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @Path("/email_confirmation")
-    public Response resendConfirmationEmail(@Context SecurityContext securityContext, @Context HttpServletRequest request) {
+    public Response resendConfirmationEmail(@Context HttpServletRequest request) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -339,8 +338,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/email_confirmation")
-    public Response confirmRegistration(final TokenDto tokenDto,
-                                        @Context SecurityContext securityContext, @Context HttpServletRequest request) {
+    public Response confirmRegistration(final TokenDto tokenDto, @Context HttpServletRequest request) {
 
         final Optional<User> optUser = userService.confirmRegistration(tokenDto.getToken());
 
@@ -400,7 +398,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/password_reset")
-    public Response resetPassword(@Valid final PasswordResetDto passwordResetDto, @Context SecurityContext securityContext) {
+    public Response resetPassword(@Valid final PasswordResetDto passwordResetDto) {
 
         final boolean isTokenValid = userService.validatePasswordResetToken(passwordResetDto.getToken());
 

@@ -32,6 +32,9 @@ public class CommentController {
     @Context
     private UriInfo uriInfo;
 
+    @Context
+    private SecurityContext securityContext;
+
     @Autowired
     private CommentService commentService;
 
@@ -49,7 +52,7 @@ public class CommentController {
 
         final PaginatedCollection<Comment> comments = commentService.getAllComments(orderBy, pageNumber, pageSize);
 
-        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
+        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -96,14 +99,14 @@ public class CommentController {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
-        return Response.ok(new CommentDto(comment, uriInfo)).build();
+        return Response.ok(new CommentDto(comment, uriInfo, securityContext)).build();
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}")
-    public Response editComment(@PathParam("id") long id, @Valid final CommentEditDto commentEditDto, @Context SecurityContext securityContext) throws MissingCommentEditPermissionException, IllegalCommentEditionException {
+    public Response editComment(@PathParam("id") long id, @Valid final CommentEditDto commentEditDto) throws MissingCommentEditPermissionException, IllegalCommentEditionException {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
@@ -140,7 +143,7 @@ public class CommentController {
 
         final PaginatedCollection<CommentVote> commentVotes = commentService.getCommentVotes(comment, pageNumber, pageSize);
 
-        final Collection<CommentVoteDto> commentVotesDto = CommentVoteDto.mapCommentsVoteToDto(commentVotes.getResults(), uriInfo);
+        final Collection<CommentVoteDto> commentVotesDto = CommentVoteDto.mapCommentsVoteToDto(commentVotes.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -153,7 +156,7 @@ public class CommentController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}/votes")
-    public Response voteComment(@PathParam("id") long id, final GenericIntegerValueDto valueDto, @Context SecurityContext securityContext) throws IllegalCommentLikeException {
+    public Response voteComment(@PathParam("id") long id, final GenericIntegerValueDto valueDto) throws IllegalCommentLikeException {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
@@ -190,7 +193,7 @@ public class CommentController {
 
         final PaginatedCollection<Comment> comments = commentService.findCommentChildren(comment, orderBy, pageNumber, pageSize);
 
-        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
+        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()

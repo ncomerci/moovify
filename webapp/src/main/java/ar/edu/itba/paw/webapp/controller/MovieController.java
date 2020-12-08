@@ -32,6 +32,9 @@ public class MovieController {
     @Context
     private UriInfo uriInfo;
 
+    @Context
+    private SecurityContext securityContext;
+
     @Autowired
     private MovieService movieService;
 
@@ -154,7 +157,7 @@ public class MovieController {
 
         final PaginatedCollection<Post> posts = postService.findPostsByMovie(movie, orderBy, pageNumber, pageSize);
 
-        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
