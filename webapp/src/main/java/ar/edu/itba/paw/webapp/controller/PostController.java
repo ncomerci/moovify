@@ -106,7 +106,7 @@ public class PostController {
 
         options.add(new SearchOptionDto("postCategory", searchService.getPostCategories(), null));
         options.add(new SearchOptionDto("postAge", searchService.getPostPeriodOptions(), null));
-        options.add(new SearchOptionDto("sortCriteria", postService.getPostSortOptions(), "newest"));
+        options.add(new SearchOptionDto("orderBy", postService.getPostSortOptions(), "newest"));
 
         return Response.ok(new GenericEntity<Collection<SearchOptionDto>>(options) {}).build();
     }
