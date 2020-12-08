@@ -13,6 +13,7 @@ import ar.edu.itba.paw.webapp.dto.generic.GenericIntegerValueDto;
 import ar.edu.itba.paw.webapp.dto.input.PostCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.PostEditDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
+import ar.edu.itba.paw.webapp.dto.output.PostCategoryDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.PostVoteDto;
 import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
@@ -206,6 +207,18 @@ public class PostController {
                 .queryParam("orderBy", orderBy);
 
         return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/categories")
+    public Response getPostCategories() {
+
+        final Collection<PostCategory> postCategories = postService.getAllPostCategories();
+
+        final Collection<PostCategoryDto> postCategoriesDto = PostCategoryDto.mapPostCategoryToDto(postCategories);
+
+        return Response.ok(new GenericEntity<Collection<PostCategoryDto>>(postCategoriesDto) {}).build();
     }
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
