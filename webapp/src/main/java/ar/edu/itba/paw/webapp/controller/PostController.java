@@ -106,9 +106,9 @@ public class PostController {
     public Response getUserOptions(){
 
         Collection<SearchOptionDto> options = new ArrayList<>();
-        options.add(new SearchOptionDto("postCategory", searchService.getPostCategories(), null));
-        options.add(new SearchOptionDto("postAge", searchService.getPostPeriodOptions(), null));
-        options.add(new SearchOptionDto("sortCriteria", postService.getPostSortOptions(), "newest"));
+        options.add(new SearchOptionDto("postCategory", searchService.getPostCategories()));
+        options.add(new SearchOptionDto("postAge", searchService.getPostPeriodOptions()));
+        options.add(new SearchOptionDto("sortCriteria", postService.getPostSortOptions()));
 
         return Response.ok(new GenericEntity<Collection<SearchOptionDto>>(options) {}).build();
     }

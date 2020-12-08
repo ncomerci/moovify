@@ -6,16 +6,14 @@ public class SearchOptionDto {
 
     private String name;
     private Collection<String> options;
-    private String defaultValue;
 
     public SearchOptionDto() {
         //For Jersey Reflection- Do not use
     }
 
-    public SearchOptionDto(String name, Collection<String> options, String defaultValue) {
+    public SearchOptionDto(String name, Collection<String> options) {
         this.name = name;
         this.options = options;
-        this.defaultValue = defaultValue;
     }
 
     public String getName() {
@@ -34,11 +32,4 @@ public class SearchOptionDto {
         this.options = options;
     }
 
-    public String getDefaultValue() {
-        return defaultValue;
-    }
-
-    public void setDefaultValue(String defaultValue) {
-        this.defaultValue = defaultValue;
-    }
 }

@@ -80,9 +80,9 @@ public class MovieController {
     public Response getMovieSearchOptions(){
 
         Collection<SearchOptionDto> options = new ArrayList<>();
-        options.add(new SearchOptionDto("movieCategory", searchService.getMoviesCategories(), null));
-        options.add(new SearchOptionDto("decades", searchService.getMoviesDecades(), null));
-        options.add(new SearchOptionDto("sortCriteria", movieService.getMovieSortOptions(), "newest"));
+        options.add(new SearchOptionDto("movieCategory", searchService.getMoviesCategories()));
+        options.add(new SearchOptionDto("decades", searchService.getMoviesDecades()));
+        options.add(new SearchOptionDto("sortCriteria", movieService.getMovieSortOptions()));
 
         return Response.ok(new GenericEntity<Collection<SearchOptionDto>>(options) {}).build();
     }

@@ -1,4 +1,11 @@
 package ar.edu.itba.paw.webapp.exceptions;
 
-public class MoviePosterNotFoundException extends RuntimeException {
+import ar.edu.itba.paw.interfaces.exceptions.CustomRuntimeException;
+
+public class MoviePosterNotFoundException extends CustomRuntimeException {
+
+    public MoviePosterNotFoundException() {
+        super("Movie poster not found");
+        responseStatus = 404;
+    }
 }

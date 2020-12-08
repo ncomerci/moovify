@@ -111,8 +111,8 @@ public class UserController {
     public Response getUserOptions(){
 
         Collection<SearchOptionDto> options = new ArrayList<>();
-        options.add(new SearchOptionDto("roles", searchService.getUserRoleOptions(), null));
-        options.add(new SearchOptionDto("sortCriteria", userService.getUserSortOptions(), "newest"));
+        options.add(new SearchOptionDto("roles", searchService.getUserRoleOptions()));
+        options.add(new SearchOptionDto("sortCriteria", userService.getUserSortOptions()));
 
         return Response.ok(new GenericEntity<Collection<SearchOptionDto>>(options) {}).build();
     }
