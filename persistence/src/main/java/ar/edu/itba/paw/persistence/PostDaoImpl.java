@@ -21,7 +21,7 @@ public class PostDaoImpl implements PostDao {
     private static final String POSTS = Post.TABLE_NAME;
     private static final String MOVIES = Movie.TABLE_NAME;
     private static final String POST_MOVIE = Post.POST_MOVIE_TABLE_NAME;
-    private static final String POSTS_LIKES = PostLike.TABLE_NAME;
+    private static final String POSTS_LIKES = PostVote.TABLE_NAME;
     private static final String TAGS = Post.TAGS_TABLE_NAME;
     private static final String POST_CATEGORY = PostCategory.TABLE_NAME;
     private static final String USER_FAV_POST = User.USER_FAV_POST;
@@ -95,26 +95,11 @@ public class PostDaoImpl implements PostDao {
 
         em.persist(post);
 
-        post.setTotalLikes(0L);
+        post.setTotalVotes(0L);
 
         LOGGER.info("Created Post: {}", post.getId());
 
         return post;
-    }
-
-    @Override
-    public int getVoteValue(Post post, User user) {
-        PostLike postLike = em.createQuery("SELECT p FROM PostLike p WHERE p.post = :post and p.user = :user", PostLike.class)
-                .setParameter("post", post)
-                .setParameter("user", user)
-                .getResultList().stream().findFirst().orElse(null);
-
-        if(postLike == null) {
-            return 0;
-        }
-
-        return postLike.getValue();
-
     }
 
     @Override
@@ -133,7 +118,7 @@ public class PostDaoImpl implements PostDao {
 
     private Optional<Post> findPostByIdAndEnabled(long id, boolean enabled) {
 
-        TypedQuery<Post> query = em.createQuery("SELECT p FROM Post p WHERE p.id = :postId AND enabled = :enabled", Post.class)
+        TypedQuery<Post> query = em.createQuery("SELECT p FROM Post p WHERE p.id = :postId AND p.enabled = :enabled", Post.class)
                 .setParameter("postId", id)
                 .setParameter("enabled", enabled);
 
@@ -211,15 +196,6 @@ public class PostDaoImpl implements PostDao {
                         " WHERE " + USER_FAV_POST + ".user_id = ?)" +
                         " AND " + NATIVE_ENABLED_FILTER,
                 sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
-    }
-
-    @Override
-    public PaginatedCollection<PostLike> getPostLikes(Post post, String sortCriteria, int pageNumber, int pageSize) {
-//        final TypedQuery<PostLike> postLikes = em.createQuery("SELECT p FROM PostLike p WHERE p.id = :id", PostLike.class)
-//                .setParameter("id", post.getId());
-//
-//        return new PaginatedCollection<>();
-        return null;
     }
 
     @Override
@@ -348,7 +324,7 @@ public class PostDaoImpl implements PostDao {
 
         final String fetchQuery = String.format(
                 "SELECT p, sum(coalesce(likes.value, 0)) AS totalLikes " +
-                        "FROM Post p LEFT OUTER JOIN p.likes likes " +
+                        "FROM Post p LEFT OUTER JOIN p.votes likes " +
                         "WHERE p.id IN :postIds " +
                         "GROUP BY p " +
                         "%s", HQLOrderBy);
@@ -392,11 +368,64 @@ public class PostDaoImpl implements PostDao {
         // Map Tuples To Posts
         final Collection<Post> posts = fetchQueryResult.stream().map(tuple -> {
 
-            tuple.get(0, Post.class).setTotalLikes(tuple.get(1, Long.class));
+            tuple.get(0, Post.class).setTotalVotes(tuple.get(1, Long.class));
             return tuple.get(0, Post.class);
 
         }).collect(Collectors.toList());
 
         return new PaginatedCollection<>(posts, pageNumber, pageSize, totalPosts);
+    }
+
+    @Override
+    public PaginatedCollection<PostVote> getPostVotes(Post post, int pageNumber, int pageSize) {
+
+        final String nativeSelect = "SELECT " + POSTS_LIKES + ".post_likes_id";
+
+        final String nativeCountSelect = "SELECT COUNT(DISTINCT " + POSTS_LIKES + ".post_likes_id)";
+
+        final String nativeFrom = "FROM " + POSTS_LIKES;
+
+        final String nativeWhere = "WHERE " + POSTS_LIKES + ".post_id = :post_id";
+
+        final String nativeOrderBy = "ORDER BY " + POSTS_LIKES + ".post_likes_id";
+
+        final String nativePagination = buildNativePaginationStatement(pageNumber, pageSize);
+
+        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, nativeWhere);
+
+        final String nativeQuery = String.format("%s %s %s %s %s",
+                nativeSelect, nativeFrom, nativeWhere, nativeOrderBy, nativePagination);
+
+        final String fetchQuery = "SELECT pv FROM PostVote pv WHERE pv.id IN :postVoteIds ORDER BY pv.id";
+
+        LOGGER.debug("QueryPostVotes nativeCountQuery: {}", nativeCountQuery);
+        LOGGER.debug("QueryPostsVotes nativeQuery: {}", nativeQuery);
+        LOGGER.debug("QueryPostsVotes fetchQuery: {}", fetchQuery);
+
+        final long totalPostVotes =
+                ((Number) em.createNativeQuery(nativeCountQuery)
+                        .setParameter("post_id", post.getId())
+                        .getSingleResult())
+                        .longValue();
+
+        if(totalPostVotes == 0) {
+            LOGGER.debug("QueryPostVotes Total Count == 0");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalPostVotes);
+        }
+
+        @SuppressWarnings("unchecked")
+        final Collection<Long> postVoteIds =
+                ((List<Number>) em.createNativeQuery(nativeQuery).setParameter("post_id", post.getId()).getResultList())
+                        .stream().map(Number::longValue).collect(Collectors.toList());
+
+        if(postVoteIds.isEmpty()) {
+            LOGGER.debug("QueryPostVotes Empty Page");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalPostVotes);
+        }
+
+        final Collection<PostVote> results = em.createQuery(fetchQuery, PostVote.class)
+                .setParameter("postVoteIds", postVoteIds).getResultList();
+
+        return new PaginatedCollection<>(results, pageNumber, pageSize, totalPostVotes);
     }
 }

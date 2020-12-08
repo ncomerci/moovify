@@ -27,8 +27,8 @@ public class UserDaoImpl implements UserDao {
     private static final String USERS = User.TABLE_NAME;
     private static final String USER_ROLE = User.USER_ROLE_TABLE_NAME;
     private static final String POSTS = Post.TABLE_NAME;
-    private static final String POSTS_LIKES = PostLike.TABLE_NAME;
-    private static final String COMMENTS_LIKES = CommentLike.TABLE_NAME;
+    private static final String POSTS_LIKES = PostVote.TABLE_NAME;
+    private static final String COMMENTS_LIKES = CommentVote.TABLE_NAME;
     private static final String COMMENTS = Comment.TABLE_NAME;
     private static final String USERS_FOLLOWS = User.USERS_FOLLOWS;
 
@@ -314,8 +314,8 @@ public class UserDaoImpl implements UserDao {
 
         final String fetchQuery = String.format(
                 "SELECT u, " +
-                "coalesce((SELECT sum(postLikes.value) from u.posts posts left outer join posts.likes postLikes), 0) + " +
-                "coalesce((SELECT sum(commentLikes.value) from u.comments comments left outer join comments.likes commentLikes), 0)" +
+                "coalesce((SELECT sum(postLikes.value) from u.posts posts left outer join posts.votes postLikes), 0) + " +
+                "coalesce((SELECT sum(commentLikes.value) from u.comments comments left outer join comments.votes commentLikes), 0)" +
                         " AS totalLikes " +
                 "FROM User u " +
                 "WHERE u.id IN :userIds " +

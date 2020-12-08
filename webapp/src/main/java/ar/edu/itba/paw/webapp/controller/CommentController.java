@@ -3,7 +3,6 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
-import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
 import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
@@ -141,7 +140,7 @@ public class CommentController {
 
         int value = commentService.getVoteValue(comment, user);
 
-        return Response.ok(new CommentVoteDto(new CommentLike(user, comment, value), uriInfo)).build();
+        return Response.ok(new CommentVoteDto(new CommentVote(user, comment, value), uriInfo)).build();
     }
 
 

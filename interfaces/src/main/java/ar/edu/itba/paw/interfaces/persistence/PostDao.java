@@ -14,8 +14,6 @@ public interface PostDao {
 
     Post register(String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, Set<Movie> movies, boolean enabled);
 
-    int getVoteValue(Post post, User user);
-
     Optional<Post> findPostById(long id);
 
     Optional<Post> findDeletedPostById(long id);
@@ -32,8 +30,6 @@ public interface PostDao {
 
     PaginatedCollection<Post> getUserFavouritePosts(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<PostLike> getPostLikes(Post post, String sortCriteria, int pageNumber, int pageSize);
-
     PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> searchDeletedPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
@@ -43,4 +39,6 @@ public interface PostDao {
     PaginatedCollection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
+    PaginatedCollection<PostVote> getPostVotes(Post post, int pageNumber, int pageSize);
 }

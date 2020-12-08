@@ -201,6 +201,14 @@ public class UserServiceImpl implements UserService {
         user.unfollowUser(userUnfollowed);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public boolean isFollowingUser(User user, User other) {
+
+        return user.isEnabled() && other.isEnabled() && user.isUserFollowing(other);
+    }
+
+
     @Transactional
     @Override
     public void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale) {
@@ -329,6 +337,14 @@ public class UserServiceImpl implements UserService {
             throw new IllegalPostUnbookmarkException();
 
         user.unbookmarkPost(post);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean hasUserBookmarkedPost(User user, Post post) {
+
+        return user.isEnabled() && post.isEnabled() && user.isPostBookmarked(post);
+
     }
 
     @Transactional(readOnly = true)

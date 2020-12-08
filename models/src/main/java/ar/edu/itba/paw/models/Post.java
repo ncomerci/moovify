@@ -22,11 +22,6 @@ public class Post {
     public static final String POST_MOVIE_TABLE_NAME = "post_movie";
     public static final String TAGS_TABLE_NAME = "tags";
 
-    static public int getLikeValue(Post post, User user) {
-        return post.getLikeValue(user);
-    }
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_post_id_seq")
     @SequenceGenerator(sequenceName = "posts_post_id_seq", name = "posts_post_id_seq", allocationSize = 1)
@@ -55,7 +50,7 @@ public class Post {
     @Basic(optional = true)
     private LocalDateTime lastEditDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name="user_id", nullable = false)
     private User user;
 
@@ -83,22 +78,22 @@ public class Post {
     private Set<String> tags;
 
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "post", cascade = CascadeType.ALL)
-    private Set<PostLike> likes;
+    private Set<PostVote> votes;
 
     @Transient
-    private Long totalLikes;
+    private Long totalVotes;
 
     @Column(nullable = false)
     private boolean enabled;
 
     private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean edited, LocalDateTime lastEditDate, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Set<Comment> comments) {
-        this(creationDate, title, body, wordCount, category, user, tags, edited, lastEditDate, enabled, likes, movies, comments);
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean edited, LocalDateTime lastEditDate, boolean enabled, Set<PostVote> votes, Set<Movie> movies, Set<Comment> comments) {
+        this(creationDate, title, body, wordCount, category, user, tags, edited, lastEditDate, enabled, votes, movies, comments);
         this.id = id;
     }
 
-    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean edited, LocalDateTime lastEditDate, boolean enabled, Set<PostLike> likes, Set<Movie> movies, Set<Comment> comments) {
+    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean edited, LocalDateTime lastEditDate, boolean enabled, Set<PostVote> votes, Set<Movie> movies, Set<Comment> comments) {
         this.creationDate = creationDate;
         this.title = title;
         this.body = body;
@@ -109,7 +104,7 @@ public class Post {
         this.edited = edited;
         this.lastEditDate = lastEditDate;
         this.enabled = enabled;
-        this.likes = likes;
+        this.votes = votes;
         this.movies = movies;
         this.comments = comments;
     }
@@ -119,24 +114,24 @@ public class Post {
     }
 
     public void calculateTotalLikes() {
-        if(totalLikes == null)
-            totalLikes = likes.stream()
+        if(totalVotes == null)
+            totalVotes = votes.stream()
                     .reduce(0L, (acum, postLike) -> acum += (long) postLike.getValue(), Long::sum);
     }
 
-    public long getTotalLikes() {
-        if(totalLikes == null)
+    public long getTotalVotes() {
+        if(totalVotes == null)
             calculateTotalLikes();
 
-        return totalLikes;
+        return totalVotes;
     }
 
-    public void setTotalLikes(long totalLikes) {
-        this.totalLikes = totalLikes;
+    public void setTotalVotes(long totalVotes) {
+        this.totalVotes = totalVotes;
     }
 
-    public Collection<PostLike> getLikes(){
-        return likes;
+    public Collection<PostVote> getVotes(){
+        return votes;
     }
 
     public long getId() {
@@ -215,10 +210,10 @@ public class Post {
 
     public boolean isEnabled() { return enabled; }
 
-    public int getLikeValue(User user) {
-        return getLikes().stream()
+    public int getVoteValue(User user) {
+        return getVotes().stream()
                 .filter(postLike -> postLike.getUser().getId() == user.getId())
-                .map(PostLike::getValue)
+                .map(PostVote::getValue)
                 .findFirst().orElse(0);
     }
 
@@ -230,37 +225,37 @@ public class Post {
         this.enabled = true;
     }
 
-    public void removeLike(User user) {
+    public void removeVote(User user) {
 
-        final Optional<PostLike> optLike =
-                getLikes().stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
+        final Optional<PostVote> optLike =
+                getVotes().stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
 
         if(optLike.isPresent()) {
-            final PostLike like = optLike.get();
+            final PostVote like = optLike.get();
 
             like.getUser().removePostLike(like);
-            getLikes().remove(like);
+            getVotes().remove(like);
         }
     }
 
-    public void like(User user, int value) {
+    public void vote(User user, int value) {
 
         if(value == 0) {
             LOGGER.error("Tried to assign value 0 to {} like (invalid value)", this);
             return;
         }
 
-        Optional<PostLike> existingLike =
-                getLikes().stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
+        Optional<PostVote> existingVote =
+                getVotes().stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
 
-        if(existingLike.isPresent())
-            existingLike.get().setValue(value);
+        if(existingVote.isPresent())
+            existingVote.get().setValue(value);
 
         else {
-            final PostLike like = new PostLike(user, this, value);
+            final PostVote vote = new PostVote(user, this, value);
 
-            user.addPostLike(like);
-            getLikes().add(like);
+            user.addPostLike(vote);
+            getVotes().add(vote);
         }
     }
 

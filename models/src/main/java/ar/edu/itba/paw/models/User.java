@@ -18,18 +18,6 @@ public class User {
 
     public static final long DEFAULT_AVATAR_ID = 0;
 
-    public static boolean hasUserBookmarkedPost(User user, Post post) {
-        return user.isPostBookmarked(post);
-    }
-
-    static public boolean hasUserFollowed(User user, User followedUser) {
-        return user.getFollowing().contains(followedUser);
-    }
-
-    static public boolean hasDescription(User user){
-        return user.getDescription().isEmpty();
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_user_id_seq")
     @SequenceGenerator(sequenceName = "users_user_id_seq", name = "users_user_id_seq", allocationSize = 1)
@@ -69,10 +57,10 @@ public class User {
     private Image avatar;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
-    private Set<PostLike> postLikes;
+    private Set<PostVote> postVotes;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
-    private Set<CommentLike> commentLikes;
+    private Set<CommentVote> commentVotes;
 
     @Transient
     private Long totalLikes;
@@ -109,12 +97,12 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> bookmarkedPosts) {
-        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postLikes, commentLikes, posts, comments, following, bookmarkedPosts);
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostVote> postVotes, Set<CommentVote> commentVotes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> bookmarkedPosts) {
+        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postVotes, commentVotes, posts, comments, following, bookmarkedPosts);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostLike> postLikes, Set<CommentLike> commentLikes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> bookmarkedPosts) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostVote> postVotes, Set<CommentVote> commentVotes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> bookmarkedPosts) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
@@ -125,8 +113,8 @@ public class User {
         this.avatar = avatar;
         this.roles = roles;
         this.enabled = enabled;
-        this.postLikes = postLikes;
-        this.commentLikes = commentLikes;
+        this.postVotes = postVotes;
+        this.commentVotes = commentVotes;
         this.posts = posts;
         this.comments = comments;
         this.following = following;
@@ -140,10 +128,10 @@ public class User {
     public void calculateTotalLikes() {
         if(totalLikes == null) {
             final long totalPostLikes = posts.stream()
-                    .reduce(0L, (acum, post) -> acum += post.getTotalLikes(), Long::sum);
+                    .reduce(0L, (acum, post) -> acum += post.getTotalVotes(), Long::sum);
 
             final long totalCommentLikes = comments.stream()
-                    .reduce(0L, (acum, comment) -> acum += comment.getTotalLikes(), Long::sum);
+                    .reduce(0L, (acum, comment) -> acum += comment.getTotalVotes(), Long::sum);
 
             totalLikes = totalPostLikes + totalCommentLikes;
         }
@@ -224,31 +212,27 @@ public class User {
         this.totalLikes = totalLikes;
     }
 
-    public Collection<CommentLike> getCommentLikes() {
-        return commentLikes;
+    public Collection<CommentVote> getCommentLikes() {
+        return commentVotes;
     }
 
-    public Set<User> getFollowing() {
-        return following;
-    }
-
-    public void removeCommentLike(CommentLike like) {
+    public void removeCommentLike(CommentVote like) {
         getCommentLikes().remove(like);
     }
 
-    public void addCommentLike(CommentLike like) {
+    public void addCommentLike(CommentVote like) {
         getCommentLikes().add(like);
     }
 
-    public Collection<PostLike> getPostLikes() {
-        return postLikes;
+    public Collection<PostVote> getPostLikes() {
+        return postVotes;
     }
 
-    public void removePostLike(PostLike like) {
+    public void removePostLike(PostVote like) {
         getPostLikes().remove(like);
     }
 
-    public void addPostLike(PostLike like) {
+    public void addPostLike(PostVote like) {
         getPostLikes().add(like);
     }
 
@@ -277,11 +261,15 @@ public class User {
     }
 
     public void followUser(User user) {
-        getFollowing().add(user);
+        getFollowingUsers().add(user);
     }
 
     public void unfollowUser(User user) {
-        getFollowing().remove(user);
+        getFollowingUsers().remove(user);
+    }
+
+    public boolean isUserFollowing(User user) {
+        return getFollowingUsers().contains(user);
     }
 
     public Duration getTimeSinceCreation() {

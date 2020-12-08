@@ -38,7 +38,7 @@ public interface PostService {
 
     PaginatedCollection<Post> getUserBookmarkedPosts(User user, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<PostLike> getPostLikes(Post post, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<PostVote> getPostVotes(Post post, int pageNumber, int pageSize);
 
     Collection<PostCategory> getAllPostCategories();
 

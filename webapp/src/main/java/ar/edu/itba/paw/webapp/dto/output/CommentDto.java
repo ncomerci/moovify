@@ -1,8 +1,6 @@
 package ar.edu.itba.paw.webapp.dto.output;
 
 import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -17,20 +15,20 @@ public class CommentDto {
     }
 
     public static UriBuilder getCommentUriBuilder(Comment comment, UriInfo uriInfo) {
-        return uriInfo.getBaseUriBuilder().path("comment").path(String.valueOf(comment.getId()));
+        return uriInfo.getBaseUriBuilder().path("comments").path(String.valueOf(comment.getId()));
     }
 
-    private Long id;
+    private long id;
     private LocalDateTime creationDateTime;
-    private Post post;
-    private Comment parent;
+    private PostDto post;
     private String body;
-    private User user;
+    private UserDto user;
     private boolean edited;
     private LocalDateTime lastEditTime;
-    private Long totalVotes;
+    private long totalVotes;
     private boolean enabled;
 
+    private String parent;
     private String children;
     private String votes;
 
@@ -42,19 +40,19 @@ public class CommentDto {
 
     public CommentDto(Comment comment, UriInfo uriInfo) {
 
-        this.id = comment.getId();
-        this.creationDateTime = comment.getCreationDate();
-        this.post = comment.getPost();
-        this.parent = comment.getParent();
-        this.body = comment.getBody();
-        this.user = comment.getUser();
-        this.edited = comment.isEdited();
-        this.lastEditTime = comment.getLastEditDate();
-        this.totalVotes = comment.getTotalLikes();
-        this.enabled = comment.isEnabled();
+        id = comment.getId();
+        creationDateTime = comment.getCreationDate();
+        post = new PostDto(comment.getPost(), uriInfo);
+        body = comment.getBody();
+        user = new UserDto(comment.getUser(), uriInfo);
+        edited = comment.isEdited();
+        lastEditTime = comment.getLastEditDate();
+        totalVotes = comment.getTotalVotes();
+        enabled = comment.isEnabled();
 
         final UriBuilder commentUriBuilder = getCommentUriBuilder(comment, uriInfo);
 
+        parent = getCommentUriBuilder(comment.getParent(), uriInfo).build().toString();
         children = commentUriBuilder.clone().path("/children").build().toString();
         votes = commentUriBuilder.clone().path("/votes").build().toString();
 
@@ -77,19 +75,19 @@ public class CommentDto {
         this.creationDateTime = creationDateTime;
     }
 
-    public Post getPost() {
+    public PostDto getPost() {
         return post;
     }
 
-    public void setPost(Post post) {
+    public void setPost(PostDto post) {
         this.post = post;
     }
 
-    public Comment getParent() {
+    public String getParent() {
         return parent;
     }
 
-    public void setParent(Comment parent) {
+    public void setParent(String parent) {
         this.parent = parent;
     }
 
@@ -101,11 +99,11 @@ public class CommentDto {
         this.body = body;
     }
 
-    public User getUser() {
+    public UserDto getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDto user) {
         this.user = user;
     }
 

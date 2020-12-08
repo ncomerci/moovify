@@ -16,6 +16,7 @@ import ar.edu.itba.paw.webapp.auth.JwtUtil;
 import ar.edu.itba.paw.webapp.dto.error.BeanValidationErrorDto;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
 import ar.edu.itba.paw.webapp.dto.error.GenericErrorDto;
+import ar.edu.itba.paw.webapp.dto.generic.GenericBooleanResponseDto;
 import ar.edu.itba.paw.webapp.dto.input.*;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
@@ -72,6 +73,7 @@ public class AuthenticatedUserController {
         return Response.ok(new UserDto(user, uriInfo)).build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     public Response authenticateUser(final UserAuthenticationDto userAuthDto) {
@@ -163,7 +165,12 @@ public class AuthenticatedUserController {
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", posts.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -180,7 +187,12 @@ public class AuthenticatedUserController {
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", comments.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -197,7 +209,26 @@ public class AuthenticatedUserController {
 
         final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", users.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, linkUriBuilder);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/following/{userId}")
+    public Response isFollowingUser(@Context SecurityContext securityContext, @PathParam("userId") long userId) {
+
+        final User loggedUser = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+
+        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
+
+        final boolean result = userService.isFollowingUser(loggedUser, user);
+
+        return Response.ok(new GenericBooleanResponseDto(result)).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -242,7 +273,26 @@ public class AuthenticatedUserController {
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", posts.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/bookmarked/{postId}")
+    public Response hasUserBookmarkedPost(@Context SecurityContext securityContext, @PathParam("postId") long postId) {
+
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+
+        final boolean result = userService.hasUserBookmarkedPost(user, post);
+
+        return Response.ok(new GenericBooleanResponseDto(result)).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -285,6 +335,7 @@ public class AuthenticatedUserController {
         return Response.noContent().build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/email_confirmation")
@@ -311,6 +362,7 @@ public class AuthenticatedUserController {
                 .build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @Path("/password_reset")
@@ -344,6 +396,7 @@ public class AuthenticatedUserController {
         return Response.noContent().build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/password_reset")
@@ -374,8 +427,7 @@ public class AuthenticatedUserController {
     }
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
-                                                                  GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
-                                                                  String orderBy) {
+                                                                  GenericEntity<Collection<Dto>> resultsDto, UriBuilder linkUriBuilder) {
         if(paginatedResults.isEmpty()) {
             if(paginatedResults.getPageNumber() == 0)
                 return Response.noContent().build();
@@ -387,13 +439,12 @@ public class AuthenticatedUserController {
         final Response.ResponseBuilder responseBuilder =
                 Response.ok(resultsDto);
 
-        setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
+        setPaginationLinks(responseBuilder, paginatedResults, linkUriBuilder);
 
         return responseBuilder.build();
     }
 
-    private <T> void setPaginationLinks(Response.ResponseBuilder response, UriInfo uriInfo,
-                                        PaginatedCollection<T> results, String orderBy) {
+    private <T> void setPaginationLinks(Response.ResponseBuilder response, PaginatedCollection<T> results, UriBuilder baseUri) {
 
         final int pageNumber = results.getPageNumber();
         final String pageNumberParamName = "pageNumber";
@@ -403,19 +454,14 @@ public class AuthenticatedUserController {
         final int prev = pageNumber - 1;
         final int next = pageNumber + 1;
 
-        final UriBuilder linkUriBuilder = uriInfo
-                .getAbsolutePathBuilder()
-                .queryParam("pageSize", results.getPageSize())
-                .queryParam("orderBy", orderBy);
+        response.link(baseUri.clone().queryParam(pageNumberParamName, first).build(), "first");
 
-        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, first).build(), "first");
-
-        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, last).build(), "last");
+        response.link(baseUri.clone().queryParam(pageNumberParamName, last).build(), "last");
 
         if(pageNumber != first)
-            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, prev).build(), "prev");
+            response.link(baseUri.clone().queryParam(pageNumberParamName, prev).build(), "prev");
 
         if(pageNumber != last)
-            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, next).build(), "next");
+            response.link(baseUri.clone().queryParam(pageNumberParamName, next).build(), "next");
     }
 }

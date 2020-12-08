@@ -24,37 +24,37 @@ public class CommentTest {
     private static final LocalDateTime DEFAULT_LAST_EDITED = null;
     private static final User DEFAULT_USER = new User();
     private static final boolean DEFAULT_ENABLED = true;
-    private static final Set<CommentLike> DEFAULT_LIKES = Collections.emptySet();
+    private static final Set<CommentVote> DEFAULT_LIKES = Collections.emptySet();
 
 
 
     @Test
     public void testCalculateTotalLikes() {
 
-            Set<CommentLike> likes = new HashSet<>();
-            CommentLike like;
+            Set<CommentVote> likes = new HashSet<>();
+            CommentVote like;
 
             // Add 20 likes: 10 positive 10 negative
             for (int i = 0; i < 10; i++) {
 
-                like = Mockito.mock(CommentLike.class);
+                like = Mockito.mock(CommentVote.class);
                 Mockito.when(like.getValue()).thenReturn(1);
 
                 likes.add(like);
 
-                like = Mockito.mock(CommentLike.class);
+                like = Mockito.mock(CommentVote.class);
                 Mockito.when(like.getValue()).thenReturn(-1);
 
                 likes.add(like);
             }
 
             // Add 2 positive likes
-            like = Mockito.mock(CommentLike.class);
+            like = Mockito.mock(CommentVote.class);
             Mockito.when(like.getValue()).thenReturn(1);
 
             likes.add(like);
 
-            like = Mockito.mock(CommentLike.class);
+            like = Mockito.mock(CommentVote.class);
             Mockito.when(like.getValue()).thenReturn(1);
 
             likes.add(like);
@@ -66,7 +66,7 @@ public class CommentTest {
             // Exercise
             comment.calculateTotalLikes();
 
-            Assert.assertEquals(2L, comment.getTotalLikes());
+            Assert.assertEquals(2L, comment.getTotalVotes());
     }
 
     @Test
@@ -75,8 +75,8 @@ public class CommentTest {
         long userRealId = 5L;
         int likeValue = -1;
 
-        Set<CommentLike> likes = new HashSet<>();
-        CommentLike like;
+        Set<CommentVote> likes = new HashSet<>();
+        CommentVote like;
         User realUser;
 
         // Create real user with valid value
@@ -89,18 +89,18 @@ public class CommentTest {
         User fakeUser2 = Mockito.mock(User.class);
         Mockito.lenient().when(fakeUser2.getId()).thenReturn(userRealId + 10L);
 
-        like = Mockito.mock(CommentLike.class);
+        like = Mockito.mock(CommentVote.class);
         Mockito.when(like.getValue()).thenReturn(likeValue);
         Mockito.when(like.getUser()).thenReturn(realUser);
 
         likes.add(like);
 
         // Create other likes
-        like = Mockito.mock(CommentLike.class);
+        like = Mockito.mock(CommentVote.class);
         Mockito.lenient().when(like.getUser()).thenReturn(fakeUser1);
         likes.add(like);
 
-        like = Mockito.mock(CommentLike.class);
+        like = Mockito.mock(CommentVote.class);
         Mockito.lenient().when(like.getUser()).thenReturn(fakeUser2);
         likes.add(like);
 
@@ -230,12 +230,12 @@ public class CommentTest {
         User fakeUser = Mockito.mock(User.class);
         Mockito.lenient().when(fakeUser.getId()).thenReturn(11L);
 
-        Set<CommentLike> likes = new HashSet<>();
+        Set<CommentVote> likes = new HashSet<>();
 
-        CommentLike realLike = Mockito.mock(CommentLike.class);
+        CommentVote realLike = Mockito.mock(CommentVote.class);
         Mockito.when(realLike.getUser()).thenReturn(realUser);
 
-        CommentLike fakeLike = Mockito.mock(CommentLike.class);
+        CommentVote fakeLike = Mockito.mock(CommentVote.class);
         Mockito.lenient().when(fakeLike.getUser()).thenReturn(fakeUser);
 
         likes.add(realLike);
@@ -267,9 +267,9 @@ public class CommentTest {
         // Exercise
         comment.like(user, 1);
 
-        Mockito.verify(user).addCommentLike(Mockito.any(CommentLike.class));
+        Mockito.verify(user).addCommentLike(Mockito.any(CommentVote.class));
 
-        Assert.assertEquals(1, comment.getLikes().size());
+        Assert.assertEquals(1, comment.getVotes().size());
     }
 
     @Test
@@ -278,9 +278,9 @@ public class CommentTest {
         User user = Mockito.mock(User.class);
         Mockito.when(user.getId()).thenReturn(1L);
 
-        Set<CommentLike> likes = new HashSet<>();
+        Set<CommentVote> likes = new HashSet<>();
 
-        CommentLike like = Mockito.mock(CommentLike.class);
+        CommentVote like = Mockito.mock(CommentVote.class);
         Mockito.when(like.getUser()).thenReturn(user);
 
         likes.add(like);

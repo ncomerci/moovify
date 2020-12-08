@@ -18,7 +18,7 @@ public class CommentDaoImpl implements CommentDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentDaoImpl.class);
 
     private static final String COMMENTS = Comment.TABLE_NAME;
-    private static final String COMMENTS_LIKES = CommentLike.TABLE_NAME;
+    private static final String COMMENTS_LIKES = CommentVote.TABLE_NAME;
 
     private static final String NATIVE_BASE_COMMENT_FROM = "FROM " + COMMENTS;
 
@@ -91,7 +91,7 @@ public class CommentDaoImpl implements CommentDao {
 
         em.persist(comment);
 
-        comment.setTotalLikes(0L);
+        comment.setTotalVotes(0L);
 
         LOGGER.info("Created Comment: {}", comment.getId());
 
@@ -100,16 +100,16 @@ public class CommentDaoImpl implements CommentDao {
 
     @Override
     public int getVoteValue(Comment comment, User user) {
-        CommentLike commentLike = em.createQuery("SELECT c FROM CommentLike c WHERE c.comment = :comment and c.user = :user", CommentLike.class)
+        CommentVote commentVote = em.createQuery("SELECT c FROM CommentVote c WHERE c.comment = :comment and c.user = :user", CommentVote.class)
                 .setParameter("comment", comment)
                 .setParameter("user", user)
                 .getResultList().stream().findFirst().orElse(null);
 
-        if (commentLike == null) {
+        if (commentVote == null) {
             return 0;
         }
 
-        return commentLike.getValue();
+        return commentVote.getValue();
     }
 
     @Override
@@ -124,7 +124,7 @@ public class CommentDaoImpl implements CommentDao {
 
         LOGGER.info("Find Deleted Comment By Id: {}", id);
 
-        TypedQuery<Comment> query = em.createQuery("SELECT c FROM Comment c WHERE c.id = :commentId AND enabled = :enabled", Comment.class)
+        TypedQuery<Comment> query = em.createQuery("SELECT c FROM Comment c WHERE c.id = :commentId AND c.enabled = :enabled", Comment.class)
                 .setParameter("commentId", id)
                 .setParameter("enabled", false);
 
@@ -198,7 +198,7 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<CommentVote> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
         return null;
     }
 
@@ -269,7 +269,7 @@ public class CommentDaoImpl implements CommentDao {
 
         final String fetchQuery = String.format(
                 "SELECT c, sum(coalesce(likes.value, 0)) AS totalLikes " +
-                        "FROM Comment c LEFT OUTER JOIN c.likes likes " +
+                        "FROM Comment c LEFT OUTER JOIN c.votes likes " +
                         "WHERE c.id IN :commentIds " +
                         "GROUP BY c " +
                         "%s", HQLOrderBy);
@@ -313,7 +313,7 @@ public class CommentDaoImpl implements CommentDao {
         // Map Tuples To Comments
         final Collection<Comment> comments = fetchQueryResult.stream().map(tuple -> {
 
-            tuple.get(0, Comment.class).setTotalLikes(tuple.get(1, Long.class));
+            tuple.get(0, Comment.class).setTotalVotes(tuple.get(1, Long.class));
             return tuple.get(0, Comment.class);
 
         }).collect(Collectors.toList());
@@ -353,7 +353,7 @@ public class CommentDaoImpl implements CommentDao {
 
         final String fetchQuery = String.format(
                 "SELECT c, sum(coalesce(likes.value, 0)) AS totalLikes " +
-                        "FROM Comment c LEFT OUTER JOIN c.likes likes " +
+                        "FROM Comment c LEFT OUTER JOIN c.votes likes " +
                         "WHERE c.id IN :commentIds " +
                         "GROUP BY c " +
                         "%s", HQLOrderBy);
@@ -395,7 +395,7 @@ public class CommentDaoImpl implements CommentDao {
         // Map Tuples To Comments
         final Collection<Comment> allComments = fetchQueryResult.stream().map(tuple -> {
 
-            tuple.get(0, Comment.class).setTotalLikes(tuple.get(1, Long.class));
+            tuple.get(0, Comment.class).setTotalVotes(tuple.get(1, Long.class));
             return tuple.get(0, Comment.class);
 
         }).collect(Collectors.toList());

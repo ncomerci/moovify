@@ -38,7 +38,7 @@ public interface CommentService {
 
     PaginatedCollection<Comment> findCommentsByUser(User user, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<CommentVote> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize);
 
     long getMaxCommentTreeDepth();
 

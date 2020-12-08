@@ -1,26 +1,26 @@
 package ar.edu.itba.paw.webapp.dto.output;
 
-import ar.edu.itba.paw.models.PostCategory;
+import ar.edu.itba.paw.models.MovieCategory;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class PostCategoryDto {
+public class MovieCategoryDto {
 
-    public static Collection<PostCategoryDto> mapPostCategoryToDto(Collection<PostCategory> postCategories) {
-        return postCategories.stream().map(PostCategoryDto::new).collect(Collectors.toList());
+    public static Collection<MovieCategoryDto> mapMovieCategoryToDto(Collection<MovieCategory> movieCategories) {
+        return movieCategories.stream().map(MovieCategoryDto::new).collect(Collectors.toList());
     }
 
     private long id;
     private String name;
 
-    public PostCategoryDto() {
+    public MovieCategoryDto() {
         // For Jersey - Do not use
     }
 
-    public PostCategoryDto(PostCategory postCategory) {
-        id = postCategory.getId();
-        name = postCategory.getName();
+    public MovieCategoryDto(MovieCategory movieCategory) {
+        id = movieCategory.getId();
+        name = movieCategory.getName();
     }
 
     public long getId() {
@@ -38,4 +38,5 @@ public class PostCategoryDto {
     public void setName(String name) {
         this.name = name;
     }
+
 }

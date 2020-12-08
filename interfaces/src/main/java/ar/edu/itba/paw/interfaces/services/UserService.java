@@ -35,6 +35,8 @@ public interface UserService {
 
     void unfollowUser(User user, User userUnfollowed) throws IllegalUserUnfollowException;
 
+    boolean isFollowingUser(User user, User other);
+
     Optional<User> confirmRegistration(String token);
 
     void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale);
@@ -52,6 +54,8 @@ public interface UserService {
     void bookmarkPost(User user, Post post) throws IllegalPostBookmarkException;
 
     void unbookmarkPost(User user, Post post) throws IllegalPostUnbookmarkException;
+
+    boolean hasUserBookmarkedPost(User user, Post post);
 
     long getFollowerCount(User user);
 

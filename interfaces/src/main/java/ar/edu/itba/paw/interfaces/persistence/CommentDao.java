@@ -37,5 +37,5 @@ public interface CommentDao {
 
     PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<CommentVote> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize);
 }

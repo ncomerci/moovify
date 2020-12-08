@@ -1,12 +1,11 @@
 package ar.edu.itba.paw.webapp.dto.output;
 
-import ar.edu.itba.paw.models.*;
+import ar.edu.itba.paw.models.Post;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PostDto {
@@ -26,12 +25,12 @@ public class PostDto {
     private int wordCount;
     private boolean edited;
     private LocalDateTime lastEditDate;
-    private User user;
-    private String postCategory;
+    private UserDto user;
+    private PostCategoryDto postCategory;
     private Collection<String> tags;
-    private Collection<Movie> movies;
+    private Collection<MovieDto> movies;
     private boolean enabled;
-    private Long totalLikes;
+    private long totalLikes;
 
     // Relations
     private String comments;
@@ -40,7 +39,7 @@ public class PostDto {
     private String url;
 
     public PostDto(){
-        // Do not use
+        // For Jersey - Do not use
     }
 
     public PostDto(Post post, UriInfo uriInfo) {
@@ -51,17 +50,17 @@ public class PostDto {
         this.wordCount = post.getWordCount();
         this.edited = post.isEdited();
         this.lastEditDate = post.getLastEditDate();
-        this.user = post.getUser();
-        this.postCategory = post.getCategory().getName();
+        this.user = new UserDto(post.getUser(), uriInfo);
+        this.postCategory = new PostCategoryDto(post.getCategory());
         this.tags = post.getTags();
-        this.movies = post.getMovies();
+        this.movies = MovieDto.mapMoviesToDto(post.getMovies(), uriInfo);
         this.enabled = post.isEnabled();
-        this.totalLikes = post.getTotalLikes();
+        this.totalLikes = post.getTotalVotes();
 
         final UriBuilder postUriBuilder = getPostUriBuilder(post, uriInfo);
 
-        comments = postUriBuilder.clone().path("/comments").build().toString();
-        votes = postUriBuilder.clone().path("/votes").build().toString();
+        comments = postUriBuilder.clone().path("comments").build().toString();
+        votes = postUriBuilder.clone().path("votes").build().toString();
 
         url = postUriBuilder.build().toString();
     }
@@ -122,19 +121,19 @@ public class PostDto {
         this.lastEditDate = lastEditDate;
     }
 
-    public User getUser() {
+    public UserDto getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDto user) {
         this.user = user;
     }
 
-    public String getPostCategory() {
+    public PostCategoryDto getPostCategory() {
         return postCategory;
     }
 
-    public void setPostCategory(String postCategory) {
+    public void setPostCategory(PostCategoryDto postCategory) {
         this.postCategory = postCategory;
     }
 
@@ -146,11 +145,11 @@ public class PostDto {
         this.tags = tags;
     }
 
-    public Collection<Movie> getMovies() {
+    public Collection<MovieDto> getMovies() {
         return movies;
     }
 
-    public void setMovies(Collection<Movie> movies) {
+    public void setMovies(Collection<MovieDto> movies) {
         this.movies = movies;
     }
 

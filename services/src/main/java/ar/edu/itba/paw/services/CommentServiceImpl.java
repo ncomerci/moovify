@@ -170,7 +170,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<CommentVote> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
         return commentDao.getCommentVotes(comment, sortCriteria, pageNumber, pageSize);
     }
 

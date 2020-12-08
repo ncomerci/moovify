@@ -5,4 +5,5 @@ public enum Role {
     NOT_VALIDATED,
     USER,
     ADMIN;
+
 }
