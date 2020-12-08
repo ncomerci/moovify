@@ -98,9 +98,9 @@ public class MovieController {
 
         Collection<SearchOptionDto> options = new ArrayList<>();
 
-        options.add(new SearchOptionDto("movieCategory", searchService.getMoviesCategories(), null));
-        options.add(new SearchOptionDto("decade", searchService.getMoviesDecades(), null));
-        options.add(new SearchOptionDto("orderBy", movieService.getMovieSortOptions(), "newest"));
+        options.add(new SearchOptionDto("movieCategory", searchService.getMoviesCategories()));
+        options.add(new SearchOptionDto("decade", searchService.getMoviesDecades()));
+        options.add(new SearchOptionDto("orderBy", movieService.getMovieSortOptions()));
 
         return Response.ok(new GenericEntity<Collection<SearchOptionDto>>(options) {}).build();
     }
