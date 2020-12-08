@@ -44,6 +44,9 @@ public class MovieDto {
     }
 
     public MovieDto(Movie movie, UriInfo uriInfo) {
+
+        final UriBuilder movieUriBuilder = getMovieUriBuilder(movie, uriInfo);
+
         id = movie.getId();
         creationDate = movie.getCreationDate();
         title = movie.getTitle();
@@ -58,8 +61,6 @@ public class MovieDto {
         voteAverage = movie.getVoteAverage();
         releaseDate = movie.getReleaseDate();
         postCount = movie.getPostCount();
-
-        final UriBuilder movieUriBuilder = getMovieUriBuilder(movie, uriInfo);
 
         poster = movieUriBuilder.clone().path("poster").build().toString();
         posts = movieUriBuilder.clone().path("posts").build().toString();

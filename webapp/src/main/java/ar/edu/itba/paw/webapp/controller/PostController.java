@@ -33,6 +33,9 @@ public class PostController {
     @Context
     private UriInfo uriInfo;
 
+    @Context
+    private SecurityContext securityContext;
+
     @Autowired
     private PostService postService;
 
@@ -62,7 +65,7 @@ public class PostController {
         else
             posts = postService.getAllPosts(orderBy, pageNumber, pageSize);
 
-        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -85,7 +88,7 @@ public class PostController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response createPost(@Valid final PostCreateDto postCreateDto, @Context SecurityContext securityContext) {
+    public Response createPost(@Valid final PostCreateDto postCreateDto) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -118,14 +121,14 @@ public class PostController {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
-        return Response.ok(new PostDto(post, uriInfo)).build();
+        return Response.ok(new PostDto(post, uriInfo, securityContext)).build();
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}")
-    public Response editPost(@PathParam("id") long id, @Valid final PostEditDto postEditDto, @Context SecurityContext securityContext) throws MissingPostEditPermissionException, IllegalPostEditionException {
+    public Response editPost(@PathParam("id") long id, @Valid final PostEditDto postEditDto) throws MissingPostEditPermissionException, IllegalPostEditionException {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
@@ -161,7 +164,7 @@ public class PostController {
 
         final PaginatedCollection<PostVote> postVotes = postService.getPostVotes(post, pageNumber, pageSize);
 
-        final Collection<PostVoteDto> postVotesDto = PostVoteDto.mapPostsVoteToDto(postVotes.getResults(), uriInfo);
+        final Collection<PostVoteDto> postVotesDto = PostVoteDto.mapPostsVoteToDto(postVotes.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
@@ -189,7 +192,7 @@ public class PostController {
     @PUT
     @Path("/{id}/votes")
     public Response votePost(@PathParam("id") long id,
-                             final GenericIntegerValueDto valueDto, @Context SecurityContext securityContext) throws IllegalPostLikeException {
+                             final GenericIntegerValueDto valueDto) throws IllegalPostLikeException {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
@@ -212,7 +215,7 @@ public class PostController {
 
         final PaginatedCollection<Comment> comments = commentService.findCommentsByPost(post, orderBy, pageNumber, pageSize);
 
-        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
+        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()

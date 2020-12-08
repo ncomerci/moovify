@@ -3,6 +3,7 @@ package ar.edu.itba.paw.webapp.dto.output;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
@@ -11,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class UserDto {
 
-    public static Collection<UserDto> mapUsersToDto(Collection<User> users, UriInfo uriInfo) {
-        return users.stream().map(u -> new UserDto(u, uriInfo)).collect(Collectors.toList());
+    public static Collection<UserDto> mapUsersToDto(Collection<User> users, UriInfo uriInfo, SecurityContext securityContext) {
+        return users.stream().map(u -> new UserDto(u, uriInfo, securityContext)).collect(Collectors.toList());
     }
 
     public static UriBuilder getUserUriBuilder(User user, UriInfo uriInfo) {
@@ -43,9 +44,17 @@ public class UserDto {
         // Do not use
     }
 
-    public UserDto(User user, UriInfo uriInfo) {
+    public UserDto(User user, UriInfo uriInfo, SecurityContext securityContext) {
+
+        final UriBuilder userUriBuilder = getUserUriBuilder(user, uriInfo);
 
         id = user.getId();
+        enabled = user.isEnabled();
+        url = userUriBuilder.build().toString();
+
+        if(!enabled && !securityContext.isUserInRole(Role.ADMIN.name()))
+            return;
+
         creationDate = user.getCreationDate();
         username = user.getUsername();
         name = user.getName();
@@ -53,18 +62,13 @@ public class UserDto {
         description = user.getDescription();
         language = user.getLanguage();
         totalLikes = user.getTotalLikes();
-        enabled = user.isEnabled();
         roles = user.getRoles();
-
-        final UriBuilder userUriBuilder = getUserUriBuilder(user, uriInfo);
 
         avatar = userUriBuilder.clone().path("/avatar").build().toString();
         posts = userUriBuilder.clone().path("/posts").build().toString();
         comments = userUriBuilder.clone().path("/comments").build().toString();
         following = userUriBuilder.clone().path("/following").build().toString();
         bookmarkedPosts = userUriBuilder.clone().path("/bookmarked").build().toString();
-
-        url = userUriBuilder.build().toString();
     }
 
     public long getId() {

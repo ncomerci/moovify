@@ -1,7 +1,9 @@
 package ar.edu.itba.paw.webapp.dto.output;
 
 import ar.edu.itba.paw.models.Post;
+import ar.edu.itba.paw.models.Role;
 
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
@@ -10,8 +12,8 @@ import java.util.stream.Collectors;
 
 public class PostDto {
 
-    public static Collection<PostDto> mapPostsToDto(Collection<Post> posts, UriInfo uriInfo) {
-        return posts.stream().map(p -> new PostDto(p, uriInfo)).collect(Collectors.toList());
+    public static Collection<PostDto> mapPostsToDto(Collection<Post> posts, UriInfo uriInfo, SecurityContext securityContext) {
+        return posts.stream().map(p -> new PostDto(p, uriInfo, securityContext)).collect(Collectors.toList());
     }
 
     public static UriBuilder getPostUriBuilder(Post post, UriInfo uriInfo) {
@@ -42,27 +44,31 @@ public class PostDto {
         // For Jersey - Do not use
     }
 
-    public PostDto(Post post, UriInfo uriInfo) {
-        this.id = post.getId();
-        this.creationDate = post.getCreationDate();
-        this.title = post.getTitle();
-        this.body = post.getBody();
-        this.wordCount = post.getWordCount();
-        this.edited = post.isEdited();
-        this.lastEditDate = post.getLastEditDate();
-        this.user = new UserDto(post.getUser(), uriInfo);
-        this.postCategory = new PostCategoryDto(post.getCategory());
-        this.tags = post.getTags();
-        this.movies = MovieDto.mapMoviesToDto(post.getMovies(), uriInfo);
-        this.enabled = post.isEnabled();
-        this.totalLikes = post.getTotalVotes();
+    public PostDto(Post post, UriInfo uriInfo, SecurityContext securityContext) {
 
         final UriBuilder postUriBuilder = getPostUriBuilder(post, uriInfo);
 
+        id = post.getId();
+        enabled = post.isEnabled();
+        url = postUriBuilder.build().toString();
+
+        if(!enabled && !securityContext.isUserInRole(Role.ADMIN.name()))
+            return;
+
+        creationDate = post.getCreationDate();
+        title = post.getTitle();
+        body = post.getBody();
+        wordCount = post.getWordCount();
+        edited = post.isEdited();
+        lastEditDate = post.getLastEditDate();
+        user = new UserDto(post.getUser(), uriInfo, securityContext);
+        postCategory = new PostCategoryDto(post.getCategory());
+        tags = post.getTags();
+        movies = MovieDto.mapMoviesToDto(post.getMovies(), uriInfo);
+        totalLikes = post.getTotalVotes();
+
         comments = postUriBuilder.clone().path("comments").build().toString();
         votes = postUriBuilder.clone().path("votes").build().toString();
-
-        url = postUriBuilder.build().toString();
     }
 
     public long getId() {
