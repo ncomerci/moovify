@@ -13,15 +13,15 @@ import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.auth.JwtUtil;
+import ar.edu.itba.paw.webapp.dto.error.BeanValidationErrorDto;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
-import ar.edu.itba.paw.webapp.dto.input.TokenDto;
-import ar.edu.itba.paw.webapp.dto.input.UpdateAvatarDto;
-import ar.edu.itba.paw.webapp.dto.input.UserAuthenticationDto;
-import ar.edu.itba.paw.webapp.dto.input.UserEditDto;
+import ar.edu.itba.paw.webapp.dto.error.GenericErrorDto;
+import ar.edu.itba.paw.webapp.dto.input.*;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +37,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Path("user")
@@ -115,7 +117,7 @@ public class AuthenticatedUserController {
         }
 
         return Response.noContent()
-                .location(UserDto.getUserUriBuilder(user, uriInfo).build())
+                .contentLocation(UserDto.getUserUriBuilder(user, uriInfo).build())
                 .build();
     }
 
@@ -130,7 +132,7 @@ public class AuthenticatedUserController {
         userService.updateAvatar(user, updateAvatarDto.getAvatar().getBytes());
 
         return Response.noContent()
-                .location(UserDto.getUserUriBuilder(user, uriInfo).path("/avatar").build())
+                .contentLocation(UserDto.getUserUriBuilder(user, uriInfo).path("/avatar").build())
                 .build();
     }
 
@@ -271,14 +273,8 @@ public class AuthenticatedUserController {
         return Response.noContent().build();
     }
 
-    // TODO: Add email flows
-    //  /user/email_verification [POST] - confirm
-    //  /user/email_verification [PUT] - resend
-    //  /user/reset_password [PUT] - send
-    //  /user/reset_password [POST] - confirm
-
     @Produces(MediaType.APPLICATION_JSON)
-    @PUT
+    @POST
     @Path("/email_confirmation")
     public Response resendConfirmationEmail(@Context SecurityContext securityContext, @Context HttpServletRequest request) {
 
@@ -290,24 +286,96 @@ public class AuthenticatedUserController {
     }
 
     @Produces(MediaType.APPLICATION_JSON)
-    @POST
+    @PUT
     @Path("/email_confirmation")
     public Response confirmRegistration(final TokenDto tokenDto,
                                         @Context SecurityContext securityContext, @Context HttpServletRequest request) {
 
         final Optional<User> optUser = userService.confirmRegistration(tokenDto.getToken());
 
-        if(optUser.isPresent() && optUser.get().isEnabled()) {
+        if(optUser.isPresent()) {
 
+            final User user = optUser.get();
+
+            final Response.ResponseBuilder responseBuilder = Response.noContent();
+
+            if(user.isEnabled() && securityContext.getUserPrincipal() != null)
+                responseBuilder.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateToken(user));
+
+            return Response.noContent().build();
         }
 
+        // TODO: Descablear String
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity(new GenericErrorDto("The token provided is invalid"))
+                .build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/password_reset")
+    public Response sendPasswordResetEmail(@Valid final PasswordResetEmailDto passwordResetEmailDto, @Context HttpServletRequest request) {
+
+        final Optional<User> optUser = userService.findUserByEmail(passwordResetEmailDto.getEmail());
+
+        if(!optUser.isPresent() || !optUser.get().isValidated()) {
+
+            final String errorMessage;
+
+            // TODO: Descablear String
+            if(!optUser.isPresent())
+                errorMessage = "Email doesn't belong to any user";
+
+            else
+                errorMessage = "Email is not confirmed";
+
+            final List<BeanValidationErrorDto> emailError =
+                    Collections.singletonList(
+                        new BeanValidationErrorDto("email", passwordResetEmailDto.getEmail(), errorMessage)
+                    );
+
+            return Response.status(Response.Status.BAD_REQUEST).entity(emailError).build();
+        }
+
+        final User user = optUser.get();
+
+        userService.createPasswordResetEmail(user, "passwordResetEmail", request.getLocale());
+
         return Response.noContent().build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/password_reset")
+    public Response resetPassword(@Valid final PasswordResetDto passwordResetDto, @Context SecurityContext securityContext) {
+
+        final boolean isTokenValid = userService.validatePasswordResetToken(passwordResetDto.getToken());
+
+        if(!isTokenValid) {
+
+            // TODO: Descablear String
+            final List<BeanValidationErrorDto> emailError =
+                    Collections.singletonList(
+                            new BeanValidationErrorDto("token", passwordResetDto.getToken(), "Invalid Token")
+                    );
+
+            return Response.status(Response.Status.BAD_REQUEST).entity(emailError).build();
+        }
+
+        final User user = userService.updatePassword(passwordResetDto.getPassword(), passwordResetDto.getToken())
+                .orElseThrow(InvalidResetPasswordToken::new);
+
+        final Response.ResponseBuilder responseBuilder = Response.noContent();
+
+        if(user.isEnabled() && securityContext.getUserPrincipal() != null)
+            responseBuilder.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateToken(user));
+
+        return responseBuilder.build();
     }
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
                                                                   GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
                                                                   String orderBy) {
-
         if(paginatedResults.isEmpty()) {
             if(paginatedResults.getPageNumber() == 0)
                 return Response.noContent().build();
