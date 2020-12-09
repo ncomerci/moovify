@@ -5,7 +5,6 @@ import ar.edu.itba.paw.interfaces.exceptions.CustomException;
 public class InvalidUserPromotionException extends CustomException {
 
     public InvalidUserPromotionException() {
-        super("Invalid user promotion");
-        responseStatus = 400;
+        super("error.InvalidUserPromotionException", 400);
     }
 }

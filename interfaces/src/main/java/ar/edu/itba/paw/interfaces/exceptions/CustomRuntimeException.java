@@ -1,18 +1,21 @@
 package ar.edu.itba.paw.interfaces.exceptions;
 
-public class CustomRuntimeException extends RuntimeException {
+public abstract class CustomRuntimeException extends RuntimeException {
 
-    protected int responseStatus;
+    private final int responseStatus;
+    private final String messageCode;
 
-    public CustomRuntimeException() {
-        super("Custom runtime exception");
-    }
-
-    public CustomRuntimeException(String message) {
-        super(message);
+    public CustomRuntimeException(String messageCode, int responseStatus) {
+        super();
+        this.messageCode = messageCode;
+        this.responseStatus = responseStatus;
     }
 
     public int getResponseStatus() {
         return responseStatus;
+    }
+
+    public String getMessageCode() {
+        return messageCode;
     }
 }

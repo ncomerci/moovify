@@ -5,7 +5,6 @@ import ar.edu.itba.paw.interfaces.exceptions.CustomRuntimeException;
 public class PostNotFoundException extends CustomRuntimeException {
 
     public PostNotFoundException() {
-        super("Post not found");
-        responseStatus = 404;
+        super("error.postNotFoundException", 404);
     }
 }

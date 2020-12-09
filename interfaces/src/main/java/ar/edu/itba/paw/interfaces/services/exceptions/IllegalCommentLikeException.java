@@ -5,7 +5,6 @@ import ar.edu.itba.paw.interfaces.exceptions.CustomException;
 public class IllegalCommentLikeException extends CustomException {
 
     public IllegalCommentLikeException() {
-        super("Illegal comment like");
-        responseStatus = 400;
+        super("error.IllegalCommentLikeException", 400);
     }
 }

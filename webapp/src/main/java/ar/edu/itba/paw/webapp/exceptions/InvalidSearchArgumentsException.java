@@ -5,7 +5,6 @@ import ar.edu.itba.paw.interfaces.exceptions.CustomRuntimeException;
 public class InvalidSearchArgumentsException extends CustomRuntimeException {
 
     public InvalidSearchArgumentsException() {
-        super("Invalid search arguments");
-        responseStatus = 400;
+        super("error.invalidSearchArgumentsException", 400);
     }
 }

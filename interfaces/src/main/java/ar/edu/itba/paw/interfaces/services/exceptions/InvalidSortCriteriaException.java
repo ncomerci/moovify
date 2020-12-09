@@ -5,7 +5,6 @@ import ar.edu.itba.paw.interfaces.exceptions.CustomRuntimeException;
 public class InvalidSortCriteriaException extends CustomRuntimeException {
 
     public InvalidSortCriteriaException() {
-        super("Invalid sort criteria");
-        responseStatus = 400;
+        super("error.invalidSortCriteriaException", 400);
     }
 }
