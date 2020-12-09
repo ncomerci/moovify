@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,12 +65,13 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User register(String username, String password, String name, String email, String description, String confirmationMailTemplate, Locale locale) throws DuplicateUniqueUserAttributeException {
+    public User register(String username, String password, String name, String email, String description, String confirmationMailTemplate) throws DuplicateUniqueUserAttributeException {
 
         final User user = userDao.register(username, passwordEncoder.encode(password),
-                name, email, description, locale.getLanguage(), Collections.singleton(Role.NOT_VALIDATED), null, true);
+                name, email, description, LocaleContextHolder.getLocale().getLanguage(),
+                Collections.singleton(Role.NOT_VALIDATED), null, true);
 
-        createConfirmationEmail(user, confirmationMailTemplate, locale);
+        createConfirmationEmail(user, confirmationMailTemplate);
 
         LOGGER.info("Created User {}", user.getId());
 
@@ -219,7 +221,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale) {
+    public void createConfirmationEmail(User user, String confirmationMailTemplate) {
 
         final String token = UUID.randomUUID().toString();
 
@@ -237,6 +239,8 @@ public class UserServiceImpl implements UserService {
 
         emailVariables.put("token", token);
 
+        final Locale locale = LocaleContextHolder.getLocale();
+
         mailService.sendEmail(user.getEmail(), messageSource.getMessage("mail.confirmation.subject", null, locale), confirmationMailTemplate, emailVariables, locale);
 
         LOGGER.info("Created and sent email confirmation token {} to User {}", token, user.getId());
@@ -244,7 +248,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void createPasswordResetEmail(User user, String passwordResetMailTemplate, Locale locale) {
+    public void createPasswordResetEmail(User user, String passwordResetMailTemplate) {
 
         final String token = UUID.randomUUID().toString();
 
@@ -259,6 +263,8 @@ public class UserServiceImpl implements UserService {
 
         final Map<String, Object> emailVariables = new HashMap<>();
         emailVariables.put("token", token);
+
+        final Locale locale = LocaleContextHolder.getLocale();
 
         mailService.sendEmail(user.getEmail(), messageSource.getMessage("mail.passwordReset.subject", null, locale), passwordResetMailTemplate, emailVariables, locale);
 
@@ -346,9 +352,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public boolean hasUserBookmarkedPost(User user, Post post) {
-
         return user.isEnabled() && post.isEnabled() && user.isPostBookmarked(post);
-
     }
 
     @Transactional(readOnly = true)

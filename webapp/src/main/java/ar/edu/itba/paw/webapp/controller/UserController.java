@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -93,14 +92,13 @@ public class UserController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response createUser(@Valid final UserCreateDto userCreateDto, @Context HttpServletRequest request) {
+    public Response createUser(@Valid final UserCreateDto userCreateDto) {
 
         final User user;
 
         try {
             user = userService.register(userCreateDto.getUsername(), userCreateDto.getPassword(), userCreateDto.getName(),
-                    userCreateDto.getEmail(), userCreateDto.getDescription(), "confirmEmail",
-                    request.getLocale());
+                    userCreateDto.getEmail(), userCreateDto.getDescription(), "confirmEmail");
         }
         catch(DuplicateUniqueUserAttributeException e) {
             return Response
