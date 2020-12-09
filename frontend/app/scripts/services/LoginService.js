@@ -19,7 +19,6 @@ define(['frontend'], function(frontend) {
           }).catch(err => {
             $window.localStorage.removeItem("authorization");
             Restangular.setDefaultHeaders({});
-            reject(err);
           });
         });
       },
