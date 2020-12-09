@@ -1,3 +1,4 @@
+'use strict';
 define(['frontend', 'services/LoginService', 'services/PageTitleService'], function(frontend) {
 
     'use strict';
