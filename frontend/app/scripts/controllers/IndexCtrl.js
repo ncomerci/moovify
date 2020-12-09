@@ -6,7 +6,6 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
 		$scope.loggedUser = LoggedUserFactory.getLoggedUser();
 		PageTitle.setTitle('asdasd'); // TODO: cambiar key
     $scope.$on('$routeChangeSuccess', function () {
-      console.log(PageTitle.getTitle());
       $scope.title = PageTitle.getTitle();
 
     });
