@@ -3,7 +3,7 @@ define(['frontend'], function(frontend) {
 
   frontend.factory('LoggedUserFactory', function(Restangular, $window) {
     let loggedUser = {
-      logged: false
+      logged: false,
     };
     const LoggedUserFactory =  {
       getLoggedUser: function () {
@@ -13,7 +13,7 @@ define(['frontend'], function(frontend) {
         return new Promise((resolve, reject) => {
           Restangular.setDefaultHeaders({authorization: token});
           Restangular.one("user").get().then(function (user) {
-            loggedUser = Object.assign(loggedUser, user);
+            Object.assign(loggedUser, user.data ? user.data : user);
             loggedUser.logged = true;
             resolve(loggedUser);
           }).catch(err => {

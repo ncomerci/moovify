@@ -128,3 +128,7 @@ $navbar-nav-item-font-size:             0.875rem;
 @mixin hook-navbar(){
   box-shadow: 0 1em 1em -1em rgba(0, 0, 0, .25);
 }
+
+@mixin hook-navbar-nav-item() {
+  font-weight: 500;
+}
