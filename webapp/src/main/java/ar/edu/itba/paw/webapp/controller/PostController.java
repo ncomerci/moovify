@@ -47,7 +47,7 @@ public class PostController {
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listPosts(@QueryParam("query") String query,
+    public Response listPosts(@QueryParam("query") @DefaultValue("") String query,
                               @QueryParam("postCategory") String postCategory,
                               @QueryParam("postAge") String postAge,
                               @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
@@ -56,7 +56,7 @@ public class PostController {
 
         final PaginatedCollection<Post> posts;
 
-        if(query != null)
+        if(!query.equals("") || postCategory != null || postAge != null)
             posts = searchService.searchPosts(query, postCategory, postAge, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         else
@@ -69,15 +69,14 @@ public class PostController {
                 .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
-        if(query != null) {
             linkUriBuilder.queryParam("query", query);
 
-            if(postCategory != null)
-                linkUriBuilder.queryParam("postCategory", postCategory);
+        if(postCategory != null)
+            linkUriBuilder.queryParam("postCategory", postCategory);
 
-            if(postAge != null)
-                linkUriBuilder.queryParam("postAge", postAge);
-        }
+        if(postAge != null)
+            linkUriBuilder.queryParam("postAge", postAge);
+
 
         return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
     }
