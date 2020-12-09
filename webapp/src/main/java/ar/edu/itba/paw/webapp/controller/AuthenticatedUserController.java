@@ -91,12 +91,11 @@ public class AuthenticatedUserController {
 
             User user = userService.findUserByUsername(authenticate.getName()).orElseThrow(UserNotFoundException::new);
 
-            return Response.noContent()
-                    .header(
-                            HttpHeaders.AUTHORIZATION,
-                            jwtUtil.generateToken(user)
-                    )
-                    .build();
+            final Response.ResponseBuilder responseBuilder = Response.noContent();
+
+            authenticateUser(responseBuilder, user);
+
+            return responseBuilder.build();
 
         } catch (AuthenticationException e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -110,6 +109,8 @@ public class AuthenticatedUserController {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
+        final boolean shouldRevalidateAuthentication = !userEditDto.getUsername().equals(user.getUsername());
+
         try {
             userService.updateUser(user, userEditDto.getName(), userEditDto.getUsername(), userEditDto.getDescription(),
                     userEditDto.getPassword());
@@ -121,9 +122,13 @@ public class AuthenticatedUserController {
                     .build();
         }
 
-        return Response.noContent()
-                .contentLocation(UserDto.getUserUriBuilder(user, uriInfo).build())
-                .build();
+        final Response.ResponseBuilder responseBuilder = Response.noContent()
+                .contentLocation(UserDto.getUserUriBuilder(user, uriInfo).build());
+
+        if(shouldRevalidateAuthentication)
+            authenticateUser(responseBuilder, user);
+
+        return responseBuilder.build();
     }
 
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -364,8 +369,8 @@ public class AuthenticatedUserController {
 
             final Response.ResponseBuilder responseBuilder = Response.noContent();
 
-            if(user.isEnabled() && securityContext.getUserPrincipal() != null)
-                responseBuilder.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateToken(user));
+            if(user.isEnabled())
+                authenticateUser(responseBuilder, user);
 
             return Response.noContent().build();
         }
@@ -435,7 +440,7 @@ public class AuthenticatedUserController {
         final Response.ResponseBuilder responseBuilder = Response.noContent();
 
         if(user.isEnabled() && securityContext.getUserPrincipal() != null)
-            responseBuilder.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateToken(user));
+            authenticateUser(responseBuilder, user);
 
         return responseBuilder.build();
     }
@@ -477,5 +482,9 @@ public class AuthenticatedUserController {
 
         if(pageNumber != last)
             response.link(baseUri.clone().queryParam(pageNumberParamName, next).build(), "next");
+    }
+
+    private void authenticateUser(Response.ResponseBuilder responseBuilder, User user) {
+        responseBuilder.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateToken(user));
     }
 }
