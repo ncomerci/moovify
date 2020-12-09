@@ -30,6 +30,7 @@ public class UserTest {
     private static final Set<Post> DEFAULT_POSTS = Collections.emptySet();
     private static final Set<Comment> DEFAULT_COMMENTS = Collections.emptySet();
     private static final Set<User> DEFAULT_FOLLOWING = Collections.emptySet();
+    private static final Set<User> DEFAULT_FOLLOWERS = Collections.emptySet();
     private static final Set<Post> DEFAULT_FAVOURITE_POSTS = Collections.emptySet();
 
 
@@ -82,7 +83,7 @@ public class UserTest {
 
         User user = new User(DEFAULT_ID, DEFAULT_CREATION_DATE, DEFAULT_USERNAME, DEFAULT_PASSWORD, DEFAULT_NAME,
                 DEFAULT_EMAIL, DEFAULT_DESCRIPTION, DEFAULT_LANGUAGE, DEFAULT_AVATAR, DEFAULT_ROLES, DEFAULT_ENABLED,
-                DEFAULT_POST_LIKES, DEFAULT_COMMENT_LIKES, posts, comments, DEFAULT_FOLLOWING,
+                DEFAULT_POST_LIKES, DEFAULT_COMMENT_LIKES, posts, comments, DEFAULT_FOLLOWING, DEFAULT_FOLLOWERS,
                 DEFAULT_FAVOURITE_POSTS);
 
         // Exercise

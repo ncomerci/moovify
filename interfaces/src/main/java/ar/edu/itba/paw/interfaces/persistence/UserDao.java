@@ -12,7 +12,7 @@ import java.util.Set;
 public interface UserDao {
 
     enum SortCriteria {
-        NEWEST, OLDEST, LIKES, USERNAME
+        NEWEST, OLDEST, VOTES, USERNAME, FOLLOWERS
     }
 
     User register(String username, String password, String name, String email, String description, String language, Set<Role> roleNames, Image avatar, boolean enabled) throws DuplicateUniqueUserAttributeException;

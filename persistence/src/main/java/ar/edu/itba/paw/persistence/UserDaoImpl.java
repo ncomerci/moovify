@@ -55,6 +55,12 @@ public class UserDaoImpl implements UserDao {
 
             ") TOTAL_LIKES ON TOTAL_LIKES.user_id = " + USERS + ".user_id";
 
+    private static final String NATIVE_FOLLOWER_COUNT_FROM = "LEFT OUTER JOIN ( " +
+            "SELECT " + USERS_FOLLOWS + ".user_follow_id, COUNT(*) follower_count " +
+                "FROM " + USERS_FOLLOWS +
+                " GROUP BY " + USERS_FOLLOWS + ".user_follow_id " +
+            ") FOLLOWER_COUNT ON FOLLOWER_COUNT.user_follow_id = " + USERS + ".user_id";
+
     // Search Query Statements
     private static final String NATIVE_SEARCH_BY_USERNAME = "LOWER(" + USERS + ".username) LIKE '%' || LOWER(?) || '%'";
 
@@ -76,8 +82,9 @@ public class UserDaoImpl implements UserDao {
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, USERS + ".creation_date desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, USERS + ".creation_date");
-        sortCriteriaQuery.put(SortCriteria.LIKES, "TOTAL_LIKES.total_likes desc");
+        sortCriteriaQuery.put(SortCriteria.VOTES, "TOTAL_LIKES.total_likes desc");
         sortCriteriaQuery.put(SortCriteria.USERNAME, USERS + ".username");
+        sortCriteriaQuery.put(SortCriteria.FOLLOWERS, "coalesce(FOLLOWER_COUNT.follower_count, 0) desc");
 
         return sortCriteriaQuery;
     }
@@ -88,8 +95,9 @@ public class UserDaoImpl implements UserDao {
 
         sortCriteriaQuery.put(SortCriteria.NEWEST, "u.creationDate desc");
         sortCriteriaQuery.put(SortCriteria.OLDEST, "u.creationDate");
-        sortCriteriaQuery.put(SortCriteria.LIKES, "totalLikes desc");
+        sortCriteriaQuery.put(SortCriteria.VOTES, "totalLikes desc");
         sortCriteriaQuery.put(SortCriteria.USERNAME, "u.username");
+        sortCriteriaQuery.put(SortCriteria.FOLLOWERS, "followerCount desc");
 
         return sortCriteriaQuery;
     }
@@ -131,7 +139,9 @@ public class UserDaoImpl implements UserDao {
             throw new DuplicateUniqueUserAttributeException(duplicatedUniqueAttributes);
         }
 
-        final User user = new User(LocalDateTime.now(), username, password, name, email, description, language, avatar, roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
+        final User user = new User(LocalDateTime.now(), username, password, name, email, description, language, avatar,
+                roleNames, enabled, Collections.emptySet(), Collections.emptySet(), Collections.emptySet(),
+                Collections.emptySet(), Collections.emptySet(), Collections.emptySet(), Collections.emptySet());
 
         em.persist(user);
 
@@ -231,7 +241,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     private String buildNativeFromStatement() {
-        return NATIVE_BASE_USER_FROM + " " + NATIVE_TOTAL_LIKES_FROM;
+        return NATIVE_BASE_USER_FROM + " " + NATIVE_TOTAL_LIKES_FROM + " " + NATIVE_FOLLOWER_COUNT_FROM;
     }
 
     private String buildNativeOrderByStatement(SortCriteria sortCriteria) {
@@ -325,7 +335,8 @@ public class UserDaoImpl implements UserDao {
                 "SELECT u, " +
                 "coalesce((SELECT sum(postLikes.value) from u.posts posts left outer join posts.votes postLikes), 0) + " +
                 "coalesce((SELECT sum(commentLikes.value) from u.comments comments left outer join comments.votes commentLikes), 0)" +
-                        " AS totalLikes " +
+                        " AS totalLikes, " +
+                "u.followers.size AS followerCount " +
                 "FROM User u " +
                 "WHERE u.id IN :userIds " +
                 "GROUP BY u " +
@@ -370,8 +381,12 @@ public class UserDaoImpl implements UserDao {
         // Map Tuples To Users
         final Collection<User> users = fetchQueryResult.stream().map(tuple -> {
 
-            tuple.get(0, User.class).setTotalLikes(tuple.get(1, Long.class));
-            return tuple.get(0, User.class);
+            final User user = tuple.get(0, User.class);
+
+            user.setTotalLikes(tuple.get(1, Long.class));
+            user.setFollowerCount(tuple.get(2, Integer.class));
+
+            return user;
 
         }).collect(Collectors.toList());
 
