@@ -236,6 +236,31 @@ public class AuthenticatedUserController {
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @Path("/following/posts")
+    public Response getFollowedUsersPosts(@QueryParam("enabled") Boolean enabled,
+                                         @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                                         @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                                         @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+
+        final PaginatedCollection<Post> posts = postService.getFollowedUsersPosts(user, enabled, orderBy, pageNumber, pageSize);
+
+        final Collection<PostDto> postDtos = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
+
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", posts.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postDtos) {}, linkUriBuilder);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
     @Path("/following/{userId}")
     public Response isFollowingUser(@PathParam("userId") long userId) {
 
