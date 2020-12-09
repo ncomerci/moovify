@@ -63,70 +63,67 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .and().authorizeRequests()
 
                     // Home Controller
-                        // "/"
-                        // "/403"
+                        // "/" - GET
 
                     // User Controller
-                        // "/user/{userId:[\d]+}
-                        // "/user/{userId:[\d]+}/posts
-                        // "/user/{userId:[\d]+}/comments
-                        // /user/avatar/{avatarId:[\d]+}
-                        // /user/registrationConfirm
-                    .antMatchers("/login", "/user/create").anonymous()
-                    .antMatchers("/user/profile",
-                                            "/user/profile/posts",
-                                            "/user/profile/comments",
-                                            "/user/profile/followed/users",
-                                            "/user/profile/edit",
-                                            "/user/changePassword").authenticated()
-                    .antMatchers(HttpMethod.POST,
-                            "/user/edit/name",
-                            "/user/edit/username",
-                            "/user/edit/description",
-                            "/user/profile/avatar",
-                            "/user/follow/{userId:[\\d]+}",
-                            "/user/unfollow/{userId:[\\d]+}",
-                            "/user/favourite/posts/add",
-                            "/user/favourite/posts/remove"
-                    ).authenticated()
+                        // "/users" - GET
+                        // "/users/options" - GET
+                        // "/users/{id:[\d]+}" - GET
+                        // "/users/{id:[\d]+}/avatar" - GET
+                        // "/users/{id:[\d]+}/posts" - GET
+                        // "/users/{id:[\d]+}/comments" - GET
+                        // "/users/{id:[\d]+}/following" - GET
+                        // "/users/{id:[\d]+}/following/{userId:[\d]+}" - GET
+                        // "/users/{id:[\d]+}/bookmarked" - GET
+                        // "/users/{id:[\d]+}/bookmarked/{userId:[\d]+}" - GET
+                    .antMatchers(HttpMethod.POST, "/users").anonymous()
+                    .antMatchers(HttpMethod.PUT, "/users/{id:[\\d]+}/privilege").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.PUT, "/users/{id:[\\d]+}/enabled").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.DELETE, "/users/{id:[\\d]+}/enabled").hasRole("ADMIN")
 
-
-                    .antMatchers("/user/resendConfirmation").hasRole("NOT_VALIDATED")
-                    .antMatchers(
-                            "/user/resetPassword",
-                            "/user/updatePassword/token",
-                            "/user/updatePassword").anonymous()
+                    // Authenticated User Controller
+                    .antMatchers(HttpMethod.POST, "/user").anonymous()
+                    .antMatchers(HttpMethod.POST, "/user/email_confirmation").hasRole("NOT_VALIDATED")
+                    .antMatchers(HttpMethod.PUT, "/user/email_confirmation").hasRole("NOT_VALIDATED")
+                    .antMatchers(HttpMethod.POST, "/user/password_reset").anonymous()
+                    .antMatchers(HttpMethod.PUT, "/user/password_reset").anonymous()
+                    .antMatchers("/user", "/user/**").hasRole("USER")
 
                     // Post Controller
-                        // "/post/{postId}"
-                    .antMatchers("/post/create").hasRole("USER")
-                    .antMatchers("/post/edit/{postId:[\\d]+}").hasRole("USER")
-                    .antMatchers(HttpMethod.POST, "/post/like").hasRole("USER")
+                        // "/posts" - GET
+                        // "/posts/options" - GET
+                        // "/posts/{id:[\d]+}" - GET
+                        // "/posts/{id:[\d]+}/votes" - GET
+                        // "/posts/{id:[\d]+}/votes/{userId:[\d]+}" - GET
+                        // "/posts/{id:[\d]+}/comments" - GET
+                        // "/posts/categories" - GET
+                    .antMatchers(HttpMethod.POST, "/posts").hasRole("USER")
+                    .antMatchers(HttpMethod.PUT, "/posts/{id:[\\d]+}").hasRole("USER")
+                    .antMatchers(HttpMethod.PUT, "/posts/{id:[\\d]+}/enabled").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.DELETE, "/posts/{id:[\\d]+}/enabled").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.PUT, "/posts/{id:[\\d]+}/votes").hasRole("USER")
 
                     // Movie Controller
-                        // "/movies/{movieId}
-                    .antMatchers("/movie/create").hasRole("ADMIN")
-                    .antMatchers("/movie/{movieId:[\\d]+}/poster/update").hasRole("ADMIN")
+                        // "/movies" - GET
+                        // "/movies/options" - GET
+                        // "/movies/{id:[\\d]+}" - GET
+                        // "/movies/{id:[\\d]+}/poster" - GET
+                        // "/movies/{id:[\\d]+}/posts" - GET
+                    .antMatchers(HttpMethod.POST, "/movies").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.PUT, "/movies/{id:[\\d]+}/poster").hasRole("ADMIN")
 
                     // Comment Controller
-                        // "/comment/{commentId:[\\d]+}"
-                    .antMatchers(HttpMethod.POST, "/comment/create").hasRole("USER")
-                    .antMatchers(HttpMethod.POST, "/comment/like").hasRole("USER")
-
-                    // Search Controller
-                        // "/search/posts"
-                        // "/search/movies"
-                        // "/search/users"
-
-                    // Admin Controller
-                    .antMatchers("/admin/**").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST,"/comment/delete/{commentId:[\\d]+}").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST,"/comment/restore/{commentId:[\\d]+}").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST,"/post/delete/{postId:[\\d]+}").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST,"/post/restore/{postId:[\\d]+}").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST,"/user/promote/{id:[\\d]+}").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST,"/user/delete/{id:[\\d]+}").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.POST, "/user/restore/{id:[\\d]+}").hasRole("ADMIN")
+                        // "/comments" - GET
+                        // "/comments/options" - GET
+                        // "/comments/{id:[\\d]+}" - GET
+                        // "/comments/{id:[\\d]+}/votes" - GET
+                        // "/comments/{id:[\\d]+}/votes/{userId:[\\d]+}" - GET
+                        // "/comments/{id:[\\d]+}/children" - GET
+                    .antMatchers(HttpMethod.POST, "/comments").hasRole("USER")
+                    .antMatchers(HttpMethod.PUT, "/comments/{id:[\\d]+}").hasRole("USER")
+                    .antMatchers(HttpMethod.PUT, "/comments/{id:[\\d]+}/enabled").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.DELETE, "/comments/{id:[\\d]+}/enabled").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.PUT, "/comments/{id:[\\d]+}/votes").hasRole("USER")
 
                     // Default
                     .antMatchers("/**").permitAll()
