@@ -21,21 +21,18 @@ public interface UserDao {
 
     Optional<User> findUserById(long id);
 
-    Optional<User> findDeletedUserById(long id);
-
     Optional<User> findUserByUsername(String username);
 
     Optional<User> findUserByEmail(String email);
 
+    // TODO: Kill method
     long getFollowerCount(User user);
 
-    PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<User> getAllUsers(Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<User> getFollowedUsers(User user, UserDao.SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<User> getFollowedUsers(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<User> searchUsers(String query, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<User> searchUsersByRole(String query, Role role, SortCriteria sortCriteria, int pageNumber, int pageSize);
-
-    PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<User> searchUsersByRole(String query, Role role, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 }

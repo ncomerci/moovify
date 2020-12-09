@@ -61,15 +61,13 @@ public interface UserService {
 
     Optional<User> findUserById(long id);
 
-    Optional<User> findDeletedUserById(long id);
-
     Optional<User> findUserByUsername(String username);
 
     Optional<User> findUserByEmail(String email);
 
-    PaginatedCollection<User> getAllUsers(String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<User> getAllUsers(Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<User> getFollowedUsers(User user, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<User> getFollowedUsers(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
     UserDao.SortCriteria getUserSortCriteria(String sortCriteriaName);
 

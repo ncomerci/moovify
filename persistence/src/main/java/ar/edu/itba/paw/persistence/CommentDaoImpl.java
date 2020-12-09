@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +33,8 @@ public class CommentDaoImpl implements CommentDao {
             ") " + COMMENTS_LIKES  + " ON " + COMMENTS + ".comment_id = " + COMMENTS_LIKES + ".tl_comment_id";
 
     private static final String NATIVE_ENABLED_FILTER = COMMENTS + ".enabled = true";
+
+    private static final String NATIVE_DISABLED_FILTER = COMMENTS + ".enabled = false";
 
     private static final EnumMap<SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQueryMap();
     private static final EnumMap<SortCriteria,String> sortCriteriaHQLMap = initializeSortCriteriaHQL();
@@ -75,81 +80,45 @@ public class CommentDaoImpl implements CommentDao {
     public Optional<Comment> findCommentById(long id) {
 
         LOGGER.info("Find Comment By Id: {}", id);
-        return findCommentByIdAndEnabled(id, true);
+        return Optional.ofNullable(em.find(Comment.class, id));
     }
 
     @Override
-    public Optional<Comment> findDeletedCommentById(long id) {
-
-        LOGGER.info("Find Deleted Comment By Id: {}", id);
-        return findCommentByIdAndEnabled(id, false);
-    }
-
-    private Optional<Comment> findCommentByIdAndEnabled(long id, boolean enabled) {
-
-        final TypedQuery<Comment> query = em.createQuery("SELECT c FROM Comment c WHERE c.id = :commentId AND c.enabled = :enabled", Comment.class)
-                .setParameter("commentId", id)
-                .setParameter("enabled", enabled);
-
-        return query.getResultList().stream().findFirst();
-    }
-
-    @Override
-    public PaginatedCollection<Comment> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> getAllComments(Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Get All Comments Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
 
-        return queryComments("WHERE " + NATIVE_ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
+        return queryComments("", enabled, sortCriteria, pageNumber, pageSize, null);
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentChildren(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentChildren(Comment comment, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Comment {} First Level Children Order By {}. Page number {}, Page Size {}", comment.getId(), sortCriteria, pageNumber, pageSize);
 
         return queryComments(
-                "WHERE coalesce(" + COMMENTS + ".parent_id, 0) = ?" ,
-                sortCriteria, pageNumber, pageSize, new Object[]{ comment.getId() });
+                "WHERE coalesce(" + COMMENTS + ".parent_id, 0) = ?",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ comment.getId() });
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByPost(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentsByPost(Post post, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Comments By Post {} Order By {}. Page number {}, Page Size {}", post.getId(), sortCriteria, pageNumber, pageSize);
 
         return queryComments(
-                "WHERE " + COMMENTS + ".post_id = ?", sortCriteria,
-                pageNumber, pageSize, new Object[]{ post.getId() });
+                "WHERE " + COMMENTS + ".post_id = ?",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ post.getId() });
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentsByUser(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Comments By User {} Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
 
         return queryComments(
-                "WHERE " + COMMENTS + ".user_id = ? AND " + COMMENTS + ".enabled = true",
-                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
-    }
-
-    @Override
-    public PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        LOGGER.info("Get all deleted Comments Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
-
-        return queryComments(
-                "WHERE " + COMMENTS + ".enabled = false",
-                sortCriteria, pageNumber, pageSize, null);
-    }
-
-    @Override
-    public PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        LOGGER.info("Search Deleted Comments by Body {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
-
-        return queryComments(
-                "WHERE LOWER(" + COMMENTS + ".body) LIKE '%' || LOWER(?) || '%' AND " + COMMENTS + ".enabled = false",
-                sortCriteria, pageNumber, pageSize, new Object[]{ query });
+                "WHERE " + COMMENTS + ".user_id = ?",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     private String buildNativeFromStatement() {
@@ -198,7 +167,31 @@ public class CommentDaoImpl implements CommentDao {
         }
     }
 
-    private PaginatedCollection<Comment> queryComments(String nativeWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] params) {
+    private String addEnabledFilter(String nativeWhereStatement, Boolean enabled) {
+        if(enabled == null)
+            return nativeWhereStatement;
+
+        final StringBuilder sb;
+
+        if(nativeWhereStatement != null)
+            sb = new StringBuilder(nativeWhereStatement.trim());
+        else
+            sb = new StringBuilder();
+
+        if(sb.length() == 0)
+            sb.append("WHERE ");
+        else
+            sb.append(" AND ");
+
+        if(enabled)
+            sb.append(NATIVE_ENABLED_FILTER);
+        else
+            sb.append(NATIVE_DISABLED_FILTER);
+
+        return sb.toString();
+    }
+
+    private PaginatedCollection<Comment> queryComments(String nativeWhereStatement, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] params) {
 
         final String nativeSelect = "SELECT " + COMMENTS + ".comment_id";
 
@@ -206,16 +199,18 @@ public class CommentDaoImpl implements CommentDao {
 
         final String nativeFrom = buildNativeFromStatement();
 
+        final String nativeWhere = addEnabledFilter(nativeWhereStatement, enabled);
+
         final String nativeOrderBy = buildNativeOrderByStatement(sortCriteria);
 
         final String HQLOrderBy = buildHQLOrderByStatement(sortCriteria);
 
         final String nativePagination = buildNativePaginationStatement(pageNumber, pageSize);
 
-        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, nativeWhereStatement);
+        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, nativeWhere);
 
         final String nativeQuery = String.format("%s %s %s %s %s",
-                nativeSelect, nativeFrom, nativeWhereStatement, nativeOrderBy, nativePagination);
+                nativeSelect, nativeFrom, nativeWhere, nativeOrderBy, nativePagination);
 
         final String fetchQuery = String.format(
                 "SELECT c, sum(coalesce(likes.value, 0)) AS totalLikes " +

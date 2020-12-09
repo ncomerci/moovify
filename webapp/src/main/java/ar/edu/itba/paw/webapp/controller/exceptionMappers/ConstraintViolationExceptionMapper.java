@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.controller;
+package ar.edu.itba.paw.webapp.controller.exceptionMappers;
 
 import ar.edu.itba.paw.webapp.dto.error.BeanValidationErrorDto;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import java.util.Set;
 @Singleton
 @Component
 @Provider
-public class ConstraintViolationMapper implements ExceptionMapper<ConstraintViolationException> {
+public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException> {
 
     /*
     *  https://stackoverflow.com/questions/43423036/custom-validationerror-class-in-jersey-to-send-only-string-message-of-error

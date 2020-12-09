@@ -133,41 +133,6 @@ public class PostDaoImplTest {
     @Test
     @Sql("classpath:user1.sql")
     @Sql("classpath:categories.sql")
-    public void testFindPostDeletedById() {
-
-        // Pre conditions
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
-
-        final long postId = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-
-        // Exercise
-        final Optional<Post> post = postDao.findDeletedPostById(postId);
-
-        // Post conditions
-        Assert.assertTrue(post.isPresent());
-        Assert.assertEquals(postId, post.get().getId());
-    }
-
-    @Test
-    @Sql("classpath:user1.sql")
-    @Sql("classpath:categories.sql")
-    public void testFindPostDeletedByIdOfEnabledPost() {
-
-        // Pre conditions
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
-
-        final long postId = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-
-        // Exercise
-        final Optional<Post> post = postDao.findDeletedPostById(postId);
-
-        // Post conditions
-        Assert.assertFalse(post.isPresent());
-    }
-
-    @Test
-    @Sql("classpath:user1.sql")
-    @Sql("classpath:categories.sql")
     @Sql("classpath:movies.sql")
     public void testFindPostsByMovie() {
 
@@ -184,7 +149,7 @@ public class PostDaoImplTest {
 
         Movie movie = em.find(Movie.class, MOVIE1_ID);
 
-        final PaginatedCollection<Post> posts = postDao.findPostsByMovie(movie, DEFAULT_SORT_CRITERIA, 0, 2);
+        final PaginatedCollection<Post> posts = postDao.findPostsByMovie(movie, true, DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(2, posts.getTotalCount());
     }
@@ -204,7 +169,7 @@ public class PostDaoImplTest {
 
         User user = em.find(User.class, USER1_ID);
 
-        final PaginatedCollection<Post> posts = postDao.findPostsByUser(user, DEFAULT_SORT_CRITERIA, 0, 2);
+        final PaginatedCollection<Post> posts = postDao.findPostsByUser(user, true, DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(2, posts.getTotalCount());
     }
@@ -226,7 +191,7 @@ public class PostDaoImplTest {
         final long post3 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         final long post4 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
-        final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.NEWEST, 1, 2);
+        final PaginatedCollection<Post> posts = postDao.getAllPosts(true, PostDao.SortCriteria.NEWEST, 1, 2);
 
         Assert.assertEquals(4, posts.getTotalCount());
         Assert.assertArrayEquals(new Long[]{post2, post4}, posts.getResults().stream().map(Post::getId).toArray());
@@ -245,7 +210,7 @@ public class PostDaoImplTest {
         final long post3 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         final long post4 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
-        final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.OLDEST, 1, 2);
+        final PaginatedCollection<Post> posts = postDao.getAllPosts(true, PostDao.SortCriteria.OLDEST, 1, 2);
 
         Assert.assertEquals(4, posts.getTotalCount());
         Assert.assertArrayEquals(new Long[]{post3, post1}, posts.getResults().stream().map(Post::getId).toArray());
@@ -274,7 +239,7 @@ public class PostDaoImplTest {
         helper.insertPostLike(post3, USER3_ID, DOWN_VOTE);
         final long post4 = helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
-        final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.HOTTEST, 1, 2);
+        final PaginatedCollection<Post> posts = postDao.getAllPosts(true, PostDao.SortCriteria.HOTTEST, 1, 2);
 
         Assert.assertEquals(4, posts.getTotalCount());
         Assert.assertArrayEquals(new Long[]{post4, post3}, posts.getResults().stream().map(Post::getId).toArray());
@@ -292,7 +257,7 @@ public class PostDaoImplTest {
         helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
-        final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.NEWEST, 10, 10);
+        final PaginatedCollection<Post> posts = postDao.getAllPosts(true, PostDao.SortCriteria.NEWEST, 10, 10);
 
         Assert.assertEquals(4, posts.getTotalCount());
         Assert.assertEquals(0, posts.getResults().size());
@@ -310,26 +275,9 @@ public class PostDaoImplTest {
         helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
         helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
-        final PaginatedCollection<Post> posts = postDao.getAllPosts(PostDao.SortCriteria.NEWEST, 0, 2);
+        final PaginatedCollection<Post> posts = postDao.getAllPosts(true, PostDao.SortCriteria.NEWEST, 0, 2);
 
         Assert.assertEquals(2, posts.getTotalCount());
-    }
-
-    @Test
-    @Sql("classpath:user1.sql")
-    @Sql("classpath:categories.sql")
-    public void testGetDeletedPosts() {
-
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
-
-        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        helper.insertPost(TITLE, USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        helper.insertPost(TITLE, USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-
-        final PaginatedCollection<Post> posts = postDao.getDeletedPosts(PostDao.SortCriteria.NEWEST, 0, 2);
-
-        Assert.assertEquals(3, posts.getTotalCount());
     }
 
     @Test
@@ -357,7 +305,7 @@ public class PostDaoImplTest {
         helper.insertFollowingUser(USER1_ID, USER3_ID);
 
         // Exercise
-        PaginatedCollection<Post> posts = postDao.getFollowedUsersPosts(user3, PostDao.SortCriteria.NEWEST, 0, 10);
+        PaginatedCollection<Post> posts = postDao.getFollowedUsersPosts(user3, true, PostDao.SortCriteria.NEWEST, 0, 10);
 
         // Follows only 1 and 1 has only 2 enabled posts
         Assert.assertEquals(2, posts.getTotalCount());
@@ -380,7 +328,7 @@ public class PostDaoImplTest {
         helper.insertFavoritePost(post1Id, user.getId());
         helper.insertFavoritePost(post3Id, user.getId());
 
-        final PaginatedCollection<Post> posts = postDao.getUserFavouritePosts(user, PostDao.SortCriteria.NEWEST, 0, 10);
+        final PaginatedCollection<Post> posts = postDao.getUserFavouritePosts(user, true, PostDao.SortCriteria.NEWEST, 0, 10);
 
         // Has 2 favs but 1 is not enabled
         Assert.assertEquals(1, posts.getTotalCount());
@@ -398,26 +346,9 @@ public class PostDaoImplTest {
         helper.insertPost("Tetle", USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         helper.insertPost("Nombre", USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
-        final PaginatedCollection<Post> posts = postDao.searchPosts("Tit", DEFAULT_SORT_CRITERIA, 0, 2);
+        final PaginatedCollection<Post> posts = postDao.searchPosts("Tit", true, DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(2, posts.getTotalCount());
-    }
-
-    @Test
-    @Sql("classpath:user1.sql")
-    @Sql("classpath:categories.sql")
-    public void testSearchDeletedPosts() {
-
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Post.TABLE_NAME);
-
-        helper.insertPost("Title", USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        helper.insertPost("Titulito", USER1_ID, CREATION_DATE.plusHours(2), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-        helper.insertPost("Tetle", USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, NOT_ENABLE);
-        helper.insertPost("Nombre", USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
-
-        final PaginatedCollection<Post> posts = postDao.searchDeletedPosts("Tit", DEFAULT_SORT_CRITERIA, 0, 2);
-
-        Assert.assertEquals(1, posts.getTotalCount());
     }
 
     @Test
@@ -432,7 +363,7 @@ public class PostDaoImplTest {
         helper.insertPost("Tetle", USER1_ID, CREATION_DATE.plusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         helper.insertPost("Nombre", USER1_ID, CREATION_DATE, CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
-        final PaginatedCollection<Post> posts = postDao.searchPostsByCategory("Tit", CATEGORY_NAME, DEFAULT_SORT_CRITERIA, 0, 2);
+        final PaginatedCollection<Post> posts = postDao.searchPostsByCategory("Tit", CATEGORY_NAME, true, DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(1, posts.getTotalCount());
     }
@@ -449,7 +380,7 @@ public class PostDaoImplTest {
         final long post3 = helper.insertPost("Tetle", USER1_ID, CREATION_DATE.minusHours(5), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
         final long post4 = helper.insertPost("Nombre", USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID, WORD_COUNT, BODY, ENABLE);
 
-        final PaginatedCollection<Post> posts = postDao.searchPostsOlderThan("Tit", CREATION_DATE, DEFAULT_SORT_CRITERIA, 0, 2);
+        final PaginatedCollection<Post> posts = postDao.searchPostsOlderThan("Tit", CREATION_DATE, true, DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(1, posts.getTotalCount());
         Assert.assertTrue(posts.getResults().stream().findFirst().isPresent());
@@ -469,7 +400,7 @@ public class PostDaoImplTest {
         final long post4 = helper.insertPost("Tittle", USER1_ID, CREATION_DATE.plusHours(10), CATEGORY_ID2, WORD_COUNT, BODY, ENABLE);
 
         final PaginatedCollection<Post> posts = postDao.searchPostsByCategoryAndOlderThan("Tit", CATEGORY_NAME,
-                CREATION_DATE, DEFAULT_SORT_CRITERIA, 0, 2);
+                CREATION_DATE, true, DEFAULT_SORT_CRITERIA, 0, 2);
 
         Assert.assertEquals(1, posts.getTotalCount());
         Assert.assertTrue(posts.getResults().stream().findFirst().isPresent());

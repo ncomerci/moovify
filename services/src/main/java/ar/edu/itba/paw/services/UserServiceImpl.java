@@ -369,12 +369,6 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<User> findDeletedUserById(long id) {
-        return userDao.findDeletedUserById(id);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public Optional<User> findUserByUsername(String username) {
         return userDao.findUserByUsername(username);
     }
@@ -387,14 +381,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<User> getAllUsers(String sortCriteria, int pageNumber, int pageSize) {
-        return userDao.getAllUsers(getUserSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<User> getAllUsers(Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return userDao.getAllUsers(enabled, getUserSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<User> getFollowedUsers(User user, String sortCriteria, int pageNumber, int pageSize) {
-        return userDao.getFollowedUsers(user, getUserSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<User> getFollowedUsers(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return userDao.getFollowedUsers(user, enabled, getUserSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Override

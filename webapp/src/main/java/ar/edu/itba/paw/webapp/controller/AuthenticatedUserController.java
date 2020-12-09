@@ -157,13 +157,14 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/posts")
-    public Response getUserPosts(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response getUserPosts(@QueryParam("enabled") Boolean enabled,
+                                 @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                  @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                  @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        final PaginatedCollection<Post> posts = postService.findPostsByUser(user, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Post> posts = postService.findPostsByUser(user, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
@@ -172,19 +173,23 @@ public class AuthenticatedUserController {
                 .queryParam("pageSize", posts.getPageSize())
                 .queryParam("orderBy", orderBy);
 
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
         return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/comments")
-    public Response getUserComments(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response getUserComments(@QueryParam("enabled") Boolean enabled,
+                                    @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                     @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                     @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        final PaginatedCollection<Comment> comments = commentService.findCommentsByUser(user, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Comment> comments = commentService.findCommentsByUser(user, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
@@ -193,19 +198,23 @@ public class AuthenticatedUserController {
                 .queryParam("pageSize", comments.getPageSize())
                 .queryParam("orderBy", orderBy);
 
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
         return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/following")
-    public Response getFollowedUsers(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response getFollowedUsers(@QueryParam("enabled") Boolean enabled,
+                                     @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                      @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                      @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        final PaginatedCollection<User> users = userService.getFollowedUsers(user, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<User> users = userService.getFollowedUsers(user, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo, securityContext);
 
@@ -213,6 +222,9 @@ public class AuthenticatedUserController {
                 .getAbsolutePathBuilder()
                 .queryParam("pageSize", users.getPageSize())
                 .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
 
         return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, linkUriBuilder);
     }
@@ -262,13 +274,14 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/bookmarked")
-    public Response getBookmarkedPosts(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response getBookmarkedPosts(@QueryParam("enabled") Boolean enabled,
+                                       @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                        @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                        @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        final PaginatedCollection<Post> posts = postService.getUserBookmarkedPosts(user, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Post> posts = postService.getUserBookmarkedPosts(user, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
@@ -276,6 +289,9 @@ public class AuthenticatedUserController {
                 .getAbsolutePathBuilder()
                 .queryParam("pageSize", posts.getPageSize())
                 .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
 
         return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
     }

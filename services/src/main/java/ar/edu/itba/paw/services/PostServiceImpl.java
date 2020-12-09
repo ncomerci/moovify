@@ -132,38 +132,32 @@ public class PostServiceImpl implements PostService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Post> findDeletedPostById(long id) {
-        return postDao.findDeletedPostById(id);
+    public PaginatedCollection<Post> getAllPosts(Boolean enabled,String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.getAllPosts(enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> getAllPosts(String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.getAllPosts(getPostSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Post> findPostsByMovie(Movie movie, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.findPostsByMovie(movie, enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> findPostsByMovie(Movie movie, String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.findPostsByMovie(movie, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Post> findPostsByUser(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.findPostsByUser(user, enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> findPostsByUser(User user, String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.findPostsByUser(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Post> getFollowedUsersPosts(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.getFollowedUsersPosts(user, enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> getFollowedUsersPosts(User user, String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.getFollowedUsersPosts(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public PaginatedCollection<Post> getUserBookmarkedPosts(User user, String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.getUserFavouritePosts(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Post> getUserBookmarkedPosts(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.getUserFavouritePosts(user, enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Override
