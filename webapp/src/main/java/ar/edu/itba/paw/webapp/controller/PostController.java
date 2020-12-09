@@ -58,7 +58,7 @@ public class PostController {
         final PaginatedCollection<Post> posts;
 
         if(!query.equals("") || postCategory != null || postAge != null)
-            posts = searchService.searchPosts(query, postCategory, postAge, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
+            posts = searchService.searchPosts(query, postCategory, postAge, enabled, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         else
             posts = postService.getAllPosts(enabled, orderBy, pageNumber, pageSize);
