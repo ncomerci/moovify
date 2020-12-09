@@ -371,11 +371,11 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @Path("/email_confirmation")
-    public Response resendConfirmationEmail(@Context HttpServletRequest request) {
+    public Response resendConfirmationEmail() {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        userService.createConfirmationEmail(user, "confirmEmail", request.getLocale());
+        userService.createConfirmationEmail(user, "confirmEmail");
 
         return Response.noContent().build();
     }
@@ -400,7 +400,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @Path("/password_reset")
-    public Response sendPasswordResetEmail(@Valid final PasswordResetEmailDto passwordResetEmailDto, @Context HttpServletRequest request) {
+    public Response sendPasswordResetEmail(@Valid final PasswordResetEmailDto passwordResetEmailDto) {
 
         final Optional<User> optUser = userService.findUserByEmail(passwordResetEmailDto.getEmail());
 
@@ -417,7 +417,7 @@ public class AuthenticatedUserController {
             final List<BeanValidationErrorDto> emailError =
                     Collections.singletonList(
                         new BeanValidationErrorDto("email", passwordResetEmailDto.getEmail(),
-                                messageSource.getMessage(errorMessageCode, null, request.getLocale()))
+                                messageSource.getMessage(errorMessageCode, null, LocaleContextHolder.getLocale()))
                     );
 
             return Response.status(Response.Status.BAD_REQUEST).entity(emailError).build();
@@ -425,7 +425,7 @@ public class AuthenticatedUserController {
 
         final User user = optUser.get();
 
-        userService.createPasswordResetEmail(user, "passwordResetEmail", request.getLocale());
+        userService.createPasswordResetEmail(user, "passwordResetEmail");
 
         return Response.noContent().build();
     }

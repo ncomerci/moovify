@@ -21,7 +21,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Locale;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
@@ -147,10 +146,9 @@ public class UserServiceTest {
 
         Mockito.doNothing().when(userServiceSpy).createConfirmationEmail(
                 Mockito.any(User.class),
-                Mockito.anyString(),
-                Mockito.any(Locale.class));
+                Mockito.anyString());
 
-        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, "", Locale.ENGLISH);
+        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, "");
 
         Mockito.verify(dao).register(Mockito.anyString(), // username
                 Mockito.anyString(),    // password
@@ -191,11 +189,10 @@ public class UserServiceTest {
 
         Mockito.doNothing().when(userServiceSpy).createConfirmationEmail(
                 Mockito.any(User.class),
-                Mockito.anyString(),
-                Mockito.any(Locale.class)
+                Mockito.anyString()
         );
 
-        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, "", Locale.ENGLISH);
+        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, "");
 
 
         Mockito.verify(dao).register(
