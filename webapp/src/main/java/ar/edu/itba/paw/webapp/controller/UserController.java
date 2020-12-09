@@ -6,6 +6,7 @@ import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
+import ar.edu.itba.paw.interfaces.services.exceptions.InvalidUserPromotionException;
 import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
@@ -135,6 +136,18 @@ public class UserController {
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
         return Response.ok(new UserDto(user, uriInfo, securityContext)).build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/{id}/privilege")
+    public Response promoteUserToAdmin(@PathParam("id") long id) throws InvalidUserPromotionException {
+
+        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        userService.promoteUserToAdmin(user);
+
+        return Response.noContent().contentLocation(UserDto.getUserUriBuilder(user, uriInfo).build()).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)

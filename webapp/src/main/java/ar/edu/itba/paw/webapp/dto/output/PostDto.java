@@ -30,13 +30,13 @@ public class PostDto {
     private UserDto user;
     private PostCategoryDto postCategory;
     private Collection<String> tags;
-    private Collection<MovieDto> movies;
     private boolean enabled;
     private Long totalLikes;
 
     // Relations
     private String comments;
     private String votes;
+    private String movies;
 
     private String url;
 
@@ -64,11 +64,11 @@ public class PostDto {
         user = new UserDto(post.getUser(), uriInfo, securityContext);
         postCategory = new PostCategoryDto(post.getCategory());
         tags = post.getTags();
-        movies = MovieDto.mapMoviesToDto(post.getMovies(), uriInfo);
         totalLikes = post.getTotalVotes();
 
         comments = postUriBuilder.clone().path("comments").build().toString();
         votes = postUriBuilder.clone().path("votes").build().toString();
+        movies = postUriBuilder.clone().path("movies").build().toString();
     }
 
     public long getId() {
@@ -151,11 +151,11 @@ public class PostDto {
         this.tags = tags;
     }
 
-    public Collection<MovieDto> getMovies() {
+    public String getMovies() {
         return movies;
     }
 
-    public void setMovies(Collection<MovieDto> movies) {
+    public void setMovies(String movies) {
         this.movies = movies;
     }
 

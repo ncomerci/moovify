@@ -168,6 +168,18 @@ public class PostController {
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @Path("/{id}/movies")
+    public Response getPostMovies(@PathParam("id") long id) {
+
+        final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+
+        final Collection<MovieDto> moviesDto = MovieDto.mapMoviesToDto(post.getMovies(), uriInfo);
+
+        return Response.ok(new GenericEntity<Collection<MovieDto>>(moviesDto) {}).build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
     @Path("/{id}/votes")
     public Response getPostVotes(@PathParam("id") long id,
                                  @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
