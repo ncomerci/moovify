@@ -6,6 +6,7 @@ import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
+import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
@@ -133,8 +134,20 @@ public class UserController {
     }
 
     @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/{id}/enabled")
+    public Response restoreUser(@PathParam("id") long id) throws RestoredEnabledModelException {
+
+        final User user = userService.findDeletedUserById(id).orElseThrow(UserNotFoundException::new);
+
+        userService.restoreUser(user);
+
+        return Response.noContent().contentLocation(UserDto.getUserUriBuilder(user, uriInfo).build()).build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
     @DELETE
-    @Path("/{id}")
+    @Path("/{id}/enabled")
     public Response deleteUser(@PathParam("id") long id) throws DeletedDisabledModelException {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);

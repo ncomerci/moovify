@@ -6,6 +6,7 @@ import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
 import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.dto.generic.GenericIntegerValueDto;
 import ar.edu.itba.paw.webapp.dto.input.CommentCreateDto;
@@ -119,10 +120,22 @@ public class CommentController {
                 .build();
     }
 
+    @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/{id}/enabled")
+    public Response restoreComment(@PathParam("id") long id) throws RestoredEnabledModelException {
+
+        final Comment comment = commentService.findDeletedCommentById(id).orElseThrow(CommentNotFoundException::new);
+
+        commentService.restoreComment(comment);
+
+        return Response.noContent().contentLocation(CommentDto.getCommentUriBuilder(comment, uriInfo).build()).build();
+    }
+
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
-    @Path("/{id}")
+    @Path("/{id}/enabled")
     public Response deleteComment(@PathParam("id") long id){
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);

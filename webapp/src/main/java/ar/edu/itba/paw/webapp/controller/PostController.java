@@ -4,10 +4,7 @@ import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
-import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostEditionException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostLikeException;
-import ar.edu.itba.paw.interfaces.services.exceptions.MissingPostEditPermissionException;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.dto.generic.GenericIntegerValueDto;
 import ar.edu.itba.paw.webapp.dto.input.PostCreateDto;
@@ -142,8 +139,20 @@ public class PostController {
     }
 
     @Produces(MediaType.APPLICATION_JSON)
+    @PUT
+    @Path("/{id}/enabled")
+    public Response restorePost(@PathParam("id") long id) throws RestoredEnabledModelException {
+
+        final Post post = postService.findDeletedPostById(id).orElseThrow(PostNotFoundException::new);
+
+        postService.restorePost(post);
+
+        return Response.noContent().contentLocation(PostDto.getPostUriBuilder(post, uriInfo).build()).build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
     @DELETE
-    @Path("/{id}")
+    @Path("/{id}/enabled")
     public Response deletePost(@PathParam("id") long id) throws DeletedDisabledModelException {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
