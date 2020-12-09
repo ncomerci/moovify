@@ -1,7 +1,10 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.*;
-import ar.edu.itba.paw.interfaces.services.*;
+import ar.edu.itba.paw.interfaces.services.MovieService;
+import ar.edu.itba.paw.interfaces.services.PostService;
+import ar.edu.itba.paw.interfaces.services.SearchService;
+import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +32,6 @@ public class SearchServiceImpl implements SearchService {
     private MovieService movieService;
 
     @Autowired
-    private CommentService commentService;
-
-    @Autowired
     private PostDao postDao;
 
     @Autowired
@@ -39,9 +39,6 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     private UserDao userDao;
-
-    @Autowired
-    private CommentDao commentDao;
 
     private enum PostSearchOptions {
         BY_CATEGORY, OLDER_THAN
@@ -108,7 +105,7 @@ public class SearchServiceImpl implements SearchService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<PaginatedCollection<Post>> searchPosts(String query, String category, String period, String sortCriteria, int pageNumber, int pageSize) {
+    public Optional<PaginatedCollection<Post>> searchPosts(String query, String category, String period, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
 
         if(query == null)
             return Optional.empty();
@@ -127,19 +124,19 @@ public class SearchServiceImpl implements SearchService {
         LOGGER.debug("Search Posts using Filter Options {} and Sort Criteria {}", options, sc);
 
         if(options.isEmpty())
-            return Optional.of(postDao.searchPosts(query, sc, pageNumber, pageSize));
+            return Optional.of(postDao.searchPosts(query, enabled, sc, pageNumber, pageSize));
 
         else if(options.size() == 1) {
 
             if(options.contains(PostSearchOptions.OLDER_THAN))
-                return Optional.of(postDao.searchPostsOlderThan(query, postPeriodOptionsMap.get(period), sc, pageNumber, pageSize));
+                return Optional.of(postDao.searchPostsOlderThan(query, postPeriodOptionsMap.get(period), enabled, sc, pageNumber, pageSize));
 
             else if(options.contains(PostSearchOptions.BY_CATEGORY))
-                return Optional.of(postDao.searchPostsByCategory(query, category, sc, pageNumber, pageSize));
+                return Optional.of(postDao.searchPostsByCategory(query, category, enabled, sc, pageNumber, pageSize));
         }
 
         else if(options.contains(PostSearchOptions.OLDER_THAN) && options.contains(PostSearchOptions.BY_CATEGORY) && options.size() == 2)
-            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, postPeriodOptionsMap.get(period), sc, pageNumber, pageSize));
+            return Optional.of(postDao.searchPostsByCategoryAndOlderThan(query, category, postPeriodOptionsMap.get(period), enabled, sc, pageNumber, pageSize));
 
         return Optional.empty();
     }
@@ -189,7 +186,7 @@ public class SearchServiceImpl implements SearchService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<PaginatedCollection<User>> searchUsers(String query, String role, String sortCriteria, int pageNumber, int pageSize) {
+    public Optional<PaginatedCollection<User>> searchUsers(String query, String role, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
 
         if(query == null)
             return Optional.empty();
@@ -204,48 +201,12 @@ public class SearchServiceImpl implements SearchService {
         LOGGER.debug("Search Users using Filter Options {} and Sort Criteria {}", options, sc);
 
         if(options.isEmpty())
-            return Optional.of(userDao.searchUsers(query, sc, pageNumber, pageSize));
+            return Optional.of(userDao.searchUsers(query, enabled, sc, pageNumber, pageSize));
 
         else if(options.contains(UserSearchOptions.BY_ROLE))
-            return Optional.of(userDao.searchUsersByRole(query, userRoleOptionsMap.get(role), sc, pageNumber, pageSize));
+            return Optional.of(userDao.searchUsersByRole(query, userRoleOptionsMap.get(role), enabled, sc, pageNumber, pageSize));
 
         return Optional.empty();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<PaginatedCollection<Post>> searchDeletedPosts(String query, String sortCriteria, int pageNumber, int pageSize) {
-
-        if(query == null)
-            return Optional.empty();
-
-        final PostDao.SortCriteria sc = postService.getPostSortCriteria(sortCriteria);
-
-        return Optional.of(postDao.searchDeletedPosts(query, sc, pageNumber, pageSize));
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<PaginatedCollection<Comment>> searchDeletedComments(String query, String sortCriteria, int pageNumber, int pageSize) {
-
-        if(query == null)
-            return Optional.empty();
-
-        final CommentDao.SortCriteria sc = commentService.getCommentSortCriteria(sortCriteria);
-
-        return Optional.of(commentDao.searchDeletedComments(query, sc, pageNumber, pageSize));
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<PaginatedCollection<User>> searchDeletedUsers(String query, String sortCriteria, int pageNumber, int pageSize) {
-
-        if(query == null)
-            return Optional.empty();
-
-        final UserDao.SortCriteria sc = userService.getUserSortCriteria(sortCriteria);
-
-        return Optional.of(userDao.searchDeletedUsers(query, sc, pageNumber, pageSize));
     }
 
     @Override

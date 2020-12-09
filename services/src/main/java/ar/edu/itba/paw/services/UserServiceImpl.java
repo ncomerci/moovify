@@ -142,11 +142,19 @@ public class UserServiceImpl implements UserService {
 
         LOGGER.info("Accessing avatar {}. (Default {})", avatarId, avatarId == User.DEFAULT_AVATAR_ID);
 
-        if(avatarId == User.DEFAULT_AVATAR_ID)
-            return Optional.of(imageService.findImageByPath(DEFAULT_AVATAR_PATH));
+        final Optional<byte[]> avatar;
+
+        if(avatarId == User.DEFAULT_AVATAR_ID) {
+            avatar = imageService.findImageByPath(DEFAULT_AVATAR_PATH);
+
+            if(!avatar.isPresent())
+                throw new RuntimeException("Failed loading user avatar");
+        }
 
         else
-            return imageService.findImageById(avatarId);
+            avatar = imageService.findImageById(avatarId);
+
+        return avatar;
     }
 
     @Transactional
@@ -200,6 +208,14 @@ public class UserServiceImpl implements UserService {
 
         user.unfollowUser(userUnfollowed);
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean isFollowingUser(User user, User other) {
+
+        return user.isEnabled() && other.isEnabled() && user.isUserFollowing(other);
+    }
+
 
     @Transactional
     @Override
@@ -333,6 +349,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
+    public boolean hasUserBookmarkedPost(User user, Post post) {
+
+        return user.isEnabled() && post.isEnabled() && user.isPostBookmarked(post);
+
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public long getFollowerCount(User user) {
         return userDao.getFollowerCount(user);
     }
@@ -341,12 +365,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findUserById(long id) {
         return userDao.findUserById(id);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Optional<User> findDeletedUserById(long id) {
-        return userDao.findDeletedUserById(id);
     }
 
     @Transactional(readOnly = true)
@@ -363,14 +381,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<User> getAllUsers(String sortCriteria, int pageNumber, int pageSize) {
-        return userDao.getAllUsers(getUserSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<User> getAllUsers(Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return userDao.getAllUsers(enabled, getUserSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<User> getFollowedUsers(User user, String sortCriteria, int pageNumber, int pageSize) {
-        return userDao.getFollowedUsers(user, getUserSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<User> getFollowedUsers(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return userDao.getFollowedUsers(user, enabled, getUserSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Override

@@ -12,26 +12,18 @@ public interface CommentDao {
 
     Comment register(Post post, Comment parent, String body, User user, boolean enabled);
 
-    int getVoteValue(Comment comment, User user);
-
     Optional<Comment> findCommentById(long id);
+
+    PaginatedCollection<Comment> getAllComments(Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     /**
      * Get all direct children of a comment. Doesn't include sub children.
      */
-    PaginatedCollection<Comment> findCommentChildren(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentChildren(Comment comment, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentDescendants(Comment comment, long maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByPost(Post post, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findPostCommentDescendants(Post post, long maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByUser(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByPost(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize);
-
-    PaginatedCollection<Comment> findCommentsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize);
-
-    PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize);
-
-    PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize);
-
-    PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<CommentVote> getCommentVotes(Comment comment, int pageNumber, int pageSize);
 }

@@ -1,9 +1,9 @@
 package ar.edu.itba.paw.webapp.dto.output;
 
 import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.Role;
 
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.time.LocalDateTime;
@@ -12,25 +12,25 @@ import java.util.stream.Collectors;
 
 public class CommentDto {
 
-    public static Collection<CommentDto> mapCommentsToDto(Collection<Comment> comments, UriInfo uriInfo) {
-        return comments.stream().map(c -> new CommentDto(c, uriInfo)).collect(Collectors.toList());
+    public static Collection<CommentDto> mapCommentsToDto(Collection<Comment> comments, UriInfo uriInfo, SecurityContext securityContext) {
+        return comments.stream().map(c -> new CommentDto(c, uriInfo, securityContext)).collect(Collectors.toList());
     }
 
     public static UriBuilder getCommentUriBuilder(Comment comment, UriInfo uriInfo) {
-        return uriInfo.getBaseUriBuilder().path("comment").path(String.valueOf(comment.getId()));
+        return uriInfo.getBaseUriBuilder().path("comments").path(String.valueOf(comment.getId()));
     }
 
-    private Long id;
+    private long id;
     private LocalDateTime creationDateTime;
-    private Post post;
-    private Comment parent;
+    private PostDto post;
     private String body;
-    private User user;
-    private boolean edited;
+    private UserDto user;
+    private Boolean edited;
     private LocalDateTime lastEditTime;
     private Long totalVotes;
     private boolean enabled;
 
+    private String parent;
     private String children;
     private String votes;
 
@@ -40,25 +40,35 @@ public class CommentDto {
         // For Jersey Reflection - Do not use
     }
 
-    public CommentDto(Comment comment, UriInfo uriInfo) {
-
-        this.id = comment.getId();
-        this.creationDateTime = comment.getCreationDate();
-        this.post = comment.getPost();
-        this.parent = comment.getParent();
-        this.body = comment.getBody();
-        this.user = comment.getUser();
-        this.edited = comment.isEdited();
-        this.lastEditTime = comment.getLastEditDate();
-        this.totalVotes = comment.getTotalLikes();
-        this.enabled = comment.isEnabled();
+    public CommentDto(Comment comment, UriInfo uriInfo, SecurityContext securityContext) {
 
         final UriBuilder commentUriBuilder = getCommentUriBuilder(comment, uriInfo);
 
+        id = comment.getId();
+        enabled = comment.isEnabled();
+
+        children = commentUriBuilder.clone().path("/children").build().toString();
+        url = commentUriBuilder.build().toString();
+
+        if(!enabled && !securityContext.isUserInRole(Role.ADMIN.name()))
+            return;
+
+        creationDateTime = comment.getCreationDate();
+        post = new PostDto(comment.getPost(), uriInfo, securityContext);
+        body = comment.getBody();
+        user = new UserDto(comment.getUser(), uriInfo, securityContext);
+        edited = comment.isEdited();
+        lastEditTime = comment.getLastEditDate();
+        totalVotes = comment.getTotalVotes();
+        
+        if(comment.getParent() != null) {
+            parent = getCommentUriBuilder(comment.getParent(), uriInfo).build().toString();
+        }
+        else {
+            parent = null;
+        }
         children = commentUriBuilder.clone().path("/children").build().toString();
         votes = commentUriBuilder.clone().path("/votes").build().toString();
-
-        url = commentUriBuilder.build().toString();
     }
 
     public Long getId() {
@@ -77,19 +87,19 @@ public class CommentDto {
         this.creationDateTime = creationDateTime;
     }
 
-    public Post getPost() {
+    public PostDto getPost() {
         return post;
     }
 
-    public void setPost(Post post) {
+    public void setPost(PostDto post) {
         this.post = post;
     }
 
-    public Comment getParent() {
+    public String getParent() {
         return parent;
     }
 
-    public void setParent(Comment parent) {
+    public void setParent(String parent) {
         this.parent = parent;
     }
 
@@ -101,19 +111,19 @@ public class CommentDto {
         this.body = body;
     }
 
-    public User getUser() {
+    public UserDto getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(UserDto user) {
         this.user = user;
     }
 
-    public boolean isEdited() {
+    public Boolean isEdited() {
         return edited;
     }
 
-    public void setEdited(boolean edited) {
+    public void setEdited(Boolean edited) {
         this.edited = edited;
     }
 

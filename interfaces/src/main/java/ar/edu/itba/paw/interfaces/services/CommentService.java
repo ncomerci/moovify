@@ -26,19 +26,15 @@ public interface CommentService {
 
     Optional<Comment> findCommentById(long id);
 
-    PaginatedCollection<Comment> findCommentChildren(Comment comment, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> getAllComments(Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentDescendants(Comment comment, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentChildren(Comment comment, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findPostCommentDescendants(Post post, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByPost(Post post, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByPost(Post post, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByUser(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByUser(User user, String sortCriteria, int pageNumber, int pageSize);
-
-    PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize);
-
-    long getMaxCommentTreeDepth();
+    PaginatedCollection<CommentVote> getCommentVotes(Comment comment, int pageNumber, int pageSize);
 
     CommentDao.SortCriteria getCommentSortCriteria(String sortCriteriaName);
 

@@ -35,6 +35,8 @@ public interface UserService {
 
     void unfollowUser(User user, User userUnfollowed) throws IllegalUserUnfollowException;
 
+    boolean isFollowingUser(User user, User other);
+
     Optional<User> confirmRegistration(String token);
 
     void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale);
@@ -53,19 +55,19 @@ public interface UserService {
 
     void unbookmarkPost(User user, Post post) throws IllegalPostUnbookmarkException;
 
+    boolean hasUserBookmarkedPost(User user, Post post);
+
     long getFollowerCount(User user);
 
     Optional<User> findUserById(long id);
-
-    Optional<User> findDeletedUserById(long id);
 
     Optional<User> findUserByUsername(String username);
 
     Optional<User> findUserByEmail(String email);
 
-    PaginatedCollection<User> getAllUsers(String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<User> getAllUsers(Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<User> getFollowedUsers(User user, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<User> getFollowedUsers(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
     UserDao.SortCriteria getUserSortCriteria(String sortCriteriaName);
 

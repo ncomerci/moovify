@@ -139,7 +139,7 @@ public class CommentDaoImplTest {
 
         // Exercise
         final PaginatedCollection<Comment> commentChildren = commentDao
-                .findCommentChildren(parentComment, CommentDao.SortCriteria.NEWEST , 1, 2);
+                .findCommentChildren(parentComment, true, CommentDao.SortCriteria.NEWEST , 1, 2);
 
         // Post conditions
         Assert.assertArrayEquals(new Long[]{child2Id, child1Id}, commentChildren.getResults().stream().map(Comment::getId).toArray());
@@ -167,7 +167,7 @@ public class CommentDaoImplTest {
 
         // Exercise
         final PaginatedCollection<Comment> commentChildren = commentDao
-                .findCommentChildren(parentComment, CommentDao.SortCriteria.OLDEST , 1, 2);
+                .findCommentChildren(parentComment, true, CommentDao.SortCriteria.OLDEST , 1, 2);
 
         // Post conditions
         Assert.assertArrayEquals(new Long[]{child3Id, child4Id}, commentChildren.getResults().stream().map(Comment::getId).toArray());
@@ -202,101 +202,11 @@ public class CommentDaoImplTest {
 
         // Exercise
         final PaginatedCollection<Comment> commentChildren = commentDao
-                .findCommentChildren(parentComment, CommentDao.SortCriteria.HOTTEST , 1, 2);
+                .findCommentChildren(parentComment, true, CommentDao.SortCriteria.HOTTEST , 1, 2);
 
         // Post conditions
         Assert.assertArrayEquals(new Long[]{child1Id, child3Id}, commentChildren.getResults().stream().map(Comment::getId).toArray());
         Assert.assertEquals(4, commentChildren.getTotalCount());
-    }
-
-    @Test
-    @Sql("classpath:user1.sql")
-    @Sql("classpath:user2.sql")
-    @Sql("classpath:categories.sql")
-    @Sql("classpath:post1.sql")
-    public void testFindCommentDescendantsByNewest() {
-
-        // Pre conditions
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Comment.TABLE_NAME);
-
-        long parentCommentId = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
-
-        // Un comment
-        long child1Id = helper.insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
-
-        Long[] child1ChildrenIds = new Long[CHILDREN_COUNT];
-
-        // Con 5 hijos
-        for(int i = 0; i < CHILDREN_COUNT; i++) {
-            child1ChildrenIds[i] = helper.insertComment(true, child1Id, POST1_ID, USER2_ID, "body Text");
-        }
-
-        // Cada hijo con un hijo mas => 11 comments
-        for(Long commentId : child1ChildrenIds){
-            helper.insertComment(true, commentId, POST1_ID, USER2_ID, "body Text");
-        }
-
-        long child2Id = helper.insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
-
-        long child3Id = helper.insertComment(true, parentCommentId, POST1_ID, USER1_ID, "body Text");
-
-        long child4Id = helper.insertComment(true, parentCommentId, POST1_ID, USER2_ID, "body Text");
-
-        long rootLevelCommentId = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
-
-        Comment parentComment = em.find(Comment.class, parentCommentId);
-
-        // Exercise
-        final PaginatedCollection<Comment> commentChildren = commentDao
-                .findCommentDescendants(parentComment, 5, CommentDao.SortCriteria.NEWEST , 1, 3);
-
-        // Post conditions
-        Assert.assertEquals(4, commentChildren.getTotalCount());
-        Assert.assertEquals(1, commentChildren.getResults().size());
-        Assert.assertEquals(5, commentChildren.getResults().stream().findFirst().get().getChildren().size());
-    }
-
-    @Test
-    @Sql("classpath:user1.sql")
-    @Sql("classpath:user2.sql")
-    @Sql("classpath:categories.sql")
-    @Sql("classpath:post1.sql")
-    public void testFindPostDescendantsByNewest() {
-
-        // Pre conditions
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Comment.TABLE_NAME);
-
-        // Un comment
-        long child1Id = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
-
-        Long[] child1ChildrenIds = new Long[CHILDREN_COUNT];
-
-        // Con 5 hijos
-        for(int i = 0; i < CHILDREN_COUNT; i++) {
-            child1ChildrenIds[i] = helper.insertComment(true, child1Id, POST1_ID, USER2_ID, "body Text");
-        }
-
-        // Cada hijo con un hijo mas => 11 comments
-        for(Long commentId : child1ChildrenIds){
-            helper.insertComment(true, commentId, POST1_ID, USER2_ID, "body Text");
-        }
-
-        long child2Id = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
-
-        long child3Id = helper.insertComment(true, null, POST1_ID, USER1_ID, "body Text");
-
-        long child4Id = helper.insertComment(true, null, POST1_ID, USER2_ID, "body Text");
-
-        Post post = em.find(Post.class, POST1_ID);
-
-        // Exercise
-        final PaginatedCollection<Comment> commentChildren = commentDao
-                .findPostCommentDescendants(post, 5, CommentDao.SortCriteria.NEWEST , 1, 3);
-
-        // Post conditions
-        Assert.assertEquals(4, commentChildren.getTotalCount());
-        Assert.assertEquals(1, commentChildren.getResults().size());
-        Assert.assertEquals(5, commentChildren.getResults().stream().findFirst().get().getChildren().size());
     }
 
     @Test
@@ -322,7 +232,7 @@ public class CommentDaoImplTest {
         Post post = em.find(Post.class, POST1_ID);
 
 //        2. ejercitar
-        final PaginatedCollection<Comment> commentsByPost = commentDao.findCommentsByPost(post, NEWEST, 1, 2);
+        final PaginatedCollection<Comment> commentsByPost = commentDao.findCommentsByPost(post, true, NEWEST, 1, 2);
 
 //        3. post-condiciones
         Assert.assertArrayEquals(new Long[]{comment3ID, comment1ID}, commentsByPost.getResults().stream().map(Comment::getId).toArray());
@@ -353,7 +263,7 @@ public class CommentDaoImplTest {
         User user = em.find(User.class, USER2_ID);
 
 //        2. ejercitar
-        final PaginatedCollection<Comment> commentsByUser = commentDao.findCommentsByUser(user, NEWEST, 1, 2);
+        final PaginatedCollection<Comment> commentsByUser = commentDao.findCommentsByUser(user, true, NEWEST, 1, 2);
 
 //        3. post-condiciones
         Assert.assertArrayEquals(new Long[]{comment3ID, comment2ID}, commentsByUser.getResults().stream().map(Comment::getId).toArray());
@@ -382,39 +292,10 @@ public class CommentDaoImplTest {
         long comment6ID = helper.insertComment(false, null, POST1_ID, USER2_ID, "body Text");
 
 //        2. ejercitar
-        final PaginatedCollection<Comment> deletedComments = commentDao.getDeletedComments(NEWEST, 1, 2);
+        final PaginatedCollection<Comment> deletedComments = commentDao.getAllComments(false, NEWEST, 1, 2);
 
 //        3. post-condiciones
         Assert.assertArrayEquals(new Long[]{comment3ID, comment2ID}, deletedComments.getResults().stream().map(Comment::getId).toArray());
-        Assert.assertEquals(4, deletedComments.getTotalCount());
-    }
-
-    @Test
-    @Sql("classpath:user1.sql")
-    @Sql("classpath:user2.sql")
-    @Sql("classpath:user3.sql")
-    @Sql("classpath:categories.sql")
-    @Sql("classpath:post1.sql")
-    @Sql("classpath:post2.sql")
-    @Sql("classpath:post3.sql")
-    public void testSearchDeletedComments() {
-
-        // Pre conditions
-        JdbcTestUtils.deleteFromTables(jdbcTemplate, Comment.TABLE_NAME);
-
-        long comment1ID = helper.insertComment(false, null, POST1_ID, USER1_ID, "body Text");
-        long comment2ID = helper.insertComment(false, null, POST2_ID, USER2_ID, "alterante message");
-        long comment3ID = helper.insertComment(false, null, POST1_ID, USER1_ID, "Text");
-        long comment4ID = helper.insertComment(false, null, POST1_ID, USER2_ID, "body");
-        long comment5ID = helper.insertComment(false, null, POST3_ID, USER3_ID, "bodyText");
-        long comment6ID = helper.insertComment(false, null, POST1_ID, USER2_ID, "BodYBodYBodY");
-        long comment7ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "bODy");
-
-//        2. ejercitar
-        final PaginatedCollection<Comment> deletedComments = commentDao.searchDeletedComments("bODy", NEWEST, 1, 2);
-
-//        3. post-condiciones
-        Assert.assertArrayEquals(new Long[]{comment4ID, comment1ID}, deletedComments.getResults().stream().map(Comment::getId).toArray());
         Assert.assertEquals(4, deletedComments.getTotalCount());
     }
 }

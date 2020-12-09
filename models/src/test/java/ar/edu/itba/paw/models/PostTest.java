@@ -26,7 +26,7 @@ public class PostTest {
     private static final boolean DEFAULT_EDITED = false;
     private static final LocalDateTime DEFAULT_LAST_EDIT_DATE = null;
     private static final boolean DEFAULT_ENABLED = true;
-    private static final Set<PostLike> DEFAULT_LIKES = Collections.emptySet();
+    private static final Set<PostVote> DEFAULT_LIKES = Collections.emptySet();
     private static final Set<Movie> DEFAULT_MOVIES = Collections.emptySet();
     private static final Set<Comment> DEFAULT_COMMENTS = Collections.emptySet();
 
@@ -34,30 +34,30 @@ public class PostTest {
     @Test
     public void testCalculateTotalLikes() {
 
-        Set<PostLike> likes = new HashSet<>();
-        PostLike like;
+        Set<PostVote> likes = new HashSet<>();
+        PostVote like;
 
         // Add 20 likes: 10 positive 10 negative
         for (int i = 0; i < 10; i++) {
 
-            like = Mockito.mock(PostLike.class);
+            like = Mockito.mock(PostVote.class);
             Mockito.when(like.getValue()).thenReturn(1);
 
             likes.add(like);
 
-            like = Mockito.mock(PostLike.class);
+            like = Mockito.mock(PostVote.class);
             Mockito.when(like.getValue()).thenReturn(-1);
 
             likes.add(like);
         }
 
         // Add 2 positive likes
-        like = Mockito.mock(PostLike.class);
+        like = Mockito.mock(PostVote.class);
         Mockito.when(like.getValue()).thenReturn(1);
 
         likes.add(like);
 
-        like = Mockito.mock(PostLike.class);
+        like = Mockito.mock(PostVote.class);
         Mockito.when(like.getValue()).thenReturn(1);
 
         likes.add(like);
@@ -69,7 +69,7 @@ public class PostTest {
         // Exercise
         post.calculateTotalLikes();
 
-        Assert.assertEquals(2L, post.getTotalLikes());
+        Assert.assertEquals(2L, post.getTotalVotes());
     }
 
     @Test
@@ -78,8 +78,8 @@ public class PostTest {
         long userRealId = 5L;
         int likeValue = -1;
 
-        Set<PostLike> likes = new HashSet<>();
-        PostLike like;
+        Set<PostVote> likes = new HashSet<>();
+        PostVote like;
         User realUser;
 
         // Create real user with valid value
@@ -92,18 +92,18 @@ public class PostTest {
         User fakeUser2 = Mockito.mock(User.class);
         Mockito.lenient().when(fakeUser2.getId()).thenReturn(userRealId + 10L);
 
-        like = Mockito.mock(PostLike.class);
+        like = Mockito.mock(PostVote.class);
         Mockito.when(like.getValue()).thenReturn(likeValue);
         Mockito.when(like.getUser()).thenReturn(realUser);
 
         likes.add(like);
 
         // Create other likes
-        like = Mockito.mock(PostLike.class);
+        like = Mockito.mock(PostVote.class);
         Mockito.lenient().when(like.getUser()).thenReturn(fakeUser1);
         likes.add(like);
 
-        like = Mockito.mock(PostLike.class);
+        like = Mockito.mock(PostVote.class);
         Mockito.lenient().when(like.getUser()).thenReturn(fakeUser2);
         likes.add(like);
 
@@ -112,7 +112,7 @@ public class PostTest {
                 DEFAULT_MOVIES, DEFAULT_COMMENTS);
 
         // Exercise
-        int value = post.getLikeValue(realUser);
+        int value = post.getVoteValue(realUser);
 
         Assert.assertEquals(likeValue, value);
     }
@@ -126,12 +126,12 @@ public class PostTest {
         User fakeUser = Mockito.mock(User.class);
         Mockito.lenient().when(fakeUser.getId()).thenReturn(11L);
 
-        Set<PostLike> likes = new HashSet<>();
+        Set<PostVote> likes = new HashSet<>();
 
-        PostLike realLike = Mockito.mock(PostLike.class);
+        PostVote realLike = Mockito.mock(PostVote.class);
         Mockito.when(realLike.getUser()).thenReturn(realUser);
 
-        PostLike fakeLike = Mockito.mock(PostLike.class);
+        PostVote fakeLike = Mockito.mock(PostVote.class);
         Mockito.lenient().when(fakeLike.getUser()).thenReturn(fakeUser);
 
         likes.add(realLike);
@@ -142,7 +142,7 @@ public class PostTest {
                 DEFAULT_MOVIES, DEFAULT_COMMENTS);
 
         // Exercise
-        post.removeLike(realUser);
+        post.removeVote(realUser);
 
         Mockito.verify(realUser).removePostLike(realLike);
 
@@ -163,11 +163,11 @@ public class PostTest {
         User user = Mockito.mock(User.class);
 
         // Exercise
-        post.like(user, 1);
+        post.vote(user, 1);
 
-        Mockito.verify(user).addPostLike(Mockito.any(PostLike.class));
+        Mockito.verify(user).addPostLike(Mockito.any(PostVote.class));
 
-        Assert.assertEquals(1, post.getLikes().size());
+        Assert.assertEquals(1, post.getVotes().size());
     }
 
     @Test
@@ -176,9 +176,9 @@ public class PostTest {
         User user = Mockito.mock(User.class);
         Mockito.when(user.getId()).thenReturn(1L);
 
-        Set<PostLike> likes = new HashSet<>();
+        Set<PostVote> likes = new HashSet<>();
 
-        PostLike like = Mockito.mock(PostLike.class);
+        PostVote like = Mockito.mock(PostVote.class);
         Mockito.when(like.getUser()).thenReturn(user);
 
         likes.add(like);
@@ -188,7 +188,7 @@ public class PostTest {
                 DEFAULT_MOVIES, DEFAULT_COMMENTS);
 
         // Exercise
-        post.like(user, -1);
+        post.vote(user, -1);
 
         Mockito.verify(like).setValue(-1);
 

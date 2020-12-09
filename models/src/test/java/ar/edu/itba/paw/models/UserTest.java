@@ -25,8 +25,8 @@ public class UserTest {
     private static final Image DEFAULT_AVATAR = null;
     private static final Set<Role> DEFAULT_ROLES = Collections.emptySet();
     private static final boolean DEFAULT_ENABLED = true;
-    private static final Set<PostLike> DEFAULT_POST_LIKES = Collections.emptySet();
-    private static final Set<CommentLike> DEFAULT_COMMENT_LIKES = Collections.emptySet();
+    private static final Set<PostVote> DEFAULT_POST_LIKES = Collections.emptySet();
+    private static final Set<CommentVote> DEFAULT_COMMENT_LIKES = Collections.emptySet();
     private static final Set<Post> DEFAULT_POSTS = Collections.emptySet();
     private static final Set<Comment> DEFAULT_COMMENTS = Collections.emptySet();
     private static final Set<User> DEFAULT_FOLLOWING = Collections.emptySet();
@@ -47,36 +47,36 @@ public class UserTest {
 
             // Comment Likes
             comment = Mockito.mock(Comment.class);
-            Mockito.when(comment.getTotalLikes()).thenReturn(15L);
+            Mockito.when(comment.getTotalVotes()).thenReturn(15L);
 
             comments.add(comment);
 
             comment = Mockito.mock(Comment.class);
-            Mockito.when(comment.getTotalLikes()).thenReturn(-12L);
+            Mockito.when(comment.getTotalVotes()).thenReturn(-12L);
 
             comments.add(comment);
 
             // Post Likes
             post = Mockito.mock(Post.class);
-            Mockito.when(post.getTotalLikes()).thenReturn(20L);
+            Mockito.when(post.getTotalVotes()).thenReturn(20L);
 
             posts.add(post);
 
             post = Mockito.mock(Post.class);
-            Mockito.when(post.getTotalLikes()).thenReturn(-18L);
+            Mockito.when(post.getTotalVotes()).thenReturn(-18L);
 
             posts.add(post);
         }
 
         // Add 50 positive comment likes
         comment = Mockito.mock(Comment.class);
-        Mockito.when(comment.getTotalLikes()).thenReturn(50L);
+        Mockito.when(comment.getTotalVotes()).thenReturn(50L);
 
         comments.add(comment);
 
         // Add 50 negative post like
         post = Mockito.mock(Post.class);
-        Mockito.when(post.getTotalLikes()).thenReturn(-50L);
+        Mockito.when(post.getTotalVotes()).thenReturn(-50L);
 
         posts.add(post);
 

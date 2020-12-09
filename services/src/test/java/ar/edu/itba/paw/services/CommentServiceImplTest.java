@@ -66,7 +66,7 @@ public class CommentServiceImplTest {
         User user = Mockito.mock(User.class);
 
         Mockito.when(comment.isEnabled()).thenReturn(true);
-        Mockito.when(comment.getLikeValue(user)).thenReturn(UP_VOTE_VALUE);
+        Mockito.when(comment.getVoteValue(user)).thenReturn(UP_VOTE_VALUE);
 
         commentService.likeComment(comment, user,0);
 
@@ -80,7 +80,7 @@ public class CommentServiceImplTest {
         User user = Mockito.mock(User.class);
 
         Mockito.when(comment.isEnabled()).thenReturn(true);
-        Mockito.when(comment.getLikeValue(user)).thenReturn(0);
+        Mockito.when(comment.getVoteValue(user)).thenReturn(0);
 
         commentService.likeComment(comment, user, UP_VOTE_VALUE);
 
@@ -94,7 +94,7 @@ public class CommentServiceImplTest {
         User user = Mockito.mock(User.class);
 
         Mockito.when(comment.isEnabled()).thenReturn(true);
-        Mockito.when(comment.getLikeValue(user)).thenReturn(0);
+        Mockito.when(comment.getVoteValue(user)).thenReturn(0);
 
         commentService.likeComment(comment, user, DOWN_VOTE_VALUE);
 

@@ -21,7 +21,7 @@ public class CommentDaoImpl implements CommentDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(CommentDaoImpl.class);
 
     private static final String COMMENTS = Comment.TABLE_NAME;
-    private static final String COMMENTS_LIKES = CommentLike.TABLE_NAME;
+    private static final String COMMENTS_LIKES = CommentVote.TABLE_NAME;
 
     private static final String NATIVE_BASE_COMMENT_FROM = "FROM " + COMMENTS;
 
@@ -32,34 +32,9 @@ public class CommentDaoImpl implements CommentDao {
             " GROUP BY " + COMMENTS + ".comment_id" +
             ") " + COMMENTS_LIKES  + " ON " + COMMENTS + ".comment_id = " + COMMENTS_LIKES + ".tl_comment_id";
 
-        private static final String NATIVE_PAGINATION_RECURSIVE_QUERY_UPPER =
-            "WITH RECURSIVE comments_rec(comment_id, parent_id, post_id, user_id, creation_date, body, enabled, iteration) AS (" +
-                "SELECT " +
-                    "root_comments.comment_id, " +
-                    "root_comments.parent_id, " +
-                    "root_comments.post_id, " +
-                    "root_comments.user_id, " +
-                    "root_comments.creation_date, " +
-                    "root_comments.body, " +
-                    "root_comments.enabled, " +
-                    "1 iteration";
+    private static final String NATIVE_ENABLED_FILTER = COMMENTS + ".enabled = true";
 
-        // The missing int value corresponds to the depth of the recursive query
-    private static final String NATIVE_PAGINATION_RECURSIVE_QUERY_LOWER =
-                " UNION " +
-                "SELECT " +
-                    COMMENTS + ".comment_id, " +
-                    COMMENTS + ".parent_id, " +
-                    COMMENTS + ".post_id, " +
-                    COMMENTS + ".user_id, " +
-                    COMMENTS + ".creation_date, " +
-                    COMMENTS + ".body, " +
-                    COMMENTS + ".enabled, " +
-                    "iteration+1 iteration " +
-                "FROM " + COMMENTS + ", comments_rec " +
-                "WHERE " + COMMENTS + ".parent_id = comments_rec.comment_id AND iteration < %d" +
-            ")";
-
+    private static final String NATIVE_DISABLED_FILTER = COMMENTS + ".enabled = false";
 
     private static final EnumMap<SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQueryMap();
     private static final EnumMap<SortCriteria,String> sortCriteriaHQLMap = initializeSortCriteriaHQL();
@@ -94,25 +69,11 @@ public class CommentDaoImpl implements CommentDao {
 
         em.persist(comment);
 
-        comment.setTotalLikes(0L);
+        comment.setTotalVotes(0L);
 
         LOGGER.info("Created Comment: {}", comment.getId());
 
         return comment;
-    }
-
-    @Override
-    public int getVoteValue(Comment comment, User user) {
-        CommentLike commentLike = em.createQuery("SELECT c FROM CommentLike c WHERE c.comment = :comment and c.user = :user", CommentLike.class)
-                .setParameter("comment", comment)
-                .setParameter("user", user)
-                .getResultList().stream().findFirst().orElse(null);
-
-        if (commentLike == null) {
-            return 0;
-        }
-
-        return commentLike.getValue();
     }
 
     @Override
@@ -123,74 +84,41 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentChildren(Comment comment, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> getAllComments(Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Get All Comments Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
+
+        return queryComments("", enabled, sortCriteria, pageNumber, pageSize, null);
+    }
+
+    @Override
+    public PaginatedCollection<Comment> findCommentChildren(Comment comment, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Comment {} First Level Children Order By {}. Page number {}, Page Size {}", comment.getId(), sortCriteria, pageNumber, pageSize);
 
         return queryComments(
-                "WHERE coalesce(" + COMMENTS + ".parent_id, 0) = ?" ,
-                sortCriteria, pageNumber, pageSize, new Object[]{ comment.getId() });
+                "WHERE coalesce(" + COMMENTS + ".parent_id, 0) = ?",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ comment.getId() });
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentDescendants(Comment comment, long maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        LOGGER.info("Find Comment {} Descendants, Order By {}, Max Depth {}, Page number {}, Page Size {}", comment.getId(), sortCriteria, maxDepth, pageNumber, pageSize);
-
-        return queryDescendantComments(sortCriteria, pageNumber, pageSize, comment.getId(), false, maxDepth);
-    }
-
-    @Override
-    public PaginatedCollection<Comment> findPostCommentDescendants(Post post, long maxDepth, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        LOGGER.info("Find Post {} Descendants, Order By {}, Max Depth {}, Page number {}, Page Size {}", post.getId(), sortCriteria, maxDepth, pageNumber, pageSize);
-
-        return queryDescendantComments(sortCriteria, pageNumber, pageSize, post.getId(), true, maxDepth);
-    }
-
-    @Override
-    public PaginatedCollection<Comment> findCommentsByPost(Post post, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentsByPost(Post post, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Comments By Post {} Order By {}. Page number {}, Page Size {}", post.getId(), sortCriteria, pageNumber, pageSize);
 
         return queryComments(
-                "WHERE " + COMMENTS + ".post_id = ?", sortCriteria,
-                pageNumber, pageSize, new Object[]{ post.getId() });
+                "WHERE " + COMMENTS + ".post_id = ?",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ post.getId() });
     }
 
     @Override
-    public PaginatedCollection<Comment> findCommentsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Comment> findCommentsByUser(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Comments By User {} Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
 
         return queryComments(
-                "WHERE " + COMMENTS + ".user_id = ? AND " + COMMENTS + ".enabled = true",
-                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
-    }
-
-    @Override
-    public PaginatedCollection<Comment> getDeletedComments(SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        LOGGER.info("Get all deleted Comments Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
-
-        return queryComments(
-                "WHERE " + COMMENTS + ".enabled = false",
-                sortCriteria, pageNumber, pageSize, null);
-    }
-
-    @Override
-    public PaginatedCollection<Comment> searchDeletedComments(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        LOGGER.info("Search Deleted Comments by Body {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
-
-        return queryComments(
-                "WHERE LOWER(" + COMMENTS + ".body) LIKE '%' || LOWER(?) || '%' AND " + COMMENTS + ".enabled = false",
-                sortCriteria, pageNumber, pageSize, new Object[]{ query });
-    }
-
-    @Override
-    public PaginatedCollection<CommentLike> getCommentVotes(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
-        return null;
+                "WHERE " + COMMENTS + ".user_id = ?",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     private String buildNativeFromStatement() {
@@ -239,7 +167,31 @@ public class CommentDaoImpl implements CommentDao {
         }
     }
 
-    private PaginatedCollection<Comment> queryComments(String nativeWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] params) {
+    private String addEnabledFilter(String nativeWhereStatement, Boolean enabled) {
+        if(enabled == null)
+            return nativeWhereStatement;
+
+        final StringBuilder sb;
+
+        if(nativeWhereStatement != null)
+            sb = new StringBuilder(nativeWhereStatement.trim());
+        else
+            sb = new StringBuilder();
+
+        if(sb.length() == 0)
+            sb.append("WHERE ");
+        else
+            sb.append(" AND ");
+
+        if(enabled)
+            sb.append(NATIVE_ENABLED_FILTER);
+        else
+            sb.append(NATIVE_DISABLED_FILTER);
+
+        return sb.toString();
+    }
+
+    private PaginatedCollection<Comment> queryComments(String nativeWhereStatement, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] params) {
 
         final String nativeSelect = "SELECT " + COMMENTS + ".comment_id";
 
@@ -247,20 +199,22 @@ public class CommentDaoImpl implements CommentDao {
 
         final String nativeFrom = buildNativeFromStatement();
 
+        final String nativeWhere = addEnabledFilter(nativeWhereStatement, enabled);
+
         final String nativeOrderBy = buildNativeOrderByStatement(sortCriteria);
 
         final String HQLOrderBy = buildHQLOrderByStatement(sortCriteria);
 
         final String nativePagination = buildNativePaginationStatement(pageNumber, pageSize);
 
-        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, nativeWhereStatement);
+        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, nativeWhere);
 
         final String nativeQuery = String.format("%s %s %s %s %s",
-                nativeSelect, nativeFrom, nativeWhereStatement, nativeOrderBy, nativePagination);
+                nativeSelect, nativeFrom, nativeWhere, nativeOrderBy, nativePagination);
 
         final String fetchQuery = String.format(
                 "SELECT c, sum(coalesce(likes.value, 0)) AS totalLikes " +
-                        "FROM Comment c LEFT OUTER JOIN c.likes likes " +
+                        "FROM Comment c LEFT OUTER JOIN c.votes likes " +
                         "WHERE c.id IN :commentIds " +
                         "GROUP BY c " +
                         "%s", HQLOrderBy);
@@ -304,7 +258,7 @@ public class CommentDaoImpl implements CommentDao {
         // Map Tuples To Comments
         final Collection<Comment> comments = fetchQueryResult.stream().map(tuple -> {
 
-            tuple.get(0, Comment.class).setTotalLikes(tuple.get(1, Long.class));
+            tuple.get(0, Comment.class).setTotalVotes(tuple.get(1, Long.class));
             return tuple.get(0, Comment.class);
 
         }).collect(Collectors.toList());
@@ -312,90 +266,56 @@ public class CommentDaoImpl implements CommentDao {
         return new PaginatedCollection<>(comments, pageNumber, pageSize, totalComments);
     }
 
-    private PaginatedCollection<Comment> queryDescendantComments(SortCriteria sortCriteria, int pageNumber, int pageSize, long rootId, boolean isRootPost, long maxDepth) {
+    @Override
+    public PaginatedCollection<CommentVote> getCommentVotes(Comment comment, int pageNumber, int pageSize) {
 
-        final String nativeCountSelect = "SELECT COUNT(DISTINCT " + COMMENTS + ".comment_id)";
+        final String nativeSelect = "SELECT " + COMMENTS_LIKES + ".comments_likes_id";
 
-        final String nativeFrom = buildNativeFromStatement();
+        final String nativeCountSelect = "SELECT COUNT(DISTINCT " + COMMENTS_LIKES + ".comments_likes_id)";
 
-        final String firstLevelCommentsWhere = isRootPost?
+        final String nativeFrom = "FROM " + COMMENTS_LIKES;
 
-                // parent_id is null (is root) and it's post is rootId
-                "WHERE " + COMMENTS + ".post_id = :rootId AND coalesce(" + COMMENTS + ".parent_id, 0) = 0" :
+        final String nativeWhere = "WHERE " + COMMENTS_LIKES + ".comment_id = :comment_id";
 
-                // It's parent_id is a comment
-                "WHERE coalesce(" + COMMENTS + ".parent_id, 0) = :rootId";
-
-        final String nativeOrderBy = buildNativeOrderByStatement(sortCriteria);
-
-        final String HQLOrderBy = buildHQLOrderByStatement(sortCriteria);
+        final String nativeOrderBy = "ORDER BY " + COMMENTS_LIKES + ".comments_likes_id";
 
         final String nativePagination = buildNativePaginationStatement(pageNumber, pageSize);
 
-        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, firstLevelCommentsWhere);
+        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, nativeWhere);
 
-        // Select First Level And All Their Descendants
-        final String recursiveNativeQuery = String.format(
-                        NATIVE_PAGINATION_RECURSIVE_QUERY_UPPER +
-                        " FROM (SELECT * %s %s %s %s ) root_comments " +
-                        NATIVE_PAGINATION_RECURSIVE_QUERY_LOWER +
-                        "SELECT comments_rec.comment_id FROM comments_rec",
-                nativeFrom, firstLevelCommentsWhere, nativeOrderBy, nativePagination, maxDepth);
+        final String nativeQuery = String.format("%s %s %s %s %s",
+                nativeSelect, nativeFrom, nativeWhere, nativeOrderBy, nativePagination);
 
-        final String fetchQuery = String.format(
-                "SELECT c, sum(coalesce(likes.value, 0)) AS totalLikes " +
-                        "FROM Comment c LEFT OUTER JOIN c.likes likes " +
-                        "WHERE c.id IN :commentIds " +
-                        "GROUP BY c " +
-                        "%s", HQLOrderBy);
+        final String fetchQuery = "SELECT cv FROM CommentVote cv WHERE cv.id IN :commentVoteIds ORDER BY cv.id";
 
-        LOGGER.debug("QueryDescendantComments nativeCountQuery: {}", nativeCountQuery);
-        LOGGER.debug("QueryDescendantComments recursiveNativeQuery: {}", recursiveNativeQuery);
-        LOGGER.debug("QueryDescendantComments fetchQuery: {}", fetchQuery);
+        LOGGER.debug("QueryCommentVotes nativeCountQuery: {}", nativeCountQuery);
+        LOGGER.debug("QueryCommentVotes nativeQuery: {}", nativeQuery);
+        LOGGER.debug("QueryCommentVotes fetchQuery: {}", fetchQuery);
 
-        // Calculate First Level Comment Count Disregarding Pagination (To Calculate Pages Later)
-        final Query totalCommentsNativeQuery =
-                em.createNativeQuery(nativeCountQuery).setParameter("rootId", rootId);
+        final long totalCommentVotes =
+                ((Number) em.createNativeQuery(nativeCountQuery)
+                        .setParameter("comment_id", comment.getId())
+                        .getSingleResult())
+                        .longValue();
 
-        final long totalFirstLevelComments = ((Number) totalCommentsNativeQuery.getSingleResult()).longValue();
-
-        if(totalFirstLevelComments == 0) {
-            LOGGER.debug("QueryCommentsDescendants Total Count == 0");
-            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalFirstLevelComments);
+        if(totalCommentVotes == 0) {
+            LOGGER.debug("QueryCommentVotes Total Count == 0");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalCommentVotes);
         }
-
-        // Calculate Which Comments To Load And Load Their Ids
-        final Query commentIdsNativeQuery =
-                em.createNativeQuery(recursiveNativeQuery).setParameter("rootId", rootId);
 
         @SuppressWarnings("unchecked")
-        final Collection<Long> commentIds =
-                ((List<Number>)commentIdsNativeQuery.getResultList())
+        final Collection<Long> commentVoteIds =
+                ((List<Number>) em.createNativeQuery(nativeQuery).setParameter("comment_id", comment.getId()).getResultList())
                         .stream().map(Number::longValue).collect(Collectors.toList());
 
-        if(commentIds.isEmpty()) {
-            LOGGER.debug("QueryCommentsDescendants Empty Page");
-            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalFirstLevelComments);
+        if(commentVoteIds.isEmpty()) {
+            LOGGER.debug("QueryCommentVotes Empty Page");
+            return new PaginatedCollection<>(Collections.emptyList(), pageNumber, pageSize, totalCommentVotes);
         }
 
-        // Get Comments Based on Ids
-        final Collection<Tuple> fetchQueryResult = em.createQuery(fetchQuery, Tuple.class)
-                .setParameter("commentIds", commentIds)
-                .getResultList();
+        final Collection<CommentVote> results = em.createQuery(fetchQuery, CommentVote.class)
+                .setParameter("commentVoteIds", commentVoteIds).getResultList();
 
-        // Map Tuples To Comments
-        final Collection<Comment> allComments = fetchQueryResult.stream().map(tuple -> {
-
-            tuple.get(0, Comment.class).setTotalLikes(tuple.get(1, Long.class));
-            return tuple.get(0, Comment.class);
-
-        }).collect(Collectors.toList());
-
-        // I Just Return First Level, But The Other Comments Are Still Loaded In The Session (Referenced In The Tree Structure)
-        final Collection<Comment> firstLevelComment = allComments.stream()
-                .filter(c -> (isRootPost && c.getParent() == null) || (!isRootPost && c.getParent().getId() == rootId))
-                .collect(Collectors.toList());
-
-        return new PaginatedCollection<>(firstLevelComment, pageNumber, pageSize, totalFirstLevelComments);
+        return new PaginatedCollection<>(results, pageNumber, pageSize, totalCommentVotes);
     }
 }

@@ -1,4 +1,10 @@
 package ar.edu.itba.paw.interfaces.services.exceptions;
 
-public class IllegalCommentEditionException extends Exception {
+import ar.edu.itba.paw.interfaces.exceptions.CustomException;
+
+public class IllegalCommentEditionException extends CustomException {
+
+    public IllegalCommentEditionException() {
+        super("error.illegalCommentEditionException", 400);
+    }
 }

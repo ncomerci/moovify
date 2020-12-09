@@ -16,6 +16,7 @@ import ar.edu.itba.paw.webapp.auth.JwtUtil;
 import ar.edu.itba.paw.webapp.dto.error.BeanValidationErrorDto;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
 import ar.edu.itba.paw.webapp.dto.error.GenericErrorDto;
+import ar.edu.itba.paw.webapp.dto.generic.GenericBooleanResponseDto;
 import ar.edu.itba.paw.webapp.dto.input.*;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
@@ -48,6 +49,9 @@ public class AuthenticatedUserController {
     @Context
     private UriInfo uriInfo;
 
+    @Context
+    private SecurityContext securityContext;
+
     @Autowired
     private UserService userService;
 
@@ -65,13 +69,14 @@ public class AuthenticatedUserController {
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response getUser(@Context SecurityContext securityContext) {
+    public Response getUser() {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        return Response.ok(new UserDto(user, uriInfo)).build();
+        return Response.ok(new UserDto(user, uriInfo, securityContext)).build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     public Response authenticateUser(final UserAuthenticationDto userAuthDto) {
@@ -86,12 +91,11 @@ public class AuthenticatedUserController {
 
             User user = userService.findUserByUsername(authenticate.getName()).orElseThrow(UserNotFoundException::new);
 
-            return Response.noContent()
-                    .header(
-                            HttpHeaders.AUTHORIZATION,
-                            jwtUtil.generateToken(user)
-                    )
-                    .build();
+            final Response.ResponseBuilder responseBuilder = Response.noContent();
+
+            authenticateUser(responseBuilder, user);
+
+            return responseBuilder.build();
 
         } catch (AuthenticationException e) {
             return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -101,9 +105,11 @@ public class AuthenticatedUserController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
-    public Response updateUser(@Context SecurityContext securityContext, final UserEditDto userEditDto) {
+    public Response updateUser(final UserEditDto userEditDto) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+
+        final boolean shouldRevalidateAuthentication = !userEditDto.getUsername().equals(user.getUsername());
 
         try {
             userService.updateUser(user, userEditDto.getName(), userEditDto.getUsername(), userEditDto.getDescription(),
@@ -116,16 +122,20 @@ public class AuthenticatedUserController {
                     .build();
         }
 
-        return Response.noContent()
-                .contentLocation(UserDto.getUserUriBuilder(user, uriInfo).build())
-                .build();
+        final Response.ResponseBuilder responseBuilder = Response.noContent()
+                .contentLocation(UserDto.getUserUriBuilder(user, uriInfo).build());
+
+        if(shouldRevalidateAuthentication)
+            authenticateUser(responseBuilder, user);
+
+        return responseBuilder.build();
     }
 
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/avatar")
-    public Response updateAvatar(@Context SecurityContext securityContext, @Valid final UpdateAvatarDto updateAvatarDto) throws IOException {
+    public Response updateAvatar(@Valid final UpdateAvatarDto updateAvatarDto) throws IOException {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -139,7 +149,7 @@ public class AuthenticatedUserController {
     @Produces("image/*")
     @GET
     @Path("/avatar")
-    public Response getAvatar(@Context SecurityContext securityContext) {
+    public Response getAvatar() {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -152,58 +162,96 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/posts")
-    public Response getUserPosts(@Context SecurityContext securityContext,
+    public Response getUserPosts(@QueryParam("enabled") Boolean enabled,
                                  @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                  @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                  @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        final PaginatedCollection<Post> posts = postService.findPostsByUser(user, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Post> posts = postService.findPostsByUser(user, enabled, orderBy, pageNumber, pageSize);
 
-        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
-        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", posts.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/comments")
-    public Response getUserComments(@Context SecurityContext securityContext,
+    public Response getUserComments(@QueryParam("enabled") Boolean enabled,
                                     @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                     @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                     @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        final PaginatedCollection<Comment> comments = commentService.findCommentsByUser(user, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Comment> comments = commentService.findCommentsByUser(user, enabled, orderBy, pageNumber, pageSize);
 
-        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo);
+        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
-        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", comments.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
+        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/following")
-    public Response getFollowedUsers(@Context SecurityContext securityContext,
+    public Response getFollowedUsers(@QueryParam("enabled") Boolean enabled,
                                      @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                      @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                      @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        final PaginatedCollection<User> users = userService.getFollowedUsers(user, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<User> users = userService.getFollowedUsers(user, enabled, orderBy, pageNumber, pageSize);
 
-        final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo);
+        final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo, securityContext);
 
-        return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", users.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
+        return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, linkUriBuilder);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/following/{userId}")
+    public Response isFollowingUser(@PathParam("userId") long userId) {
+
+        final User loggedUser = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+
+        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
+
+        final boolean result = userService.isFollowingUser(loggedUser, user);
+
+        return Response.ok(new GenericBooleanResponseDto(result)).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/following/{userId}")
-    public Response followUser(@PathParam("userId") long userId, @Context SecurityContext securityContext) throws IllegalUserFollowException {
+    public Response followUser(@PathParam("userId") long userId) throws IllegalUserFollowException {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -217,7 +265,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/following/{userId}")
-    public Response unfollowUser(@PathParam("userId") long userId, @Context SecurityContext securityContext) throws IllegalUserUnfollowException {
+    public Response unfollowUser(@PathParam("userId") long userId) throws IllegalUserUnfollowException {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -231,24 +279,46 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/bookmarked")
-    public Response getBookmarkedPosts(@Context SecurityContext securityContext,
+    public Response getBookmarkedPosts(@QueryParam("enabled") Boolean enabled,
                                        @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                        @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                        @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        final PaginatedCollection<Post> posts = postService.getUserBookmarkedPosts(user, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Post> posts = postService.getUserBookmarkedPosts(user, enabled, orderBy, pageNumber, pageSize);
 
-        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
-        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", posts.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/bookmarked/{postId}")
+    public Response hasUserBookmarkedPost(@PathParam("postId") long postId) {
+
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+
+        final boolean result = userService.hasUserBookmarkedPost(user, post);
+
+        return Response.ok(new GenericBooleanResponseDto(result)).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/bookmarked/{postId}")
-    public Response bookmarkPost(@PathParam("postId") long postId, @Context SecurityContext securityContext) throws IllegalPostBookmarkException {
+    public Response bookmarkPost(@PathParam("postId") long postId) throws IllegalPostBookmarkException {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -262,7 +332,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/bookmarked/{postId}")
-    public Response unbookmarkPost(@PathParam("postId") long postId, @Context SecurityContext securityContext) throws IllegalPostUnbookmarkException {
+    public Response unbookmarkPost(@PathParam("postId") long postId) throws IllegalPostUnbookmarkException {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -276,7 +346,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @Path("/email_confirmation")
-    public Response resendConfirmationEmail(@Context SecurityContext securityContext, @Context HttpServletRequest request) {
+    public Response resendConfirmationEmail(@Context HttpServletRequest request) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -285,11 +355,11 @@ public class AuthenticatedUserController {
         return Response.noContent().build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/email_confirmation")
-    public Response confirmRegistration(final TokenDto tokenDto,
-                                        @Context SecurityContext securityContext, @Context HttpServletRequest request) {
+    public Response confirmRegistration(final TokenDto tokenDto, @Context HttpServletRequest request) {
 
         final Optional<User> optUser = userService.confirmRegistration(tokenDto.getToken());
 
@@ -299,8 +369,8 @@ public class AuthenticatedUserController {
 
             final Response.ResponseBuilder responseBuilder = Response.noContent();
 
-            if(user.isEnabled() && securityContext.getUserPrincipal() != null)
-                responseBuilder.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateToken(user));
+            if(user.isEnabled())
+                authenticateUser(responseBuilder, user);
 
             return Response.noContent().build();
         }
@@ -311,6 +381,7 @@ public class AuthenticatedUserController {
                 .build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @Path("/password_reset")
@@ -344,10 +415,11 @@ public class AuthenticatedUserController {
         return Response.noContent().build();
     }
 
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/password_reset")
-    public Response resetPassword(@Valid final PasswordResetDto passwordResetDto, @Context SecurityContext securityContext) {
+    public Response resetPassword(@Valid final PasswordResetDto passwordResetDto) {
 
         final boolean isTokenValid = userService.validatePasswordResetToken(passwordResetDto.getToken());
 
@@ -368,14 +440,13 @@ public class AuthenticatedUserController {
         final Response.ResponseBuilder responseBuilder = Response.noContent();
 
         if(user.isEnabled() && securityContext.getUserPrincipal() != null)
-            responseBuilder.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateToken(user));
+            authenticateUser(responseBuilder, user);
 
         return responseBuilder.build();
     }
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
-                                                                  GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
-                                                                  String orderBy) {
+                                                                  GenericEntity<Collection<Dto>> resultsDto, UriBuilder linkUriBuilder) {
         if(paginatedResults.isEmpty()) {
             if(paginatedResults.getPageNumber() == 0)
                 return Response.noContent().build();
@@ -387,13 +458,12 @@ public class AuthenticatedUserController {
         final Response.ResponseBuilder responseBuilder =
                 Response.ok(resultsDto);
 
-        setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
+        setPaginationLinks(responseBuilder, paginatedResults, linkUriBuilder);
 
         return responseBuilder.build();
     }
 
-    private <T> void setPaginationLinks(Response.ResponseBuilder response, UriInfo uriInfo,
-                                        PaginatedCollection<T> results, String orderBy) {
+    private <T> void setPaginationLinks(Response.ResponseBuilder response, PaginatedCollection<T> results, UriBuilder baseUri) {
 
         final int pageNumber = results.getPageNumber();
         final String pageNumberParamName = "pageNumber";
@@ -403,19 +473,18 @@ public class AuthenticatedUserController {
         final int prev = pageNumber - 1;
         final int next = pageNumber + 1;
 
-        final UriBuilder linkUriBuilder = uriInfo
-                .getAbsolutePathBuilder()
-                .queryParam("pageSize", results.getPageSize())
-                .queryParam("orderBy", orderBy);
+        response.link(baseUri.clone().queryParam(pageNumberParamName, first).build(), "first");
 
-        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, first).build(), "first");
-
-        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, last).build(), "last");
+        response.link(baseUri.clone().queryParam(pageNumberParamName, last).build(), "last");
 
         if(pageNumber != first)
-            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, prev).build(), "prev");
+            response.link(baseUri.clone().queryParam(pageNumberParamName, prev).build(), "prev");
 
         if(pageNumber != last)
-            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, next).build(), "next");
+            response.link(baseUri.clone().queryParam(pageNumberParamName, next).build(), "next");
+    }
+
+    private void authenticateUser(Response.ResponseBuilder responseBuilder, User user) {
+        responseBuilder.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateToken(user));
     }
 }

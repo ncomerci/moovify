@@ -27,8 +27,8 @@ public class UserDaoImpl implements UserDao {
     private static final String USERS = User.TABLE_NAME;
     private static final String USER_ROLE = User.USER_ROLE_TABLE_NAME;
     private static final String POSTS = Post.TABLE_NAME;
-    private static final String POSTS_LIKES = PostLike.TABLE_NAME;
-    private static final String COMMENTS_LIKES = CommentLike.TABLE_NAME;
+    private static final String POSTS_LIKES = PostVote.TABLE_NAME;
+    private static final String COMMENTS_LIKES = CommentVote.TABLE_NAME;
     private static final String COMMENTS = Comment.TABLE_NAME;
     private static final String USERS_FOLLOWS = User.USERS_FOLLOWS;
 
@@ -64,6 +64,8 @@ public class UserDaoImpl implements UserDao {
             " WHERE LOWER(" + USER_ROLE + ".role_name) = LOWER(?))";
 
     private static final String NATIVE_ENABLED_FILTER = USERS + ".enabled = true";
+
+    private static final String NATIVE_DISABLED_FILTER = USERS + ".enabled = false";
 
     private static final EnumMap<SortCriteria, String> sortCriteriaQueryMap = initializeSortCriteriaQueryMap();
     private static final EnumMap<SortCriteria, String> sortCriteriaHQLMap = initializeSortCriteriaHQLMap();
@@ -162,22 +164,17 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findUserById(long id) {
-        return findByCriteria("id", id, true);
-    }
-
-    @Override
-    public Optional<User> findDeletedUserById(long id) {
-        return findByCriteria("id", id, false);
+        return findByCriteria("id", id);
     }
 
     @Override
     public Optional<User> findUserByUsername(String username) {
-        return findByCriteria("username", username, true);
+        return findByCriteria("username", username);
     }
 
     @Override
     public Optional<User> findUserByEmail(String email) {
-        return findByCriteria("email", email, true);
+        return findByCriteria("email", email);
     }
 
     @Override
@@ -191,15 +188,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public PaginatedCollection<User> getAllUsers(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<User> getAllUsers(Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Search All Users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
 
-        return queryUsers("", sortCriteria, pageNumber, pageSize, null);
+        return queryUsers("", enabled, sortCriteria, pageNumber, pageSize, null);
     }
 
     @Override
-    public PaginatedCollection<User> getFollowedUsers(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<User> getFollowedUsers(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Get All followed users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
 
@@ -208,43 +205,29 @@ public class UserDaoImpl implements UserDao {
                         USERS + ".user_id IN ( " +
                         "SELECT " + USERS_FOLLOWS + ".user_follow_id " +
                         "FROM " + USERS_FOLLOWS +
-                        " WHERE " + USERS_FOLLOWS + ".user_id = ?)" +
-                        " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
+                        " WHERE " + USERS_FOLLOWS + ".user_id = ?)",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override
-    public PaginatedCollection<User> searchUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<User> searchUsers(String query, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Search Users By Name {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
 
         return queryUsers(
-                "WHERE " + NATIVE_SEARCH_BY_USERNAME +
-                                    " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ query });
+                "WHERE " + NATIVE_SEARCH_BY_USERNAME,
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ query });
     }
 
     @Override
-    public PaginatedCollection<User> searchUsersByRole(String query, Role role, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<User> searchUsersByRole(String query, Role role, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Search Users By Name {} And Role {} Order By {}. Page number {}, Page Size {}", query, role, sortCriteria, pageNumber, pageSize);
 
         return queryUsers(
                 "WHERE " + NATIVE_SEARCH_BY_USERNAME +
-                                    " AND " + NATIVE_SEARCH_BY_ROLE +
-                                    " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ query, role.name() });
-    }
-
-    @Override
-    public PaginatedCollection<User> searchDeletedUsers(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        LOGGER.info("Search All Deleted Users Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
-
-        return queryUsers(
-                "WHERE " + NATIVE_SEARCH_BY_USERNAME +
-                                " AND " + USERS + ".enabled = false",
-                sortCriteria, pageNumber, pageSize, new Object[]{ query });
+                                    " AND " + NATIVE_SEARCH_BY_ROLE,
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ query, role.name() });
     }
 
     private String buildNativeFromStatement() {
@@ -281,6 +264,30 @@ public class UserDaoImpl implements UserDao {
         return String.format("LIMIT %d OFFSET %d", pageSize, pageNumber * pageSize);
     }
 
+    private String addEnabledFilter(String nativeWhereStatement, Boolean enabled) {
+        if(enabled == null)
+            return nativeWhereStatement;
+
+        final StringBuilder sb;
+
+        if(nativeWhereStatement != null)
+            sb = new StringBuilder(nativeWhereStatement.trim());
+        else
+            sb = new StringBuilder();
+
+        if(sb.length() == 0)
+            sb.append("WHERE ");
+        else
+            sb.append(" AND ");
+
+        if(enabled)
+            sb.append(NATIVE_ENABLED_FILTER);
+        else
+            sb.append(NATIVE_DISABLED_FILTER);
+
+        return sb.toString();
+    }
+
     private void addParamsToNativeQuery(Query query, Object[] params) {
         if(params == null)
             return;
@@ -293,7 +300,7 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    private PaginatedCollection<User> queryUsers(String nativeWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] params) {
+    private PaginatedCollection<User> queryUsers(String nativeWhereStatement, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] params) {
 
         final String nativeSelect = "SELECT " + USERS + ".user_id";
 
@@ -301,21 +308,23 @@ public class UserDaoImpl implements UserDao {
 
         final String nativeFrom = buildNativeFromStatement();
 
+        final String nativeWhere = addEnabledFilter(nativeWhereStatement, enabled);
+
         final String nativeOrderBy = buildNativeOrderByStatement(sortCriteria);
 
         final String HQLOrderBy = buildHQLOrderByStatement(sortCriteria);
 
         final String nativePagination = buildNativePaginationStatement(pageNumber, pageSize);
 
-        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, nativeWhereStatement);
+        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, nativeWhere);
 
         final String nativeQuery = String.format("%s %s %s %s %s",
-                nativeSelect, nativeFrom, nativeWhereStatement, nativeOrderBy, nativePagination);
+                nativeSelect, nativeFrom, nativeWhere, nativeOrderBy, nativePagination);
 
         final String fetchQuery = String.format(
                 "SELECT u, " +
-                "coalesce((SELECT sum(postLikes.value) from u.posts posts left outer join posts.likes postLikes), 0) + " +
-                "coalesce((SELECT sum(commentLikes.value) from u.comments comments left outer join comments.likes commentLikes), 0)" +
+                "coalesce((SELECT sum(postLikes.value) from u.posts posts left outer join posts.votes postLikes), 0) + " +
+                "coalesce((SELECT sum(commentLikes.value) from u.comments comments left outer join comments.votes commentLikes), 0)" +
                         " AS totalLikes " +
                 "FROM User u " +
                 "WHERE u.id IN :userIds " +
@@ -369,19 +378,19 @@ public class UserDaoImpl implements UserDao {
         return new PaginatedCollection<>(users, pageNumber, pageSize, totalUsers);
     }
 
-    private <T> Optional<User> findByCriteria(String field, T value, boolean enabled) {
+    private <T> Optional<User> findByCriteria(String field, T value) {
 
-        LOGGER.info("Find User By {}: {} and enabled = {}", field, value, enabled);
+        LOGGER.info("Find User By {}: {}", field, value);
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
 
-        CriteriaQuery<User> q = cb.createQuery(User.class);
+        final CriteriaQuery<User> q = cb.createQuery(User.class);
 
-        Root<User> u = q.from(User.class);
+        final Root<User> u = q.from(User.class);
 
         q.select(u);
 
-        q.where(cb.equal(u.get(field), value), cb.equal(u.get("enabled"), enabled));
+        q.where(cb.equal(u.get(field), value));
 
         return em.createQuery(q).getResultList().stream().findFirst();
     }

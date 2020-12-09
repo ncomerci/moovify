@@ -7,17 +7,17 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "posts_likes", uniqueConstraints = @UniqueConstraint(columnNames = {"post_id", "user_id"}))
-public class PostLike {
+@Table(name = "comments_likes", uniqueConstraints = @UniqueConstraint(columnNames = {"comment_id", "user_id"}))
+public class CommentVote {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostLike.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommentVote.class);
 
-    public static final String TABLE_NAME = "posts_likes";
+    public static final String TABLE_NAME = "comments_likes";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_likes_post_likes_id_seq")
-    @SequenceGenerator(sequenceName = "posts_likes_post_likes_id_seq", name = "posts_likes_post_likes_id_seq", allocationSize = 1)
-    @Column(name = "post_likes_id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comments_likes_comments_likes_id_seq")
+    @SequenceGenerator(sequenceName = "comments_likes_comments_likes_id_seq", name = "comments_likes_comments_likes_id_seq", allocationSize = 1)
+    @Column(name = "comments_likes_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -25,19 +25,20 @@ public class PostLike {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name="comment_id", nullable = false)
+    private Comment comment;
 
     @Column(nullable = false)
     private int value;
 
-    public PostLike(User user, Post post, int value) {
+    public CommentVote(User user, Comment comment, int value) {
         this.user = user;
-        this.post = post;
+        this.comment = comment;
         this.value = value;
     }
 
-    protected PostLike() {
+    protected CommentVote() {
+        // Hibernate
     }
 
     public long getId() {
@@ -48,8 +49,8 @@ public class PostLike {
         return user;
     }
 
-    public Post getPost() {
-        return post;
+    public Comment getComment() {
+        return comment;
     }
 
     public int getValue() {
@@ -69,8 +70,8 @@ public class PostLike {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PostLike postLike = (PostLike) o;
-        return id == postLike.getId();
+        CommentVote that = (CommentVote) o;
+        return id == that.getId();
     }
 
     @Override
@@ -80,7 +81,7 @@ public class PostLike {
 
     @Override
     public String toString() {
-        return "PostLikes{" +
+        return "CommentLike{" +
                 "id=" + id +
                 ", value=" + value +
                 '}';

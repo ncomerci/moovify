@@ -10,6 +10,8 @@ import ar.edu.itba.paw.webapp.dto.input.MovieCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.UpdateMoviePosterDto;
 import ar.edu.itba.paw.webapp.dto.output.MovieDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
+import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
+import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.MoviePosterNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 @Path("movies")
@@ -28,6 +31,9 @@ public class MovieController {
 
     @Context
     private UriInfo uriInfo;
+
+    @Context
+    private SecurityContext securityContext;
 
     @Autowired
     private MovieService movieService;
@@ -40,36 +46,65 @@ public class MovieController {
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listMovies(@QueryParam("query") String query,
+    public Response listMovies(@QueryParam("query") @DefaultValue("") String query,
                                @QueryParam("movieCategory") String movieCategory,
                                @QueryParam("decade") String decade,
                                @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
-                               @QueryParam("pageSize") @DefaultValue("10") int pageSize){
+                               @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final PaginatedCollection<Movie> movies;
 
-        if(query != null){
-            movies = searchService.searchMovies(query, movieCategory, decade, orderBy, pageNumber, pageSize).orElseThrow(MovieNotFoundException::new);
-        }
-        else {
+        if(!query.equals("") || movieCategory != null || decade != null)
+            movies = searchService.searchMovies(query, movieCategory, decade, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
+
+        else
             movies = movieService.getAllMovies(orderBy, pageNumber, pageSize);
-        }
 
         final Collection<MovieDto> moviesDto = MovieDto.mapMoviesToDto(movies.getResults(), uriInfo);
 
-        return buildGenericPaginationResponse(movies, new GenericEntity<Collection<MovieDto>>(moviesDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", pageSize)
+                .queryParam("orderBy", orderBy);
+
+        linkUriBuilder.queryParam("query", query);
+
+        if(movieCategory != null)
+            linkUriBuilder.queryParam("movieCategory", movieCategory);
+
+        if(decade != null)
+            linkUriBuilder.queryParam("decade", decade);
+
+
+        return buildGenericPaginationResponse(movies, new GenericEntity<Collection<MovieDto>>(moviesDto) {}, linkUriBuilder);
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response addMovie(@Valid final MovieCreateDto movieCreateDto){
+    public Response createMovie(@Valid final MovieCreateDto movieCreateDto){
 
-        final Movie movie = movieService.register(movieCreateDto.getTitle(), movieCreateDto.getOriginalTitle(), movieCreateDto.getTmdbId(), movieCreateDto.getImdbId(), movieCreateDto.getOriginalLanguage(),
-                movieCreateDto.getOverview(), movieCreateDto.getPopularity(), movieCreateDto.getRuntime(), movieCreateDto.getVoteAverage(),  movieCreateDto.getReleaseDate(),  movieCreateDto.getCategories());
+        final Movie movie = movieService.register(movieCreateDto.getTitle(), movieCreateDto.getOriginalTitle(),
+                movieCreateDto.getTmdbId(), movieCreateDto.getImdbId(), movieCreateDto.getOriginalLanguage(),
+                movieCreateDto.getOverview(), movieCreateDto.getPopularity(), movieCreateDto.getRuntime(),
+                movieCreateDto.getVoteAverage(),  movieCreateDto.getReleaseDate(),  movieCreateDto.getCategories());
 
         return Response.created(MovieDto.getMovieUriBuilder(movie, uriInfo).build()).build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/options")
+    public Response getMovieSearchOptions(){
+
+        Collection<SearchOptionDto> options = new ArrayList<>();
+
+        options.add(new SearchOptionDto("movieCategory", searchService.getMoviesCategories()));
+        options.add(new SearchOptionDto("decade", searchService.getMoviesDecades()));
+        options.add(new SearchOptionDto("orderBy", movieService.getMovieSortOptions()));
+
+        return Response.ok(new GenericEntity<Collection<SearchOptionDto>>(options) {}).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -89,7 +124,7 @@ public class MovieController {
 
         final Movie movie = movieService.findMovieById(id).orElseThrow(MovieNotFoundException::new);
 
-        final byte[] imageData = movieService.getPoster(movie.getPosterId()).orElseThrow(MoviePosterNotFoundException::new);
+        final byte[] imageData = movieService.getPoster(movie).orElseThrow(MoviePosterNotFoundException::new);
 
         return Response.ok(imageData).build();
     }
@@ -105,7 +140,7 @@ public class MovieController {
         movieService.updatePoster(movie, updateMoviePosterDto.getPoster().getBytes());
 
         return Response.noContent()
-                .location(MovieDto.getMovieUriBuilder(movie, uriInfo).path("/" + id).build())
+                .contentLocation(MovieDto.getMovieUriBuilder(movie, uriInfo).path("poster").build())
                 .build();
     }
 
@@ -113,23 +148,31 @@ public class MovieController {
     @GET
     @Path("/{id}/posts")
     public Response getMoviePosts(@PathParam("id") long id,
+                                  @QueryParam("enabled") Boolean enabled,
                                   @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                   @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                   @QueryParam("pageSize") @DefaultValue("10") int pageSize){
 
         final Movie movie = movieService.findMovieById(id).orElseThrow(MovieNotFoundException::new);
 
-        final PaginatedCollection<Post> posts = postService.findPostsByMovie(movie, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Post> posts = postService.findPostsByMovie(movie, enabled, orderBy, pageNumber, pageSize);
 
-        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo);
+        final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
-        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, uriInfo, orderBy);
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", pageSize)
+                .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
     }
 
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
-                                                                  GenericEntity<Collection<Dto>> resultsDto, UriInfo uriInfo,
-                                                                  String orderBy) {
+                                                                  GenericEntity<Collection<Dto>> resultsDto, UriBuilder linkUriBuilder) {
 
         if(paginatedResults.isEmpty()) {
             if(paginatedResults.getPageNumber() == 0)
@@ -142,13 +185,12 @@ public class MovieController {
         final Response.ResponseBuilder responseBuilder =
                 Response.ok(resultsDto);
 
-        setPaginationLinks(responseBuilder, uriInfo, paginatedResults, orderBy);
+        setPaginationLinks(responseBuilder, paginatedResults, linkUriBuilder);
 
         return responseBuilder.build();
     }
 
-    private <T> void setPaginationLinks(Response.ResponseBuilder response, UriInfo uriInfo,
-                                        PaginatedCollection<T> results, String orderBy) {
+    private <T> void setPaginationLinks(Response.ResponseBuilder response, PaginatedCollection<T> results, UriBuilder baseUri) {
 
         final int pageNumber = results.getPageNumber();
         final String pageNumberParamName = "pageNumber";
@@ -158,19 +200,14 @@ public class MovieController {
         final int prev = pageNumber - 1;
         final int next = pageNumber + 1;
 
-        final UriBuilder linkUriBuilder = uriInfo
-                .getAbsolutePathBuilder()
-                .queryParam("pageSize", results.getPageSize())
-                .queryParam("orderBy", orderBy);
+        response.link(baseUri.clone().queryParam(pageNumberParamName, first).build(), "first");
 
-        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, first).build(), "first");
-
-        response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, last).build(), "last");
+        response.link(baseUri.clone().queryParam(pageNumberParamName, last).build(), "last");
 
         if(pageNumber != first)
-            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, prev).build(), "prev");
+            response.link(baseUri.clone().queryParam(pageNumberParamName, prev).build(), "prev");
 
         if(pageNumber != last)
-            response.link(linkUriBuilder.clone().queryParam(pageNumberParamName, next).build(), "next");
+            response.link(baseUri.clone().queryParam(pageNumberParamName, next).build(), "next");
     }
 }
