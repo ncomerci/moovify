@@ -15,6 +15,7 @@ import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentVoteDto;
 import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.ForbiddenEntityRelationshipAccessException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +89,7 @@ public class CommentController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/options")
-    public Response getMovieSearchOptions(){
+    public Response getCommentSearchOptions(){
 
         Collection<SearchOptionDto> options = new ArrayList<>();
 
@@ -158,6 +159,8 @@ public class CommentController {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
+        guaranteeCommentRelationshipAccessPermissions(securityContext, comment);
+
         final PaginatedCollection<CommentVote> commentVotes = commentService.getCommentVotes(comment, pageNumber, pageSize);
 
         final Collection<CommentVoteDto> commentVotesDto = CommentVoteDto.mapCommentsVoteToDto(commentVotes.getResults(), uriInfo, securityContext);
@@ -191,6 +194,8 @@ public class CommentController {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
+        guaranteeCommentRelationshipAccessPermissions(securityContext, comment);
+
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
         int value = commentService.getVoteValue(comment, user);
@@ -208,6 +213,8 @@ public class CommentController {
                                         @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
+
+        guaranteeCommentRelationshipAccessPermissions(securityContext, comment);
 
         final PaginatedCollection<Comment> comments = commentService.findCommentChildren(comment, enabled, orderBy, pageNumber, pageSize);
 
@@ -262,5 +269,10 @@ public class CommentController {
 
         if(pageNumber != last)
             response.link(baseUri.clone().queryParam(pageNumberParamName, next).build(), "next");
+    }
+
+    private void guaranteeCommentRelationshipAccessPermissions(SecurityContext securityContext, Comment comment) {
+        if(!comment.isEnabled() && !securityContext.isUserInRole(Role.ADMIN.name()))
+            throw new ForbiddenEntityRelationshipAccessException(securityContext.getUserPrincipal() != null);
     }
 }
