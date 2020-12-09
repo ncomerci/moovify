@@ -131,33 +131,28 @@ public class CommentServiceImpl implements CommentService {
         return commentDao.findCommentById(commentId);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public Optional<Comment> findDeletedCommentById(long commentId) {
-        return commentDao.findDeletedCommentById(commentId);
+    public PaginatedCollection<Comment> getAllComments(Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.getAllComments(enabled, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Comment> getAllComments(String sortCriteria, int pageNumber, int pageSize) {
-        return commentDao.getAllPosts(getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Comment> findCommentChildren(Comment comment, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.findCommentChildren(comment, enabled, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Comment> findCommentChildren(Comment comment, String sortCriteria, int pageNumber, int pageSize) {
-        return commentDao.findCommentChildren(comment, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Comment> findCommentsByPost(Post post, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.findCommentsByPost(post, enabled, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Comment> findCommentsByPost(Post post, String sortCriteria, int pageNumber, int pageSize) {
-        return commentDao.findCommentsByPost(post, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public PaginatedCollection<Comment> findCommentsByUser(User user, String sortCriteria, int pageNumber, int pageSize) {
-        return commentDao.findCommentsByUser(user, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Comment> findCommentsByUser(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.findCommentsByUser(user, enabled, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Override

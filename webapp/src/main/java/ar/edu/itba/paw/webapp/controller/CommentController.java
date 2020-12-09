@@ -47,18 +47,22 @@ public class CommentController {
 
     @Produces
     @GET
-    public Response listComments(@QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+    public Response listComments(@QueryParam("enabled") Boolean enabled,
+                                 @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                  @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                  @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final PaginatedCollection<Comment> comments = commentService.getAllComments(orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Comment> comments = commentService.getAllComments(enabled, orderBy, pageNumber, pageSize);
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
         final UriBuilder linkUriBuilder = uriInfo
                 .getAbsolutePathBuilder()
-                .queryParam("pageSize", pageSize)
-                .queryParam("orderBy", orderBy);
+                .queryParam("orderBy", orderBy)
+                .queryParam("pageSize", pageSize);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
 
         return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
     }
@@ -125,7 +129,7 @@ public class CommentController {
     @Path("/{id}/enabled")
     public Response restoreComment(@PathParam("id") long id) throws RestoredEnabledModelException {
 
-        final Comment comment = commentService.findDeletedCommentById(id).orElseThrow(CommentNotFoundException::new);
+        final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
         commentService.restoreComment(comment);
 
@@ -198,13 +202,14 @@ public class CommentController {
     @GET
     @Path("/{id}/children")
     public  Response getCommentChildren(@PathParam("id") long id,
+                                        @QueryParam("enabled") Boolean enabled,
                                         @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                         @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                         @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
-        final PaginatedCollection<Comment> comments = commentService.findCommentChildren(comment, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Comment> comments = commentService.findCommentChildren(comment, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
@@ -212,6 +217,9 @@ public class CommentController {
                 .getAbsolutePathBuilder()
                 .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
 
         return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
     }

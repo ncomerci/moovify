@@ -58,15 +58,17 @@ public class SearchServiceImplTest {
 
         Mockito.when(postDao.searchPosts(
                 Mockito.anyString(),
+                Mockito.anyBoolean(),
                 Mockito.any(PostDao.SortCriteria.class),
                 Mockito.anyInt(),
                 Mockito.anyInt())
         ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT));
 
-        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(QUERY, null, null, null, PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(QUERY, null, null, true, null, PAGE_NUMBER, PAGE_SIZE);
 
         Mockito.verify(postDao).searchPosts(
                 Mockito.anyString(),
+                Mockito.anyBoolean(),
                 Mockito.isA(PostDao.SortCriteria.class),
                 Mockito.intThat(e -> e >= 0),
                 Mockito.intThat(e -> e > 0)
@@ -81,16 +83,18 @@ public class SearchServiceImplTest {
         Mockito.when(postDao.searchPostsByCategory(
                 Mockito.anyString(),
                 Mockito.anyString(),
+                Mockito.anyBoolean(),
                 Mockito.any(PostDao.SortCriteria.class),
                 Mockito.anyInt(),
                 Mockito.anyInt())
         ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT));
 
-        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(QUERY, POST_CATEGORY, null, null, PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(QUERY, POST_CATEGORY, null, true, null, PAGE_NUMBER, PAGE_SIZE);
 
         Mockito.verify(postDao).searchPostsByCategory(
                 Mockito.anyString(),
                 Mockito.anyString(),
+                Mockito.anyBoolean(),
                 Mockito.any(PostDao.SortCriteria.class),
                 Mockito.intThat(e -> e >= 0),
                 Mockito.intThat(e -> e > 0)
@@ -105,16 +109,18 @@ public class SearchServiceImplTest {
         Mockito.when(postDao.searchPostsOlderThan(
                 Mockito.anyString(),
                 Mockito.any(LocalDateTime.class),
+                Mockito.anyBoolean(),
                 Mockito.any(PostDao.SortCriteria.class),
                 Mockito.anyInt(),
                 Mockito.anyInt())
         ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT));
 
-        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(QUERY, null, PERIOD, null, PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(QUERY, null, PERIOD, true, null, PAGE_NUMBER, PAGE_SIZE);
 
         Mockito.verify(postDao).searchPostsOlderThan(
                 Mockito.anyString(),
                 Mockito.any(LocalDateTime.class),
+                Mockito.anyBoolean(),
                 Mockito.any(PostDao.SortCriteria.class),
                 Mockito.intThat(e -> e >= 0),
                 Mockito.intThat(e -> e > 0)
@@ -130,17 +136,19 @@ public class SearchServiceImplTest {
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.any(LocalDateTime.class),
+                Mockito.anyBoolean(),
                 Mockito.any(PostDao.SortCriteria.class),
                 Mockito.anyInt(),
                 Mockito.anyInt())
         ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
 
-        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(QUERY, POST_CATEGORY, PERIOD, null, PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(QUERY, POST_CATEGORY, PERIOD, true, null, PAGE_NUMBER, PAGE_SIZE);
 
         Mockito.verify(postDao).searchPostsByCategoryAndOlderThan(
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.any(LocalDateTime.class),
+                Mockito.anyBoolean(),
                 Mockito.any(PostDao.SortCriteria.class),
                 Mockito.anyInt(),
                 Mockito.anyInt()
@@ -152,7 +160,7 @@ public class SearchServiceImplTest {
     @Test
     public void testSearchPostsFail() {
 
-        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(null, null, null, null, PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(null, null, null, true, null, PAGE_NUMBER, PAGE_SIZE);
 
         Assert.assertFalse(posts.isPresent());
     }
@@ -270,15 +278,17 @@ public class SearchServiceImplTest {
 
         Mockito.when(userDao.searchUsers(
                 Mockito.anyString(),
+                Mockito.anyBoolean(),
                 Mockito.any(UserDao.SortCriteria.class),
                 Mockito.anyInt(),
                 Mockito.anyInt())
         ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
 
-        Optional<PaginatedCollection<User>> user = searchService.searchUsers(QUERY, null, null, PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<User>> user = searchService.searchUsers(QUERY, null, true, null, PAGE_NUMBER, PAGE_SIZE);
 
         Mockito.verify(userDao).searchUsers(
                 Mockito.anyString(),
+                Mockito.anyBoolean(),
                 Mockito.any(UserDao.SortCriteria.class),
                 Mockito.intThat(e -> e >= 0),
                 Mockito.intThat(e -> e > 0)
@@ -293,16 +303,18 @@ public class SearchServiceImplTest {
         Mockito.when(userDao.searchUsersByRole(
                 Mockito.anyString(),
                 Mockito.any(Role.class),
+                Mockito.anyBoolean(),
                 Mockito.any(UserDao.SortCriteria.class),
                 Mockito.anyInt(),
                 Mockito.anyInt())
         ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
 
-        Optional<PaginatedCollection<User>> user = searchService.searchUsers(QUERY, ROLE, null, PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<User>> user = searchService.searchUsers(QUERY, ROLE, true, null, PAGE_NUMBER, PAGE_SIZE);
 
         Mockito.verify(userDao).searchUsersByRole(
                 Mockito.anyString(),
                 Mockito.any(Role.class),
+                Mockito.anyBoolean(),
                 Mockito.any(UserDao.SortCriteria.class),
                 Mockito.intThat(e -> e >= 0),
                 Mockito.intThat(e -> e > 0)
@@ -314,98 +326,99 @@ public class SearchServiceImplTest {
     @Test
     public void testSearchUsersFail() {
 
-        Optional<PaginatedCollection<User>> user = searchService.searchUsers(null, null, null, PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<User>> user = searchService.searchUsers(null, null, true, null, PAGE_NUMBER, PAGE_SIZE);
 
         Assert.assertFalse(user.isPresent());
     }
 
-    @Test
-    public void testSearchDeletedPosts() {
-
-        Mockito.when(postDao.searchDeletedPosts(
-                Mockito.anyString(),
-                Mockito.any(PostDao.SortCriteria.class),
-                Mockito.anyInt(),
-                Mockito.anyInt())
-        ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
-
-        Optional<PaginatedCollection<Post>> posts = searchService.searchDeletedPosts(QUERY, "newest",  PAGE_NUMBER, PAGE_SIZE);
-
-        Mockito.verify(postDao).searchDeletedPosts(
-                Mockito.anyString(),
-                Mockito.any(PostDao.SortCriteria.class),
-                Mockito.intThat(e -> e >= 0),
-                Mockito.intThat(e -> e > 0)
-        );
-
-        Assert.assertTrue(posts.isPresent());
-    }
+//    @Test
+//    public void testSearchDeletedPosts() {
+//
+//        Mockito.when(postDao.searchDeletedPosts(
+//                Mockito.anyString(),
+//                Mockito.any(PostDao.SortCriteria.class),
+//                Mockito.anyInt(),
+//                Mockito.anyInt())
+//        ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
+//
+//        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(QUERY, null, null, false, "newest",  PAGE_NUMBER, PAGE_SIZE);
+//
+//        Mockito.verify(postDao).searchDeletedPosts(
+//                Mockito.anyString(),
+//                Mockito.any(PostDao.SortCriteria.class),
+//                Mockito.intThat(e -> e >= 0),
+//                Mockito.intThat(e -> e > 0)
+//        );
+//
+//        Assert.assertTrue(posts.isPresent());
+//    }
 
     @Test
     public void testSearchDeletedPostsFail() {
 
-        Optional<PaginatedCollection<Post>> posts = searchService.searchDeletedPosts(null, "newest",  PAGE_NUMBER, PAGE_SIZE);
+        Optional<PaginatedCollection<Post>> posts = searchService.searchPosts(null, null, null, false, "newest",  PAGE_NUMBER, PAGE_SIZE);
 
         Assert.assertFalse(posts.isPresent());
     }
 
-    @Test
-    public void testSearchDeletedComments() {
+//    @Test
+//    public void testSearchDeletedComments() {
+//
+//        Mockito.when(commentDao.searchComments(
+//                Mockito.anyString(),
+//                Mockito.anyBoolean(),
+//                Mockito.any(CommentDao.SortCriteria.class),
+//                Mockito.anyInt(),
+//                Mockito.anyInt())
+//        ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
+//
+//        Optional<PaginatedCollection<Comment>> comments = searchService.searchDeletedComments(QUERY, "newest",  PAGE_NUMBER, PAGE_SIZE);
+//
+//        Mockito.verify(commentDao).searchDeletedComments(
+//                Mockito.anyString(),
+//                Mockito.any(CommentDao.SortCriteria.class),
+//                Mockito.intThat(e -> e >= 0),
+//                Mockito.intThat(e -> e > 0)
+//        );
+//
+//        Assert.assertTrue(comments.isPresent());
+//    }
 
-        Mockito.when(commentDao.searchDeletedComments(
-                Mockito.anyString(),
-                Mockito.any(CommentDao.SortCriteria.class),
-                Mockito.anyInt(),
-                Mockito.anyInt())
-        ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
+//    @Test
+//    public void testSearchDeletedCommentsFail() {
+//
+//        Optional<PaginatedCollection<Comment>> comments = searchService.searchDeletedComments(null, "newest",  PAGE_NUMBER, PAGE_SIZE);
+//
+//        Assert.assertFalse(comments.isPresent());
+//    }
 
-        Optional<PaginatedCollection<Comment>> comments = searchService.searchDeletedComments(QUERY, "newest",  PAGE_NUMBER, PAGE_SIZE);
+//    @Test
+//    public void testSearchDeletedUsers() {
+//
+//        Mockito.when(userDao.searchDeletedUsers(
+//                Mockito.anyString(),
+//                Mockito.any(UserDao.SortCriteria.class),
+//                Mockito.anyInt(),
+//                Mockito.anyInt())
+//        ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
+//
+//        Optional<PaginatedCollection<User>> users = searchService.searchDeletedUsers(QUERY, "newest",  PAGE_NUMBER, PAGE_SIZE);
+//
+//        Mockito.verify(userDao).searchDeletedUsers(
+//                Mockito.anyString(),
+//                Mockito.any(UserDao.SortCriteria.class),
+//                Mockito.intThat(e -> e >= 0),
+//                Mockito.intThat(e -> e > 0)
+//        );
+//
+//        Assert.assertTrue(users.isPresent());
+//    }
 
-        Mockito.verify(commentDao).searchDeletedComments(
-                Mockito.anyString(),
-                Mockito.any(CommentDao.SortCriteria.class),
-                Mockito.intThat(e -> e >= 0),
-                Mockito.intThat(e -> e > 0)
-        );
-
-        Assert.assertTrue(comments.isPresent());
-    }
-
-    @Test
-    public void testSearchDeletedCommentsFail() {
-
-        Optional<PaginatedCollection<Comment>> comments = searchService.searchDeletedComments(null, "newest",  PAGE_NUMBER, PAGE_SIZE);
-
-        Assert.assertFalse(comments.isPresent());
-    }
-
-    @Test
-    public void testSearchDeletedUsers() {
-
-        Mockito.when(userDao.searchDeletedUsers(
-                Mockito.anyString(),
-                Mockito.any(UserDao.SortCriteria.class),
-                Mockito.anyInt(),
-                Mockito.anyInt())
-        ).thenReturn(new PaginatedCollection<>(new ArrayList<>(), PAGE_NUMBER, PAGE_SIZE, TOTAL_COUNT ));
-
-        Optional<PaginatedCollection<User>> users = searchService.searchDeletedUsers(QUERY, "newest",  PAGE_NUMBER, PAGE_SIZE);
-
-        Mockito.verify(userDao).searchDeletedUsers(
-                Mockito.anyString(),
-                Mockito.any(UserDao.SortCriteria.class),
-                Mockito.intThat(e -> e >= 0),
-                Mockito.intThat(e -> e > 0)
-        );
-
-        Assert.assertTrue(users.isPresent());
-    }
-
-    @Test
-    public void testSearchDeletedUsersFail() {
-
-        Optional<PaginatedCollection<User>> users = searchService.searchDeletedUsers(null, "newest",  PAGE_NUMBER, PAGE_SIZE);
-
-        Assert.assertFalse(users.isPresent());
-    }
+//    @Test
+//    public void testSearchDeletedUsersFail() {
+//
+//        Optional<PaginatedCollection<User>> users = searchService.searchDeletedUsers(null, "newest",  PAGE_NUMBER, PAGE_SIZE);
+//
+//        Assert.assertFalse(users.isPresent());
+//    }
 }

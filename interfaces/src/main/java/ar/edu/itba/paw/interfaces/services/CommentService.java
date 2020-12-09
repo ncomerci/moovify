@@ -26,15 +26,13 @@ public interface CommentService {
 
     Optional<Comment> findCommentById(long id);
 
-    Optional<Comment> findDeletedCommentById(long id);
+    PaginatedCollection<Comment> getAllComments(Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> getAllComments(String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentChildren(Comment comment, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentChildren(Comment comment, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByPost(Post post, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Comment> findCommentsByPost(Post post, String sortCriteria, int pageNumber, int pageSize);
-
-    PaginatedCollection<Comment> findCommentsByUser(User user, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Comment> findCommentsByUser(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<CommentVote> getCommentVotes(Comment comment, int pageNumber, int pageSize);
 

@@ -1,4 +1,4 @@
-package ar.edu.itba.paw.webapp.controller;
+package ar.edu.itba.paw.webapp.controller.exceptionMappers;
 
 import ar.edu.itba.paw.interfaces.exceptions.CustomRuntimeException;
 import ar.edu.itba.paw.webapp.dto.error.GenericErrorDto;

@@ -26,17 +26,15 @@ public interface PostService {
 
     Optional<Post> findPostById(long id);
 
-    Optional<Post> findDeletedPostById(long id);
+    PaginatedCollection<Post> getAllPosts(Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> getAllPosts(String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Post> findPostsByMovie(Movie movie, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> findPostsByMovie(Movie movie, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Post> findPostsByUser(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> findPostsByUser(User user, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Post> getFollowedUsersPosts(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
-    PaginatedCollection<Post> getFollowedUsersPosts(User user, String sortCriteria, int pageNumber, int pageSize);
-
-    PaginatedCollection<Post> getUserBookmarkedPosts(User user, String sortCriteria, int pageNumber, int pageSize);
+    PaginatedCollection<Post> getUserBookmarkedPosts(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<PostVote> getPostVotes(Post post, int pageNumber, int pageSize);
 

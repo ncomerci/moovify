@@ -50,6 +50,7 @@ public class PostController {
     public Response listPosts(@QueryParam("query") @DefaultValue("") String query,
                               @QueryParam("postCategory") String postCategory,
                               @QueryParam("postAge") String postAge,
+                              @QueryParam("enabled") Boolean enabled,
                               @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                               @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                               @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
@@ -60,7 +61,7 @@ public class PostController {
             posts = searchService.searchPosts(query, postCategory, postAge, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         else
-            posts = postService.getAllPosts(orderBy, pageNumber, pageSize);
+            posts = postService.getAllPosts(enabled, orderBy, pageNumber, pageSize);
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
@@ -69,7 +70,10 @@ public class PostController {
                 .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
-            linkUriBuilder.queryParam("query", query);
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
+        linkUriBuilder.queryParam("query", query);
 
         if(postCategory != null)
             linkUriBuilder.queryParam("postCategory", postCategory);
@@ -142,7 +146,7 @@ public class PostController {
     @Path("/{id}/enabled")
     public Response restorePost(@PathParam("id") long id) throws RestoredEnabledModelException {
 
-        final Post post = postService.findDeletedPostById(id).orElseThrow(PostNotFoundException::new);
+        final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
         postService.restorePost(post);
 
@@ -215,13 +219,14 @@ public class PostController {
     @GET
     @Path("/{id}/comments")
     public Response getPostComments(@PathParam("id") long id,
+                                    @QueryParam("enabled") Boolean enabled,
                                     @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                     @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                     @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
-        final PaginatedCollection<Comment> comments = commentService.findCommentsByPost(post, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Comment> comments = commentService.findCommentsByPost(post, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
@@ -229,6 +234,9 @@ public class PostController {
                 .getAbsolutePathBuilder()
                 .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
 
         return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
     }

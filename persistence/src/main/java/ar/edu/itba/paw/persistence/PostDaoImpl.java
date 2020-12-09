@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -62,6 +65,8 @@ public class PostDaoImpl implements PostDao {
 
     private static final String NATIVE_ENABLED_FILTER = POSTS + ".enabled = true";
 
+    private static final String NATIVE_DISABLED_FILTER = POSTS + ".enabled = false";
+
 
     private static final EnumMap<SortCriteria,String> sortCriteriaQueryMap = initializeSortCriteriaQueryMap();
     private static final EnumMap<SortCriteria,String> sortCriteriaHQLMap = initializeSortCriteriaHQLMap();
@@ -106,35 +111,19 @@ public class PostDaoImpl implements PostDao {
     public Optional<Post> findPostById(long id) {
 
         LOGGER.info("Find Post By Id {}", id);
-        return findPostByIdAndEnabled(id, true);
+        return Optional.ofNullable(em.find(Post.class, id));
     }
 
     @Override
-    public Optional<Post> findDeletedPostById(long id) {
-
-        LOGGER.info("Find Deleted Post By Id {}", id);
-        return findPostByIdAndEnabled(id, false);
-    }
-
-    private Optional<Post> findPostByIdAndEnabled(long id, boolean enabled) {
-
-        final TypedQuery<Post> query = em.createQuery("SELECT p FROM Post p WHERE p.id = :postId AND p.enabled = :enabled", Post.class)
-                .setParameter("postId", id)
-                .setParameter("enabled", enabled);
-
-        return query.getResultList().stream().findFirst();
-    }
-
-    @Override
-    public PaginatedCollection<Post> getAllPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> getAllPosts(Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Get All Posts Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
 
-        return queryPosts("WHERE " + NATIVE_ENABLED_FILTER, sortCriteria, pageNumber, pageSize, null);
+        return queryPosts("", enabled, sortCriteria, pageNumber, pageSize, null);
     }
 
     @Override
-    public PaginatedCollection<Post> findPostsByMovie(Movie movie, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> findPostsByMovie(Movie movie, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Posts By Movie {} Order By {}. Page number {}, Page Size {}", movie.getId(), sortCriteria, pageNumber, pageSize);
 
@@ -143,33 +132,22 @@ public class PostDaoImpl implements PostDao {
                         POSTS + ".post_id IN ( " +
                             "SELECT " + POST_MOVIE + ".post_id " +
                             "FROM " + POST_MOVIE +
-                            " WHERE " + POST_MOVIE + ".movie_id = ?)" +
-                        " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ movie.getId() });
+                            " WHERE " + POST_MOVIE + ".movie_id = ?)",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ movie.getId() });
     }
 
     @Override
-    public PaginatedCollection<Post> findPostsByUser(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> findPostsByUser(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Posts By User {} Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
 
         return queryPosts(
-                "WHERE " + POSTS + ".user_id = ? AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
+                "WHERE " + POSTS + ".user_id = ?",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override
-    public PaginatedCollection<Post> getDeletedPosts(SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        LOGGER.info("Get Deleted Posts Order By {}. Page number {}, Page Size {}", sortCriteria, pageNumber, pageSize);
-
-        return queryPosts(
-                "WHERE " + POSTS + ".enabled = false",
-                sortCriteria, pageNumber, pageSize, null);
-    }
-
-    @Override
-    public PaginatedCollection<Post> getFollowedUsersPosts(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> getFollowedUsersPosts(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Get User {} Followed Users Posts Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
 
@@ -178,13 +156,12 @@ public class PostDaoImpl implements PostDao {
                         POSTS + ".user_id IN ( " +
                         "SELECT " + USERS_FOLLOWS + ".user_follow_id " +
                         "FROM " + USERS_FOLLOWS +
-                        " WHERE " + USERS_FOLLOWS + ".user_id = ?)" +
-                        " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
+                        " WHERE " + USERS_FOLLOWS + ".user_id = ?)",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override
-    public PaginatedCollection<Post> getUserFavouritePosts(User user, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> getUserFavouritePosts(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Get User {} Favourite Posts Order By {}. Page number {}, Page Size {}", user.getId(), sortCriteria, pageNumber, pageSize);
 
@@ -193,68 +170,52 @@ public class PostDaoImpl implements PostDao {
                         POSTS + ".post_id IN ( " +
                         "SELECT " + USER_FAV_POST + ".post_id " +
                         "FROM " + USER_FAV_POST +
-                        " WHERE " + USER_FAV_POST + ".user_id = ?)" +
-                        " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
+                        " WHERE " + USER_FAV_POST + ".user_id = ?)",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
     @Override
-    public PaginatedCollection<Post> searchPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> searchPosts(String query, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Search Posts By Post Title, Tags and Movie {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
 
         return queryPosts(
-                "WHERE " + NATIVE_SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
-                                    " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
+                "WHERE " + NATIVE_SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS,
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
     }
 
     @Override
-    public PaginatedCollection<Post> searchDeletedPosts(String query, SortCriteria sortCriteria, int pageNumber, int pageSize) {
-
-        LOGGER.info("Search Deleted Posts By Post Title, Tags and Movie {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
-
-        return queryPosts(
-                 "WHERE " + NATIVE_SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
-                                    " AND " + POSTS + ".enabled = false",
-                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query });
-    }
-
-    @Override
-    public PaginatedCollection<Post> searchPostsByCategory(String query, String category, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> searchPostsByCategory(String query, String category, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Search Posts By Post Title, Tags, Movie {} And Category {} Order By {}. Page number {}, Page Size {}", query, category, sortCriteria, pageNumber, pageSize);
 
         return queryPosts(
                 "WHERE " + NATIVE_SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
-                                    " AND " + NATIVE_SEARCH_BY_POST_CATEGORY +
-                                    " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, category });
+                                    " AND " + NATIVE_SEARCH_BY_POST_CATEGORY,
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, category });
     }
 
     @Override
-    public PaginatedCollection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> searchPostsOlderThan(String query, LocalDateTime fromDate, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Search Posts By Post Title, Tags, Movie {} And Min Age {} Order By {}. Page number {}, Page Size {}", query, fromDate, sortCriteria, pageNumber, pageSize);
 
         return queryPosts(
                 "WHERE " + NATIVE_SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
-                                    " AND " + NATIVE_SEARCH_POSTS_OLDER_THAN +
-                                    " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, Timestamp.valueOf(fromDate) });
+                                    " AND " + NATIVE_SEARCH_POSTS_OLDER_THAN,
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, Timestamp.valueOf(fromDate) });
     }
 
     @Override
-    public PaginatedCollection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+    public PaginatedCollection<Post> searchPostsByCategoryAndOlderThan(String query, String category, LocalDateTime fromDate, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Search Posts By Post Title, Tags, Movie {}, Category {} And Min Age {} Order By {}. Page number {}, Page Size {}", query, category, fromDate, sortCriteria, pageNumber, pageSize);
 
         return queryPosts(
                 "WHERE " + NATIVE_SEARCH_BY_POST_TITLE_MOVIE_TITLE_AND_TAGS +
                                     " AND " + NATIVE_SEARCH_BY_POST_CATEGORY +
-                                    " AND " + NATIVE_SEARCH_POSTS_OLDER_THAN +
-                                    " AND " + NATIVE_ENABLED_FILTER,
-                sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, category, Timestamp.valueOf(fromDate) });
+                                    " AND " + NATIVE_SEARCH_POSTS_OLDER_THAN,
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ query, query, query, category, Timestamp.valueOf(fromDate) });
     }
 
     private String buildNativeFromStatement() {
@@ -303,7 +264,31 @@ public class PostDaoImpl implements PostDao {
         }
     }
 
-    private PaginatedCollection<Post> queryPosts(String nativeWhereStatement, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] params) {
+    private String addEnabledFilter(String nativeWhereStatement, Boolean enabled) {
+        if(enabled == null)
+            return nativeWhereStatement;
+
+        final StringBuilder sb;
+
+        if(nativeWhereStatement != null)
+            sb = new StringBuilder(nativeWhereStatement.trim());
+        else
+            sb = new StringBuilder();
+
+        if(sb.length() == 0)
+            sb.append("WHERE ");
+        else
+            sb.append(" AND ");
+
+        if(enabled)
+            sb.append(NATIVE_ENABLED_FILTER);
+        else
+            sb.append(NATIVE_DISABLED_FILTER);
+
+        return sb.toString();
+    }
+
+    private PaginatedCollection<Post> queryPosts(String nativeWhereStatement, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize, Object[] params) {
 
         final String nativeSelect = "SELECT " + POSTS + ".post_id";
 
@@ -311,16 +296,18 @@ public class PostDaoImpl implements PostDao {
 
         final String nativeFrom = buildNativeFromStatement();
 
+        final String nativeWhere = addEnabledFilter(nativeWhereStatement, enabled);
+
         final String nativeOrderBy = buildNativeOrderByStatement(sortCriteria);
 
         final String HQLOrderBy = buildHQLOrderByStatement(sortCriteria);
 
         final String nativePagination = buildNativePaginationStatement(pageNumber, pageSize);
 
-        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, nativeWhereStatement);
+        final String nativeCountQuery = String.format("%s %s %s", nativeCountSelect, nativeFrom, nativeWhere);
 
         final String nativeQuery = String.format("%s %s %s %s %s",
-                nativeSelect, nativeFrom, nativeWhereStatement, nativeOrderBy, nativePagination);
+                nativeSelect, nativeFrom, nativeWhere, nativeOrderBy, nativePagination);
 
         final String fetchQuery = String.format(
                 "SELECT p, sum(coalesce(likes.value, 0)) AS totalLikes " +

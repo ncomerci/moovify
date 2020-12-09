@@ -148,13 +148,14 @@ public class MovieController {
     @GET
     @Path("/{id}/posts")
     public Response getMoviePosts(@PathParam("id") long id,
+                                  @QueryParam("enabled") Boolean enabled,
                                   @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                   @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                   @QueryParam("pageSize") @DefaultValue("10") int pageSize){
 
         final Movie movie = movieService.findMovieById(id).orElseThrow(MovieNotFoundException::new);
 
-        final PaginatedCollection<Post> posts = postService.findPostsByMovie(movie, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Post> posts = postService.findPostsByMovie(movie, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<PostDto> postsDto = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
 
@@ -162,6 +163,9 @@ public class MovieController {
                 .getAbsolutePathBuilder()
                 .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
 
         return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postsDto) {}, linkUriBuilder);
     }
