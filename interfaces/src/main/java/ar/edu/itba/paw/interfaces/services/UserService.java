@@ -37,7 +37,7 @@ public interface UserService {
 
     boolean isFollowingUser(User user, User other);
 
-    Optional<User> confirmRegistration(String token);
+    User confirmRegistration(String token) throws InvalidEmailConfirmationTokenException;
 
     void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale);
 
@@ -45,7 +45,7 @@ public interface UserService {
 
     boolean validatePasswordResetToken(String token);
 
-    Optional<User> updatePassword(String password, String token);
+    User updatePassword(String password, String token) throws InvalidResetPasswordToken;
 
     Optional<byte[]> getAvatar(User user);
 

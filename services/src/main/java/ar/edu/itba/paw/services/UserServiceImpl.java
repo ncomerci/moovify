@@ -267,14 +267,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<User> confirmRegistration(String token) {
+    public User confirmRegistration(String token) throws InvalidEmailConfirmationTokenException {
 
         final Optional<UserVerificationToken> optToken = userVerificationTokenDao.getVerificationToken(token);
 
-        if(!optToken.isPresent() || !optToken.get().isValid()) {
-            LOGGER.warn("A user tried to confirm their email, but it's token {} was invalid", token);
-            return Optional.empty();
-        }
+        if(!optToken.isPresent() || !optToken.get().isValid())
+            throw new InvalidEmailConfirmationTokenException();
 
         final UserVerificationToken userVerificationToken = optToken.get();
 
@@ -289,7 +287,7 @@ public class UserServiceImpl implements UserService {
 
         LOGGER.info("User {} has confirmed their email", user.getId());
 
-        return Optional.of(user);
+        return user;
     }
 
     @Transactional(readOnly = true)
@@ -302,14 +300,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public Optional<User> updatePassword(String password, String token) {
+    public User updatePassword(String password, String token) throws InvalidResetPasswordToken {
 
         final Optional<PasswordResetToken> optToken = passwordResetTokenDao.getResetPasswordToken(token);
 
-        if(!optToken.isPresent() || !optToken.get().isValid()) {
-            LOGGER.warn("A user tried to update their password, but it's token {} was invalid", token);
-            return Optional.empty();
-        }
+        if(!optToken.isPresent() || !optToken.get().isValid())
+            throw new InvalidResetPasswordToken();
 
         final PasswordResetToken passwordResetToken = optToken.get();
 
@@ -324,7 +320,7 @@ public class UserServiceImpl implements UserService {
 
         LOGGER.info("User {} has updated their password successfully", user.getId());
 
-        return Optional.of(user);
+        return user;
     }
 
     @Transactional

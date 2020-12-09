@@ -10,10 +10,7 @@ import ar.edu.itba.paw.webapp.dto.generic.GenericIntegerValueDto;
 import ar.edu.itba.paw.webapp.dto.input.PostCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.PostEditDto;
 import ar.edu.itba.paw.webapp.dto.output.*;
-import ar.edu.itba.paw.webapp.exceptions.InvalidPostCategoryException;
-import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
-import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -103,7 +100,7 @@ public class PostController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/options")
-    public Response getUserOptions(){
+    public Response getPostOptions(){
 
         Collection<SearchOptionDto> options = new ArrayList<>();
 
@@ -172,6 +169,8 @@ public class PostController {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
+        guaranteePostRelationshipAccessPermissions(securityContext, post);
+
         final Collection<MovieDto> moviesDto = MovieDto.mapMoviesToDto(post.getMovies(), uriInfo);
 
         return Response.ok(new GenericEntity<Collection<MovieDto>>(moviesDto) {}).build();
@@ -185,6 +184,8 @@ public class PostController {
                                  @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+
+        guaranteePostRelationshipAccessPermissions(securityContext, post);
 
         final PaginatedCollection<PostVote> postVotes = postService.getPostVotes(post, pageNumber, pageSize);
 
@@ -203,6 +204,8 @@ public class PostController {
     public Response getVoteValue(@PathParam("id") long id, @PathParam("userId") long userId) {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+
+        guaranteePostRelationshipAccessPermissions(securityContext, post);
 
         final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
 
@@ -237,6 +240,8 @@ public class PostController {
                                     @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
+
+        guaranteePostRelationshipAccessPermissions(securityContext, post);
 
         final PaginatedCollection<Comment> comments = commentService.findCommentsByPost(post, enabled, orderBy, pageNumber, pageSize);
 
@@ -304,5 +309,10 @@ public class PostController {
 
         if(pageNumber != last)
             response.link(baseUri.clone().queryParam(pageNumberParamName, next).build(), "next");
+    }
+
+    private void guaranteePostRelationshipAccessPermissions(SecurityContext securityContext, Post post) {
+        if(!post.isEnabled() && !securityContext.isUserInRole(Role.ADMIN.name()))
+            throw new ForbiddenEntityRelationshipAccessException(securityContext.getUserPrincipal() != null);
     }
 }

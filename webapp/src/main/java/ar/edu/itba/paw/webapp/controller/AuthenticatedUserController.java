@@ -4,10 +4,7 @@ import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttr
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostBookmarkException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalPostUnbookmarkException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalUserFollowException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalUserUnfollowException;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
@@ -15,17 +12,17 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.auth.JwtUtil;
 import ar.edu.itba.paw.webapp.dto.error.BeanValidationErrorDto;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
-import ar.edu.itba.paw.webapp.dto.error.GenericErrorDto;
 import ar.edu.itba.paw.webapp.dto.generic.GenericBooleanResponseDto;
 import ar.edu.itba.paw.webapp.dto.input.*;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.InvalidResetPasswordToken;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -51,6 +48,9 @@ public class AuthenticatedUserController {
 
     @Context
     private SecurityContext securityContext;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Autowired
     private UserService userService;
@@ -118,7 +118,7 @@ public class AuthenticatedUserController {
         catch(DuplicateUniqueUserAttributeException e) {
             return Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(new DuplicateUniqueUserAttributeErrorDto(e))
+                    .entity(new DuplicateUniqueUserAttributeErrorDto(e, messageSource))
                     .build();
         }
 
@@ -232,6 +232,31 @@ public class AuthenticatedUserController {
             linkUriBuilder.queryParam("enabled", enabled);
 
         return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, linkUriBuilder);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/following/posts")
+    public Response getFollowedUsersPosts(@QueryParam("enabled") Boolean enabled,
+                                         @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                                         @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                                         @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+
+        final PaginatedCollection<Post> posts = postService.getFollowedUsersPosts(user, enabled, orderBy, pageNumber, pageSize);
+
+        final Collection<PostDto> postDtos = PostDto.mapPostsToDto(posts.getResults(), uriInfo, securityContext);
+
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", posts.getPageSize())
+                .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
+        return buildGenericPaginationResponse(posts, new GenericEntity<Collection<PostDto>>(postDtos) {}, linkUriBuilder);
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -359,26 +384,16 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/email_confirmation")
-    public Response confirmRegistration(final TokenDto tokenDto, @Context HttpServletRequest request) {
+    public Response confirmRegistration(final TokenDto tokenDto, @Context HttpServletRequest request) throws InvalidEmailConfirmationTokenException {
 
-        final Optional<User> optUser = userService.confirmRegistration(tokenDto.getToken());
+        final User user = userService.confirmRegistration(tokenDto.getToken());
 
-        if(optUser.isPresent()) {
+        final Response.ResponseBuilder responseBuilder = Response.noContent();
 
-            final User user = optUser.get();
+        if(user.isEnabled())
+            authenticateUser(responseBuilder, user);
 
-            final Response.ResponseBuilder responseBuilder = Response.noContent();
-
-            if(user.isEnabled())
-                authenticateUser(responseBuilder, user);
-
-            return Response.noContent().build();
-        }
-
-        // TODO: Descablear String
-        return Response.status(Response.Status.BAD_REQUEST)
-                .entity(new GenericErrorDto("The token provided is invalid"))
-                .build();
+        return Response.noContent().build();
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -391,18 +406,18 @@ public class AuthenticatedUserController {
 
         if(!optUser.isPresent() || !optUser.get().isValidated()) {
 
-            final String errorMessage;
+            final String errorMessageCode;
 
-            // TODO: Descablear String
             if(!optUser.isPresent())
-                errorMessage = "Email doesn't belong to any user";
+                errorMessageCode = "error.invalidResetPasswordEmail";
 
             else
-                errorMessage = "Email is not confirmed";
+                errorMessageCode = "error.notValidatedResetPasswordEmail";
 
             final List<BeanValidationErrorDto> emailError =
                     Collections.singletonList(
-                        new BeanValidationErrorDto("email", passwordResetEmailDto.getEmail(), errorMessage)
+                        new BeanValidationErrorDto("email", passwordResetEmailDto.getEmail(),
+                                messageSource.getMessage(errorMessageCode, null, request.getLocale()))
                     );
 
             return Response.status(Response.Status.BAD_REQUEST).entity(emailError).build();
@@ -419,23 +434,25 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/password_reset")
-    public Response resetPassword(@Valid final PasswordResetDto passwordResetDto) {
+    public Response resetPassword(@Valid final PasswordResetDto passwordResetDto) throws InvalidResetPasswordToken {
 
         final boolean isTokenValid = userService.validatePasswordResetToken(passwordResetDto.getToken());
 
         if(!isTokenValid) {
 
-            // TODO: Descablear String
             final List<BeanValidationErrorDto> emailError =
                     Collections.singletonList(
-                            new BeanValidationErrorDto("token", passwordResetDto.getToken(), "Invalid Token")
+                            new BeanValidationErrorDto("token", passwordResetDto.getToken(),
+                                    messageSource.getMessage(
+                                            "error.invalidResetPasswordTokenException", null, LocaleContextHolder.getLocale()
+                                    )
+                            )
                     );
 
             return Response.status(Response.Status.BAD_REQUEST).entity(emailError).build();
         }
 
-        final User user = userService.updatePassword(passwordResetDto.getPassword(), passwordResetDto.getToken())
-                .orElseThrow(InvalidResetPasswordToken::new);
+        final User user = userService.updatePassword(passwordResetDto.getPassword(), passwordResetDto.getToken());
 
         final Response.ResponseBuilder responseBuilder = Response.noContent();
 
