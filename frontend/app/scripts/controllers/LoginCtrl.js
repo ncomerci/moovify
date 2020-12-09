@@ -4,10 +4,9 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
     frontend.controller('LoginCtrl', function($scope, LoggedUserFactory, $window, PageTitle) {
       PageTitle.setTitle('USER_LOGIN_TITLE')
       $scope.login = function (user) {
-        LoggedUserFactory.login(user).then(function () {
+        LoggedUserFactory.login(user, $scope.checkValue).then(function () {
           $window.history.back();
         });
       }
     });
-
 });
