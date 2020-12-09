@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.dto.output;
 
 import ar.edu.itba.paw.models.Movie;
-import ar.edu.itba.paw.models.MovieCategory;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
@@ -26,16 +25,18 @@ public class MovieDto {
     private String originalTitle;
     private long tmdbId;
     private String imdbId;
-    private Collection<MovieCategory> categories;
+    private Collection<MovieCategoryDto> categories;
     private String originalLanguage;
     private String overview;
     private float popularity;
     private float runtime;
     private float voteAverage;
     private LocalDate releaseDate;
+    private int postCount;
 
     private String poster;
     private String posts;
+
     private String url;
 
     public MovieDto() {
@@ -43,24 +44,27 @@ public class MovieDto {
     }
 
     public MovieDto(Movie movie, UriInfo uriInfo) {
-        this.id = movie.getId();
-        this.creationDate = movie.getCreationDate();
-        this.title = movie.getTitle();
-        this.originalTitle = movie.getOriginalTitle();
-        this.tmdbId = movie.getTmdbId();
-        this.imdbId = movie.getImdbId();
-        this.categories = movie.getCategories();
-        this.originalLanguage = movie.getOriginalLanguage();
-        this.overview = movie.getOverview();
-        this.popularity = movie.getPopularity();
-        this.runtime = movie.getRuntime();
-        this.voteAverage = movie.getVoteAverage();
-        this.releaseDate = movie.getReleaseDate();
 
         final UriBuilder movieUriBuilder = getMovieUriBuilder(movie, uriInfo);
 
-        poster = movieUriBuilder.clone().path("/poster").build().toString();
-        posts = movieUriBuilder.clone().path("/posts").build().toString();
+        id = movie.getId();
+        creationDate = movie.getCreationDate();
+        title = movie.getTitle();
+        originalTitle = movie.getOriginalTitle();
+        tmdbId = movie.getTmdbId();
+        imdbId = movie.getImdbId();
+        categories = MovieCategoryDto.mapMovieCategoryToDto(movie.getCategories());
+        originalLanguage = movie.getOriginalLanguage();
+        overview = movie.getOverview();
+        popularity = movie.getPopularity();
+        runtime = movie.getRuntime();
+        voteAverage = movie.getVoteAverage();
+        releaseDate = movie.getReleaseDate();
+        postCount = movie.getPostCount();
+
+        poster = movieUriBuilder.clone().path("poster").build().toString();
+        posts = movieUriBuilder.clone().path("posts").build().toString();
+
         url = movieUriBuilder.build().toString();
     }
 
@@ -112,11 +116,11 @@ public class MovieDto {
         this.imdbId = imdbId;
     }
 
-    public Collection<MovieCategory> getCategories() {
+    public Collection<MovieCategoryDto> getCategories() {
         return categories;
     }
 
-    public void setCategories(Collection<MovieCategory> categories) {
+    public void setCategories(Collection<MovieCategoryDto> categories) {
         this.categories = categories;
     }
 
@@ -190,5 +194,13 @@ public class MovieDto {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public int getPostCount() {
+        return postCount;
+    }
+
+    public void setPostCount(int postCount) {
+        this.postCount = postCount;
     }
 }

@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -37,21 +37,27 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public byte[] findImageByPath(String imagePath) {
+    public Optional<byte[]> findImageByPath(String imagePath) {
+
+        final URL imageUrl = this.getClass().getClassLoader().getResource(imagePath);
+
+        if(imageUrl == null)
+            return Optional.empty();
+
         try {
-            final byte[] ans = Files.readAllBytes(Paths.get(Objects.requireNonNull(this.getClass().getClassLoader().getResource(imagePath)).toURI()));
+            final byte[] ans = Files.readAllBytes(Paths.get((imageUrl.toURI())));
 
             LOGGER.debug("{} image resource loaded successfully", imagePath);
 
-            return ans;
+            return Optional.of(ans);
         }
         catch(IOException ioE) {
             LOGGER.error("Could not locate {} image resource", imagePath, ioE);
-            throw new RuntimeException("Could not locate image resource");
+            return Optional.empty();
         }
         catch(URISyntaxException uriSyntaxE) {
             LOGGER.error("There was a problem with URI Syntax searching {} image resource", imagePath, uriSyntaxE);
-            throw new RuntimeException("Could not locate image resource");
+            return Optional.empty();
         }
     }
 }

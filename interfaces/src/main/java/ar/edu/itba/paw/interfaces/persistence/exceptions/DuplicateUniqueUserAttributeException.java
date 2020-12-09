@@ -12,7 +12,6 @@ public class DuplicateUniqueUserAttributeException extends Exception {
     private final EnumSet<UniqueAttributes> attributes;
 
     public DuplicateUniqueUserAttributeException(EnumSet<UniqueAttributes> attributes) {
-        super();
         this.attributes = attributes;
     }
 

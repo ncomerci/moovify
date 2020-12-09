@@ -1,43 +1,36 @@
 package ar.edu.itba.paw.webapp.dto.output;
 
-import ar.edu.itba.paw.models.CommentLike;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.CommentVote;
 
-import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class CommentVoteDto {
 
-    public static Collection<CommentVoteDto> mapCommentsLikeToDto(Collection<CommentLike> commentLikes, UriInfo uriInfo) {
-        return commentLikes.stream().map(c -> new CommentVoteDto(c, uriInfo)).collect(Collectors.toList());
+    public static Collection<CommentVoteDto> mapCommentsVoteToDto(Collection<CommentVote> commentVotes, UriInfo uriInfo, SecurityContext securityContext) {
+        return commentVotes.stream().map(c -> new CommentVoteDto(c, uriInfo, securityContext)).collect(Collectors.toList());
     }
 
-    public static UriBuilder getUserUriBuilder(User user, UriInfo uriInfo) {
-        return uriInfo.getBaseUriBuilder().path("users").path(String.valueOf(user.getId()));
-    }
-
-    private long userId;
+    private UserDto user;
     private int value;
-    private String userUrl;
 
     public CommentVoteDto() {
         //For Jersey Reflection- Do not use
     }
 
-    public CommentVoteDto(CommentLike commentLike, UriInfo uriInfo) {
-        this.userId = commentLike.getUser().getId();
-        this.value = commentLike.getValue();
-        this.userUrl = getUserUriBuilder(commentLike.getUser(), uriInfo).build().toString();
+    public CommentVoteDto(CommentVote commentVote, UriInfo uriInfo, SecurityContext securityContext) {
+        user = new UserDto(commentVote.getUser(), uriInfo, securityContext);
+        value = commentVote.getValue();
     }
 
-    public long getUserId() {
-        return userId;
+    public UserDto getUser() {
+        return user;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setUser(UserDto user) {
+        this.user = user;
     }
 
     public int getValue() {
@@ -48,11 +41,4 @@ public class CommentVoteDto {
         this.value = value;
     }
 
-    public String getUserUrl() {
-        return userUrl;
-    }
-
-    public void setUserUrl(String userUrl) {
-        this.userUrl = userUrl;
-    }
 }

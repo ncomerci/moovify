@@ -7,17 +7,17 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "comments_likes", uniqueConstraints = @UniqueConstraint(columnNames = {"comment_id", "user_id"}))
-public class CommentLike {
+@Table(name = "posts_likes", uniqueConstraints = @UniqueConstraint(columnNames = {"post_id", "user_id"}))
+public class PostVote {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommentLike.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PostVote.class);
 
-    public static final String TABLE_NAME = "comments_likes";
+    public static final String TABLE_NAME = "posts_likes";
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comments_likes_comments_likes_id_seq")
-    @SequenceGenerator(sequenceName = "comments_likes_comments_likes_id_seq", name = "comments_likes_comments_likes_id_seq", allocationSize = 1)
-    @Column(name = "comments_likes_id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "posts_likes_post_likes_id_seq")
+    @SequenceGenerator(sequenceName = "posts_likes_post_likes_id_seq", name = "posts_likes_post_likes_id_seq", allocationSize = 1)
+    @Column(name = "post_likes_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -25,20 +25,19 @@ public class CommentLike {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name="comment_id", nullable = false)
-    private Comment comment;
+    @JoinColumn(name="post_id", nullable = false)
+    private Post post;
 
     @Column(nullable = false)
     private int value;
 
-    public CommentLike(User user, Comment comment, int value) {
+    public PostVote(User user, Post post, int value) {
         this.user = user;
-        this.comment = comment;
+        this.post = post;
         this.value = value;
     }
 
-    protected CommentLike() {
-        // Hibernate
+    protected PostVote() {
     }
 
     public long getId() {
@@ -49,8 +48,8 @@ public class CommentLike {
         return user;
     }
 
-    public Comment getComment() {
-        return comment;
+    public Post getPost() {
+        return post;
     }
 
     public int getValue() {
@@ -70,8 +69,8 @@ public class CommentLike {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        CommentLike that = (CommentLike) o;
-        return id == that.getId();
+        PostVote postVote = (PostVote) o;
+        return id == postVote.getId();
     }
 
     @Override
@@ -81,7 +80,7 @@ public class CommentLike {
 
     @Override
     public String toString() {
-        return "CommentLike{" +
+        return "PostLikes{" +
                 "id=" + id +
                 ", value=" + value +
                 '}';

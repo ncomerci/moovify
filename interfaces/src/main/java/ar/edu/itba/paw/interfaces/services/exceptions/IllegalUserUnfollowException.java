@@ -1,4 +1,10 @@
 package ar.edu.itba.paw.interfaces.services.exceptions;
 
-public class IllegalUserUnfollowException extends Exception {
+import ar.edu.itba.paw.interfaces.exceptions.CustomException;
+
+public class IllegalUserUnfollowException extends CustomException {
+
+    public IllegalUserUnfollowException() {
+        super("error.illegalUserUnfollowException", 400);
+    }
 }

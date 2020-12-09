@@ -19,14 +19,6 @@ public class Comment {
 
     public static final String TABLE_NAME = "comments";
 
-    static public int getLikeValue(Comment comment, User user) {
-        return comment.getLikeValue(user);
-    }
-
-    public static int getDescendantCount(Comment comment, long maxDepth) {
-        return comment.getDescendantCount(maxDepth);
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comments_comment_id_seq")
     @SequenceGenerator(sequenceName = "comments_comment_id_seq", name = "comments_comment_id_seq", allocationSize = 1)
@@ -64,20 +56,20 @@ public class Comment {
     private User user;
 
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "comment", cascade = CascadeType.ALL)
-    private Set<CommentLike> likes;
+    private Set<CommentVote> votes;
 
     @Transient
-    private Long totalLikes;
+    private Long totalVotes;
 
     @Column(nullable = false)
     private boolean enabled;
 
-    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, boolean edited, LocalDateTime lastEditDate, User user, boolean enabled, Set<CommentLike> likes) {
-        this(creationDate, post, parent, children, body, edited, lastEditDate, user, enabled, likes);
+    public Comment(long id, LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, boolean edited, LocalDateTime lastEditDate, User user, boolean enabled, Set<CommentVote> votes) {
+        this(creationDate, post, parent, children, body, edited, lastEditDate, user, enabled, votes);
         this.id = id;
     }
 
-    public Comment(LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, boolean edited, LocalDateTime lastEditDate, User user, boolean enabled, Set<CommentLike> likes) {
+    public Comment(LocalDateTime creationDate, Post post, Comment parent, Set<Comment> children, String body, boolean edited, LocalDateTime lastEditDate, User user, boolean enabled, Set<CommentVote> votes) {
         this.creationDate = creationDate;
         this.post = post;
         this.parent = parent;
@@ -87,7 +79,7 @@ public class Comment {
         this.lastEditDate = lastEditDate;
         this.user = user;
         this.enabled = enabled;
-        this.likes = likes;
+        this.votes = votes;
     }
 
     protected Comment() {
@@ -95,8 +87,8 @@ public class Comment {
     }
 
     public void calculateTotalLikes() {
-        if(totalLikes == null)
-            totalLikes = likes.stream()
+        if(totalVotes == null)
+            totalVotes = votes.stream()
                 .reduce(0L, (acum, commentLike) -> acum += (long) commentLike.getValue(), Long::sum);
     }
 
@@ -143,25 +135,25 @@ public class Comment {
         return user;
     }
 
-    public Collection<CommentLike> getLikes() {
-        return likes;
+    public Collection<CommentVote> getVotes() {
+        return votes;
     }
 
-    public long getTotalLikes() {
-        if(totalLikes == null)
+    public long getTotalVotes() {
+        if(totalVotes == null)
             calculateTotalLikes();
 
-        return totalLikes;
+        return totalVotes;
     }
 
-    public void setTotalLikes(long totalLikes) {
-        this.totalLikes = totalLikes;
+    public void setTotalVotes(long totalVotes) {
+        this.totalVotes = totalVotes;
     }
 
-    public int getLikeValue(User user) {
-        return getLikes().stream()
+    public int getVoteValue(User user) {
+        return getVotes().stream()
                 .filter(commentLike -> commentLike.getUser().getId() == user.getId())
-                .map(CommentLike::getValue)
+                .map(CommentVote::getValue)
                 .findFirst().orElse(0);
     }
 
@@ -196,14 +188,14 @@ public class Comment {
 
     public void removeLike(User user) {
 
-        final Optional<CommentLike> optLike =
-                getLikes().stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
+        final Optional<CommentVote> optLike =
+                getVotes().stream().filter(like -> like.getUser().getId() == user.getId()).findFirst();
 
         if(optLike.isPresent()) {
-            final CommentLike like = optLike.get();
+            final CommentVote like = optLike.get();
 
             like.getUser().removeCommentLike(like);
-            getLikes().remove(like);
+            getVotes().remove(like);
         }
     }
 
@@ -213,7 +205,7 @@ public class Comment {
             return;
         }
 
-        final Optional<CommentLike> existingLike = likes.stream()
+        final Optional<CommentVote> existingLike = votes.stream()
                 .filter(like -> like.getUser().getId() == user.getId())
                 .findFirst();
 
@@ -221,10 +213,10 @@ public class Comment {
             existingLike.get().setValue(value);
 
         else {
-            final CommentLike like = new CommentLike(user, this, value);
+            final CommentVote like = new CommentVote(user, this, value);
 
             user.addCommentLike(like);
-            getLikes().add(like);
+            getVotes().add(like);
         }
     }
 

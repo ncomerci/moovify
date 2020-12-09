@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -43,17 +43,6 @@ public class WebConfig extends ResourceConfig {
 
     @Autowired
     private Environment env;
-
-//    @Bean
-//    public ViewResolver viewResolver() {
-//        final InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-//
-//        viewResolver.setViewClass(JstlView.class); // Es el default, pero lo aclaramos
-//        viewResolver.setSuffix(".jsp");
-//        viewResolver.setPrefix("/WEB-INF/jsp/");
-//
-//        return viewResolver;
-//    }
 
     @Bean(name = "applicationBasePath")
     public String applicationBasePath() {
@@ -108,11 +97,11 @@ public class WebConfig extends ResourceConfig {
 
     @Bean
     public MessageSource messageSource() {
-        final ReloadableResourceBundleMessageSource msgSource = new ReloadableResourceBundleMessageSource();
+        final ResourceBundleMessageSource msgSource = new ResourceBundleMessageSource();
 
         msgSource.setBasename("classpath:i18n/messages");
         msgSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
-        msgSource.setCacheSeconds(env.getProperty("strings.cache", Integer.class));
+//        msgSource.setCacheSeconds(env.getProperty("strings.cache", Integer.class));
 
         return msgSource;
     }

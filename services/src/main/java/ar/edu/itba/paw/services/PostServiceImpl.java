@@ -85,17 +85,17 @@ public class PostServiceImpl implements PostService {
         if(!post.isEnabled())
             throw new IllegalPostLikeException();
 
-        if(post.getLikeValue(user) == value)
+        if(post.getVoteValue(user) == value)
             return;
 
         if(value == 0) {
             LOGGER.info("Delete Like: User {} Post {}", user.getId(), post.getId());
-            post.removeLike(user);
+            post.removeVote(user);
         }
 
         else if(value == -1 || value == 1) {
             LOGGER.info("Like: User {} Post {} Value {}", user.getId(), post.getId(), value);
-            post.like(user, value);
+            post.vote(user, value);
         }
     }
 
@@ -121,7 +121,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public int getVoteValue(Post post, User user) {
-        return postDao.getVoteValue(post, user);
+        return post.getVoteValue(user);
     }
 
     @Transactional(readOnly = true)
@@ -132,43 +132,37 @@ public class PostServiceImpl implements PostService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Post> findDeletedPostById(long id) {
-        return postDao.findDeletedPostById(id);
+    public PaginatedCollection<Post> getAllPosts(Boolean enabled,String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.getAllPosts(enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> getAllPosts(String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.getAllPosts(getPostSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Post> findPostsByMovie(Movie movie, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.findPostsByMovie(movie, enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> findPostsByMovie(Movie movie, String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.findPostsByMovie(movie, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Post> findPostsByUser(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.findPostsByUser(user, enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> findPostsByUser(User user, String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.findPostsByUser(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Post> getFollowedUsersPosts(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.getFollowedUsersPosts(user, enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public PaginatedCollection<Post> getFollowedUsersPosts(User user, String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.getFollowedUsersPosts(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public PaginatedCollection<Post> getUserBookmarkedPosts(User user, String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.getUserFavouritePosts(user, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
+    public PaginatedCollection<Post> getUserBookmarkedPosts(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return postDao.getUserFavouritePosts(user, enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
     @Override
-    public PaginatedCollection<PostLike> getPostLikes(Post post, String sortCriteria, int pageNumber, int pageSize) {
-        return postDao.getPostLikes(post, sortCriteria, pageNumber, pageSize);
+    public PaginatedCollection<PostVote> getPostVotes(Post post, int pageNumber, int pageSize) {
+        return postDao.getPostVotes(post, pageNumber, pageSize);
     }
 
     @Transactional(readOnly = true)

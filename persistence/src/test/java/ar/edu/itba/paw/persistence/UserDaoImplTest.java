@@ -151,24 +151,6 @@ public class UserDaoImplTest {
     }
 
     @Test
-    public void testFindDeletedUserById() {
-
-        // Pre conditions
-        long id = helper.insertUser(USERNAME, NAME, CREATION_DATE, EMAIL, DISABLE, "USER");
-
-        // Exercise
-        final Optional<User> user = userDao.findDeletedUserById(id);
-
-        final String whereClause = String.format("user_id = %d", id);
-
-        // Post conditions
-        Assert.assertTrue(user.isPresent());
-        Assert.assertEquals(id,user.get().getId() );
-        Assert.assertEquals(USERNAME, user.get().getUsername() );
-        Assert.assertEquals(EMAIL, user.get().getEmail());
-    }
-
-    @Test
     public void testFindUserByUsername() {
 
         // Pre conditions
@@ -209,7 +191,7 @@ public class UserDaoImplTest {
         long user4 = helper.insertUser("username4", NAME, CREATION_DATE.plusHours(20), "email4", ENABLE, "USER");
 
         // Exercise
-        PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.OLDEST, PAGE_SECOND, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.getAllUsers(true, UserDao.SortCriteria.OLDEST, PAGE_SECOND, PAGE_SIZE);
 
         // Post conditions
         Assert.assertEquals(4, users.getTotalCount());
@@ -228,7 +210,7 @@ public class UserDaoImplTest {
         long user4 = helper.insertUser("username4", NAME, CREATION_DATE.plusHours(20), "email4", ENABLE, "USER");
 
         // Exercise
-        PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.NEWEST, PAGE_SECOND, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.getAllUsers(true, UserDao.SortCriteria.NEWEST, PAGE_SECOND, PAGE_SIZE);
 
         // Post conditions
         Assert.assertEquals(4, users.getTotalCount());
@@ -247,7 +229,7 @@ public class UserDaoImplTest {
         long user4 = helper.insertUser("username4", "zname", CREATION_DATE.plusHours(20), "email4", ENABLE, "USER");
 
         // Exercise
-        PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.USERNAME, PAGE_SECOND, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.getAllUsers(true, UserDao.SortCriteria.USERNAME, PAGE_SECOND, PAGE_SIZE);
 
         // Post conditions
         Assert.assertEquals(4, users.getTotalCount());
@@ -277,7 +259,7 @@ public class UserDaoImplTest {
         helper.insertPostLike(post1, user3, UPVOTE);
 
         // Exercise
-        PaginatedCollection<User> users = userDao.getAllUsers(UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.getAllUsers(true, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
 
         // Post conditions
         Assert.assertEquals(4, users.getTotalCount());
@@ -296,7 +278,7 @@ public class UserDaoImplTest {
         long user4ID = helper.insertUser("nombre", "test", CREATION_DATE.plusHours(20), "email4", ENABLE, "USER");
 
         // Exercise
-        PaginatedCollection<User> users = userDao.searchUsers("useRName", UserDao.SortCriteria.NEWEST, 0, 10);
+        PaginatedCollection<User> users = userDao.searchUsers("useRName", true, UserDao.SortCriteria.NEWEST, 0, 10);
 
         // Post conditions
         Assert.assertEquals(2, users.getTotalCount());
@@ -315,27 +297,10 @@ public class UserDaoImplTest {
         helper.insertUser("user", NAME, CREATION_DATE, "email3", ENABLE, "USER");
 
         // Exercise
-        PaginatedCollection<User> users = userDao.searchUsersByRole(USERNAME, Role.USER, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.searchUsersByRole(USERNAME, Role.USER, true, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
 
         // Post conditions
         Assert.assertEquals(1, users.getTotalCount());
     }
 
-    @Test
-    public void searchDeletedUsers() {
-
-        // Pre conditions
-        JdbcTestUtils.deleteFromTables(jdbcTemplate ,USERS);
-
-        helper.insertUser(USERNAME, "NAME", CREATION_DATE, EMAIL, ENABLE, "USER");
-        helper.insertUser("usuarioCOOL", "NOmbre", CREATION_DATE, "email2", ENABLE, "USER");
-        helper.insertUser("Alternate USERNAME", NAME, CREATION_DATE, "email3", DISABLE, "USER");
-        helper.insertUser("USUARIO", "Nein", CREATION_DATE, "email4", DISABLE, "USER");
-
-        // Exercise
-        PaginatedCollection<User> users = userDao.searchDeletedUsers("usuario", UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
-
-        // Post conditions
-        Assert.assertEquals(1, users.getTotalCount());
-    }
 }

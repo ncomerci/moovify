@@ -59,7 +59,7 @@ public class InsertHelper {
                 .withTableName(User.USER_ROLE_TABLE_NAME);
 
         this.postsLikesInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(PostLike.TABLE_NAME);
+                .withTableName(PostVote.TABLE_NAME);
 
         this.postsMoviesInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(Post.POST_MOVIE_TABLE_NAME);
@@ -71,7 +71,7 @@ public class InsertHelper {
                 .withTableName(Comment.TABLE_NAME);
 
         this.commentLikeInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName(CommentLike.TABLE_NAME);
+                .withTableName(CommentVote.TABLE_NAME);
 
         this.movieJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName(Movie.TABLE_NAME);

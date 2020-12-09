@@ -43,6 +43,10 @@ public class JwtUtil {
                     .parseClaimsJws(jws)
                     .getBody();
 
+            // Jwt Expired
+            if(new Date().after(body.getExpiration()))
+                return null;
+
             final String username = body.getSubject();
 
             final String password = body.get("password", String.class);
@@ -72,7 +76,7 @@ public class JwtUtil {
         return "Bearer " +
                 Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 12 * HOUR_MILLIS))
                 .signWith(secret)
                 .compact();
@@ -94,5 +98,4 @@ public class JwtUtil {
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                 .collect(Collectors.toList());
     }
-
 }
