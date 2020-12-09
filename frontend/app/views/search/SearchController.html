@@ -1,0 +1,25 @@
+<div class="jumbotron">
+	<h1>'Allo, 'Allo!</h1>
+	<p class="lead">
+		{{ searchOptions.query }}
+	</p>
+	<input type='text' placeholder='Search'
+		ng-model='searchOptions.query'
+		ng-model-options='{ debounce: 1000 }'
+		ng-change='execSearch()'
+	/>
+	<select ng-model='searchOptions.contentType' ng-change='execSearch(searchOptions.contentType)'>
+		<option value="posts">posts</option>
+		<option value="movies">movies</option>
+		<option value="users">users</option>
+	</select>
+
+	<div ng-repeat="(key, value) in searchOptions.params">
+		<select ng-model='searchOptions.params[key]' ng-change='execSearch()'>
+			<option ng-repeat="option in getOptionsValue(searchOptions.contentType, key)" ng-value="option">{{option}}</option>
+		</select>
+	</div>
+
+	<paginated-display type='searchOptions.contentType' collection='paginatedAns.collection' pagination-params='paginatedAns.paginationParams'/>
+</div>
+

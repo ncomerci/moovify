@@ -13,6 +13,5 @@ define([], function() {
     USER_CREATE_SIGNUP: 'Sign up',
     USER_CREATE_SIGNUP_ALT: 'Signup',
     SEARCH_TITLE: 'Search'
-
 	};
 });

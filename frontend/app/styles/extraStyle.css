@@ -1,0 +1,279 @@
+.search-query-input::placeholder {
+    color: #999;
+}
+
+.error {
+    color: red;
+}
+
+.m-text-primary {
+    color: #fa8a32 !important;
+}
+
+.m-text-red {
+    color: #EA5455 !important;
+}
+
+.m-text-white{
+    color: #ffffff; !important;
+}
+
+.m-width-max-content {
+    width: max-content;
+}
+
+.m-bg-primary-lighter-5 {
+    /*background-color: #262B35;*/
+    background-color: rgba(38, 43, 53,0.5);
+}
+
+.m-opacity-5 {
+    opacity: 50%;
+}
+
+.m-rounded-bottom-10 {
+    border-radius: 0 0 10px 10px;
+}
+
+.hidden {
+    display: none;
+}
+
+.width-inherit {
+    width: inherit;
+}
+
+.pre-line {
+    white-space: pre-line;
+}
+
+.min-height-1000{
+    min-height: 1000px;
+}
+
+.red-button {
+    background-color: #cf1b1b;
+}
+
+.red-button:hover,
+.red-button:focus {
+    background-color: #900d0d;
+}
+
+.small-iconify {
+    width: 24px !important;
+    height: 24px !important;
+}
+
+.large-iconify {
+    width: 40px !important;
+    height: 40px !important;
+}
+
+.small {
+    font-size: 16px;
+    line-height: 20px;
+}
+
+.text-lead{
+    font-size: 1.5rem;
+    line-height: 1.5;
+}
+.margin-user-home-display{
+    margin-top: 26px !important;
+}
+.margin-user-display{
+    margin-top: 40px !important;
+}
+
+.edit-icon-button:hover,
+.edit-icon-button:focus {
+    background: rgba(170, 170, 170, 0.55)
+}
+.edit-icon-button {
+    box-sizing: border-box;
+    width: 32px;
+    height: 32px;
+    border-radius: 400px;
+    background: rgba(170, 170, 170, 0.25);
+    color: #fa8a32;
+    vertical-align: middle;
+    /* 1 */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.1s ease-in-out;
+    transition-property: color, background-color;
+}
+
+.circle {
+    display: block;
+    width: 230px;
+    height: 230px;
+    object-fit: cover;
+    margin: 1em auto;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    -webkit-border-radius: 99em;
+    -moz-border-radius: 99em;
+}
+
+.circle-comment {
+    display: block;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    margin: 1em auto;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    -webkit-border-radius: 99em;
+    -moz-border-radius: 99em;
+}
+.image-user-display{
+    display: block;
+    width: 100px;
+    height:100px;
+    object-fit: cover;
+    margin: 1em auto;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    -webkit-border-radius: 99em;
+    -moz-border-radius: 99em;
+}
+.circle-navbar {
+    display: block;
+    width: 45px;
+    height: 45px;
+    margin: 1em auto;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    -webkit-border-radius: 99em;
+    -moz-border-radius: 99em;
+}
+
+.m-long-text {
+    word-break: break-all;
+}
+
+.extra-margin-small-top {
+    margin-top: 5px !important;
+}
+
+a.anchor {
+    display: block;
+    position: relative;
+    top: -260px;
+    visibility: hidden;
+}
+
+.movie-poster{
+    object-fit: cover;
+    height: 450px;
+    width: 300px;
+}
+
+.main-page {
+  box-shadow: 0 -1em 1em -1em rgba(0, 0, 0, .25);
+}
+
+.uk-badge.disabled {
+  color: #fff;
+}
+
+.mid-bold {
+  font-weight: 500;
+}
+
+.iconify {
+  width: 32px;
+  height: 32px;
+}
+
+.admin-badge {
+  width: 18px;
+  height: 18px;
+}
+
+.admin-button {
+  border: 1px solid #F3F3F3;
+  color: #F3F3F3;
+}
+
+.admin-button:hover,
+.admin-button:focus {
+  border: 1px solid #D1D1D1;
+  color: #D1D1D1;
+}
+
+.nav-user {
+  color: #f2a365;
+}
+
+.nav-user:hover,
+.nav-user:focus,
+.nav-user:active {
+  color: #fa8a32;
+}
+
+.userTitle {
+  color: #f2a365;
+}
+
+.search-button {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+.user-login-button {
+  padding-left: 35px !important;
+  padding-right: 35px !important;
+}
+
+.user-profile-button {
+  border: 1px solid #30475e;
+  color: #30475e;
+}
+
+.user-profile-button:hover,
+.user-profile-button:focus{
+  border: 1px solid #222831;
+  color: #222831;
+}
+
+.logout-button {
+  border: 1px solid #cf1b1b;
+  color: #cf1b1b;
+}
+
+.logout-button:hover,
+.logout-button:focus {
+  border: 1px solid #900d0d;
+  color: #900d0d;
+}
+
+.icon-error {
+  color: #f0506e;
+}
+
+.extended-button {
+  width: 100% !important;
+}
+
+.delete-comment-button {
+  color: #cf1b1b !important;
+  font-size: 16px;
+}
+
+.delete-comment-button:hover,
+.delete-comment-button:focus {
+  color: #900d0d !important;
+}
+
+.ng-cloak { display: none !important; }
+
+form {
+  margin-block-end: 1em;
+}

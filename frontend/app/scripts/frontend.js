@@ -2,14 +2,22 @@
 define(['routes',
 	'services/dependencyResolverFor',
 	'i18n/i18nLoader!',
+	'uikit',
+	'uikiticons',
 	'angular',
 	'angular-route',
-	'bootstrap',
-	'angular-translate'],
-	function(config, dependencyResolverFor, i18n) {
+	'angular-translate',
+	'restangular'
+	],
+	function(config, dependencyResolverFor, i18n, UIkit, icons) {
+
+		// Wire UIkit icons to UIkit handler.
+		icons(UIkit);
+
 		var frontend = angular.module('frontend', [
 			'ngRoute',
-			'pascalprecht.translate'
+			'pascalprecht.translate',
+			'restangular'
 		]);
 		frontend
 			.config(
@@ -19,7 +27,16 @@ define(['routes',
 				'$filterProvider',
 				'$provide',
 				'$translateProvider',
-				function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $translateProvider) {
+				'$locationProvider',
+				'RestangularProvider',
+				function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $translateProvider, $locationProvider, RestangularProvider) {
+
+					RestangularProvider.setBaseUrl('http://localhost/api');
+          // RestangularProvider.addResponseInterceptor(function(data, operation, what, url, response, deferred) {
+          //   return response;
+          // });
+					$locationProvider.html5Mode(true);
+
 
 					frontend.controller = $controllerProvider.register;
 					frontend.directive = $compileProvider.directive;
@@ -29,7 +46,12 @@ define(['routes',
 
 					if (config.routes !== undefined) {
 						angular.forEach(config.routes, function(route, path) {
-							$routeProvider.when(path, {templateUrl: route.templateUrl, resolve: dependencyResolverFor(['controllers/' + route.controller]), controller: route.controller, gaPageTitle: route.gaPageTitle});
+							$routeProvider.when(path, {
+								templateUrl: route.templateUrl, 
+								resolve: dependencyResolverFor(['controllers/' + route.controller]), 
+								controller: route.controller,
+								gaPageTitle: route.gaPageTitle
+							});
 						});
 					}
 					if (config.defaultRoutePath !== undefined) {
@@ -39,6 +61,7 @@ define(['routes',
 					$translateProvider.translations('preferredLanguage', i18n);
 					$translateProvider.preferredLanguage('preferredLanguage');
 				}]);
+
 		return frontend;
 	}
 );

@@ -1,46 +1,103 @@
 <!doctype html>
-<html class="no-js">
+<html lang="en" class="no-js" ng-controller="IndexCtrl">
 <head>
   <meta charset="utf-8">
-  <title>frontend</title>
+  <title>{{title.value}}</title>
+  <base href="/">
   <meta name="description" content="">
+
+  <link rel = "icon" href = "images/favicon.png" type = "image/x-icon" />
 
   <!-- build:css(.tmp) styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/extraStyle.css">
   <!-- endbuild -->
 
 </head>
-<body ng-controller="IndexCtrl">
+<body class="uk-padding-remove">
   <!--[if lt IE 7]>
   <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
   <![endif]-->
   <!-- Add your site or application content here -->
-  <div class="container">
-    <div class="header">
-      <ul class="nav nav-pills pull-right">
-        <li class="active"><a ng-href="#">Home</a></li>
-        <li><a ng-href="#/about">About</a></li>
-        <li><a ng-href="#">Contact</a></li>
-      </ul>
-      <h3 class="text-muted">frontend</h3>
-    </div>
-    <div ng-view=""></div>
 
-    <div class="footer">
-      <p><span class="glyphicon glyphicon-heart"></span> from the Yeoman team</p>
+  <nav class="uk-navbar-container" uk-navbar>
+    <a class="uk-logo" href="/"><img id="nav-logo" src="images/logo.png" alt="Moovify"></a>
+    <div class="uk-navbar-right">
+      <ul class="uk-navbar-nav">
+        <li class="uk-visible@s">
+          <a id="nav-search-toggle" class="uk-navbar-toggle">
+            <span uk-icon="icon: search; ratio: 1.7"></span>
+          </a>
+          <div class="uk-drop" data-uk-drop="mode: click; pos: left-center; offset: 0; boundary: #navbar">
+            <form action="/search/posts" class="uk-search uk-search-navbar uk-width-1-1">
+              <label for="nav-search"></label>
+              <input autofocus id="nav-search" name="query" class="uk-search-input" type="search" placeholder="search" >
+              <button id="submit-navbar-search-button" class="uk-button uk-button-default uk-border-rounded search-button" type="submit">SEARCH</button>
+            </form>
+          </div>
+        </li>
+        <li class="uk-navbar-item ng-cloak" ng-show="!loggedUser.logged">
+          <a href="/login">LOGIN</a>
+        </li>
+        <li>
+          <a class="uk-text-center ng-cloak" ng-href="/user/create" ng-show="!loggedUser.logged">
+          <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-text-secondary" type="button">SIGNUP</button>
+          </a>
+        </li>
+
+        <li class="uk-navbar-item ng-cloak" ng-show="loggedUser.logged">
+            <!-- This is a button toggling the modal -->
+            <a ng-show="!loggedUser.enabled" class="uk-padding-remove" href="#" uk-toggle="target: #confirm-email-modal">
+              CREATE POST
+            </a>
+            <a ng-show="loggedUser.enabled" class="uk-padding-remove" ng-href="/post/create">CREATE POST</a>
+        </li>
+        <li ng-show="loggedUser.logged" class="ng-cloak">
+          <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" ng-href="/user/profile">
+            <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
+            <img src="/user/avatar/{{loggedUser.avatarId}}" class="uk-comment-avatar circle-navbar" width="45" height="45" alt="User Avatar">
+            <span class="uk-text-bold uk-margin-small-left">{{loggedUser.username}}</span>
+            <span ng-show="loggedUser.admin" class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="ADMIN TITLE"></span>
+          </a>
+          <div class="uk-navbar-dropdown m-bg-primary-lighter-5 m-rounded-bottom-10">
+            <ul class="uk-nav uk-navbar-dropdown-nav">
+              <li>
+                <a class="uk-text-normal uk-text-center m-text-primary" ng-href="/user/profile">
+                USER PROFILE
+                </a>
+              </li>
+                <li ng-show="loggedUser.admin">
+                  <a class="uk-text-normal uk-text-center m-text-primary" ng-href="/admin/deleted/posts">
+                  ADMIN PANEL
+                  </a>
+                </li>
+              <li>
+                <a class="uk-text-normal uk-text-center m-text-red" ng-href="/logout">
+                LOGOUT
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <a href="/search/posts?query=elPepe">SEARCH</a>
+  <a href="/search/movies?query=elPepe">SEARCH</a>
+  <a href="/search/users?query=elPepe">SEARCH</a>
+  <div ng-view=""></div>
+
+  <!-- Confirm email modal -->
+  <div ng-show="loggedUser && !loggedUser.enabled" id="confirm-email-modal" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+      <h2 class="uk-modal-title">MODAL TITLE</h2>
+      <p>EMAIL CONFIRM TEXT MODAL</p>
+      <p class="uk-text-right">
+        <a class="uk-button uk-button-secondary uk-border-rounded uk-text-bolder" ng-href="/user/resendConfirmation">RESEND EMAIL</a>
+        <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-modal-close" type="button">CLOSE</button>
+      </p>
     </div>
   </div>
-
-  <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
-  <script>
-   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-   ga('create', 'UA-XXXXX-X');
-   ga('send', 'pageview');
- </script>
 
  <!-- build:js(.) scripts/oldieshim.js -->
   <!--[if lt IE 9]>
@@ -50,5 +107,6 @@
   <!-- endbuild -->
   <script src="/scripts/paths.js"></script>
   <script src="bower_components/requirejs/require.js" data-main="/scripts/build.js"></script>
+
 </body>
 </html>
