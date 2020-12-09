@@ -57,7 +57,7 @@ public class UserController {
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listUsers(@QueryParam("query") String query,
+    public Response listUsers(@QueryParam("query") @DefaultValue("") String query,
                               @QueryParam("role") String role,
                               @QueryParam("enabled") Boolean enabled,
                               @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
@@ -66,7 +66,7 @@ public class UserController {
 
         final PaginatedCollection<User> users;
 
-        if(query != null)
+        if(!query.equals("") || role != null)
             users = searchService.searchUsers(query, role, enabled, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         else
@@ -80,15 +80,14 @@ public class UserController {
                 .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
+        linkUriBuilder.queryParam("query", query);
+
         if(enabled != null)
             linkUriBuilder.queryParam("enabled", enabled);
 
-        if(query != null) {
-            linkUriBuilder.queryParam("query", query);
+        if(role != null)
+            linkUriBuilder.queryParam("role", role);
 
-            if(role != null)
-                linkUriBuilder.queryParam("role", role);
-        }
 
         return buildGenericPaginationResponse(users, new GenericEntity<Collection<UserDto>>(usersDto) {}, linkUriBuilder);
     }

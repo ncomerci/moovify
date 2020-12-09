@@ -46,7 +46,7 @@ public class MovieController {
 
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listMovies(@QueryParam("query") String query,
+    public Response listMovies(@QueryParam("query") @DefaultValue("") String query,
                                @QueryParam("movieCategory") String movieCategory,
                                @QueryParam("decade") String decade,
                                @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
@@ -55,7 +55,7 @@ public class MovieController {
 
         final PaginatedCollection<Movie> movies;
 
-        if(query != null)
+        if(!query.equals("") || movieCategory != null || decade != null)
             movies = searchService.searchMovies(query, movieCategory, decade, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
 
         else
@@ -68,15 +68,14 @@ public class MovieController {
                 .queryParam("pageSize", pageSize)
                 .queryParam("orderBy", orderBy);
 
-        if(query != null) {
-            linkUriBuilder.queryParam("query", query);
+        linkUriBuilder.queryParam("query", query);
 
-            if(movieCategory != null)
-                linkUriBuilder.queryParam("movieCategory", movieCategory);
+        if(movieCategory != null)
+            linkUriBuilder.queryParam("movieCategory", movieCategory);
 
-            if(decade != null)
-                linkUriBuilder.queryParam("decade", decade);
-        }
+        if(decade != null)
+            linkUriBuilder.queryParam("decade", decade);
+
 
         return buildGenericPaginationResponse(movies, new GenericEntity<Collection<MovieDto>>(moviesDto) {}, linkUriBuilder);
     }
