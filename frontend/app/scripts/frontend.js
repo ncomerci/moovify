@@ -35,7 +35,6 @@ define(['routes',
           // RestangularProvider.addResponseInterceptor(function(data, operation, what, url, response, deferred) {
           //   return response;
           // });
-					// RestangularProvider.setBaseUrl('https://significanoverte.free.beeceptor.com');
 					$locationProvider.html5Mode(true);
 
 
@@ -47,7 +46,12 @@ define(['routes',
 
 					if (config.routes !== undefined) {
 						angular.forEach(config.routes, function(route, path) {
-							$routeProvider.when(path, {templateUrl: route.templateUrl, resolve: dependencyResolverFor(['controllers/' + route.controller]), controller: route.controller, gaPageTitle: route.gaPageTitle});
+							$routeProvider.when(path, {
+								templateUrl: route.templateUrl, 
+								resolve: dependencyResolverFor(['controllers/' + route.controller]), 
+								controller: route.controller,
+								gaPageTitle: route.gaPageTitle
+							});
 						});
 					}
 					if (config.defaultRoutePath !== undefined) {

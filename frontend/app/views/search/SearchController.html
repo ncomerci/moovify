@@ -3,7 +3,7 @@
 	<p class="lead">
 		{{ searchOptions.query }}
 	</p>
-	<input type='text' placeholder='Type a name..'
+	<input type='text' placeholder='Search'
 		ng-model='searchOptions.query'
 		ng-model-options='{ debounce: 1000 }'
 		ng-change='execSearch()'
@@ -12,13 +12,14 @@
 		<option value="posts">posts</option>
 		<option value="movies">movies</option>
 		<option value="users">users</option>
-	</select> 
+	</select>
 
 	<div ng-repeat="(key, value) in searchOptions.params">
 		<select ng-model='searchOptions.params[key]' ng-change='execSearch()'>
 			<option ng-repeat="option in getOptionsValue(searchOptions.contentType, key)" ng-value="option">{{option}}</option>
 		</select>
 	</div>
-	<p><a class="btn btn-lg btn-success" ng-href="#">Incredible!<span class="glyphicon glyphicon-ok"></span></a></p>
+
+	<paginated-display type='searchOptions.contentType' collection='paginatedAns.collection' pagination-params='paginatedAns.paginationParams'/>
 </div>
 
