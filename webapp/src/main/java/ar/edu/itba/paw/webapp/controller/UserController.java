@@ -8,10 +8,7 @@ import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.DeletedDisabledModelException;
 import ar.edu.itba.paw.interfaces.services.exceptions.InvalidUserPromotionException;
 import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
 import ar.edu.itba.paw.webapp.dto.generic.GenericBooleanResponseDto;
 import ar.edu.itba.paw.webapp.dto.input.UserCreateDto;
@@ -19,14 +16,11 @@ import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
-import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
-import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
@@ -42,6 +36,9 @@ public class UserController {
 
     @Context
     private SecurityContext securityContext;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Autowired
     private UserService userService;
@@ -95,19 +92,18 @@ public class UserController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response createUser(@Valid final UserCreateDto userCreateDto, @Context HttpServletRequest request) {
+    public Response createUser(@Valid final UserCreateDto userCreateDto) {
 
         final User user;
 
         try {
             user = userService.register(userCreateDto.getUsername(), userCreateDto.getPassword(), userCreateDto.getName(),
-                    userCreateDto.getEmail(), userCreateDto.getDescription(), "confirmEmail",
-                    request.getLocale());
+                    userCreateDto.getEmail(), userCreateDto.getDescription(), "confirmEmail");
         }
         catch(DuplicateUniqueUserAttributeException e) {
             return Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(new DuplicateUniqueUserAttributeErrorDto(e))
+                    .entity(new DuplicateUniqueUserAttributeErrorDto(e, messageSource))
                     .build();
         }
 
@@ -180,6 +176,8 @@ public class UserController {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
+        guaranteeUserRelationshipAccessPermissions(securityContext, user);
+
         final byte[] imageData = userService.getAvatar(user).orElseThrow(AvatarNotFoundException::new);
 
         // TODO: Set conditional cache?
@@ -196,6 +194,8 @@ public class UserController {
                                  @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        guaranteeUserRelationshipAccessPermissions(securityContext, user);
 
         final PaginatedCollection<Post> posts = postService.findPostsByUser(user, enabled, orderBy, pageNumber, pageSize);
 
@@ -223,6 +223,8 @@ public class UserController {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
+        guaranteeUserRelationshipAccessPermissions(securityContext, user);
+
         final PaginatedCollection<Comment> comments = commentService.findCommentsByUser(user, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
@@ -249,6 +251,8 @@ public class UserController {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
+        guaranteeUserRelationshipAccessPermissions(securityContext, user);
+
         final PaginatedCollection<User> users = userService.getFollowedUsers(user, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<UserDto> usersDto = UserDto.mapUsersToDto(users.getResults(), uriInfo, securityContext);
@@ -269,11 +273,13 @@ public class UserController {
     @Path("{id}/following/{userId}")
     public Response isFollowingUser(@PathParam("id") long id, @PathParam("userId") long userId) {
 
-        final User loggedUser = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
-        final User user = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
+        guaranteeUserRelationshipAccessPermissions(securityContext, user);
 
-        final boolean result = userService.isFollowingUser(loggedUser, user);
+        final User other = userService.findUserById(userId).orElseThrow(UserNotFoundException::new);
+
+        final boolean result = userService.isFollowingUser(user, other);
 
         return Response.ok(new GenericBooleanResponseDto(result)).build();
     }
@@ -288,6 +294,8 @@ public class UserController {
                                      @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        guaranteeUserRelationshipAccessPermissions(securityContext, user);
 
         final PaginatedCollection<Post> posts = postService.getUserBookmarkedPosts(user, enabled, orderBy, pageNumber, pageSize);
 
@@ -310,6 +318,8 @@ public class UserController {
     public Response hasUserBookmarkedPost(@PathParam("id") long id, @PathParam("postId") long postId) {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
+
+        guaranteeUserRelationshipAccessPermissions(securityContext, user);
 
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 
@@ -357,6 +367,11 @@ public class UserController {
 
         if(pageNumber != last)
             response.link(baseUri.clone().queryParam(pageNumberParamName, next).build(), "next");
+    }
+
+    private void guaranteeUserRelationshipAccessPermissions(SecurityContext securityContext, User user) {
+        if(!user.isEnabled() && !securityContext.isUserInRole(Role.ADMIN.name()))
+            throw new ForbiddenEntityRelationshipAccessException(securityContext.getUserPrincipal() != null);
     }
 }
 

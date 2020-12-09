@@ -1,6 +1,8 @@
 package ar.edu.itba.paw.webapp.dto.error;
 
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.EnumSet;
 
@@ -13,10 +15,9 @@ public class DuplicateUniqueUserAttributeErrorDto {
         //For jersey - do not use
     }
 
-    public DuplicateUniqueUserAttributeErrorDto(DuplicateUniqueUserAttributeException e) {
+    public DuplicateUniqueUserAttributeErrorDto(DuplicateUniqueUserAttributeException e, MessageSource messageSource) {
 
-        // TODO: Descablear String
-        message = "The user you tried to create had duplicated unique attributes";
+        message = messageSource.getMessage(e.getMessageCode(), null, LocaleContextHolder.getLocale());
         duplicatedAttributes = e.getDuplicatedUniqueAttributes();
     }
 

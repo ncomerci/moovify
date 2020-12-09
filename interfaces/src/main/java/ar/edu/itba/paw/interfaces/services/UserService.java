@@ -8,12 +8,11 @@ import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
 
 import java.util.Collection;
-import java.util.Locale;
 import java.util.Optional;
 
 public interface UserService {
 
-    User register(String username, String password, String name, String email, String description, String confirmationMailTemplate, Locale locale) throws DuplicateUniqueUserAttributeException;
+    User register(String username, String password, String name, String email, String description, String confirmationMailTemplate) throws DuplicateUniqueUserAttributeException;
 
     void updateUser(User user, String name, String username, String description, String password) throws DuplicateUniqueUserAttributeException;
 
@@ -37,15 +36,15 @@ public interface UserService {
 
     boolean isFollowingUser(User user, User other);
 
-    Optional<User> confirmRegistration(String token);
+    User confirmRegistration(String token) throws InvalidEmailConfirmationTokenException;
 
-    void createConfirmationEmail(User user, String confirmationMailTemplate, Locale locale);
+    void createConfirmationEmail(User user, String confirmationMailTemplate);
 
-    void createPasswordResetEmail(User user, String passwordResetMailTemplate, Locale locale);
+    void createPasswordResetEmail(User user, String passwordResetMailTemplate);
 
     boolean validatePasswordResetToken(String token);
 
-    Optional<User> updatePassword(String password, String token);
+    User updatePassword(String password, String token) throws InvalidResetPasswordToken;
 
     Optional<byte[]> getAvatar(User user);
 

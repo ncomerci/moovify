@@ -1,13 +1,14 @@
-
 'use strict';
-define(['frontend', 'services/SearchService'], function(frontend) {
+define(['frontend', 'services/SearchService', 'directives/paginatedDisplay'], function(frontend) {
 
     frontend.controller('SearchController', function($scope, $routeParams, $route, $location, SearchService) {
-        
+
+        console.log("Inicializando!");
+
         const searchOptionsValuesByType = {
             posts: {
                 postCategory: ['all', 'debate'],
-                postAge: ['alltime', 'debate'],
+                postAge: ['alltime', '24hs'],
                 sortCriteria: ['newest', 'hottest']
             },
             movies: {
@@ -43,7 +44,11 @@ define(['frontend', 'services/SearchService'], function(frontend) {
         $scope.searchOptions = {
             contentType: $routeParams.contentType,
             query: $routeParams.query ? $routeParams.query : '',
-            params: searchOptionsByType[$routeParams.contentType]
+            params: searchOptionsByType[$routeParams.contentType],
+            paginationParams: {
+                size: 5,
+                page: 0
+            }
         };
 
         // $scope.execSearch = (newType) => {
@@ -52,31 +57,47 @@ define(['frontend', 'services/SearchService'], function(frontend) {
         //         $scope.searchOptions.params = searchOptionsByType[newType];
         //     }
 
-        //     console.log($scope.searchOptions.contentType, 
+        //     console.log($scope.searchOptions.contentType,
         //         Object.assign({query: $scope.searchOptions.query}, $scope.searchOptions.params)
         //     );
         // };
 
-        $scope.$watch('searchOptions.contentType', function (newValue, oldValue) {
-            $scope.searchOptions.params = searchOptionsByType[$scope.searchOptions.contentType];
-        });
+        $scope.paginatedAns = {
+            collection: [],
+            paginationParams: {
+                size: 5,
+                page: 0
+            }
+        }
 
         $scope.execSearch = (newType) => {
-            
+
             if (newType) {
+                Object.keys($scope.searchOptions.params).forEach(k => $location.search(k, null));
                 $scope.searchOptions.params = searchOptionsByType[newType];
+                Object.keys($scope.searchOptions.params).forEach(k => $scope.searchOptions.params[k]);
+                // $location.path('/search/' + newType, false);
+            }
+            else {   
+                Object.keys($scope.searchOptions.params).forEach(k => $location.search(k, $scope.searchOptions.params[k]));
             }
 
-            SearchService(
-                    $scope.searchOptions.contentType, 
-                    Object.assign({query: $scope.searchOptions.query}, $scope.searchOptions.params)
-                ).then(function(ans) {
-                    console.log(ans);
-                }
-            );
+            $location.search('query', $scope.searchOptions.query)
+
         };
-        
-        // $scope.execSearch();
+
+        $scope.query = function() {
+            SearchService(
+                $scope.searchOptions.contentType,
+                Object.assign({query: $scope.searchOptions.query}, $scope.searchOptions.params)
+            ).then(function(ans) {
+                console.log('ANS',ans);
+                $scope.paginatedAns.collection = ans;
+            }
+        );
+        }
+
+        $scope.query();
 
     });
 
