@@ -6,7 +6,8 @@ define([], function() {
         routes: {
             '/': {
                 templateUrl: '/views/home.html',
-                controller: 'HomeCtrl'
+                controller: 'HomeCtrl',
+                gaPageTitle: 'Home'
             },
             '/search/:contentType': {
                 templateUrl: '/views/search/SearchController.html',
@@ -14,7 +15,7 @@ define([], function() {
             },
             '/login': {
                 templateUrl: '/views/login/login.html',
-                controller: 'LoginCtrl'
+                controller: 'LoginCtrl',
             }
             /* ===== yeoman hook ===== */
             /* Do not remove these commented lines! Needed for auto-generation */
