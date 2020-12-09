@@ -259,7 +259,7 @@ public class UserDaoImplTest {
         helper.insertPostLike(post1, user3, UPVOTE);
 
         // Exercise
-        PaginatedCollection<User> users = userDao.getAllUsers(true, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.getAllUsers(true, UserDao.SortCriteria.VOTES, PAGE_FIRST, PAGE_SIZE);
 
         // Post conditions
         Assert.assertEquals(4, users.getTotalCount());
@@ -297,7 +297,7 @@ public class UserDaoImplTest {
         helper.insertUser("user", NAME, CREATION_DATE, "email3", ENABLE, "USER");
 
         // Exercise
-        PaginatedCollection<User> users = userDao.searchUsersByRole(USERNAME, Role.USER, true, UserDao.SortCriteria.LIKES, PAGE_FIRST, PAGE_SIZE);
+        PaginatedCollection<User> users = userDao.searchUsersByRole(USERNAME, Role.USER, true, UserDao.SortCriteria.VOTES, PAGE_FIRST, PAGE_SIZE);
 
         // Post conditions
         Assert.assertEquals(1, users.getTotalCount());

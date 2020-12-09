@@ -58,7 +58,8 @@ public class UserServiceImpl implements UserService {
         sortCriteriaMap.put("username", UserDao.SortCriteria.USERNAME);
         sortCriteriaMap.put("newest", UserDao.SortCriteria.NEWEST);
         sortCriteriaMap.put("oldest", UserDao.SortCriteria.OLDEST);
-        sortCriteriaMap.put("likes", UserDao.SortCriteria.LIKES);
+        sortCriteriaMap.put("votes", UserDao.SortCriteria.VOTES);
+        sortCriteriaMap.put("followers", UserDao.SortCriteria.FOLLOWERS);
 
         return sortCriteriaMap;
     }

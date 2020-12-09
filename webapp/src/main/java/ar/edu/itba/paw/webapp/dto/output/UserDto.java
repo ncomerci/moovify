@@ -28,6 +28,7 @@ public class UserDto {
     private String description;
     private String language;
     private Long totalLikes;
+    private Integer followerCount;
     private boolean enabled;
     private Collection<Role> roles;
 
@@ -62,6 +63,7 @@ public class UserDto {
         description = user.getDescription();
         language = user.getLanguage();
         totalLikes = user.getTotalLikes();
+        followerCount = user.getFollowerCount();
         roles = user.getRoles();
 
         avatar = userUriBuilder.clone().path("/avatar").build().toString();
@@ -133,6 +135,14 @@ public class UserDto {
 
     public void setTotalLikes(Long totalLikes) {
         this.totalLikes = totalLikes;
+    }
+
+    public Integer getFollowerCount() {
+        return followerCount;
+    }
+
+    public void setFollowerCount(Integer followerCount) {
+        this.followerCount = followerCount;
     }
 
     public boolean isEnabled() {

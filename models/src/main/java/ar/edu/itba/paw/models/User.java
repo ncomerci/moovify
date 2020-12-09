@@ -65,6 +65,9 @@ public class User {
     @Transient
     private Long totalLikes;
 
+    @Transient
+    private Integer followerCount;
+
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = USER_ROLE_TABLE_NAME,
             joinColumns = @JoinColumn(name = "user_id"))
@@ -86,6 +89,9 @@ public class User {
     )
     private Set<User> following;
 
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "following")
+    private Set<User> followers;
+
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = USER_FAV_POST,
@@ -97,12 +103,12 @@ public class User {
     @Column(nullable = false)
     private boolean enabled;
 
-    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostVote> postVotes, Set<CommentVote> commentVotes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> bookmarkedPosts) {
-        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postVotes, commentVotes, posts, comments, following, bookmarkedPosts);
+    public User(long id, LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostVote> postVotes, Set<CommentVote> commentVotes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<User> followers, Set<Post> bookmarkedPosts) {
+        this(creationDate, username, password, name, email, description, language, avatar, roles, enabled, postVotes, commentVotes, posts, comments, following, followers, bookmarkedPosts);
         this.id = id;
     }
 
-    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostVote> postVotes, Set<CommentVote> commentVotes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<Post> bookmarkedPosts) {
+    public User(LocalDateTime creationDate, String username, String password, String name, String email, String description, String language, Image avatar, Set<Role> roles, boolean enabled, Set<PostVote> postVotes, Set<CommentVote> commentVotes, Set<Post> posts, Set<Comment> comments, Set<User> following, Set<User> followers, Set<Post> bookmarkedPosts) {
         this.creationDate = creationDate;
         this.username = username;
         this.password = password;
@@ -118,6 +124,7 @@ public class User {
         this.posts = posts;
         this.comments = comments;
         this.following = following;
+        this.followers = followers;
         this.bookmarkedPosts = bookmarkedPosts;
     }
 
@@ -212,6 +219,17 @@ public class User {
         this.totalLikes = totalLikes;
     }
 
+    public int getFollowerCount() {
+        if(followerCount == null)
+            followerCount = getFollowers().size();
+
+        return followerCount;
+    }
+
+    public void setFollowerCount(int followerCount) {
+        this.followerCount = followerCount;
+    }
+
     public Collection<CommentVote> getCommentLikes() {
         return commentVotes;
     }
@@ -262,14 +280,20 @@ public class User {
 
     public void followUser(User user) {
         getFollowingUsers().add(user);
+        user.getFollowers().add(this);
     }
 
     public void unfollowUser(User user) {
         getFollowingUsers().remove(user);
+        user.getFollowers().remove(this);
     }
 
     public boolean isUserFollowing(User user) {
         return getFollowingUsers().contains(user);
+    }
+
+    public Collection<User> getFollowers() {
+        return followers;
     }
 
     public Duration getTimeSinceCreation() {
