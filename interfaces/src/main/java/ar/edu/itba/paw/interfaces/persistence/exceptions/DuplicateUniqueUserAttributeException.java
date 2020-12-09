@@ -10,12 +10,18 @@ public class DuplicateUniqueUserAttributeException extends Exception {
     }
 
     private final EnumSet<UniqueAttributes> attributes;
+    private final String messageCode;
 
     public DuplicateUniqueUserAttributeException(EnumSet<UniqueAttributes> attributes) {
         this.attributes = attributes;
+        messageCode = "error.DuplicateUniqueUserAttributeException";
     }
 
     public EnumSet<UniqueAttributes> getDuplicatedUniqueAttributes() {
         return attributes;
+    }
+
+    public String getMessageCode() {
+        return messageCode;
     }
 }

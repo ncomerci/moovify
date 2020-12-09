@@ -18,6 +18,7 @@ import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,9 @@ public class UserController {
 
     @Context
     private SecurityContext securityContext;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Autowired
     private UserService userService;
@@ -101,7 +105,7 @@ public class UserController {
         catch(DuplicateUniqueUserAttributeException e) {
             return Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(new DuplicateUniqueUserAttributeErrorDto(e))
+                    .entity(new DuplicateUniqueUserAttributeErrorDto(e, messageSource))
                     .build();
         }
 
