@@ -9,6 +9,7 @@
 
 $form-radio-checked-background:                    $moovify-primary-color-light;
 $form-radio-checked-focus-background:              $moovify-primary-color-dark;
+$form-background:                                  #fff;
 
 //$form-line-height:                               $form-height - (2* $form-border-width) !default;
 //
@@ -95,6 +96,12 @@ $form-radio-checked-focus-background:              $moovify-primary-color-dark;
 
 @mixin hook-form-radio-checked-focus(){
   border-color: transparent;
+}
+
+@mixin hook-form(){
+  border: 1px solid #e5e5e5;
+  transition: 0.2s ease-in-out;
+  transition-property: color, background-color, border;
 }
 
 

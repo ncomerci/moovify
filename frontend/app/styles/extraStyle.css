@@ -272,5 +272,8 @@ a.anchor {
   color: #900d0d !important;
 }
 
-
 .ng-cloak { display: none !important; }
+
+form {
+  margin-block-end: 1em;
+}
