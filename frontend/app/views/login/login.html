@@ -13,11 +13,11 @@
           <label>
                 <span class="uk-form-icon"
                       uk-icon="icon: user"
-                      ng-class="{'icon-error': (loginForm.username.$error.required && loginBtnPressed) || loginError}"
+                      ng-class="{'icon-error': (loginForm.username.$error.required && loginBtnPressed)}"
                 ></span>
                 <input class="uk-input"
                        ng-model="user.username"
-                       ng-class="{'uk-form-danger': (loginForm.username.$error.required && loginBtnPressed) || loginError}"
+                       ng-class="{'uk-form-danger': (loginForm.username.$error.required && loginBtnPressed)}"
                        type="text"
                        name="username"
                        required
@@ -31,10 +31,10 @@
           <label>
                 <span class="uk-form-icon"
                       uk-icon="icon: lock"
-                      ng-class="{'icon-error': (loginForm.password.$error.required && loginBtnPressed) || loginError}"
+                      ng-class="{'icon-error': (loginForm.password.$error.required && loginBtnPressed)}"
                 ></span>
                 <input class="uk-input"
-                       ng-class="{'uk-form-danger': (loginForm.password.$error.required && loginBtnPressed) || loginError}"
+                       ng-class="{'uk-form-danger': (loginForm.password.$error.required && loginBtnPressed)}"
                        ng-model="user.password"
                        type="password"
                        name="password"
@@ -56,8 +56,8 @@
       <div class="uk-text-center">
         <input class="uk-button uk-button-primary uk-border-rounded extended-button uk-text-uppercase"
                ng-class="{
-               'disabled-primary': (loginForm.password.$error.required || loginForm.username.$error.required),
-               'uk-disabled': (loginForm.password.$error.required || loginForm.username.$error.required)
+               'disabled-primary': (loginForm.password.$error.required || loginForm.username.$error.required) && loginBtnPressed,
+               'uk-disabled': (loginForm.password.$error.required || loginForm.username.$error.required) && loginBtnPressed
                }"
                type="submit" value="{{'USER_LOGIN' | translate}}"
                ng-click="login(user)"
