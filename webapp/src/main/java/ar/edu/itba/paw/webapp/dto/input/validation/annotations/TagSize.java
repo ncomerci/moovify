@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.dto.input.validation.annotations;
 
 
+
 import ar.edu.itba.paw.webapp.dto.input.validation.constraints.TagSizeConstraintValidator;
 
 import javax.validation.Constraint;
@@ -18,7 +19,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface TagSize {
 
-    String message() default "{javax.validation.constraints.TagSize.message}" ;
+    String message() default "{custom.validation.TagsSize.message}" ;
 
     Class<?>[] groups() default {};
 

@@ -17,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 public @interface Image {
 
-    String message() default "{javax.validation.constraints.Image.message}";
+    String message() default "{custom.validation.Image.message}";
 
     Class<?>[] groups() default {};
 
