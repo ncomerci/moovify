@@ -7,22 +7,23 @@ import ar.edu.itba.paw.models.Movie;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.webapp.dto.input.MovieCreateDto;
-import ar.edu.itba.paw.webapp.dto.input.UpdateMoviePosterDto;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.Image;
 import ar.edu.itba.paw.webapp.dto.output.MovieDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.MoviePosterNotFoundException;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -118,29 +119,40 @@ public class MovieController {
         return Response.ok(new MovieDto(movie, uriInfo)).build();
     }
 
-    @Produces("image/*")
+    @Produces({ "image/*", MediaType.APPLICATION_JSON })
     @GET
     @Path("/{id}/poster")
-    public Response getPoster(@PathVariable("id") long id) {
+    public Response getPoster(@PathVariable("id") long id, @Context Request request) {
 
         final Movie movie = movieService.findMovieById(id).orElseThrow(MovieNotFoundException::new);
 
-        final byte[] imageData = movieService.getPoster(movie).orElseThrow(MoviePosterNotFoundException::new);
+        final EntityTag eTag = new EntityTag(String.valueOf(movie.getPosterId()));
+        final CacheControl cacheControl = new CacheControl();
+        cacheControl.setNoCache(true);
 
-        return Response.ok(imageData).build();
+        Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(eTag);
+
+        if(responseBuilder == null) {
+
+            final byte[] imageData = movieService.getPoster(movie).orElseThrow(MoviePosterNotFoundException::new);
+
+            responseBuilder = Response.ok(imageData).type(movie.getPosterType()).tag(eTag);
+        }
+
+        return responseBuilder.cacheControl(cacheControl).build();
     }
 
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/{id}/poster")
-    public Response updatePoster(@PathParam("id") long id, @Valid final UpdateMoviePosterDto updateMoviePosterDto) throws IOException {
+    public Response updatePoster(@PathParam("id") long id,
+                                 @Image @FormDataParam("poster") final FormDataBodyPart posterBody,
+                                 @Size(max = 1024 * 1024) @FormDataParam("poster") byte[] posterBytes) {
 
         final Movie movie = movieService.findMovieById(id).orElseThrow(MovieNotFoundException::new);
 
-        final MultipartFile poster = updateMoviePosterDto.getPoster();
-
-        movieService.updatePoster(movie, poster.getBytes(), poster.getContentType());
+        movieService.updatePoster(movie, posterBytes, posterBody.getMediaType().toString());
 
         return Response.noContent()
                 .contentLocation(MovieDto.getMovieUriBuilder(movie, uriInfo).path("poster").build())

@@ -141,7 +141,7 @@ public class AuthenticatedUserController {
     public Response updateAvatar(@Image @FormDataParam("avatar") final FormDataBodyPart avatarBody,
                                  @Size(max = 1024 * 1024) @FormDataParam("avatar") byte[] avatarBytes) {
 
-        User user = userService.findUserById(3).orElseThrow(UserNotFoundException::new);
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         userService.updateAvatar(user, avatarBytes, avatarBody.getMediaType().toString());
 
@@ -150,17 +150,27 @@ public class AuthenticatedUserController {
                 .build();
     }
 
-    @Produces("image/*")
+    @Produces({ "image/*", MediaType.APPLICATION_JSON })
     @GET
     @Path("/avatar")
-    public Response getAvatar() {
+    public Response getAvatar(@Context Request request) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        final byte[] imageData = userService.getAvatar(user).orElseThrow(AvatarNotFoundException::new);
+        final EntityTag eTag = new EntityTag(String.valueOf(user.getAvatarId()));
+        final CacheControl cacheControl = new CacheControl();
+        cacheControl.setNoCache(true);
 
-        // TODO: Set conditional cache?
-        return Response.ok(imageData).build();
+        Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(eTag);
+
+        if(responseBuilder == null) {
+
+            final byte[] imageData = userService.getAvatar(user).orElseThrow(AvatarNotFoundException::new);
+
+            responseBuilder = Response.ok(imageData).type(user.getAvatarType()).tag(eTag);
+        }
+
+        return responseBuilder.cacheControl(cacheControl).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)

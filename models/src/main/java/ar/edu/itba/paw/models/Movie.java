@@ -174,6 +174,13 @@ public class Movie implements Serializable {
         return poster.getId();
     }
 
+    public String getPosterType() {
+        if(poster == null)
+            return Image.DEFAULT_TYPE;
+
+        return poster.getType();
+    }
+
     public void setPoster(Image poster) {
         this.poster = poster;
     }
