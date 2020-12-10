@@ -22,7 +22,7 @@ public class CommentDto {
 
     private long id;
     private LocalDateTime creationDateTime;
-    private PostDto post;
+    private LightweightPostDto post;
     private String body;
     private UserDto user;
     private Boolean edited;
@@ -54,7 +54,7 @@ public class CommentDto {
             return;
 
         creationDateTime = comment.getCreationDate();
-        post = new PostDto(comment.getPost(), uriInfo, securityContext);
+        post = new LightweightPostDto(comment.getPost(), uriInfo, securityContext);
         body = comment.getBody();
         user = new UserDto(comment.getUser(), uriInfo, securityContext);
         edited = comment.isEdited();
@@ -87,11 +87,11 @@ public class CommentDto {
         this.creationDateTime = creationDateTime;
     }
 
-    public PostDto getPost() {
+    public LightweightPostDto getPost() {
         return post;
     }
 
-    public void setPost(PostDto post) {
+    public void setPost(LightweightPostDto post) {
         this.post = post;
     }
 

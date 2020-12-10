@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.config;
 
+import ar.edu.itba.paw.webapp.auth.ForbiddenAccessHandler;
 import ar.edu.itba.paw.webapp.auth.JwtAuthFilter;
 import ar.edu.itba.paw.webapp.auth.JwtUtil;
 import ar.edu.itba.paw.webapp.auth.UnauthorizedRequestHandler;
@@ -61,6 +62,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                 .and().exceptionHandling()
                     // Executes when unauthorized user is trying to access resource
                     .authenticationEntryPoint(new UnauthorizedRequestHandler())
+                    .accessDeniedHandler(new ForbiddenAccessHandler())
 
                 .and().authorizeRequests()
 

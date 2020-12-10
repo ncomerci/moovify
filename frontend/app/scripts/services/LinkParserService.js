@@ -42,6 +42,12 @@ define(['frontend'], function(frontend) {
 
       Object.keys(ans).forEach(entry => delete ans[entry].rel);
 
+      ans.isInFirstPage = () => ans.prev === undefined;
+      ans.isInLastPage = () => ans.next === undefined;
+      ans.isOnlyPage = () => ans.isInFirstPage() && ans.isInLastPage();
+      ans.currentPage = ans.isInFirstPage() ? 0 : parseInt(ans.prev.pageNumber) + 1;
+      ans.pageSize = parseInt(ans.first.pageSize);
+
       return ans;
     }
 
