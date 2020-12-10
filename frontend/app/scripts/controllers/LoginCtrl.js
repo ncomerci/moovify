@@ -4,6 +4,9 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
     frontend.controller('LoginCtrl', function($scope, LoggedUserFactory, $window, PageTitle) {
       PageTitle.setTitle('USER_LOGIN_TITLE')
 
+      $scope.loginBtnPressed = false;
+      $scope.loginError = false
+
       LoggedUserFactory.isLogged().then(resp => {
         if(resp) {
           $window.location.href = '/';
@@ -11,8 +14,13 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
       });
 
       $scope.login = function (user) {
+        $scope.loginBtnPressed = true;
         LoggedUserFactory.login(user, $scope.checkValue).then(function () {
           $window.history.back();
+        }).catch(err => {
+          $scope.loginError = true;
+          $scope.$apply();
+          console.log($scope.loginError)
         });
       }
     });

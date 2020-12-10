@@ -104,6 +104,10 @@ $form-background:                                  #fff;
   transition-property: color, background-color, border;
 }
 
+@mixin hook-form-danger() {
+  border-color: $form-danger-color;
+}
+
 
 
 // @mixin hook-form-radio-checked-focus(){}

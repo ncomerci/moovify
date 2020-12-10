@@ -277,3 +277,7 @@ a.anchor {
 form {
   margin-block-end: 1em;
 }
+
+.disabled-primary {
+  background-color: #F6C9A6;
+}

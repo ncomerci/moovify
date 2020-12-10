@@ -34,6 +34,8 @@ define([], function() {
     USER_EMAILCONFIRM_CLOSEMODAL: 'Ok, got it!',
     SEARCH_TITLE: 'Search',
     NAVBAR_CREATE_POST: 'Create post',
+    FORM_FIELD_REQUIRED: 'Field required',
+    FORM_BAD_CREDENTIALS: 'Incorrect user or password'
 
 	};
 });

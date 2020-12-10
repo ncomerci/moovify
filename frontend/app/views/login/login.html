@@ -5,58 +5,65 @@
 </head>
 <body>
 <div class="uk-container uk-container-xsmall uk-margin-medium-top">
-  <form novalidate>
+  <form name="loginForm">
     <fieldset class="uk-fieldset">
       <legend class="uk-legend uk-text-uppercase uk-text-center uk-text-bold uk-text-large uk-text-secondary">{{'USER_LOGIN' | translate}}</legend>
       <div class="uk-margin">
         <div class="uk-inline uk-width-expand">
           <label>
-<!--            <c:choose>-->
-<!--              <c:when test="${param.error != null}">-->
-<!--                <span class="uk-form-icon icon-error"  uk-icon="icon: user"></span>-->
-<!--                <input class="uk-input uk-form-danger" name="username" type="text" placeholder="<spring:message code="user.login.Username"/>"/>-->
-<!--              </c:when>-->
-<!--              <c:otherwise>-->
-                <span class="uk-form-icon" uk-icon="icon: user"></span>
-                <input class="uk-input" ng-model="user.username" type="text" placeholder="{{'USER_LOGIN_USERNAME' | translate}}"/>
-<!--              </c:otherwise>-->
-<!--            </c:choose>-->
+                <span class="uk-form-icon"
+                      uk-icon="icon: user"
+                      ng-class="{'icon-error': (loginForm.username.$error.required && loginBtnPressed) || loginError}"
+                ></span>
+                <input class="uk-input"
+                       ng-model="user.username"
+                       ng-class="{'uk-form-danger': (loginForm.username.$error.required && loginBtnPressed) || loginError}"
+                       type="text"
+                       name="username"
+                       required
+                       placeholder="{{'USER_LOGIN_USERNAME' | translate}}"
+                />
           </label>
         </div>
       </div>
       <div class="uk-margin">
         <div class="uk-inline uk-width-expand">
           <label>
-<!--            <c:choose>-->
-<!--              <c:when test="${param.error != null}">-->
-<!--                <span class="uk-form-icon icon-error"  uk-icon="icon: lock"></span>-->
-<!--                <input class="uk-input uk-form-danger" name="password" type="password" placeholder="<spring:message code="user.login.Password"/>" />-->
-<!--              </c:when>-->
-<!--              <c:otherwise>-->
-                <span class="uk-form-icon" uk-icon="icon: lock"></span>
-                <input class="uk-input" ng-model="user.password" type="password" placeholder="{{'USER_LOGIN_PASSWORD' | translate}}" />
-<!--              </c:otherwise>-->
-<!--            </c:choose>-->
+                <span class="uk-form-icon"
+                      uk-icon="icon: lock"
+                      ng-class="{'icon-error': (loginForm.password.$error.required && loginBtnPressed) || loginError}"
+                ></span>
+                <input class="uk-input"
+                       ng-class="{'uk-form-danger': (loginForm.password.$error.required && loginBtnPressed) || loginError}"
+                       ng-model="user.password"
+                       type="password"
+                       name="password"
+                       required
+                       placeholder="{{'USER_LOGIN_PASSWORD' | translate}}"
+                />
           </label>
         </div>
-<!--        <c:if test="${param.error != null}">-->
-<!--          <div id="error">-->
-<!--            <p class="uk-text-danger uk-text-center uk-text-bold uk-margin-small-top">-->
-<!--              <spring:message code="user.login.badCredentials"/>-->
-<!--            </p>-->
-<!--          </div>-->
-<!--        </c:if>-->
+        <p class="uk-text-danger uk-text-center uk-text-bold uk-margin-small-top" ng-if="loginError">
+          {{'FORM_BAD_CREDENTIALS' | translate}}
+        </p>
       </div>
       <div class="uk-margin uk-grid-small uk-child-width-auto uk-grid uk-align-center">
         <label class="uk-text-center">
-          <input class="uk-checkbox" type="checkbox" ng-model='checkValue'> <!-- ng-model="user.remember" -->
+          <input class="uk-checkbox" type="checkbox" ng-model='checkValue'>
           <span class="uk-text-secondary">{{'USER_LOGIN_REMEMBERME' | translate}}</span>
         </label>
       </div>
       <div class="uk-text-center">
-        <input class="uk-button uk-button-primary uk-border-rounded extended-button uk-text-uppercase" type="submit" value="{{'USER_LOGIN' | translate}}" ng-click="login(user)"/>
+        <input class="uk-button uk-button-primary uk-border-rounded extended-button uk-text-uppercase"
+               ng-class="{
+               'disabled-primary': (loginForm.password.$error.required || loginForm.username.$error.required),
+               'uk-disabled': (loginForm.password.$error.required || loginForm.username.$error.required)
+               }"
+               type="submit" value="{{'USER_LOGIN' | translate}}"
+               ng-click="login(user)"
+        />
       </div>
-      <div class="uk-text-center uk-text-bold uk-text-muted uk-margin">{{'USER_LOGIN_NOACCOUNT' | translate}} <a href="/user/create">{{'USER_CREATE_SIGNUP' | translate}}</a></div>
+      <div class="uk-text-center uk-text-bold uk-text-muted uk-margin">{{'USER_LOGIN_NOACCOUNT' | translate}} <a ng-href="/signup">{{'USER_CREATE_SIGNUP' | translate}}</a></div>
     </fieldset>
   </form>
 
