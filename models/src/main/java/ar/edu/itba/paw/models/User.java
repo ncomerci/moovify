@@ -325,6 +325,13 @@ public class User {
         return avatar.getId();
     }
 
+    public String getAvatarType() {
+        if(avatar == null)
+            return Image.DEFAULT_TYPE;
+
+        return avatar.getType();
+    }
+
     public void setAvatar(Image avatar) {
         this.avatar = avatar;
     }

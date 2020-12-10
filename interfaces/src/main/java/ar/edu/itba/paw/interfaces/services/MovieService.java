@@ -16,7 +16,7 @@ public interface MovieService {
 
     Optional<Movie> findMovieById(long id);
 
-    void updatePoster(Movie movie, byte[] newPoster);
+    void updatePoster(Movie movie, byte[] newPoster, String type);
 
     Optional<byte[]> getPoster(Movie movie);
 

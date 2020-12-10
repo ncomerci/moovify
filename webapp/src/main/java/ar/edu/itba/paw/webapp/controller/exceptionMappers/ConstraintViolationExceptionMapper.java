@@ -7,6 +7,7 @@ import javax.inject.Singleton;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -35,14 +36,16 @@ public class ConstraintViolationExceptionMapper implements ExceptionMapper<Const
             errors.add(
                     new BeanValidationErrorDto(
                             getViolationPropertyName(violation),
-                            violation.getInvalidValue().toString(),
                             violation.getMessage()
                     )
             );
         }
 
-        return Response.status(Response.Status.BAD_REQUEST)
-                .entity(new GenericEntity<Collection<BeanValidationErrorDto>>(errors) {}).build();
+        return Response
+                .status(Response.Status.BAD_REQUEST)
+                .entity(new GenericEntity<Collection<BeanValidationErrorDto>>(errors) {})
+                .type(MediaType.APPLICATION_JSON)
+                .build();
     }
 
     private String getViolationPropertyName(ConstraintViolation<?> violation) {
