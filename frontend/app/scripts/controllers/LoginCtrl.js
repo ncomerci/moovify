@@ -5,7 +5,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
       PageTitle.setTitle('USER_LOGIN_TITLE')
 
       $scope.loginBtnPressed = false;
-      $scope.loginError = false
+      $scope.loginError = false;
 
       LoggedUserFactory.isLogged().then(resp => {
         if(resp) {
@@ -17,11 +17,10 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
         $scope.loginBtnPressed = true;
         LoggedUserFactory.login(user, $scope.checkValue).then(function () {
           $window.history.back();
-        }).catch(err => {
+        }).catch(() => {
           $scope.loginError = true;
           $scope.$apply();
-          console.log($scope.loginError)
         });
-      }
+      };
     });
 });
