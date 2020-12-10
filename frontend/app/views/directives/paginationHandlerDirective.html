@@ -1,0 +1,8 @@
+<div ng-show="paginationParams">
+  <input type='number' placeholder='Search'
+         ng-model='paginationParams.pageSize'
+         ng-model-options='{ debounce: 1000 }'/>
+  <input type='number' placeholder='Search'
+         ng-model='paginationParams.currentPage'
+         ng-model-options='{ debounce: 1000 }'/>
+</div>
