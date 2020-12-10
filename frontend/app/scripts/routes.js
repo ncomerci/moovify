@@ -2,11 +2,15 @@
 
 define([], function() {
     return {
-        defaultRoutePath: '/',
+        defaultRoutePath: '/404',
         routes: {
             '/': {
                 templateUrl: '/views/home.html',
                 controller: 'HomeCtrl',
+            },
+            '/404': {
+                templateUrl: '/404.html',
+                // controller: 'ErrorController'
             },
             '/search/:contentType': {
                 templateUrl: '/views/search/SearchController.html',
