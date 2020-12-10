@@ -19,8 +19,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -103,16 +101,6 @@ public class WebConfig {
 //        msgSource.setCacheSeconds(env.getProperty("strings.cache", Integer.class));
 
         return msgSource;
-    }
-
-    @Bean
-    public MultipartResolver multipartResolver() {
-        final CommonsMultipartResolver cmr = new CommonsMultipartResolver();
-
-        cmr.setMaxUploadSize(10485760);
-        cmr.setMaxUploadSizePerFile(10485760);
-
-        return cmr;
     }
 
     @Bean
