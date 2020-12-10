@@ -21,7 +21,7 @@ define(['frontend', 'services/SearchService', 'directives/paginatedDisplay', 'co
                 sortCriteria: ['newest', 'oldest']
             }
         };
-        //
+
         // const searchOptionsByType = {
         //     posts: {
         //         postCategory: $routeParams.postCategory ? $routeParams.postCategory : searchOptionsValuesByType.posts.postCategory[0],

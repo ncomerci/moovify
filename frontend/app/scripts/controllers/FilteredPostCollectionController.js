@@ -18,20 +18,20 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
     $scope.execSearch = () => PostFetchService.searchPosts(
       $scope.query.value, $scope.filterParams.postCategory, $scope.filterParams.postAge, $scope.filterParams.orderBy,
       $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
-      resp => {
-        $scope.posts = resp.posts;
-        $scope.paginationParams = Object.assign($scope.paginationParams, resp.paginationParams);
-        $scope.$apply();
-        // console.log(resp);
-      }).catch(console.log);
+        resp => {
+          $scope.posts = resp.posts;
+          Object.assign($scope.paginationParams, resp.paginationParams);
+          $scope.$apply();
+          console.log(resp);
+        }
+      ).catch(console.log);
 
     $scope.execSearch();
 
     $scope.$watchCollection('paginationParams', (newParams, oldParams) => {
 
-
       if(newParams.pageSize !== oldParams.pageSize || newParams.currentPage !== oldParams.currentPage){
-      console.log("Pagination", newParams, oldParams);
+        console.log("Pagination", newParams, oldParams);
         $scope.execSearch();
       }
 
@@ -46,9 +46,8 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
     $scope.$watchCollection('filterParams', (newParams, oldParams) => {
 
-
       if(newParams.postCategory !== oldParams.postCategory || newParams.postAge !== oldParams.postAge || newParams.orderBy !== oldParams.orderBy){
-      console.log("filter", newParams, oldParams);
+        console.log("filter", newParams, oldParams);
         $scope.execSearch();
       }
 
