@@ -64,12 +64,12 @@ public class MovieServiceImpl implements MovieService {
 
     @Transactional
     @Override
-    public void updatePoster(Movie movie, byte[] newPoster) {
+    public void updatePoster(Movie movie, byte[] newPoster, String type) {
 
         Image poster = null;
 
         if(newPoster.length > 0)
-            poster = imageService.uploadImage(newPoster);
+            poster = imageService.uploadImage(newPoster, type);
 
         movie.setPoster(poster);
 

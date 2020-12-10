@@ -1,0 +1,105 @@
+<div class="uk-container uk-container-xsmall uk-margin-medium-top" ng-controller="SignupCtrl">
+
+  <legend class="uk-legend uk-text-uppercase uk-text-center uk-text-bold uk-text-large uk-text-secondary">
+    {{'USER_CREATE_SIGNUP' | translate}}
+  </legend>
+  <p class="uk-text-center uk-text-normal uk-text-italic uk-text-bold">{{'USER_CREATE_SIGNUPDESC' | translate}}</p>
+  <form>
+
+    <div class="uk-margin">
+<!--      <c:set var="nameError"><form:errors path="name"/></c:set>-->
+      <div class="uk-inline uk-width-expand">
+        <label>
+          <span class="uk-form-icon" uk-icon="icon: info"></span>
+          <input class="uk-input" ng-model="user.name" placeholder="{{'USER_CREATE_NAME' | translate}}"/>
+        </label>
+      </div>
+<!--      <form:errors path="name" element="p" cssClass="error uk-margin-remove-top"/>-->
+    </div>
+
+    <div class="uk-margin">
+<!--      <c:set var="mailError"><form:errors path="email"/></c:set>-->
+      <div class="uk-inline uk-width-expand">
+        <label>
+          <span class="uk-form-icon" uk-icon="icon: mail"></span>
+          <input class="uk-input" ng-model="user.email" type="email" placeholder="{{'USER_CREATE_EMAIL' | translate}}"/>
+        </label>
+      </div>
+<!--      <form:errors path="email" element="p" cssClass="error uk-margin-remove-top"/>-->
+    </div>
+
+    <div class="uk-margin">
+<!--      <c:set var="userError"><form:errors path="username"/></c:set>-->
+      <div class="uk-inline uk-width-expand">
+        <label>
+          <span class="uk-form-icon" uk-icon="icon: user"></span>
+          <input class="uk-input" ng-model="user.username" placeholder="{{'USER_CREATE_USERNAME' | translate}}"/>
+        </label>
+      </div>
+<!--      <form:errors path="username" element="p" cssClass="error uk-margin-remove-top"/>-->
+    </div>
+
+    <div class="uk-margin">
+<!--      <c:set var="passError"><form:errors path="password"/></c:set>-->
+      <div class="uk-inline uk-width-expand">
+        <label>
+          <span class="uk-form-icon" uk-icon="icon: lock"></span>
+          <input class="uk-input" type="password" ng-model="user.password" placeholder="{{'USER_CREATE_PASSWORD' | translate}}"/>
+        </label>
+      </div>
+<!--      <form:errors path="password" element="p" cssClass="error uk-margin-remove-top"/>-->
+<!--      <form:errors element="p" cssClass="error uk-margin-remove-top"/>-->
+    </div>
+
+    <div class="uk-margin">
+<!--      <c:set var="repPassError"><form:errors path="repeatPassword" cssClass="error uk-margin-remove-top"/></c:set>-->
+      <div class="uk-inline uk-width-expand">
+        <label>
+          <span class="uk-form-icon" uk-icon="icon: lock"></span>
+          <input class="uk-input" type="password" ng-model="user.repeatPassword" placeholder="{{'USER_CREATE_REPEATPASSWORD' | translate}}"/>
+        </label>
+      </div>
+<!--      <form:errors path="repeatPassword" element="p" cssClass="error uk-margin-remove-top"/>-->
+    </div>
+
+    <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
+      <div class="uk-width-1-2">
+        <p class="uk-margin-bottom uk-text-left">{{'USER_CREATE_SELECTAVATAR' | translate}}</p>
+      </div>
+      <div class="uk-width-1-2 uk-text-right">
+<!--        <c:set var="addAvatarError"><form:errors path="avatar"/></c:set>-->
+        <div class="uk-inline uk-width-expand">
+          <div uk-form-custom>
+            <label>
+<!--             TODO: ver como manejar el tema de la imagen -->
+              <input path="avatar" type="file" accept="image/*"/>
+              <button class="uk-button uk-button-primary uk-border-rounded extended-button uk-text-uppercase" type="button" tabindex="-1">
+                {{'USER_CREATE_SELECTFILE' | translate}}
+              </button>
+            </label>
+          </div>
+          <p id="avatar-not-uploaded" >{{'USER_CREATE_NOAVATARSELECTED' | translate}}</p>
+          <p id="avatar-uploaded" class="hidden">{{'USER_CREATE_AVATARSELECTED' | translate}}
+            <span id="file-name"></span>
+          </p>
+        </div>
+<!--        <form:errors path="avatar" element="p" cssClass="error uk-margin-remove-top"/>-->
+      </div>
+    </div>
+
+    <div class="uk-text-center uk-margin-medium-top">
+      <input class="uk-button uk-button-primary uk-border-rounded extended-button uk-text-uppercase" type="submit" value="{{'USER_CREATE_BUTTON' | translate}}" ng-click="signup(user)"/>
+    </div>
+    <div class="uk-text-center uk-text-bold uk-text-muted uk-margin">
+      {{'USER_CREATE_ALREADYACCOUNT' | translate}}
+      <a ng-href="/login">
+        {{'USER_LOGIN' | translate}}
+      </a>
+    </div>
+    <div>
+      <div class="uk-inline uk-width-expand">
+        <input type="hidden" path="description"/>
+      </div>
+    </div>
+  </form>
+</div>

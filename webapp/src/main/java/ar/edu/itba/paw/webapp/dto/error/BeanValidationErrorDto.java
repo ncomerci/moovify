@@ -3,16 +3,14 @@ package ar.edu.itba.paw.webapp.dto.error;
 public class BeanValidationErrorDto {
 
     private String attribute;
-    private String value;
     private String message;
 
     public BeanValidationErrorDto() {
         // For Jersey - Do not use
     }
 
-    public BeanValidationErrorDto(String attribute, String value, String message) {
+    public BeanValidationErrorDto(String attribute, String message) {
         this.attribute = attribute;
-        this.value = value;
         this.message = message;
     }
 
@@ -22,14 +20,6 @@ public class BeanValidationErrorDto {
 
     public void setAttribute(String attribute) {
         this.attribute = attribute;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 
     public String getMessage() {

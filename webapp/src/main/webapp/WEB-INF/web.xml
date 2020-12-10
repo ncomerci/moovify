@@ -32,6 +32,11 @@
       <param-value>ar.edu.itba.paw.webapp.controller</param-value>
     </init-param>
 
+    <init-param>
+      <param-name>jersey.config.server.provider.classnames</param-name>
+      <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+    </init-param>
+
 <!--  Don't send any HTML on error  -->
     <init-param>
       <param-name>jersey.config.server.response.setStatusOverSendError</param-name>

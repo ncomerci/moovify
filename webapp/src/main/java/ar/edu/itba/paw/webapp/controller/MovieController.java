@@ -17,6 +17,7 @@ import ar.edu.itba.paw.webapp.exceptions.MoviePosterNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.ws.rs.*;
@@ -137,7 +138,9 @@ public class MovieController {
 
         final Movie movie = movieService.findMovieById(id).orElseThrow(MovieNotFoundException::new);
 
-        movieService.updatePoster(movie, updateMoviePosterDto.getPoster().getBytes());
+        final MultipartFile poster = updateMoviePosterDto.getPoster();
+
+        movieService.updatePoster(movie, poster.getBytes(), poster.getContentType());
 
         return Response.noContent()
                 .contentLocation(MovieDto.getMovieUriBuilder(movie, uriInfo).path("poster").build())

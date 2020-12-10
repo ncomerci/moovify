@@ -87,7 +87,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.PUT, "/user/email_confirmation").hasRole("NOT_VALIDATED")
                     .antMatchers(HttpMethod.POST, "/user/password_reset").anonymous()
                     .antMatchers(HttpMethod.PUT, "/user/password_reset").anonymous()
-                    .antMatchers("/user", "/user/**").hasRole("USER")
+//                    TODO.antMatchers("/user", "/user/**").hasRole("USER")
 
                     // Post Controller
                         // "/posts" - GET

@@ -20,81 +20,83 @@
   <![endif]-->
   <!-- Add your site or application content here -->
 
-  <nav class="uk-navbar-container" uk-navbar>
-    <a class="uk-logo" href="/"><img id="nav-logo" src="images/logo.png" alt="Moovify"></a>
-    <div class="uk-navbar-right">
-      <ul class="uk-navbar-nav">
-        <li class="uk-visible@s">
-          <a id="nav-search-toggle" class="uk-navbar-toggle">
-            <span uk-icon="icon: search; ratio: 1.7"></span>
-          </a>
-          <div class="uk-drop" data-uk-drop="mode: click; pos: left-center; offset: 0; boundary: #navbar">
-            <form action="/search/posts" class="uk-search uk-search-navbar uk-width-1-1">
-              <label for="nav-search"></label>
-              <input autofocus id="nav-search" name="query" class="uk-search-input" type="search" placeholder="search" >
-              <button id="submit-navbar-search-button" class="uk-button uk-button-default uk-border-rounded search-button" type="submit">SEARCH</button>
-            </form>
-          </div>
-        </li>
-        <li class="uk-navbar-item ng-cloak" ng-show="!loggedUser.logged">
-          <a href="/login">LOGIN</a>
-        </li>
-        <li>
-          <a class="uk-text-center ng-cloak" ng-href="/user/create" ng-show="!loggedUser.logged">
-          <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-text-secondary" type="button">SIGNUP</button>
-          </a>
-        </li>
-
-        <li class="uk-navbar-item ng-cloak" ng-show="loggedUser.logged">
-            <!-- This is a button toggling the modal -->
-            <a ng-show="!loggedUser.enabled" class="uk-padding-remove" href="#" uk-toggle="target: #confirm-email-modal">
-              CREATE POST
+  <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
+    <nav class="uk-navbar-container" uk-navbar>
+      <a class="uk-logo" href="/"><img id="nav-logo" src="images/logo.png" alt="Moovify"></a>
+      <div class="uk-navbar-right">
+        <ul class="uk-navbar-nav">
+          <li class="uk-visible@s uk-flex uk-flex-middle">
+            <a id="nav-search-toggle" class="uk-navbar-toggle" title="{{'SEARCH_TITLE' | translate}}">
+              <span uk-icon="icon: search; ratio: 1.7"></span>
             </a>
-            <a ng-show="loggedUser.enabled" class="uk-padding-remove" ng-href="/post/create">CREATE POST</a>
-        </li>
-        <li ng-show="loggedUser.logged" class="ng-cloak">
-          <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" ng-href="/user/profile">
-            <span class="iconify" data-icon="teenyicons:user-circle-outline" data-inline="false"></span>
-            <img src="/user/avatar/{{loggedUser.avatarId}}" class="uk-comment-avatar circle-navbar" width="45" height="45" alt="User Avatar">
-            <span class="uk-text-bold uk-margin-small-left">{{loggedUser.username}}</span>
-            <span ng-show="loggedUser.admin" class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="ADMIN TITLE"></span>
-          </a>
-          <div class="uk-navbar-dropdown m-bg-primary-lighter-5 m-rounded-bottom-10">
-            <ul class="uk-nav uk-navbar-dropdown-nav">
-              <li>
-                <a class="uk-text-normal uk-text-center m-text-primary" ng-href="/user/profile">
-                USER PROFILE
-                </a>
-              </li>
-                <li ng-show="loggedUser.admin">
-                  <a class="uk-text-normal uk-text-center m-text-primary" ng-href="/admin/deleted/posts">
-                  ADMIN PANEL
+            <div class="uk-drop" data-uk-drop="mode: click; pos: left-center; offset: 0; boundary: #navbar">
+              <form action="/search/posts" class="uk-search uk-search-navbar uk-width-1-1">
+                <label for="nav-search"></label>
+                <input autofocus id="nav-search" name="query" class="uk-search-input" type="search" placeholder="{{'SEARCH_TITLE' | translate}}..." >
+                <button id="submit-navbar-search-button" class="uk-button uk-button-default uk-border-rounded search-button uk-text-uppercase" type="submit">{{'SEARCH_TITLE' | translate}}</button>
+              </form>
+            </div>
+          </li>
+          <li class="uk-navbar-item uk-text-uppercase ng-cloak" ng-if="!loggedUser.logged">
+            <a href="/login">{{'USER_LOGIN_ALT' | translate}}</a>
+          </li>
+          <li>
+            <a class="uk-text-center ng-cloak" ng-href="/signup" ng-if="!loggedUser.logged">
+              <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-text-uppercase uk-text-secondary" type="button">{{'USER_CREATE_SIGNUP_ALT' | translate}}</button>
+            </a>
+          </li>
+
+          <li class="uk-navbar-item ng-cloak" ng-if="loggedUser.logged">
+            <!-- This is a button toggling the modal -->
+            <a ng-if="loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" href="#" uk-toggle="target: #confirm-email-modal">
+              {{'NAVBAR_CREATE_POST' | translate}}
+            </a>
+            <a ng-if="!loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" ng-href="/post/create">{{'NAVBAR_CREATE_POST' | translate}}</a>
+          </li>
+          <li ng-if="loggedUser.logged" class="ng-cloak">
+            <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" ng-href="/user/profile">
+
+              <img ng-src="{{loggedUser.avatar}}" class="uk-comment-avatar circle-navbar" width="45" height="45" alt="User Avatar">
+              <span class="uk-text-bold uk-margin-small-left uk-text-uppercase">{{loggedUser.username}}</span>
+              <span ng-if="loggedUser.roles.includes('ADMIN')" class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
+            </a>
+            <div class="uk-navbar-dropdown m-bg-primary-lighter-5 m-rounded-bottom-10">
+              <ul class="uk-nav uk-navbar-dropdown-nav">
+                <li>
+                  <a class="uk-text-normal uk-text-center m-text-primary" ng-href="/user/profile">
+                    {{'USER_PROFILE' | translate}}
                   </a>
                 </li>
-              <li>
-                <a class="uk-text-normal uk-text-center m-text-red" ng-href="/logout">
-                LOGOUT
-                </a>
-              </li>
-            </ul>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </nav>
+                <li ng-if="loggedUser.roles.includes('ADMIN')">
+                  <a class="uk-text-normal uk-text-center m-text-primary" ng-href="/admin/deleted/posts">
+                    {{'ADMIN_PANEL_BTN' | translate}}
+                  </a>
+                </li>
+                <li>
+                  <a class="uk-text-normal uk-text-center m-text-red" ng-click="logout()">
+                    {{'USER_LOGOUT' | translate}}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
   <a href="/search/posts?query=elPepe">SEARCH</a>
   <a href="/search/movies?query=elPepe">SEARCH</a>
   <a href="/search/users?query=elPepe">SEARCH</a>
   <div ng-view=""></div>
 
   <!-- Confirm email modal -->
-  <div ng-show="loggedUser && !loggedUser.enabled" id="confirm-email-modal" uk-modal>
+  <div class="ng-cloak" ng-if="loggedUser && loggedUser.roles.includes('NOT_VALIDATED')" id="confirm-email-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
-      <h2 class="uk-modal-title">MODAL TITLE</h2>
-      <p>EMAIL CONFIRM TEXT MODAL</p>
+      <h2 class="uk-modal-title">{{'USER_EMAILCONFIRM_TITLE' | translate}}</h2>
+      <p>{{'USER_EMAILCONFIRM_TEXT' | translate}}</p>
       <p class="uk-text-right">
-        <a class="uk-button uk-button-secondary uk-border-rounded uk-text-bolder" ng-href="/user/resendConfirmation">RESEND EMAIL</a>
-        <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-modal-close" type="button">CLOSE</button>
+        <a class="uk-button uk-button-secondary uk-border-rounded uk-text-bolder uk-text-uppercase" ng-href="/user/resendConfirmation">{{'USER_PROFILE_RESENDEMAIL' | translate}}</a>
+        <button class="uk-button uk-button-primary uk-border-rounded uk-text-bolder uk-modal-close uk-text-uppercase" type="button">{{'USER_EMAILCONFIRM_CLOSEMODAL' | translate}}</button>
       </p>
     </div>
   </div>
@@ -107,6 +109,7 @@
   <!-- endbuild -->
   <script src="/scripts/paths.js"></script>
   <script src="bower_components/requirejs/require.js" data-main="/scripts/build.js"></script>
+  <script src="/scripts/iconify.js"></script>
 
 </body>
 </html>

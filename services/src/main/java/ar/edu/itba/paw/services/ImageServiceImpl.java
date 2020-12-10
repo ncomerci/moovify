@@ -26,8 +26,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Transactional
     @Override
-    public Image uploadImage(byte[] image) {
-        return imageDao.uploadImage(image);
+    public Image uploadImage(byte[] image, String type) {
+        return imageDao.uploadImage(image, type);
     }
 
     @Transactional(readOnly = true)

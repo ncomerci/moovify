@@ -68,6 +68,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User register(String username, String password, String name, String email, String description, String confirmationMailTemplate) throws DuplicateUniqueUserAttributeException {
 
+        if(description == null)
+            description = "";
+
         final User user = userDao.register(username, passwordEncoder.encode(password),
                 name, email, description, LocaleContextHolder.getLocale().getLanguage(),
                 Collections.singleton(Role.NOT_VALIDATED), null, true);
@@ -82,6 +85,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateUser(User user, String name, String username, String description, String password) throws DuplicateUniqueUserAttributeException {
+
+        if(description == null)
+            description = "";
 
         updateUsername(user, username);
 
@@ -125,12 +131,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateAvatar(User user, byte[] newAvatar) {
+    public void updateAvatar(User user, byte[] newAvatar, String type) {
 
         Image avatar = null;
 
         if(newAvatar.length > 0)
-            avatar = imageService.uploadImage(newAvatar);
+            avatar = imageService.uploadImage(newAvatar, type);
 
         user.setAvatar(avatar);
 
