@@ -4,36 +4,25 @@ import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttr
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
-import java.util.EnumSet;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
-public class DuplicateUniqueUserAttributeErrorDto {
+public class DuplicateUniqueUserAttributeErrorDto extends BeanValidationErrorDto {
 
-    private String message;
-    private EnumSet<DuplicateUniqueUserAttributeException.UniqueAttributes> duplicatedAttributes;
+    public static Collection<DuplicateUniqueUserAttributeErrorDto> mapDuplicateUniqueUserAttributeExceptionToDtos(DuplicateUniqueUserAttributeException e, MessageSource messageSource) {
+
+        final String message = messageSource.getMessage(e.getMessageCode(), null, LocaleContextHolder.getLocale());
+
+        return e.getDuplicatedUniqueAttributes().stream()
+                .map(attr -> new DuplicateUniqueUserAttributeErrorDto(attr, message)).collect(Collectors.toList());
+    }
 
     public DuplicateUniqueUserAttributeErrorDto() {
+        super();
         //For jersey - do not use
     }
 
-    public DuplicateUniqueUserAttributeErrorDto(DuplicateUniqueUserAttributeException e, MessageSource messageSource) {
-
-        message = messageSource.getMessage(e.getMessageCode(), null, LocaleContextHolder.getLocale());
-        duplicatedAttributes = e.getDuplicatedUniqueAttributes();
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public EnumSet<DuplicateUniqueUserAttributeException.UniqueAttributes> getDuplicatedAttributes() {
-        return duplicatedAttributes;
-    }
-
-    public void setDuplicatedAttributes(EnumSet<DuplicateUniqueUserAttributeException.UniqueAttributes> duplicatedAttributes) {
-        this.duplicatedAttributes = duplicatedAttributes;
+    public DuplicateUniqueUserAttributeErrorDto(DuplicateUniqueUserAttributeException.UniqueAttributes attribute, String message) {
+        super(attribute.toString(), message);
     }
 }

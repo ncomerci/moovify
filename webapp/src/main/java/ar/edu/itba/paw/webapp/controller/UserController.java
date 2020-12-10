@@ -101,9 +101,13 @@ public class UserController {
                     userCreateDto.getEmail(), userCreateDto.getDescription(), "confirmEmail");
         }
         catch(DuplicateUniqueUserAttributeException e) {
+
+            final Collection<DuplicateUniqueUserAttributeErrorDto> errorsDto =
+                    DuplicateUniqueUserAttributeErrorDto.mapDuplicateUniqueUserAttributeExceptionToDtos(e, messageSource);
+
             return Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(new DuplicateUniqueUserAttributeErrorDto(e, messageSource))
+                    .entity(new GenericEntity<Collection<DuplicateUniqueUserAttributeErrorDto>>(errorsDto) {})
                     .build();
         }
 

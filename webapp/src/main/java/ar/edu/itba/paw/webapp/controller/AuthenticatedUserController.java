@@ -119,9 +119,13 @@ public class AuthenticatedUserController {
                     userEditDto.getPassword());
         }
         catch(DuplicateUniqueUserAttributeException e) {
+
+            final Collection<DuplicateUniqueUserAttributeErrorDto> errorsDto =
+                    DuplicateUniqueUserAttributeErrorDto.mapDuplicateUniqueUserAttributeExceptionToDtos(e, messageSource);
+
             return Response
                     .status(Response.Status.BAD_REQUEST)
-                    .entity(new DuplicateUniqueUserAttributeErrorDto(e, messageSource))
+                    .entity(new GenericEntity<Collection<DuplicateUniqueUserAttributeErrorDto>>(errorsDto) {})
                     .build();
         }
 
@@ -136,7 +140,7 @@ public class AuthenticatedUserController {
 
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    @POST
+    @PUT
     @Path("/avatar")
     public Response updateAvatar(@Image @FormDataParam("avatar") final FormDataBodyPart avatarBody,
                                  @Size(max = 1024 * 1024) @FormDataParam("avatar") byte[] avatarBytes) {

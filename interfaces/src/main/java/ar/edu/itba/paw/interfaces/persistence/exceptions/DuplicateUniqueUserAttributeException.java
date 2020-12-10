@@ -6,7 +6,12 @@ public class DuplicateUniqueUserAttributeException extends Exception {
 
     public enum UniqueAttributes {
         USERNAME,
-        EMAIL
+        EMAIL;
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
     }
 
     private final EnumSet<UniqueAttributes> attributes;
