@@ -1,10 +1,8 @@
-'use strict';
 define(['frontend', 'services/LoginService', 'services/PageTitleService'], function(frontend) {
 
     'use strict';
-    frontend.controller('LoginCtrl', function($scope, LoggedUserFactory, $window, PageTitle, $location) {
+    frontend.controller('LoginCtrl', function($scope, LoggedUserFactory, $window, PageTitle) {
       PageTitle.setTitle('USER_LOGIN_TITLE')
-      const loggedUser = LoggedUserFactory.getLoggedUser();
 
       LoggedUserFactory.isLogged().then(resp => {
         if(resp) {
