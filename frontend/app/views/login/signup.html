@@ -4,14 +4,24 @@
     {{'USER_CREATE_SIGNUP' | translate}}
   </legend>
   <p class="uk-text-center uk-text-normal uk-text-italic uk-text-bold">{{'USER_CREATE_SIGNUPDESC' | translate}}</p>
-  <form>
+  <form name="signupForm">
 
     <div class="uk-margin">
 <!--      <c:set var="nameError"><form:errors path="name"/></c:set>-->
       <div class="uk-inline uk-width-expand">
         <label>
-          <span class="uk-form-icon" uk-icon="icon: info"></span>
-          <input class="uk-input" ng-model="user.name" placeholder="{{'USER_CREATE_NAME' | translate}}"/>
+          <span class="uk-form-icon"
+                uk-icon="icon: info"
+                ng-class="{'icon-error': (signupForm.name.$error.required && signUpBtnPressed)}"
+          ></span>
+          <input class="uk-input"
+                 type="text"
+                 name="name"
+                 ng-model="user.name"
+                 placeholder="{{'USER_CREATE_NAME' | translate}}"
+                 ng-class="{'uk-form-danger': (signupForm.name.$error.required && signUpBtnPressed)}"
+                 required
+          />
         </label>
       </div>
 <!--      <form:errors path="name" element="p" cssClass="error uk-margin-remove-top"/>-->
@@ -21,8 +31,16 @@
 <!--      <c:set var="mailError"><form:errors path="email"/></c:set>-->
       <div class="uk-inline uk-width-expand">
         <label>
-          <span class="uk-form-icon" uk-icon="icon: mail"></span>
-          <input class="uk-input" ng-model="user.email" type="email" placeholder="{{'USER_CREATE_EMAIL' | translate}}"/>
+          <span
+            class="uk-form-icon"
+            uk-icon="icon: mail"
+          ></span>
+          <input class="uk-input"
+                 ng-model="user.email"
+                 type="email"
+                 placeholder="{{'USER_CREATE_EMAIL' | translate}}"
+                 required
+          />
         </label>
       </div>
 <!--      <form:errors path="email" element="p" cssClass="error uk-margin-remove-top"/>-->

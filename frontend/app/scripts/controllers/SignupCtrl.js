@@ -10,6 +10,9 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
         }
       });
 
+      $scope.signUpBtnPressed = false;
+      $scope.signUpError = false;
+
       $scope.signup = function (user) {
       //  TODO: lógica de la validación del formulario
           Restangular.setFullResponse(true).all('users').post(user).then(resp => {
