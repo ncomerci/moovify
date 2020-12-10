@@ -402,7 +402,7 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/email_confirmation")
-    public Response confirmRegistration(final TokenDto tokenDto, @Context HttpServletRequest request) throws InvalidEmailConfirmationTokenException {
+    public Response confirmRegistration(@Valid final TokenDto tokenDto, @Context HttpServletRequest request) throws InvalidEmailConfirmationTokenException {
 
         final User user = userService.confirmRegistration(tokenDto.getToken());
 

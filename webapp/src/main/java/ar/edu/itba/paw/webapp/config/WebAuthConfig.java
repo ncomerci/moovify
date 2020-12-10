@@ -55,9 +55,11 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
             http
                 .sessionManagement()
+                    // Don't create session
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
                 .and().exceptionHandling()
+                    // Executes when unauthorized user is trying to access resource
                     .authenticationEntryPoint(new UnauthorizedRequestHandler())
 
                 .and().authorizeRequests()
@@ -76,18 +78,38 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         // "/users/{id:[\d]+}/following/{userId:[\d]+}" - GET
                         // "/users/{id:[\d]+}/bookmarked" - GET
                         // "/users/{id:[\d]+}/bookmarked/{userId:[\d]+}" - GET
-                    .antMatchers(HttpMethod.POST, "/api/users").anonymous()
-                    .antMatchers(HttpMethod.PUT, "/api/users/{id:[\\d]+}/privilege").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.PUT, "/api/users/{id:[\\d]+}/enabled").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.DELETE, "/api/users/{id:[\\d]+}/enabled").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST, "/api/users", "/api/users/")
+                    .anonymous()
+
+                    .antMatchers(HttpMethod.PUT, "/api/users/{id:[\\d]+}/privilege", "/api/users/{id:[\\d]+}/privilege/")
+                    .hasRole("ADMIN")
+
+                    .antMatchers(HttpMethod.PUT, "/api/users/{id:[\\d]+}/enabled", "/api/users/{id:[\\d]+}/enabled/")
+                    .hasRole("ADMIN")
+
+                    .antMatchers(HttpMethod.DELETE, "/api/users/{id:[\\d]+}/enabled", "/api/users/{id:[\\d]+}/enabled/")
+                    .hasRole("ADMIN")
+
 
                     // Authenticated User Controller
-                    .antMatchers(HttpMethod.POST, "/api/user").anonymous()
-                    .antMatchers(HttpMethod.POST, "/api/user/email_confirmation").hasRole("NOT_VALIDATED")
-                    .antMatchers(HttpMethod.PUT, "/api/user/email_confirmation").hasRole("NOT_VALIDATED")
-                    .antMatchers(HttpMethod.POST, "/api/user/password_reset").anonymous()
-                    .antMatchers(HttpMethod.PUT, "/api/user/password_reset").anonymous()
-                    .antMatchers("/api/user", "/api/user/**").hasRole("USER")
+                    .antMatchers(HttpMethod.POST, "/api/user", "/api/user/")
+                    .anonymous()
+
+                    .antMatchers(HttpMethod.POST, "/api/user/email_confirmation", "/api/user/email_confirmation/")
+                    .hasRole("NOT_VALIDATED")
+
+                    .antMatchers(HttpMethod.PUT, "/api/user/email_confirmation", "/api/user/email_confirmation/")
+                    .hasAnyRole("ANONYMOUS", "NOT_VALIDATED")
+
+                    .antMatchers(HttpMethod.POST, "/api/user/password_reset", "/api/user/password_reset/")
+                    .anonymous()
+
+                    .antMatchers(HttpMethod.PUT, "/api/user/password_reset", "/api/user/password_reset/")
+                    .anonymous()
+
+                    .antMatchers("/api/user", "/api/user/", "/api/user/**")
+                    .authenticated()
+
 
                     // Post Controller
                         // "/posts" - GET
@@ -97,11 +119,20 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         // "/posts/{id:[\d]+}/votes/{userId:[\d]+}" - GET
                         // "/posts/{id:[\d]+}/comments" - GET
                         // "/posts/categories" - GET
-                    .antMatchers(HttpMethod.POST, "/api/posts").hasRole("USER")
-                    .antMatchers(HttpMethod.PUT, "/api/posts/{id:[\\d]+}").hasRole("USER")
-                    .antMatchers(HttpMethod.PUT, "/api/posts/{id:[\\d]+}/enabled").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.DELETE, "/api/posts/{id:[\\d]+}/enabled").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.PUT, "/api/posts/{id:[\\d]+}/votes").hasRole("USER")
+                    .antMatchers(HttpMethod.POST, "/api/posts", "/api/posts/")
+                    .hasRole("USER")
+
+                    .antMatchers(HttpMethod.PUT, "/api/posts/{id:[\\d]+}", "/api/posts/{id:[\\d]+}/")
+                    .hasRole("USER")
+
+                    .antMatchers(HttpMethod.PUT, "/api/posts/{id:[\\d]+}/enabled", "/api/posts/{id:[\\d]+}/enabled/")
+                    .hasRole("ADMIN")
+
+                    .antMatchers(HttpMethod.DELETE, "/api/posts/{id:[\\d]+}/enabled", "/api/posts/{id:[\\d]+}/enabled/")
+                    .hasRole("ADMIN")
+
+                    .antMatchers(HttpMethod.PUT, "/api/posts/{id:[\\d]+}/votes", "/api/posts/{id:[\\d]+}/votes/")
+                    .hasRole("USER")
 
                     // Movie Controller
                         // "/movies" - GET
@@ -109,8 +140,12 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         // "/movies/{id:[\\d]+}" - GET
                         // "/movies/{id:[\\d]+}/poster" - GET
                         // "/movies/{id:[\\d]+}/posts" - GET
-                    .antMatchers(HttpMethod.POST, "/api/movies").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.PUT, "/api/movies/{id:[\\d]+}/poster").hasRole("ADMIN")
+                    .antMatchers(HttpMethod.POST, "/api/movies", "/api/movies/")
+                    .hasRole("ADMIN")
+
+                    .antMatchers(HttpMethod.PUT, "/api/movies/{id:[\\d]+}/poster", "/api/movies/{id:[\\d]+}/poster/")
+                    .hasRole("ADMIN")
+
 
                     // Comment Controller
                         // "/comments" - GET
@@ -119,17 +154,28 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                         // "/comments/{id:[\\d]+}/votes" - GET
                         // "/comments/{id:[\\d]+}/votes/{userId:[\\d]+}" - GET
                         // "/comments/{id:[\\d]+}/children" - GET
-                    .antMatchers(HttpMethod.POST, "/api/comments").hasRole("USER")
-                    .antMatchers(HttpMethod.PUT, "/api/comments/{id:[\\d]+}").hasRole("USER")
-                    .antMatchers(HttpMethod.PUT, "/api/comments/{id:[\\d]+}/enabled").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.DELETE, "/api/comments/{id:[\\d]+}/enabled").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.PUT, "/api/comments/{id:[\\d]+}/votes").hasRole("USER")
+                    .antMatchers(HttpMethod.POST, "/api/comments", "/api/comments/")
+                    .hasRole("USER")
 
+                    .antMatchers(HttpMethod.PUT, "/api/comments/{id:[\\d]+}", "/api/comments/{id:[\\d]+}/")
+                    .hasRole("USER")
+
+                    .antMatchers(HttpMethod.PUT, "/api/comments/{id:[\\d]+}/enabled", "/api/comments/{id:[\\d]+}/enabled/")
+                    .hasRole("ADMIN")
+
+                    .antMatchers(HttpMethod.DELETE, "/api/comments/{id:[\\d]+}/enabled", "/api/comments/{id:[\\d]+}/enabled/")
+                    .hasRole("ADMIN")
+
+                    .antMatchers(HttpMethod.PUT, "/api/comments/{id:[\\d]+}/votes", "/api/comments/{id:[\\d]+}/votes/")
+                    .hasRole("USER")
+
+                    
                     // Default
                     .antMatchers("/api/**").permitAll()
 
                 .and().csrf().disable()
 
+                // Register Jwt Authentication Filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
