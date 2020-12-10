@@ -75,3 +75,6 @@ ALTER TABLE movies ADD CONSTRAINT fk_movie_poster FOREIGN KEY (poster_id) REFERE
 -- Api Migration --
 -- Image no longer has security tag --
 ALTER TABLE images DROP COLUMN security_tag;
+
+-- Image now has Mime Type --
+ALTER TABLE images ADD COLUMN type VARCHAR(40) default NULL;

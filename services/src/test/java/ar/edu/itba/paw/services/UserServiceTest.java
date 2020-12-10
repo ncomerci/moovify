@@ -171,7 +171,7 @@ public class UserServiceTest {
 
         UserService userServiceSpy = Mockito.spy(userService);
 
-        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class))).thenReturn(Mockito.mock(Image.class));
+        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(Mockito.mock(Image.class));
 
         Mockito.when(dao.register(
                 Mockito.anyString(),    // username
@@ -256,9 +256,9 @@ public class UserServiceTest {
 
         User user = Mockito.mock(User.class);
 
-        userService.updateAvatar(user, new byte[0]);
+        userService.updateAvatar(user, new byte[0], Image.DEFAULT_TYPE);
 
-        Mockito.verify(imageService, Mockito.never()).uploadImage(Mockito.any(byte[].class));
+        Mockito.verify(imageService, Mockito.never()).uploadImage(Mockito.any(byte[].class), Mockito.anyString());
         Mockito.verify(user).setAvatar(null);
     }
 
@@ -270,11 +270,11 @@ public class UserServiceTest {
         User user = Mockito.mock(User.class);
         byte[] data = new byte[10];
 
-        Mockito.when(imageService.uploadImage(Mockito.eq(data))).thenReturn(image);
+        Mockito.when(imageService.uploadImage(Mockito.eq(data), Mockito.anyString())).thenReturn(image);
 
-        userService.updateAvatar(user, data);
+        userService.updateAvatar(user, data, Image.DEFAULT_TYPE);
 
-        Mockito.verify(imageService).uploadImage(Mockito.eq(data));
+        Mockito.verify(imageService).uploadImage(Mockito.eq(data), Mockito.anyString());
         Mockito.verify(user).setAvatar(image);
     }
 

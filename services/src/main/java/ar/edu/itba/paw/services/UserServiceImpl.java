@@ -125,12 +125,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void updateAvatar(User user, byte[] newAvatar) {
+    public void updateAvatar(User user, byte[] newAvatar, String type) {
 
         Image avatar = null;
 
         if(newAvatar.length > 0)
-            avatar = imageService.uploadImage(newAvatar);
+            avatar = imageService.uploadImage(newAvatar, type);
 
         user.setAvatar(avatar);
 

@@ -59,7 +59,7 @@ public class ImageDaoImplTest {
         JdbcTestUtils.deleteFromTables(jdbcTemplate, Image.TABLE_NAME);
 
         // Exercise
-        imageDao.uploadImage(new byte[BYTE_ARRAY_SIZE]);
+        imageDao.uploadImage(new byte[BYTE_ARRAY_SIZE], Image.DEFAULT_TYPE);
 
         em.flush();
 

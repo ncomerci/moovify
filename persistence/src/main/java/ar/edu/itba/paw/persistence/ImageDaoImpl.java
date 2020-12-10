@@ -19,9 +19,9 @@ public class ImageDaoImpl implements ImageDao {
     private EntityManager em;
 
     @Override
-    public Image uploadImage(byte[] data) {
+    public Image uploadImage(byte[] data, String type) {
 
-        final Image image = new Image(data);
+        final Image image = new Image(data, type);
 
         em.persist(image);
 

@@ -169,19 +169,29 @@ public class UserController {
         return Response.noContent().build();
     }
 
-    @Produces("image/*")
+    @Produces({ "image/*", MediaType.APPLICATION_JSON })
     @GET
     @Path("/{id}/avatar")
-    public Response getAvatar(@PathParam("id") long id) {
+    public Response getAvatar(@PathParam("id") long id, @Context Request request) {
 
         final User user = userService.findUserById(id).orElseThrow(UserNotFoundException::new);
 
         guaranteeUserRelationshipAccessPermissions(securityContext, user);
 
-        final byte[] imageData = userService.getAvatar(user).orElseThrow(AvatarNotFoundException::new);
+        final EntityTag eTag = new EntityTag(String.valueOf(user.getAvatarId()));
+        final CacheControl cacheControl = new CacheControl();
+        cacheControl.setNoCache(true);
 
-        // TODO: Set conditional cache?
-        return Response.ok(imageData).build();
+        Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(eTag);
+
+        if(responseBuilder == null) {
+
+            final byte[] imageData = userService.getAvatar(user).orElseThrow(AvatarNotFoundException::new);
+
+            responseBuilder = Response.ok(imageData).type(user.getAvatarType()).tag(eTag);
+        }
+
+        return responseBuilder.cacheControl(cacheControl).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)

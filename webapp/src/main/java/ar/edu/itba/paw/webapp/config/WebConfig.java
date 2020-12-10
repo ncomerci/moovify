@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -97,7 +97,7 @@ public class WebConfig extends ResourceConfig {
 
     @Bean
     public MessageSource messageSource() {
-        final ResourceBundleMessageSource msgSource = new ResourceBundleMessageSource();
+        final ReloadableResourceBundleMessageSource msgSource = new ReloadableResourceBundleMessageSource();
 
         msgSource.setBasename("classpath:i18n/messages");
         msgSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());

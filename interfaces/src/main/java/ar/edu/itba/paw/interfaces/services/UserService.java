@@ -48,7 +48,7 @@ public interface UserService {
 
     Optional<byte[]> getAvatar(User user);
 
-    void updateAvatar(User user, byte[] newAvatar);
+    void updateAvatar(User user, byte[] newAvatar, String type);
 
     void bookmarkPost(User user, Post post) throws IllegalPostBookmarkException;
 

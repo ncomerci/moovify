@@ -1,6 +1,6 @@
 package ar.edu.itba.paw.webapp.dto.input.validation.annotations;
 
-import ar.edu.itba.paw.webapp.dto.input.validation.constraints.AvatarConstraintValidator;
+import ar.edu.itba.paw.webapp.dto.input.validation.constraints.ImageConstraintValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -12,12 +12,12 @@ import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Documented
-@Constraint(validatedBy = AvatarConstraintValidator.class)
-@Target({ TYPE, FIELD, ANNOTATION_TYPE })
+@Constraint(validatedBy = ImageConstraintValidator.class)
+@Target({ TYPE, FIELD, PARAMETER, ANNOTATION_TYPE })
 @Retention(RUNTIME)
-public @interface Avatar {
+public @interface Image {
 
-    String message() default "{javax.validation.constraints.Avatar.message}";
+    String message() default "{javax.validation.constraints.Image.message}";
 
     Class<?>[] groups() default {};
 

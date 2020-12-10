@@ -14,12 +14,15 @@ import ar.edu.itba.paw.webapp.dto.error.BeanValidationErrorDto;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
 import ar.edu.itba.paw.webapp.dto.generic.GenericBooleanResponseDto;
 import ar.edu.itba.paw.webapp.dto.input.*;
+import ar.edu.itba.paw.webapp.dto.input.validation.annotations.Image;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -31,9 +34,9 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -133,13 +136,14 @@ public class AuthenticatedUserController {
 
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    @PUT
+    @POST
     @Path("/avatar")
-    public Response updateAvatar(@Valid final UpdateAvatarDto updateAvatarDto) throws IOException {
+    public Response updateAvatar(@Image @FormDataParam("avatar") final FormDataBodyPart avatarBody,
+                                 @Size(max = 1024 * 1024) @FormDataParam("avatar") byte[] avatarBytes) {
 
-        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findUserById(3).orElseThrow(UserNotFoundException::new);
 
-        userService.updateAvatar(user, updateAvatarDto.getAvatar().getBytes());
+        userService.updateAvatar(user, avatarBytes, avatarBody.getMediaType().toString());
 
         return Response.noContent()
                 .contentLocation(UserDto.getUserUriBuilder(user, uriInfo).path("/avatar").build())
@@ -416,7 +420,7 @@ public class AuthenticatedUserController {
 
             final List<BeanValidationErrorDto> emailError =
                     Collections.singletonList(
-                        new BeanValidationErrorDto("email", passwordResetEmailDto.getEmail(),
+                        new BeanValidationErrorDto("email",
                                 messageSource.getMessage(errorMessageCode, null, LocaleContextHolder.getLocale()))
                     );
 
@@ -442,7 +446,7 @@ public class AuthenticatedUserController {
 
             final List<BeanValidationErrorDto> emailError =
                     Collections.singletonList(
-                            new BeanValidationErrorDto("token", passwordResetDto.getToken(),
+                            new BeanValidationErrorDto("token",
                                     messageSource.getMessage(
                                             "error.invalidResetPasswordTokenException", null, LocaleContextHolder.getLocale()
                                     )

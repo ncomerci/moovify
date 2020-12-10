@@ -10,6 +10,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Singleton;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -34,6 +35,10 @@ public class GlobalCustomExceptionMapper implements ExceptionMapper<CustomExcept
 
         LOGGER.error("{} was thrown with message {}. Responding with Http Status {}", exception.getClass().getName(), messageForLogger, exception.getResponseStatus());
 
-        return Response.status(exception.getResponseStatus()).entity(new GenericErrorDto(message)).build();
+        return Response
+                .status(exception.getResponseStatus())
+                .entity(new GenericErrorDto(message))
+                .type(MediaType.APPLICATION_JSON)
+                .build();
     }
 }
