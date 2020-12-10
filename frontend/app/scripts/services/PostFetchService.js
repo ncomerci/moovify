@@ -20,7 +20,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
         sortCriteria: orderBy,
         pageSize: pageSize ? pageSize : 5,
         pageNumber: pageNumber ? pageNumber : 0
-      }
+      };
 
       // TODO error handling
       return new Promise((resolve, reject) => {
@@ -31,14 +31,8 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
             reject(postResponse);
             return;
           }
-          console.log(postResponse);
-          let paginationParams = LinkParserService.parse(postResponse.headers('Link'));
 
-          paginationParams.isInFirstPage = () => paginationParams.prev === undefined;
-          paginationParams.isInLastPage = () => paginationParams.next === undefined;
-          paginationParams.isOnlyPage = () => paginationParams.isInFirstPage() && paginationParams.isInLastPage();
-          paginationParams.currentPage = paginationParams.isInFirstPage() ? 0 : parseInt(paginationParams.prev.pageNumber) + 1;
-          paginationParams.pageSize = queryParams.pageSize;
+          let paginationParams = LinkParserService.parse(postResponse.headers('Link'));
 
           let posts = postResponse.data;
 

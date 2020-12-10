@@ -32,9 +32,12 @@ define(['routes',
 				function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $translateProvider, $locationProvider, RestangularProvider) {
 
 					RestangularProvider.setBaseUrl('http://localhost/api');
-          // RestangularProvider.addResponseInterceptor(function(data, operation, what, url, response, deferred) {
-          //   return response;
+
+					// El link del url viene con localhost:8080 :C
+					// RestangularProvider.setRestangularFields({
+          //   selfLink: 'url'
           // });
+
 					$locationProvider.html5Mode(true);
 
 
@@ -47,8 +50,8 @@ define(['routes',
 					if (config.routes !== undefined) {
 						angular.forEach(config.routes, function(route, path) {
 							$routeProvider.when(path, {
-								templateUrl: route.templateUrl, 
-								resolve: dependencyResolverFor(['controllers/' + route.controller]), 
+								templateUrl: route.templateUrl,
+								resolve: dependencyResolverFor(['controllers/' + route.controller]),
 								controller: route.controller,
 								gaPageTitle: route.gaPageTitle
 							});
