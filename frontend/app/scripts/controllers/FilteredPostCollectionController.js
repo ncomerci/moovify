@@ -2,10 +2,7 @@
 define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/PostFetchService',
   'directives/PaginationHandlerDirective', 'directives/PostsFiltersHandlerDirective'], function(frontend) {
 
-  const basePaginationParams = {
-    pageSize: 5,
-    currentPage: 0
-  }
+  const defaultPageSize = 5;
 
   function init(value, defaultVal){
     return value ? value : defaultVal;
@@ -13,7 +10,8 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
   frontend.controller('FilteredPostCollectionController', function ($scope, PostFetchService, $location, $routeParams) {
     $scope.posts = [];
-    $scope.paginationParams = basePaginationParams;
+
+    $scope.paginationParams = {currentPage: init(parseInt($routeParams.pageNumber), 0), pageSize: init(parseInt($routeParams.pageSize), defaultPageSize)};
     $scope.query = $scope.$parent.query;
     $scope.filterParams = {
       postCategory: init($routeParams.postCategory, null),
@@ -21,6 +19,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
       orderBy: init($routeParams.orderBy, 'newest'),
       enabled: true
     };
+    $scope.resetPagination = null;
 
     $scope.execSearch = () => PostFetchService.searchPosts(
       $scope.query.value, $scope.filterParams.postCategory, $scope.filterParams.postAge, $scope.filterParams.enabled,
@@ -30,48 +29,23 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
           $scope.paginationParams = resp.paginationParams;
 
           // Refresh URL
-          $location.search(resp.queryParams);
-          $location.search('type', 'post')
+          Object.entries(resp.queryParams).forEach(([param, value]) => $location.search(param, value));
         }
       ).catch(() => $location.path('/404')); // TODO: Add 500 page
 
-    $scope.resetPagination = () => {
-
-      if($scope.paginationParams === null){
-        $scope.paginationParams = {
-          pageSize: basePaginationParams.pageSize
-        }
-      }
-
-      $scope.paginationParams.currentPage = basePaginationParams.currentPage;
-    }
-
+    // Execute first search
     $scope.execSearch();
 
-    $scope.$watchCollection('paginationParams', (newParams, oldParams) => {
+    $scope.$watch('query.value', (newParam, oldParam) => {
 
-      if(!newParams || !oldParams){
+      if(newParam === oldParam)
         return;
-      }
 
-      let newPageSize = newParams.pageSize !== oldParams.pageSize;
-      let newPageNumber = newParams.currentPage !== oldParams.currentPage;
-
-      if(newPageSize || newPageNumber){
-
-        if(newPageSize){
-          $scope.resetPagination();
-        }
-        $scope.execSearch();
-      }
-    });
-
-    $scope.$watch('query.value', (newQueryVal, oldQueryVal) => {
-      if(newQueryVal !== oldQueryVal){
+      if($scope.resetPagination)
         $scope.resetPagination();
-        $scope.execSearch();
-      }
-    });
+
+      $scope.execSearch();
+    }, true);
 
     $scope.$watchCollection('filterParams', (newParams, oldParams) => {
 
@@ -80,7 +54,10 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
       let newOrderBy = newParams.orderBy !== oldParams.orderBy;
 
       if(newPostCategory || newPostAge || newOrderBy) {
-        $scope.resetPagination();
+
+        if($scope.resetPagination)
+          $scope.resetPagination();
+
         $scope.execSearch();
       }
     });

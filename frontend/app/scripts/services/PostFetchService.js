@@ -21,8 +21,6 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
         pageNumber: pageNumber ? pageNumber : 0
       };
 
-      console.log(queryParams);
-
       // Optional Params
       if(category)
         queryParams.postCategory = category;
@@ -36,7 +34,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
       return $q((resolve, reject) => {
         RestFulResponse.all(path).getList(queryParams).then((postResponse) => {
 
-          let paginationParams = null;
+          let paginationParams = {pageSize: queryParams.pageSize};
           let linkHeader = postResponse.headers('Link');
           let posts = postResponse.data;
 

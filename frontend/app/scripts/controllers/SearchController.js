@@ -6,8 +6,6 @@ define(['frontend', 'directives/paginatedDisplay', 'controllers/FilteredPostColl
 
         console.log("Inicializando!");
 
-        $scope.getOptionsValue = (type, optionName) => searchOptionsValuesByType[type][optionName];
-
         $scope.query = {
           value: $routeParams.query ? $routeParams.query : ''
         }
