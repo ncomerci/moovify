@@ -1,0 +1,47 @@
+<div class="uk-width-1-1">
+  <div class="uk-flex">
+    <div class="uk-width-expand uk-margin-small-top uk-margin-small-bottom uk-text-truncate">
+      <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
+
+        <span ng-switch="post.postCategory.name">
+            <span ng-switch-when="watchlist" class="iconify small-iconify" data-icon="bi:list-ol" data-inline="false"></span>
+            <span ng-switch-when="critique" class="iconify small-iconify" data-icon="ic:outline-rate-review" data-inline="false"></span>
+            <span ng-switch-when="news" class="iconify small-iconify" data-icon="fa:newspaper-o" data-inline="false"></span>
+            <span ng-switch-when="debate" class="iconify small-iconify" data-icon="octicon:comment-discussion-24" data-inline="false"></span>
+        </span>
+
+        <span>{{post.postCategory.name}}</span>
+        <!-- TODO badge de admin-->
+        <span> {{post.user.enabled ? post.user.username : 'INVALID'}}</span>
+
+        <span>{{post.totalLikes}}</span>
+
+        <span>
+          <span ng-if="post.totalLikes >= 0" uk-icon="icon: chevron-up; ratio: 0.8"></span>
+          <span ng-if="post.totalLikes < 0" uk-icon="icon: chevron-down; ratio: 0.8"></span>
+        </span>
+
+      </p>
+
+      <a class="text-lead" ng-href="/posts/{{post.id}}">
+      <!-- TODO bookmarked-->
+        <span>{{post.title}}</span>
+      </a>
+
+
+      <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
+        {{'MOVIES DISCUTIDAS'}}
+        <span ng-repeat="movie in post.movies">
+          <a ng-href="/movies/{{movie.id}}">
+            {{movie.title}}
+          </a>
+        </span>
+      </p>
+    </div>
+    <div class="uk-width-auto">
+      <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
+        <span>{{getAgeMessageCode()}}</span>
+      </p>
+    </div>
+  </div>
+</div>

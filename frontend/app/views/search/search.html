@@ -1,9 +1,7 @@
-<div class="jumbotron">
-	<h1>'Allo, 'Allo!</h1>
-	<p class="lead">
-		{{ searchOptions.query }}
-	</p>
-	<input type='text' placeholder='Search'
+<div class="uk-container-small uk-margin-auto">
+	<h1>Search Results</h1>
+
+  <input type='text' placeholder='Search'
 		ng-model='query.value'
 		ng-model-options='{ debounce: 1000 }'
 	/>
@@ -14,28 +12,16 @@
 		<option value="users">users</option>
 	</select>
 
-  <div ng-switch="searchOptions.contentType">
-    <div ng-switch-when="posts">
+    <div ng-show="searchOptions.contentType === 'posts'">
       <search-posts-directive query="query" enabled="{{true}}"></search-posts-directive>
     </div>
 
-    <div ng-switch-when="users">
+    <div ng-show="searchOptions.contentType === 'users'">
       <search-users-directive query="query" enabled="{{true}}"></search-users-directive>
     </div>
 
-    <div ng-switch-when="movies">
+    <div ng-show="searchOptions.contentType === 'movies'">
       <search-movies-directive query="query" enabled="{{true}}"></search-movies-directive>
     </div>
-  </div>
-
-
-
-<!--	<div ng-repeat="(key, value) in searchOptions.params">-->
-<!--		<select ng-model='searchOptions.params[key]' ng-change='execSearch()'>-->
-<!--			<option ng-repeat="option in getOptionsValue(searchOptions.contentType, key)" ng-value="option">{{option}}</option>-->
-<!--		</select>-->
-<!--	</div>-->
-
-<!--	<paginated-display type='searchOptions.contentType' collection='paginatedAns.collection' pagination-params='paginatedAns.paginationParams'/>-->
 </div>
 
