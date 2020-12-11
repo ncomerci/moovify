@@ -1,0 +1,13 @@
+<div ng-if="supportedValues && filterParams">
+  <select ng-model='filterParams.movieCategory'>
+    <option value="">{{'EMPTY'}}</option>
+    <option ng-repeat="option in supportedValues['movieCategory']" ng-value="option">{{option}}</option>
+  </select>
+  <select ng-model='filterParams.decade'>
+    <option value="">{{'EMPTY'}}</option>
+    <option ng-repeat="option in supportedValues['decade']" ng-value="option">{{option}}</option>
+  </select>
+  <select ng-model='filterParams.orderBy'>
+    <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{option}}</option>
+  </select>
+</div>

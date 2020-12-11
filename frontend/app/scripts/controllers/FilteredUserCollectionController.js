@@ -2,10 +2,7 @@
 define(['frontend', 'services/UserFetchService',
   'directives/PaginationHandlerDirective', 'directives/UserFiltersHandlerDirective'], function(frontend) {
 
-  const basePaginationParams = {
-    pageSize: 5,
-    currentPage: 0
-  }
+  const defaultPageSize = 5;
 
   function init(value, defaultVal){
     return value ? value : defaultVal;
@@ -13,13 +10,15 @@ define(['frontend', 'services/UserFetchService',
 
   frontend.controller('FilteredUserCollectionController', function ($scope, UserFetchService, $location, $routeParams) {
     $scope.users = [];
-    $scope.paginationParams = basePaginationParams;
+
+    $scope.paginationParams = {currentPage: init(parseInt($routeParams.pageNumber), 0), pageSize: init(parseInt($routeParams.pageSize), defaultPageSize)};
     $scope.query = $scope.$parent.query;
     $scope.filterParams = {
       role: init($routeParams.role, null),
       orderBy: init($routeParams.orderBy, 'newest'),
-      enabled: true
+      enabled: true,
     };
+    $scope.resetPagination = null;
 
     $scope.execSearch = () => UserFetchService.searchUsers(
       $scope.query.value, $scope.filterParams.role, $scope.filterParams.enabled, $scope.filterParams.orderBy,
@@ -29,50 +28,23 @@ define(['frontend', 'services/UserFetchService',
         $scope.paginationParams = resp.paginationParams;
 
         // Refresh URL
-        $location.search(resp.queryParams);
-        $location.search('type', 'user')
+        Object.entries(resp.queryParams).forEach(([param, value]) => $location.search(param, value));
       }
     ).catch(() => $location.path('/404')); // TODO: Add 500 page
 
-    // TODO: No se puede encargar la directiva de paginacion?
-    $scope.resetPagination = () => {
-
-      if($scope.paginationParams === null){
-        $scope.paginationParams = {
-          pageSize: basePaginationParams.pageSize
-        }
-      }
-
-      $scope.paginationParams.currentPage = basePaginationParams.currentPage;
-    }
-
+    // Execute first search
     $scope.execSearch();
 
-    // TODO: Si le pasaramos la funcion a ejecutar execSearch, esto tambien lo podria hacer la directive de paginacion
-    $scope.$watchCollection('paginationParams', (newParams, oldParams) => {
+    $scope.$watch('query.value', (newParam, oldParam) => {
 
-      if(!newParams || !oldParams){
+      if(newParam === oldParam)
         return;
-      }
 
-      let newPageSize = newParams.pageSize !== oldParams.pageSize;
-      let newPageNumber = newParams.currentPage !== oldParams.currentPage;
-
-      if(newPageSize || newPageNumber){
-
-        if(newPageSize){
-          $scope.resetPagination();
-        }
-        $scope.execSearch();
-      }
-    });
-
-    $scope.$watch('query.value', (newQueryVal, oldQueryVal) => {
-      if(newQueryVal !== oldQueryVal){
+      if($scope.resetPagination)
         $scope.resetPagination();
-        $scope.execSearch();
-      }
-    });
+
+      $scope.execSearch();
+    }, true);
 
     $scope.$watchCollection('filterParams', (newParams, oldParams) => {
 
@@ -80,7 +52,10 @@ define(['frontend', 'services/UserFetchService',
       let newOrderBy = newParams.orderBy !== oldParams.orderBy;
 
       if(newRole || newOrderBy) {
-        $scope.resetPagination();
+
+        if($scope.resetPagination)
+          $scope.resetPagination();
+
         $scope.execSearch();
       }
     });
