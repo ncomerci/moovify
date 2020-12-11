@@ -35,7 +35,13 @@ define([], function() {
     SEARCH_TITLE: 'Search',
     NAVBAR_CREATE_POST: 'Create post',
     FORM_FIELD_REQUIRED: 'Field required',
-    FORM_BAD_CREDENTIALS: 'Incorrect user or password'
-
+    FORM_BAD_CREDENTIALS: 'Incorrect user or password',
+    FORM_MIN_LENGTH_ERROR: 'Minimum length is {{ minLen }} characters',
+    FORM_MAX_LENGTH_ERROR: 'Maximum length is {{ maxLen }} characters',
+    FORM_NAME_PATTERN_ERROR: 'Only letters and spaces are allowed',
+    FORM_EMAIL_PATTERN_ERROR: 'Invalid email',
+    FORM_USERNAME_PATTERN_ERROR: "Only these characters are allowed: letters, numbers, '_' and '#'",
+    FORM_PASSWORD_PATTERN_ERROR: "White spaces are not allowed",
+    FORM_REPEAT_PASSWORD_ERROR: "Passwords don't match"
 	};
 });

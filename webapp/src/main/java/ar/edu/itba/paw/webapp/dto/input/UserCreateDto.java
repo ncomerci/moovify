@@ -11,16 +11,16 @@ public class UserCreateDto {
 
     // TODO: Los mensajes de pattern son meh
     @Size(min = 6, max = 50)
-    @Pattern(regexp = "[a-zA-Z0-9#_]+")
+    @Pattern(regexp = "^[a-zA-Z0-9#_]+$")
     private String username;
 
     // TODO: Se repiten los mensajes de tamanio
-    @Pattern(regexp = "[a-zA-Z0-9#_]+")
+    @Pattern(regexp = "^[^\\s]+$")
     @Size(min=12, max=30)
     private String password;
 
     // TODO: El string de spaces normalization no se muestra bien
-    @Pattern(regexp = "[a-zA-Z ]+")
+    @Pattern(regexp = "^[a-zA-Z ]+$")
     @SpacesNormalization(message = "invalid use of spaces")
     @Size(min = 2, max = 50)
     private String name;

@@ -7,76 +7,130 @@
   <form name="signupForm">
 
     <div class="uk-margin">
-<!--      <c:set var="nameError"><form:errors path="name"/></c:set>-->
       <div class="uk-inline uk-width-expand">
         <label>
           <span class="uk-form-icon"
                 uk-icon="icon: info"
-                ng-class="{'icon-error': (signupForm.name.$error.required && signUpBtnPressed)}"
+                ng-class="{'icon-error': fieldIsNotValid('name')}"
           ></span>
           <input class="uk-input"
                  type="text"
                  name="name"
                  ng-model="user.name"
                  placeholder="{{'USER_CREATE_NAME' | translate}}"
-                 ng-class="{'uk-form-danger': (signupForm.name.$error.required && signUpBtnPressed)}"
+                 ng-class="{'uk-form-danger': fieldIsNotValid('name')}"
+                 ng-pattern="nameConstrains.pattern"
+                 ng-minlength="{{nameConstrains.minLen}}"
+                 ng-maxlength="{{nameConstrains.maxLen}}"
                  required
           />
         </label>
       </div>
-<!--      <form:errors path="name" element="p" cssClass="error uk-margin-remove-top"/>-->
+      <div class="uk-text-danger" ng-if="fieldRequired('name')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.name.$error.pattern">{{'FORM_NAME_PATTERN_ERROR' | translate}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.name.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: nameConstrains.minLen};}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.name.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: nameConstrains.maxLen};}}</div>
     </div>
 
     <div class="uk-margin">
-<!--      <c:set var="mailError"><form:errors path="email"/></c:set>-->
       <div class="uk-inline uk-width-expand">
         <label>
           <span
             class="uk-form-icon"
             uk-icon="icon: mail"
+            ng-class="{'icon-error': emailIsNotValid()}"
           ></span>
           <input class="uk-input"
                  ng-model="user.email"
                  type="email"
+                 name="email"
                  placeholder="{{'USER_CREATE_EMAIL' | translate}}"
+                 ng-class="{'uk-form-danger': emailIsNotValid()}"
                  required
           />
         </label>
       </div>
-<!--      <form:errors path="email" element="p" cssClass="error uk-margin-remove-top"/>-->
+      <div class="uk-text-danger" ng-if="fieldRequired('email')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.email.$error.email">{{'FORM_EMAIL_PATTERN_ERROR' | translate}}</div>
     </div>
 
     <div class="uk-margin">
-<!--      <c:set var="userError"><form:errors path="username"/></c:set>-->
       <div class="uk-inline uk-width-expand">
         <label>
-          <span class="uk-form-icon" uk-icon="icon: user"></span>
-          <input class="uk-input" ng-model="user.username" placeholder="{{'USER_CREATE_USERNAME' | translate}}"/>
+          <span class="uk-form-icon"
+                uk-icon="icon: user"
+                ng-class="{'icon-error': fieldIsNotValid('username')}"
+          ></span>
+          <input class="uk-input"
+                 name="username"
+                 type="text"
+                 ng-model="user.username"
+                 placeholder="{{'USER_CREATE_USERNAME' | translate}}"
+                 ng-class="{'uk-form-danger': fieldIsNotValid('username')}"
+                 ng-pattern="usernameConstrains.pattern"
+                 ng-minlength="{{usernameConstrains.minLen}}"
+                 ng-maxlength="{{usernameConstrains.maxLen}}"
+                 required
+          />
         </label>
       </div>
-<!--      <form:errors path="username" element="p" cssClass="error uk-margin-remove-top"/>-->
+      <div class="uk-text-danger" ng-if="fieldRequired('username')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.username.$error.pattern">{{'FORM_USERNAME_PATTERN_ERROR' | translate}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.username.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: usernameConstrains.minLen};}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.username.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: usernameConstrains.maxLen};}}</div>
     </div>
 
     <div class="uk-margin">
-<!--      <c:set var="passError"><form:errors path="password"/></c:set>-->
       <div class="uk-inline uk-width-expand">
         <label>
-          <span class="uk-form-icon" uk-icon="icon: lock"></span>
-          <input class="uk-input" type="password" ng-model="user.password" placeholder="{{'USER_CREATE_PASSWORD' | translate}}"/>
+          <span class="uk-form-icon"
+                uk-icon="icon: lock"
+                ng-class="{'icon-error': fieldIsNotValid('password')}"
+          ></span>
+          <input class="uk-input"
+                 type="password"
+                 name="password"
+                 ng-model="user.password"
+                 placeholder="{{'USER_CREATE_PASSWORD' | translate}}"
+                 ng-class="{'uk-form-danger': fieldIsNotValid('password')}"
+                 ng-pattern="passwordConstrains.pattern"
+                 ng-minlength="{{passwordConstrains.minLen}}"
+                 ng-maxlength="{{passwordConstrains.maxLen}}"
+                 required
+          />
         </label>
       </div>
-<!--      <form:errors path="password" element="p" cssClass="error uk-margin-remove-top"/>-->
-<!--      <form:errors element="p" cssClass="error uk-margin-remove-top"/>-->
+      <div class="uk-text-danger" ng-if="fieldRequired('password')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.password.$error.pattern">{{'FORM_PASSWORD_PATTERN_ERROR' | translate}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.password.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: passwordConstrains.minLen};}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.password.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: passwordConstrains.maxLen};}}</div>
     </div>
 
     <div class="uk-margin">
-<!--      <c:set var="repPassError"><form:errors path="repeatPassword" cssClass="error uk-margin-remove-top"/></c:set>-->
       <div class="uk-inline uk-width-expand">
         <label>
-          <span class="uk-form-icon" uk-icon="icon: lock"></span>
-          <input class="uk-input" type="password" ng-model="user.repeatPassword" placeholder="{{'USER_CREATE_REPEATPASSWORD' | translate}}"/>
+          <span class="uk-form-icon"
+                uk-icon="icon: lock"
+                ng-class="{'icon-error': fieldIsNotValid('repeatPassword') || passwordsNotEquals()}"
+          ></span>
+          <input class="uk-input"
+                 type="password"
+                 name="repeatPassword"
+                 ng-model="user.repeatPassword"
+                 placeholder="{{'USER_CREATE_REPEATPASSWORD' | translate}}"
+                 ng-class="{'uk-form-danger': fieldIsNotValid('repeatPassword') || passwordsNotEquals()}"
+                 ng-pattern="passwordConstrains.pattern"
+                 ng-minlength="{{passwordConstrains.minLen}}"
+                 ng-maxlength="{{passwordConstrains.maxLen}}"
+                 required
+          />
         </label>
       </div>
+      <div class="uk-text-danger" ng-if="fieldRequired('repeatPassword')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.repeatPassword.$error.pattern">{{'FORM_PASSWORD_PATTERN_ERROR' | translate}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.repeatPassword.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: passwordConstrains.minLen};}}</div>
+      <div class="uk-text-danger" ng-if="signupForm.repeatPassword.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: passwordConstrains.maxLen};}}</div>
+      <div class="uk-text-danger" ng-if="passwordsNotEquals()">{{'FORM_REPEAT_PASSWORD_ERROR' | translate}}</div>
 <!--      <form:errors path="repeatPassword" element="p" cssClass="error uk-margin-remove-top"/>-->
     </div>
 
@@ -106,7 +160,10 @@
     </div>
 
     <div class="uk-text-center uk-margin-medium-top">
-      <input class="uk-button uk-button-primary uk-border-rounded extended-button uk-text-uppercase" type="submit" value="{{'USER_CREATE_BUTTON' | translate}}" ng-click="signup(user)"/>
+      <input class="uk-button uk-button-primary uk-border-rounded extended-button uk-text-uppercase"
+             type="submit"
+             value="{{'USER_CREATE_BUTTON' | translate}}"
+             ng-click="signup(user)"/>
     </div>
     <div class="uk-text-center uk-text-bold uk-text-muted uk-margin">
       {{'USER_CREATE_ALREADYACCOUNT' | translate}}
