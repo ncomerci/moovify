@@ -2,7 +2,7 @@
 define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/UserFetchService',
   'directives/PaginationHandlerDirective', 'directives/UserFiltersHandlerDirective'], function(frontend) {
 
-  const defaultPageSize = 5;
+  var defaultPageSize = 5;
 
   function init(value, defaultVal){
     return value ? value : defaultVal;
@@ -20,17 +20,21 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
       controller: function ($scope, UserFetchService) {
 
-        $scope.execSearch = () => UserFetchService.searchUsers(
-          $scope.query.value, $scope.filterParams.role, $scope.filterParams.enabled, $scope.filterParams.orderBy,
-          $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
-          resp => {
-            $scope.users = resp.collection;
-            $scope.paginationParams = resp.paginationParams;
+        $scope.execSearch = function() {
 
-            // Refresh URL
-            Object.entries(resp.queryParams).forEach(([param, value]) => $location.search(param, value));
-          }
-        ).catch(() => $location.path('/404')); // TODO: Add 500 page
+          UserFetchService.searchUsers(
+            $scope.query.value, $scope.filterParams.role, $scope.filterParams.enabled, $scope.filterParams.orderBy,
+            $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
+
+            function(resp) {
+              $scope.users = resp.collection;
+              $scope.paginationParams = resp.paginationParams;
+
+              // Refresh URL
+              Object.keys(resp.queryParams).forEach(function(paramKey) { $location.search(paramKey, resp.queryParams[paramKey]) });
+            }
+          ).catch(function() { $location.path('/404') });
+        } // TODO: Add 500 page
 
       },
 
@@ -50,7 +54,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
         scope.resetPagination = null;
 
-        scope.$watch('query.value', (newParam, oldParam, scope) => {
+        scope.$watch('query.value', function(newParam, oldParam, scope) {
 
           if(newParam === oldParam)
             return;
@@ -61,10 +65,10 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
           scope.execSearch();
         }, true);
 
-        scope.$watchCollection('filterParams', (newParams, oldParams, scope) => {
+        scope.$watchCollection('filterParams', function(newParams, oldParams, scope) {
 
-          let newRole = newParams.role !== oldParams.role;
-          let newOrderBy = newParams.orderBy !== oldParams.orderBy;
+          var newRole = newParams.role !== oldParams.role;
+          var newOrderBy = newParams.orderBy !== oldParams.orderBy;
 
           if(newRole || newOrderBy) {
 

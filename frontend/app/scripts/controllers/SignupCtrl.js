@@ -4,7 +4,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
     frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, $window, PageTitle, RestFulResponse, $location, $translate) {
       PageTitle.setTitle('asd') //TODO: cambiar la key
 
-      LoggedUserFactory.isLogged().then(resp => {
+      LoggedUserFactory.isLogged().then(function(resp){
         if(resp) {
           $window.location.href = '/';
         }
@@ -33,7 +33,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
         maxLen: 30
       }
 
-      const fieldErrors = {
+      var fieldErrors = {
         name: {
           i18nKey: 'USER_CREATE_NAME',
           message: ''
@@ -66,22 +66,22 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
           !$scope.passwordsNotEquals()
         )
         {
-          RestFulResponse.all('users').post(user).then(() => {
-            const aux_user = {
+          RestFulResponse.all('users').post(user).then(function() {
+            var aux_user = {
               username: user.username,
               password: user.password
             }
-            LoggedUserFactory.login(aux_user, false).then(() => {
-              $location.path(`/`) // TODO: poner la ruta del perfil
+            LoggedUserFactory.login(aux_user, false).then(function() {
+              $location.path('/'); // TODO: poner la ruta del perfil
             })
-          }).catch(err => {
-              for(const e of err.data) {
-                $translate(fieldErrors[e['attribute']].i18nKey).then(field => {
-                  $translate('FORM_DUPLICATED_FIELD_ERROR', {field: field}).then(msg => {
+          }).catch(function(err) {
+            err.data.forEach(function(e){
+                $translate(fieldErrors[e['attribute']].i18nKey).then(function(field) {
+                  $translate('FORM_DUPLICATED_FIELD_ERROR', {field: field}).then(function(msg) {
                     fieldErrors[e['attribute']].message = msg;
-                  }).catch(err => console.log('inside', err));
-                }).catch(err => console.log('outside', err));
-              }
+                  }).catch(function(err) { console.log('inside', err) });
+                }).catch(function(err){ console.log('outside', err) });
+              });
           });
         }
       }
@@ -105,7 +105,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
       $scope.checkFieldError = function (field) {
         if(fieldErrors[field] === undefined) {
-          throw `Field '${field}' does not exists!`;
+          throw 'Field ' + field + 'does not exists!';
         }
 
         return fieldErrors[field].message !== '';

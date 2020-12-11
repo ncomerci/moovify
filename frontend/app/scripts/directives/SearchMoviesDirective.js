@@ -2,7 +2,7 @@
 define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/MovieFetchService',
   'directives/PaginationHandlerDirective', 'directives/MoviesFiltersHandlerDirective'], function(frontend) {
 
-  const defaultPageSize = 5;
+  var defaultPageSize = 5;
 
   function init(value, defaultVal){
     return value ? value : defaultVal;
@@ -20,18 +20,22 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
       controller: function ($scope, MovieFetchService) {
 
-        $scope.execSearch = () => MovieFetchService.searchMovies($scope.query.value, $scope.filterParams.movieCategory,
-          $scope.filterParams.decade, $scope.filterParams.enabled, $scope.filterParams.orderBy,
-          $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
-          resp => {
+        $scope.execSearch = function() {
 
-            $scope.movies = resp.collection;
-            $scope.paginationParams = resp.paginationParams;
+          MovieFetchService.searchMovies($scope.query.value, $scope.filterParams.movieCategory,
+            $scope.filterParams.decade, $scope.filterParams.enabled, $scope.filterParams.orderBy,
+            $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 
-            // Refresh URL
-            Object.entries(resp.queryParams).forEach(([param, value]) => $location.search(param, value));
-          }
-        ).catch(() => $location.path('/404'));
+            function(resp) {
+
+              $scope.movies = resp.collection;
+              $scope.paginationParams = resp.paginationParams;
+
+              // Refresh URL
+              Object.keys(resp.queryParams).forEach(function(paramKey){  $location.search(paramKey, resp.queryParams[paramKey]) });
+            }
+          ).catch(function(){ $location.path('/404') });
+        }
 
       },
 
@@ -52,7 +56,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
         scope.resetPagination = null;
 
-        scope.$watch('query.value', (newParam, oldParam, scope) => {
+        scope.$watch('query.value', function(newParam, oldParam, scope) {
 
           if(newParam === oldParam)
             return;
@@ -63,11 +67,11 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
           scope.execSearch();
         }, true);
 
-        scope.$watchCollection('filterParams', (newParams, oldParams, scope) => {
+        scope.$watchCollection('filterParams', function(newParams, oldParams, scope) {
 
-          let newMovieCategory = newParams.movieCategory !== oldParams.movieCategory;
-          let newDecade = newParams.decade !== oldParams.decade;
-          let newOrderBy = newParams.orderBy !== oldParams.orderBy;
+          var newMovieCategory = newParams.movieCategory !== oldParams.movieCategory;
+          var newDecade = newParams.decade !== oldParams.decade;
+          var newOrderBy = newParams.orderBy !== oldParams.orderBy;
 
           if(newMovieCategory || newDecade || newOrderBy) {
 

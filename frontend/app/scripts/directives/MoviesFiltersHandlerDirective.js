@@ -11,10 +11,10 @@ define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
 
         scope.supportedValues = null;
 
-        DynamicOptionsService.getOptions('/movies').then((optionArray) => {
+        DynamicOptionsService.getOptions('/movies').then(function(optionArray) {
           scope.supportedValues = {};
-          optionArray.forEach(opt => scope.supportedValues[opt.name] = opt.options);
-        }).catch(() => $location.path('/404')); //con location.path redirijo
+          optionArray.forEach(function(opt){ scope.supportedValues[opt.name] = opt.options });
+        }).catch(function() { $location.path('/404') }); //con location.path redirijo
 
       },
       templateUrl:'views/directives/movieFiltersHandlerDirective.html'

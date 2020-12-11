@@ -1,20 +1,20 @@
 'use strict';
 define(['frontend', 'services/LoginService', 'services/PageTitleService'], function(frontend) {
 
-	frontend.controller('IndexCtrl', async function($scope, LoggedUserFactory, $route, PageTitle, $window, Restangular) {
+	frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $route, PageTitle, $window, Restangular) {
 		$scope.welcomeText = 'Welcome to your frontend page';
 		$scope.loggedUser = LoggedUserFactory.getLoggedUser();
 		PageTitle.setTitle('asdasd'); // TODO: cambiar key
     $scope.title = PageTitle.getTitle();
 
-    const token = $window.localStorage.getItem("authorization");
+    var token = $window.localStorage.getItem("authorization");
     if(token) {
-      await LoggedUserFactory.saveToken(token);
+      LoggedUserFactory.saveToken(token);
     }
 
     $scope.logout = function () {
-      const loggedUser = LoggedUserFactory.getLoggedUser();
-      let aux = {
+      var loggedUser = LoggedUserFactory.getLoggedUser();
+      var aux = {
         logged: false
       };
       Object.assign(loggedUser, aux);
