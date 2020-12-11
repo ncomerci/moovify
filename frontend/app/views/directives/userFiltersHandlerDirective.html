@@ -1,0 +1,9 @@
+<div ng-if="supportedValues && filterParams">
+  <select ng-model='filterParams.role'>
+    <option value="">{{'EMPTY'}}</option>
+    <option ng-repeat="option in supportedValues['role']" ng-value="option">{{option}}</option>
+  </select>
+  <select ng-model='filterParams.orderBy'>
+    <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{option}}</option>
+  </select>
+</div>

@@ -13,7 +13,7 @@ define([], function() {
                 // controller: 'ErrorController'
             },
             '/search': {
-                templateUrl: '/views/search/SearchController.html',
+                templateUrl: '/views/search/search.html',
                 controller: 'SearchController'
             },
             '/login': {

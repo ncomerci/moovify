@@ -1,5 +1,6 @@
 'use strict';
-define(['frontend', 'directives/paginatedDisplay', 'controllers/FilteredPostCollectionController'], function(frontend) {
+define(['frontend', 'directives/paginatedDisplay', 'controllers/FilteredPostCollectionController',
+    'controllers/FilteredUserCollectionController'], function(frontend) {
 
     frontend.controller('SearchController', function($scope, $routeParams) {
 

@@ -27,6 +27,18 @@
         </div>
       </div>
     </div>
+
+    <div ng-switch-when="users">
+      <div ng-controller="FilteredUserCollectionController">
+        <user-filters-handler-directive filter-params="filterParams"></user-filters-handler-directive>
+        <div ng-show="users.length > 0">
+          <div ng-repeat="user in users">
+            {{user.username}}
+          </div>
+          <pagination-handler-directive pagination-params="paginationParams"/>
+        </div>
+      </div>
+    </div>
   </div>
 
 
