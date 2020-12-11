@@ -1,7 +1,7 @@
 'use strict';
 define([], function() {
 
-	return {
+  return {
     ADMIN_TITLE: 'Admin',
     ADMIN_PANEL_BTN: 'Admin panel',
     USER_LOGIN_TITLE: 'Moovify | Login',
@@ -15,6 +15,18 @@ define([], function() {
     USER_LOGIN_RESETPASSWORD: 'Forgot my password',
     USER_CREATE_SIGNUP: 'Sign up',
     USER_CREATE_SIGNUP_ALT: 'Signup',
+    USER_CREATE_SIGNUPDESC: 'Please fill this form to get free access to Moovify',
+    USER_CREATE_NAME: 'Name',
+    USER_CREATE_EMAIL: 'Email',
+    USER_CREATE_USERNAME: 'Username',
+    USER_CREATE_PASSWORD: 'Password',
+    USER_CREATE_REPEATPASSWORD: 'Repeat password',
+    USER_CREATE_SELECTAVATAR: 'Want to select an avatar? (Optional)',
+    USER_CREATE_SELECTFILE: 'Select file',
+    USER_CREATE_NOAVATARSELECTED: 'No Avatar Selected',
+    USER_CREATE_AVATARSELECTED: 'Selected Avatar:',
+    USER_CREATE_BUTTON: 'Create account',
+    USER_CREATE_ALREADYACCOUNT: 'Already have an account?',
     USER_PROFILE: 'My profile',
     USER_EMAILCONFIRM_TITLE: 'Email confirmation requiered',
     USER_EMAILCONFIRM_TEXT: 'To be able to create a new post, you have to confirm your email address. Check your email box, we sent you a link!',
@@ -22,5 +34,14 @@ define([], function() {
     USER_EMAILCONFIRM_CLOSEMODAL: 'Ok, got it!',
     SEARCH_TITLE: 'Search',
     NAVBAR_CREATE_POST: 'Create post',
-	};
+    FORM_FIELD_REQUIRED: 'Field required',
+    FORM_BAD_CREDENTIALS: 'Incorrect user or password',
+    FORM_MIN_LENGTH_ERROR: 'Minimum length is {{ minLen }} characters',
+    FORM_MAX_LENGTH_ERROR: 'Maximum length is {{ maxLen }} characters',
+    FORM_NAME_PATTERN_ERROR: 'Only letters and spaces are allowed',
+    FORM_EMAIL_PATTERN_ERROR: 'Invalid email',
+    FORM_USERNAME_PATTERN_ERROR: "Only these characters are allowed: letters, numbers, '_' and '#'",
+    FORM_PASSWORD_PATTERN_ERROR: "White spaces are not allowed",
+    FORM_REPEAT_PASSWORD_ERROR: "Passwords don't match"
+  };
 });

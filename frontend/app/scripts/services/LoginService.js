@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend'], function(frontend) {
 
-  frontend.factory('LoggedUserFactory', function(Restangular, $window) {
+  frontend.factory('LoggedUserFactory', function(Restangular, $window, $q) {
     let loggedUser = {
       logged: false,
     };
@@ -14,7 +14,7 @@ define(['frontend'], function(frontend) {
         return loggedUser;
       },
       saveToken: function (token) {
-        return new Promise((resolve, reject) => {
+        return $q((resolve, reject) => {
           Restangular.setDefaultHeaders({authorization: token});
           mutex.value = true;
           Restangular.one("user").get().then(function (user) {
@@ -31,7 +31,7 @@ define(['frontend'], function(frontend) {
         });
       },
       login: function (user, remember) {
-        return new Promise((resolve, reject) => {
+        return $q((resolve, reject) => {
           mutex.value = true;
           Restangular.setFullResponse(true).all("user").post(user).then(function(resp) {
             LoggedUserFactory.saveToken(resp.headers("authorization")).then(r => resolve(r));
@@ -45,7 +45,7 @@ define(['frontend'], function(frontend) {
         })
       },
       isLogged: function () {
-        return new Promise((resolve, reject) => {
+        return $q((resolve, reject) => {
 
           const f = function() {
             if (!mutex.value) {
