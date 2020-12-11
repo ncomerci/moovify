@@ -4,9 +4,12 @@ import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttr
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import javax.xml.bind.annotation.XmlType;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+// Remove type attribute added automatically by jersey when extending class
+@XmlType(name="")
 public class DuplicateUniqueUserAttributeErrorDto extends BeanValidationErrorDto {
 
     public static Collection<DuplicateUniqueUserAttributeErrorDto> mapDuplicateUniqueUserAttributeExceptionToDtos(DuplicateUniqueUserAttributeException e, MessageSource messageSource) {
