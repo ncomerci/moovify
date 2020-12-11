@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.dto.input;
 
 import ar.edu.itba.paw.webapp.dto.input.validation.annotations.SpacesNormalization;
-import ar.edu.itba.paw.webapp.dto.input.validation.annotations.ValidPassword;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
@@ -16,13 +15,13 @@ public class UserCreateDto {
     private String username;
 
     // TODO: Se repiten los mensajes de tamanio
-    @ValidPassword
+    @Pattern(regexp = "[a-zA-Z0-9#_]+")
     @Size(min=12, max=30)
     private String password;
 
     // TODO: El string de spaces normalization no se muestra bien
     @Pattern(regexp = "[a-zA-Z ]+")
-    @SpacesNormalization
+    @SpacesNormalization(message = "invalid use of spaces")
     @Size(min = 2, max = 50)
     private String name;
 

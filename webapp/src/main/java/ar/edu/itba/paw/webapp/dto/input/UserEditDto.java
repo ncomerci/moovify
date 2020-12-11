@@ -1,7 +1,6 @@
 package ar.edu.itba.paw.webapp.dto.input;
 
 import ar.edu.itba.paw.webapp.dto.input.validation.annotations.SpacesNormalization;
-import ar.edu.itba.paw.webapp.dto.input.validation.annotations.ValidPassword;
 
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -12,7 +11,6 @@ public class UserEditDto {
     @Pattern(regexp = "[a-zA-Z0-9#_]+")
     private String username;
 
-    @ValidPassword
     @Size(min = 12, max = 30)
     private String password;
 
