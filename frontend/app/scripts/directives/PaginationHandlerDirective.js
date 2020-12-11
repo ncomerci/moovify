@@ -17,19 +17,18 @@ define(['frontend'], function(frontend) {
 
         scope.searchFn = scope.searchFn();
 
-        scope.resetPaginationFn = () => {
-          console.log(scope);
+        scope.resetPaginationFn = function() {
           scope.paginationParams.currentPage = 0;
         }
 
-        scope.$watchCollection('paginationParams', (newParams, oldParams, scope) => {
+        scope.$watchCollection('paginationParams', function(newParams, oldParams, scope) {
 
           if(!newParams || !oldParams){
             return;
           }
 
-          let newPageSize = newParams.pageSize !== oldParams.pageSize;
-          let newPageNumber = newParams.currentPage !== oldParams.currentPage;
+          var newPageSize = newParams.pageSize !== oldParams.pageSize;
+          var newPageNumber = newParams.currentPage !== oldParams.currentPage;
 
           if(newPageSize || newPageNumber){
 

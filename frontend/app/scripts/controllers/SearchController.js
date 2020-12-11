@@ -2,7 +2,7 @@
 define(['frontend', 'directives/SearchMoviesDirective', 'directives/SearchUsersDirective',
   'directives/SearchPostsDirective',], function(frontend) {
 
-    const defaultType = 'posts';
+  var defaultType = 'posts';
 
     frontend.controller('SearchController', function($scope, $routeParams, $location) {
 
@@ -21,7 +21,7 @@ define(['frontend', 'directives/SearchMoviesDirective', 'directives/SearchUsersD
         $location.search('type', defaultType);
       }
 
-      $scope.$watch('searchOptions.contentType', (newParam, oldParam, scope) => {
+      $scope.$watch('searchOptions.contentType', function(newParam, oldParam, scope) {
 
         if(newParam !== oldParam)
           $location.search('type', scope.searchOptions.contentType);

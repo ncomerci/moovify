@@ -2,19 +2,19 @@
 define(['frontend'], function(frontend) {
 
   frontend.factory('LoggedUserFactory', function(Restangular, $window, $q) {
-    let loggedUser = {
+    var loggedUser = {
       logged: false,
     };
-    let mutex = {
+    var mutex = {
       value: false
     }
 
-    const LoggedUserFactory =  {
+    var LoggedUserFactory =  {
       getLoggedUser: function () {
         return loggedUser;
       },
       saveToken: function (token) {
-        return $q((resolve, reject) => {
+        return $q(function(resolve, reject) {
           Restangular.setDefaultHeaders({authorization: token});
           mutex.value = true;
           Restangular.one("user").get().then(function (user) {
@@ -22,7 +22,7 @@ define(['frontend'], function(frontend) {
             loggedUser.logged = true;
             mutex.value = false;
             resolve(loggedUser);
-          }).catch(err => {
+          }).catch(function(err) {
             mutex.value = false;
             $window.localStorage.removeItem("authorization");
             Restangular.setDefaultHeaders({});
@@ -31,23 +31,23 @@ define(['frontend'], function(frontend) {
         });
       },
       login: function (user, remember) {
-        return $q((resolve, reject) => {
+        return $q(function(resolve, reject) {
           mutex.value = true;
           Restangular.setFullResponse(true).all("user").post(user).then(function(resp) {
-            LoggedUserFactory.saveToken(resp.headers("authorization")).then(r => resolve(r));
+            LoggedUserFactory.saveToken(resp.headers("authorization")).then(function(r) { resolve(r) });
             if(remember) {
               $window.localStorage.setItem("authorization", resp.headers("authorization"));
             }
-          }).catch(err => {
+          }).catch(function(err) {
             mutex.value = false;
             reject(err);
           });
         })
       },
       isLogged: function () {
-        return $q((resolve, reject) => {
+        return $q(function(resolve, reject) {
 
-          const f = function() {
+          var f = function() {
             if (!mutex.value) {
               return resolve(loggedUser.logged);
             }

@@ -383,6 +383,26 @@ module.exports = function (grunt) {
                 outputFile: '<%= yeoman.dist %>/scripts/paths.js'
             }
         }
+    },
+
+    babel: {
+      options: {
+        sourceMap: true,
+        presets: ['env']
+      },
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.dist %>/bower_components',
+          src: '**/*.js',
+          dest: '<%= yeoman.dist %>/bower_components'
+        }, {
+          expand: true,
+          cwd: '<%= yeoman.dist %>/scripts',
+          src: '**/*.js',
+          dest: '<%= yeoman.dist %>/scripts'
+        }]
+      }
     }
   });
 

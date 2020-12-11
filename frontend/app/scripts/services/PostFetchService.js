@@ -14,7 +14,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
     function fetchPosts(path, query, category, age, enabled, orderBy, pageSize, pageNumber) {
 
       // Obligatory params
-      let queryParams = {
+      var queryParams = {
         query: query,
         orderBy: orderBy,
         pageSize: pageSize ? pageSize : 5,
@@ -31,21 +31,21 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
       if(enabled !== null)
         queryParams.enabled = enabled;
 
-      return $q((resolve, reject) => {
-        RestFulResponse.all(path).getList(queryParams).then((postResponse) => {
+      return $q(function(resolve, reject) {
+        RestFulResponse.all(path).getList(queryParams).then(function(postResponse) {
 
-          let paginationParams = {pageSize: queryParams.pageSize};
-          let linkHeader = postResponse.headers('Link');
-          let posts = postResponse.data;
+          var paginationParams = {pageSize: queryParams.pageSize};
+          var linkHeader = postResponse.headers('Link');
+          var posts = postResponse.data;
 
-          // Si no hay Link => no habia contenido => no me interesa paginar nada
+          // Si no hay Link -> no habia contenido -> no me interesa paginar nada
           if(linkHeader){
             paginationParams = LinkParserService.parse(linkHeader);
           }
 
           resolve({collection: posts, paginationParams: paginationParams, queryParams: queryParams});
 
-        }).catch((response) => reject({status: response.status, message: 'PostFetchService: FetchPost'}));
+        }).catch(function(response) { reject({status: response.status, message: 'PostFetchService: FetchPost'}) });
       });
     }
   });

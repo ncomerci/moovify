@@ -19,7 +19,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
 		PageTitle.setTitle('asdasd'); // TODO: cambiar key
     $scope.title = PageTitle.getTitle();
 
-    const token = $window.localStorage.getItem("authorization");
+    var token = $window.localStorage.getItem("authorization");
 
     if(token) {
       LoggedUserFactory.saveToken(token).then(function () {
