@@ -8,11 +8,14 @@ define(['frontend'], function(frontend) {
         post: '='
       },
       templateUrl: 'views/directives/postListEntryDirective.html',
+      link: function (scope) {
+        console.log(scope.post);
+      },
       controller: function ($scope) {
         $scope.getAgeMessageCode = function () {
 
-          let creationDateTime = new Date($scope.post.creationDate).getTime();
-          let currentDateTime = new Date().getTime();
+          var creationDateTime = new Date($scope.post.creationDate).getTime();
+          var currentDateTime = new Date().getTime();
 
           if(currentDateTime - creationDateTime < 1000 * 60 * 60){
             return 'LAST_HOUR';
@@ -30,8 +33,7 @@ define(['frontend'], function(frontend) {
             return 'LAST_YEAR'
           }
         }
-      },
-      link: (scope) => console.log(scope.post)
+      }
     };
   });
 

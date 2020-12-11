@@ -531,7 +531,7 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('default', [
-    'newer:eslint',
+    //'newer:eslint',
     'build'
   ]);
 };

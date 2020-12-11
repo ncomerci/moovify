@@ -3,8 +3,8 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
 
   function finishInit($scope) {
     $scope.logout = function () {
-      const loggedUser = LoggedUserFactory.getLoggedUser();
-      let aux = {
+      var loggedUser = LoggedUserFactory.getLoggedUser();
+      var aux = {
         logged: false
       };
       Object.assign(loggedUser, aux);
