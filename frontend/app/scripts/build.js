@@ -15,7 +15,8 @@ require.config({
         restangular: '../../bower_components/restangular/dist/restangular',
         uikit: '../../bower_components/uikit/dist/js/uikit',
         uikiticons: '../../bower_components/uikit/dist/js/uikit-icons',
-        'uikit-icons': '../../bower_components/uikit/dist/js/uikit-icons'
+        'uikit-icons': '../../bower_components/uikit/dist/js/uikit-icons',
+        iconify: 'external_dependencies/iconify/iconify'
     },
     shim: {
         angular: {

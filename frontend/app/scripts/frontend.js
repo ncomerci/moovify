@@ -7,7 +7,8 @@ define(['routes',
 	'angular',
 	'angular-route',
 	'angular-translate',
-	'restangular'
+	'restangular',
+  'iconify'
 	],
 	function(config, dependencyResolverFor, i18n, UIkit, icons) {
 
