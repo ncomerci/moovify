@@ -38,6 +38,18 @@
         </div>
       </div>
     </div>
+
+    <div ng-switch-when="movies">
+      <div ng-controller="FilteredMovieCollectionController">
+        <movies-filters-handler-directive filter-params="filterParams"></movies-filters-handler-directive>
+        <div ng-show="movies.length > 0">
+          <div ng-repeat="movie in movies">
+            {{movie.title}}
+          </div>
+          <pagination-handler-directive pagination-params="paginationParams"/>
+        </div>
+      </div>
+    </div>
   </div>
 
 
