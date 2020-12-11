@@ -1,0 +1,9 @@
+<div >
+  <movies-filters-handler-directive filter-params="filterParams"></movies-filters-handler-directive>
+  <div ng-show="movies.length > 0">
+    <div ng-repeat="movie in movies">
+      {{movie.title}}
+    </div>
+    <pagination-handler-directive pagination-params="paginationParams" reset-pagination-fn="resetPagination" search-fn="execSearch">
+  </div>
+</div>
