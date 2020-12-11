@@ -12,7 +12,7 @@ define([], function() {
                 templateUrl: '/404.html',
                 // controller: 'ErrorController'
             },
-            '/search/:contentType': {
+            '/search': {
                 templateUrl: '/views/search/SearchController.html',
                 controller: 'SearchController'
             },

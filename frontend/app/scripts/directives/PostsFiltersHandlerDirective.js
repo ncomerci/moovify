@@ -1,23 +1,21 @@
 'use strict';
-define(['frontend'], function(frontend) {
+define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
 
-
-  const supportedValues = {
-    postCategory: ['debate', 'watchlist'],
-    postAge: ['day', 'week'],
-    orderBy: ['newest', 'oldest']
-  }
-
-  frontend.directive('postsFiltersHandlerDirective', function() {
+  frontend.directive('postsFiltersHandlerDirective', function(DynamicOptionsService, $location) {
     return {
       restrict: 'E',
       scope: {
         filterParams: '='
       },
-      link: function(scope, element, attrs) {
-          scope.getSupportedValues = function (type) {
-          return supportedValues[type];
-        }
+      link: function(scope) {
+
+        scope.supportedValues = null;
+
+        DynamicOptionsService.getOptions('/posts').then((optionArray) => {
+          scope.supportedValues = {};
+          optionArray.forEach(opt => scope.supportedValues[opt.name] = opt.options);
+        }).catch(() => $location.path('/404'));
+
       },
       templateUrl: 'views/directives/postFiltersHandlerDirective.html'
     };
