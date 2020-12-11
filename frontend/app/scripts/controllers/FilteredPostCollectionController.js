@@ -16,19 +16,24 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
     $scope.paginationParams = basePaginationParams;
     $scope.query = $scope.$parent.query;
     $scope.filterParams = {
-      postCategory: init($routeParams.postCategory, ''),
-      postAge: init($routeParams.postAge, ''),
-      orderBy: init($routeParams.orderBy, 'newest')
+      postCategory: init($routeParams.postCategory, null),
+      postAge: init($routeParams.postAge, null),
+      orderBy: init($routeParams.orderBy, 'newest'),
+      enabled: true
     };
 
     $scope.execSearch = () => PostFetchService.searchPosts(
-      $scope.query.value, $scope.filterParams.postCategory, $scope.filterParams.postAge, $scope.filterParams.orderBy,
-      $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
+      $scope.query.value, $scope.filterParams.postCategory, $scope.filterParams.postAge, $scope.filterParams.enabled,
+      $scope.filterParams.orderBy, $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
         resp => {
           $scope.posts = resp.collection;
           $scope.paginationParams = resp.paginationParams;
+
+          // Refresh URL
+          $location.search(resp.queryParams);
+          $location.search('type', 'post')
         }
-      ).catch(() => $location.path('/404'));
+      ).catch(() => $location.path('/404')); // TODO: Add 500 page
 
     $scope.resetPagination = () => {
 
@@ -53,6 +58,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
       let newPageNumber = newParams.currentPage !== oldParams.currentPage;
 
       if(newPageSize || newPageNumber){
+
         if(newPageSize){
           $scope.resetPagination();
         }
@@ -72,16 +78,6 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
       let newPostCategory = newParams.postCategory !== oldParams.postCategory;
       let newPostAge = newParams.postAge !== oldParams.postAge;
       let newOrderBy = newParams.orderBy !== oldParams.orderBy;
-
-      if(newPostCategory) {
-        $location.search('postCategory', newParams.postCategory);
-      }
-      if(newPostAge) {
-        $location.search('postAge', newParams.postAge);
-      }
-      if(newOrderBy) {
-        $location.search('orderBy', newParams.orderBy);
-      }
 
       if(newPostCategory || newPostAge || newOrderBy) {
         $scope.resetPagination();

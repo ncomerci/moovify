@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'directives/paginatedDisplay', 'controllers/FilteredPostCollectionController'], function(frontend) {
 
-    frontend.controller('SearchController', function($scope, $routeParams, $route, $location) {
+    frontend.controller('SearchController', function($scope, $routeParams) {
 
         console.log("Inicializando!");
 
@@ -11,19 +11,14 @@ define(['frontend', 'directives/paginatedDisplay', 'controllers/FilteredPostColl
           value: $routeParams.query ? $routeParams.query : ''
         }
 
-        $scope.$watch('searchOptions.contentType', function (newVal, oldVal) {
-          if(newVal !== oldVal){
-            $location.search({});
-            $location.search('type', $scope.searchOptions.contentType);
-            $location.search('query', $scope.query.value);
-          }
-        });
-
-        $scope.$watch('query.value', function (newQuery) {
-          if(newQuery){
-            $location.search('query', newQuery);
-          }
-        });
+        // TODO: Ask if correct to delete
+        // $scope.$watch('searchOptions.contentType', function (newVal, oldVal) {
+        //   if(newVal !== oldVal){
+        //     $location.search({});
+        //     $location.search('type', $scope.searchOptions.contentType);
+        //     $location.search('query', $scope.query.value);
+        //   }
+        // });
 
         $scope.searchOptions = {
             contentType: $routeParams.contentType ? $routeParams.contentType : 'posts',

@@ -7,6 +7,8 @@
 		ng-model='query.value'
 		ng-model-options='{ debounce: 1000 }'
 	/>
+
+<!-- TODO: Que le esta pasando a exec search -->
 	<select ng-model='searchOptions.contentType' ng-change='execSearch(searchOptions.contentType)'>
 		<option value="posts">posts</option>
 		<option value="movies">movies</option>
