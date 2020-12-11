@@ -2,7 +2,7 @@
 <html lang="en" class="no-js" ng-controller="IndexCtrl">
 <head>
   <meta charset="utf-8">
-  <title>{{title.value}}</title>
+  <title ng-bind="title.value">Moovify</title>
   <base href="/">
   <meta name="description" content="">
 
@@ -83,9 +83,7 @@
       </div>
     </nav>
   </header>
-  <a href="/search/posts?query=elPepe">SEARCH</a>
-  <a href="/search/movies?query=elPepe">SEARCH</a>
-  <a href="/search/users?query=elPepe">SEARCH</a>
+
   <div ng-view=""></div>
 
   <!-- Confirm email modal -->

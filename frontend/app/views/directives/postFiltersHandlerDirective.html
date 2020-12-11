@@ -1,11 +1,13 @@
-<select ng-model='filterParams.postCategory'>
-    <option value="">{{'EMPTY'}}</option>
-    <option ng-repeat="option in getSupportedValues('postCategory')" ng-value="option">{{option}}</option>
-</select>
-<select ng-model='filterParams.postAge'>
-    <option value="">{{'EMPTY'}}</option>
-    <option ng-repeat="option in getSupportedValues('postAge')" ng-value="option">{{option}}</option>
-</select>
-<select ng-model='filterParams.orderBy'>
-    <option ng-repeat="option in getSupportedValues('orderBy')" ng-value="option">{{option}}</option>
-</select>
+<div ng-if="supportedValues && filterParams">
+  <select ng-model='filterParams.postCategory'>
+      <option value="">{{'EMPTY'}}</option>
+      <option ng-repeat="option in supportedValues['postCategory']" ng-value="option">{{option}}</option>
+  </select>
+  <select ng-model='filterParams.postAge'>
+      <option value="">{{'EMPTY'}}</option>
+      <option ng-repeat="option in supportedValues['postAge']" ng-value="option">{{option}}</option>
+  </select>
+  <select ng-model='filterParams.orderBy'>
+      <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{option}}</option>
+  </select>
+</div>

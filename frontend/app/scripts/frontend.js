@@ -38,6 +38,18 @@ define(['routes',
 					// RestangularProvider.setRestangularFields({
           //   selfLink: 'url'
           // });
+          RestangularProvider.setResponseExtractor(function(response) {
+            var newResponse = response;
+            if (angular.isArray(response)) {
+              angular.forEach(newResponse, function(value, key) {
+                newResponse[key].originalElement = angular.copy(value);
+              });
+            } else if(newResponse) {
+              newResponse.originalElement = angular.copy(response);
+            }
+
+            return newResponse;
+          });
 
 					$locationProvider.html5Mode(true);
 
@@ -52,9 +64,10 @@ define(['routes',
 						angular.forEach(config.routes, function(route, path) {
 							$routeProvider.when(path, {
 								templateUrl: route.templateUrl,
-								resolve: dependencyResolverFor(['controllers/' + route.controller]),
+								resolve: route.controller ? dependencyResolverFor(['controllers/' + route.controller]) : () => {},
 								controller: route.controller,
-								gaPageTitle: route.gaPageTitle
+								gaPageTitle: route.gaPageTitle,
+                reloadOnSearch: false
 							});
 						});
 					}

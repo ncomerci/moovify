@@ -122,7 +122,7 @@ public class MovieController {
     @Produces({ "image/*", MediaType.APPLICATION_JSON })
     @GET
     @Path("/{id}/poster")
-    public Response getPoster(@PathVariable("id") long id, @Context Request request) {
+    public Response getPoster(@PathParam("id") long id, @Context Request request) {
 
         final Movie movie = movieService.findMovieById(id).orElseThrow(MovieNotFoundException::new);
 

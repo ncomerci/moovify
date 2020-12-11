@@ -17,8 +17,12 @@
     <div ng-switch-when="posts">
       <div ng-controller="FilteredPostCollectionController">
         <posts-filters-handler-directive filter-params="filterParams"></posts-filters-handler-directive>
-        <!-- display -->
-        <pagination-handler-directive pagination-params="paginationParams"/>
+        <div ng-show="posts.length > 0">
+          <div ng-repeat="post in posts">
+            {{post.title}}
+          </div>
+          <pagination-handler-directive pagination-params="paginationParams"/>
+        </div>
       </div>
     </div>
   </div>

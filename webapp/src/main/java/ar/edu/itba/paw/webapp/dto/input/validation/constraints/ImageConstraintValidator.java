@@ -15,7 +15,7 @@ public class ImageConstraintValidator implements ConstraintValidator<Image, Form
 
     public boolean isValid(FormDataBodyPart image, ConstraintValidatorContext context) {
 
-        return image.getMediaType().toString().contains(ACCEPTED_MIME_TYPES);
+        return image != null && image.getMediaType().toString().contains(ACCEPTED_MIME_TYPES);
     }
 
 }

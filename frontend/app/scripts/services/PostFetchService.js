@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserService'], function(frontend) {
 
-  frontend.service('PostFetchService', function(RestFulResponse, LinkParserService) {
+  frontend.service('PostFetchService', function(RestFulResponse, LinkParserService, $q) {
 
     this.searchPosts = function(query, category, age, orderBy, pageSize, pageNumber) {
       return this.$$fetchPosts('/posts', query, category, age, orderBy, pageSize, pageNumber);
@@ -17,48 +17,27 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
         query: query,
         postCategory: category,
         postAge: age,
-        sortCriteria: orderBy,
+        orderBy: orderBy,
         pageSize: pageSize ? pageSize : 5,
         pageNumber: pageNumber ? pageNumber : 0
       };
 
-      // TODO error handling
-      return new Promise((resolve, reject) => {
-
+      return $q((resolve, reject) => {
         RestFulResponse.all(path).getList(queryParams).then((postResponse) => {
 
-          if(postResponse.status !== 200){
-            reject(postResponse);
-            return;
-          }
-
-          let paginationParams = LinkParserService.parse(postResponse.headers('Link'));
-
+          let paginationParams = null;
+          let linkHeader = postResponse.headers('Link');
           let posts = postResponse.data;
 
-          let promises = this.$$getMoviesPromiseArray(posts);
+          // Si no hay Link => no habia contenido => no me interesa paginar nada
+          if(linkHeader){
+            paginationParams = LinkParserService.parse(linkHeader);
+          }
 
-          Promise.all(promises).then((response) => {
-            resolve({posts: response, paginationParams: paginationParams});
-          })
-        }).catch(reject);
+          resolve({collection: posts, paginationParams: paginationParams});
+
+        }).catch((response) => reject({status: response.status, message: 'PostFetchService: FetchPost'}));
       });
     }
-
-    this.$$getMoviesPromiseArray = function (posts) {
-
-      return posts.map(post => new Promise(
-        (resolve, reject) => RestFulResponse.one('posts', post.id).getList('movies').then((response) => {
-
-          if(response.status !== 200)
-            reject(response);
-
-          post.movies = response.data;
-          resolve(post);
-
-        }).catch(reject)
-      ));
-    }
-
   });
 });

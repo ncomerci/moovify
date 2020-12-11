@@ -1,43 +1,9 @@
 'use strict';
-define(['frontend', 'services/SearchService', 'directives/paginatedDisplay', 'controllers/FilteredPostCollectionController'], function(frontend) {
+define(['frontend', 'directives/paginatedDisplay', 'controllers/FilteredPostCollectionController'], function(frontend) {
 
-    frontend.controller('SearchController', function($scope, $routeParams, $route, $location, SearchService) {
+    frontend.controller('SearchController', function($scope, $routeParams, $route, $location) {
 
         console.log("Inicializando!");
-        //
-        const searchOptionsValuesByType = {
-            posts: {
-                postCategory: ['all', 'debate'],
-                postAge: ['alltime', '24hs'],
-                sortCriteria: ['newest', 'hottest']
-            },
-            movies: {
-                movieCategory: ['all', 'action'],
-                decade: ['alltime', '2010s'],
-                sortCriteria: ['newest', 'oldest']
-            },
-            users: {
-                role: ['all', 'user'],
-                sortCriteria: ['newest', 'oldest']
-            }
-        };
-
-        // const searchOptionsByType = {
-        //     posts: {
-        //         postCategory: $routeParams.postCategory ? $routeParams.postCategory : searchOptionsValuesByType.posts.postCategory[0],
-        //         postAge: $routeParams.postAge ? $routeParams.postAge : searchOptionsValuesByType.posts.postAge[0],
-        //         sortCriteria: $routeParams.sortCriteria ? $routeParams.sortCriteria : searchOptionsValuesByType.posts.sortCriteria[0]
-        //     },
-        //     movies: {
-        //         movieCategory: $routeParams.movieCategory ? $routeParams.movieCategory : searchOptionsValuesByType.movies.movieCategory[0],
-        //         decade: $routeParams.decade ? $routeParams.decade : searchOptionsValuesByType.movies.decade[0],
-        //         sortCriteria: $routeParams.sortCriteria ? $routeParams.sortCriteria : searchOptionsValuesByType.movies.sortCriteria[0]
-        //     },
-        //     users: {
-        //         role: $routeParams.role ? $routeParams.role : searchOptionsValuesByType.users.role[0],
-        //         sortCriteria: $routeParams.sortCriteria ? $routeParams.sortCriteria : searchOptionsValuesByType.users.sortCriteria[0]
-        //     }
-        // };
 
         $scope.getOptionsValue = (type, optionName) => searchOptionsValuesByType[type][optionName];
 
@@ -45,36 +11,23 @@ define(['frontend', 'services/SearchService', 'directives/paginatedDisplay', 'co
           value: $routeParams.query ? $routeParams.query : ''
         }
 
+        $scope.$watch('searchOptions.contentType', function (newVal, oldVal) {
+          if(newVal !== oldVal){
+            $location.search({});
+            $location.search('type', $scope.searchOptions.contentType);
+            $location.search('query', $scope.query.value);
+          }
+        });
+
+        $scope.$watch('query.value', function (newQuery) {
+          if(newQuery){
+            $location.search('query', newQuery);
+          }
+        });
+
         $scope.searchOptions = {
-            contentType: $routeParams.contentType,
-        //     query: $routeParams.query ? $routeParams.query : '',
-        //     params: searchOptionsByType[$routeParams.contentType],
-        //     paginationParams: {
-        //         size: 5,
-        //         page: 0
-        //     }
+            contentType: $routeParams.contentType ? $routeParams.contentType : 'posts',
         };
-        // $scope.$watch('searchOptions.query', function (){
-        //   $scope.$apply();
-        // })
-        // $scope.execSearch = (newType) => {
-
-        //     if(newType){
-        //         $scope.searchOptions.params = searchOptionsByType[newType];
-        //     }
-
-        //     console.log($scope.searchOptions.contentType,
-        //         Object.assign({query: $scope.searchOptions.query}, $scope.searchOptions.params)
-        //     );
-        // };
-
-        // $scope.paginatedAns = {
-        //     collection: [],
-        //     paginationParams: {
-        //         size: 5,
-        //         page: 0
-        //     }
-        // }
     });
 
 });
