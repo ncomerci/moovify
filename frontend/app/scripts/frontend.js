@@ -63,9 +63,10 @@ define(['routes',
 						angular.forEach(config.routes, function(route, path) {
 							$routeProvider.when(path, {
 								templateUrl: route.templateUrl,
-								resolve: dependencyResolverFor(['controllers/' + route.controller]),
+								resolve: route.controller ? dependencyResolverFor(['controllers/' + route.controller]) : () => {},
 								controller: route.controller,
-								gaPageTitle: route.gaPageTitle
+								gaPageTitle: route.gaPageTitle,
+                reloadOnSearch: false
 							});
 						});
 					}
