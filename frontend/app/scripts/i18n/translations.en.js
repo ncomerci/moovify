@@ -42,6 +42,7 @@ define([], function() {
     FORM_EMAIL_PATTERN_ERROR: 'Invalid email',
     FORM_USERNAME_PATTERN_ERROR: "Only these characters are allowed: letters, numbers, '_' and '#'",
     FORM_PASSWORD_PATTERN_ERROR: "White spaces are not allowed",
-    FORM_REPEAT_PASSWORD_ERROR: "Passwords don't match"
+    FORM_REPEAT_PASSWORD_ERROR: "Passwords don't match",
+    FORM_DUPLICATED_FIELD_ERROR: "{{ field }} already exists, please choose another"
 	};
 });

@@ -10,7 +10,7 @@ define(['frontend'], function(frontend) {
 	      return title;
       },
       setTitle: function (i18nKey) {
-	      $translate(i18nKey).then(t => title.value = t).catch(err => title.value = 'Moovify');
+	      $translate(i18nKey).then(t => title.value = t).catch(() => title.value = 'Moovify');
       }
     }
 	});
