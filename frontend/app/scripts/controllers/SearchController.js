@@ -1,6 +1,6 @@
 'use strict';
 define(['frontend', 'directives/paginatedDisplay', 'controllers/FilteredPostCollectionController',
-    'controllers/FilteredUserCollectionController'], function(frontend) {
+    'controllers/FilteredUserCollectionController', 'controllers/FilteredMovieCollectionController'], function(frontend) {
 
     frontend.controller('SearchController', function($scope, $routeParams) {
 
@@ -11,7 +11,6 @@ define(['frontend', 'directives/paginatedDisplay', 'controllers/FilteredPostColl
         $scope.query = {
           value: $routeParams.query ? $routeParams.query : ''
         }
-
         // TODO: Ask if correct to delete
         // $scope.$watch('searchOptions.contentType', function (newVal, oldVal) {
         //   if(newVal !== oldVal){
