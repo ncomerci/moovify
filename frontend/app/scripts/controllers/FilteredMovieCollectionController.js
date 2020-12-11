@@ -2,10 +2,7 @@
 define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/MovieFetchService',
   'directives/PaginationHandlerDirective', 'directives/MoviesFiltersHandlerDirective'], function(frontend) {
 
-  const basePaginationParams = {
-    pageSize: 5,
-    currentPage: 0
-  }
+  const defaultPageSize = 5;
 
   function init(value, defaultVal){
     return value ? value : defaultVal;
@@ -13,7 +10,8 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
   frontend.controller('FilteredMovieCollectionController', function ($scope, MovieFetchService, $location, $routeParams) {
     $scope.movies = [];
-    $scope.paginationParams = basePaginationParams;
+
+    $scope.paginationParams = {currentPage: init(parseInt($routeParams.pageNumber), 0), pageSize: init(parseInt($routeParams.pageSize), defaultPageSize)};
     $scope.query = $scope.$parent.query;
     $scope.filterParams = {
       movieCategory: init($routeParams.movieCategory, null),
@@ -21,6 +19,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
       orderBy: init($routeParams.orderBy, 'newest'),
       enabled: true
     };
+    $scope.resetPagination = null;
 
     $scope.execSearch = () => MovieFetchService.searchMovies($scope.query.value, $scope.filterParams.movieCategory,
       $scope.filterParams.decade, $scope.filterParams.enabled, $scope.filterParams.orderBy,
@@ -35,51 +34,31 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
         }
     ).catch(() => $location.path('/404'));
 
-    $scope.resetPagination = () => {
-
-      if($scope.paginationParams === null){
-        $scope.paginationParams = {
-          pageSize: basePaginationParams.pageSize
-        }
-      }
-      $scope.paginationParams.currentPage = basePaginationParams.currentPage;
-    }
-
+    // Execute first search
     $scope.execSearch();
 
-    $scope.$watchCollection('paginationParams', (newParams, oldParams) => {
-      if(!newParams || !oldParams){
+    $scope.$watch('query.value', (newParam, oldParam) => {
+
+      if(newParam === oldParam)
         return;
-      }
-      console.log(newParams.currentPage);
-      console.log(oldParams.currentPage);
-      let newPageSize = newParams.pageSize !== oldParams.pageSize;
-      let newPageNumber = newParams.currentPage !== oldParams.currentPage;
 
-      if(newPageNumber || newPageSize){
-
-        if(newPageSize){
-          $scope.resetPagination();
-        }
-        $scope.execSearch();
-      }
-    });
-
-    $scope.$watch('query.value', (newQueryVal, oldQueryVal) => {
-      if(newQueryVal !== oldQueryVal){
+      if($scope.resetPagination)
         $scope.resetPagination();
-        $scope.execSearch();
-      }
-    });
+
+      $scope.execSearch();
+    }, true);
 
     $scope.$watchCollection('filterParams', (newParams, oldParams) => {
-      console.log('filter params triggered');
+
       let newMovieCategory = newParams.movieCategory !== oldParams.movieCategory;
       let newDecade = newParams.decade !== oldParams.decade;
       let newOrderBy = newParams.orderBy !== oldParams.orderBy;
 
       if(newMovieCategory || newDecade || newOrderBy) {
-        $scope.resetPagination();
+
+        if($scope.resetPagination)
+          $scope.resetPagination();
+
         $scope.execSearch();
       }
     });

@@ -46,7 +46,7 @@
           <div ng-repeat="movie in movies">
             {{movie.title}}
           </div>
-          <pagination-handler-directive pagination-params="paginationParams"/>
+          <pagination-handler-directive pagination-params="paginationParams" reset-pagination-fn="resetPagination" search-fn="execSearch">
         </div>
       </div>
     </div>
