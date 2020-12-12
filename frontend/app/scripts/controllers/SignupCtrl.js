@@ -98,14 +98,6 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
                     $scope.loggedUser.avatar = resp.headers('Content-Location');
                     $scope.$apply();
                   });
-                  /*r.all('/user/avatar')
-                    .customPUT(fd, undefined, undefined, Object.assign({'Content-Type': undefined}, RestFulResponse.defaultHeaders))
-                    .then(function () {
-                      // esto es para que angular detecte que hubo un cambio y pida de nuevo la imagen
-                      var aux = $scope.loggedUser.avatar;
-                      $scope.loggedUser.avatar = null;
-                      $scope.loggedUser.avatar = aux;
-                    });*/
                 });
               }
               $location.path('/') // TODO: poner la ruta del perfil
