@@ -8,7 +8,7 @@ public class Image {
 
     public static final String TABLE_NAME = "images";
 
-    public static final String DEFAULT_TYPE = "image/jpg";
+    public static final String DEFAULT_TYPE = "image/jpeg";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "images_image_id_seq")

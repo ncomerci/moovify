@@ -11,7 +11,7 @@ define(['frontend'], function(frontend) {
         resetPaginationFn: '='
       },
 
-      templateUrl: 'views/directives/paginationHandlerDirective.html',
+      templateUrl: 'resources/views/directives/paginationHandlerDirective.html',
 
       link: function(scope) {
 

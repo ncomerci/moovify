@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.services;
 
+import ar.edu.itba.paw.interfaces.persistence.AuthenticationRefreshTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.PasswordResetTokenDao;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.UserVerificationTokenDao;
@@ -39,6 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordResetTokenDao passwordResetTokenDao;
+
+    @Autowired
+    private AuthenticationRefreshTokenDao authenticationRefreshTokenDao;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -225,6 +229,38 @@ public class UserServiceImpl implements UserService {
         return user.isEnabled() && other.isEnabled() && user.isUserFollowing(other);
     }
 
+    @Transactional
+    @Override
+    public AuthenticationRefreshToken getUserRefreshToken(User user) {
+
+        final Optional<AuthenticationRefreshToken> optToken = authenticationRefreshTokenDao.findRefreshTokenByUser(user);
+
+        if(optToken.isPresent()) {
+
+            final AuthenticationRefreshToken authToken = optToken.get();
+
+            if(!authToken.isValid()) {
+                authToken.reset();
+            }
+
+            return authToken;
+        }
+
+        return authenticationRefreshTokenDao
+                .createRefreshToken(
+                        AuthenticationRefreshToken.generateSecureToken(),
+                        AuthenticationRefreshToken.calculateExpiryDate(),
+                        user
+                );
+    }
+
+    @Override
+    public void deleteUserRefreshToken(User user) {
+        final Optional<AuthenticationRefreshToken> optToken = authenticationRefreshTokenDao.findRefreshTokenByUser(user);
+
+        optToken.ifPresent(authenticationRefreshToken
+                -> authenticationRefreshTokenDao.deleteRefreshToken(authenticationRefreshToken));
+    }
 
     @Transactional
     @Override
@@ -364,12 +400,6 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public long getFollowerCount(User user) {
-        return userDao.getFollowerCount(user);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public Optional<User> findUserById(long id) {
         return userDao.findUserById(id);
     }
@@ -384,6 +414,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findUserByEmail(String email) {
         return userDao.findUserByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<User> findUserByRefreshToken(String refreshToken) {
+        return authenticationRefreshTokenDao
+                .getRefreshToken(refreshToken)
+                .map(AuthenticationRefreshToken::getUser);
     }
 
     @Transactional(readOnly = true)

@@ -1,7 +1,7 @@
 define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/RestFulResponseFactory'], function(frontend) {
 
     'use strict';
-    frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, $window, PageTitle, RestFulResponse, $location, $translate) {
+    frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, $window, PageTitle, RestFulResponse, $location, $translate, $document) {
       PageTitle.setTitle('asd') //TODO: cambiar la key
 
       LoggedUserFactory.isLogged().then(function(resp){
@@ -52,7 +52,24 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
         },
       }
 
-      // TODO: subir avatar
+      $scope.avatar = {
+        file: undefined,
+        error: false
+      }
+
+      var inputFile = angular.element(document.getElementById('avatar'))[0];
+
+      inputFile.addEventListener('change', function () {
+        $scope.avatar.file = inputFile.files[0];
+        if($scope.avatar.file !== undefined && $scope.avatar.file.size > 1000000) {
+          $scope.avatar.file = undefined;
+          $scope.avatar.error = true;
+        } else {
+          $scope.avatar.error = false;
+        }
+        $scope.$apply();
+      });
+
       $scope.signup = function (user) {
 
         $scope.signUpBtnPressed = true;
@@ -71,8 +88,20 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
               username: user.username,
               password: user.password
             }
-            LoggedUserFactory.login(aux_user, false).then(function() {
-              $location.path('/'); // TODO: poner la ruta del perfil
+            LoggedUserFactory.login(aux_user, false).then(function () {
+              if($scope.avatar.file !== undefined) {
+                var fd = new FormData();
+                fd.append('avatar', $scope.avatar.file);
+                RestFulResponse.all('/user/avatar')
+                  .customPUT(fd, undefined, undefined, Object.assign({'Content-Type': undefined}, RestFulResponse.defaultHeaders))
+                  .then(function () {
+                    // esto es para que angular detecte que hubo un cambio y pida de nuevo la imagen
+                    var aux = $scope.loggedUser.avatar;
+                    $scope.loggedUser.avatar = null;
+                    $scope.loggedUser.avatar = aux;
+                  });
+              }
+              $location.path('/') // TODO: poner la ruta del perfil
             })
           }).catch(function(err) {
             err.data.forEach(function(e){

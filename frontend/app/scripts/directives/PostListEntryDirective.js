@@ -7,7 +7,7 @@ define(['frontend'], function(frontend) {
       scope: {
         post: '='
       },
-      templateUrl: 'views/directives/postListEntryDirective.html',
+      templateUrl: 'resources/views/directives/postListEntryDirective.html',
       link: function (scope) {
         console.log(scope.post);
       },

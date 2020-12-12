@@ -20,8 +20,6 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
         pageNumber: pageNumber ? pageNumber : 0
       };
 
-      console.log('aaaaaaaaaaaa');
-
       if(category) {
         queryParams.movieCategory = category;
       }

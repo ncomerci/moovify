@@ -1,36 +1,28 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/PageTitleService'], function(frontend) {
+define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/RestFulResponseFactory'], function(frontend) {
 
-  function finishInit($scope) {
+  frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $route, PageTitle, $window, RestFulResponse) {
+
+    $scope.loggedUser = LoggedUserFactory.getLoggedUser();
+    PageTitle.setTitle('asdasd'); // TODO: cambiar key
+    $scope.title = PageTitle.getTitle();
+
+    var token = $window.localStorage.getItem("authorization");
+
+    if(token) {
+      LoggedUserFactory.saveToken(token).then(/*nothing to do*/);
+    }
+
     $scope.logout = function () {
       var loggedUser = LoggedUserFactory.getLoggedUser();
       var aux = {
         logged: false
       };
       Object.assign(loggedUser, aux);
-      Restangular.setDefaultHeaders({});
+      RestFulResponse.setDefaultHeaders({});
       $window.localStorage.removeItem("authorization");
     }
-  }
 
-	frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $route, PageTitle, $window) {
-
-		$scope.loggedUser = LoggedUserFactory.getLoggedUser();
-		PageTitle.setTitle('asdasd'); // TODO: cambiar key
-    $scope.title = PageTitle.getTitle();
-
-    var token = $window.localStorage.getItem("authorization");
-
-    if(token) {
-      LoggedUserFactory.saveToken(token).then(function () {
-          finishInit($scope);
-        }
-      );
-    }
-    else {
-      finishInit($scope);
-    }
-
-	});
+  });
 
 });

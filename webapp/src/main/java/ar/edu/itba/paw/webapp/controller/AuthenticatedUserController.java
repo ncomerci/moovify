@@ -5,13 +5,11 @@ import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.PostService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.*;
-import ar.edu.itba.paw.models.Comment;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.auth.JwtUtil;
 import ar.edu.itba.paw.webapp.dto.error.BeanValidationErrorDto;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
+import ar.edu.itba.paw.webapp.dto.error.GenericErrorDto;
 import ar.edu.itba.paw.webapp.dto.generic.GenericBooleanResponseDto;
 import ar.edu.itba.paw.webapp.dto.input.*;
 import ar.edu.itba.paw.webapp.dto.input.validation.annotations.Image;
@@ -37,10 +35,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Path("user")
 @Component
@@ -70,6 +65,8 @@ public class AuthenticatedUserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+
+
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response getUser() {
@@ -97,6 +94,10 @@ public class AuthenticatedUserController {
             final Response.ResponseBuilder responseBuilder = Response.noContent();
 
             authenticateUser(responseBuilder, user);
+
+            final AuthenticationRefreshToken authToken = userService.getUserRefreshToken(user);
+
+            responseBuilder.cookie(jwtUtil.generateRefreshCookie(authToken));
 
             return responseBuilder.build();
 
@@ -134,6 +135,63 @@ public class AuthenticatedUserController {
 
         if(shouldRevalidateAuthentication)
             authenticateUser(responseBuilder, user);
+
+        return responseBuilder.build();
+    }
+
+    @Produces
+    @POST
+    @Path("/refresh_token")
+    public Response refreshAccessToken(@CookieParam(JwtUtil.REFRESH_TOKEN_COOKIE_NAME) String refreshToken) {
+
+        final Response.ResponseBuilder failedRefreshResponse =
+                Response.status(Response.Status.UNAUTHORIZED)
+                .entity(new GenericErrorDto(
+                        messageSource.getMessage("error.refreshJwt", null, LocaleContextHolder.getLocale()))
+                );
+
+        if(refreshToken == null)
+            return failedRefreshResponse.build();
+
+        final Optional<User> optUser = userService.findUserByRefreshToken(refreshToken);
+
+        if(!optUser.isPresent())
+            return failedRefreshResponse.build();
+
+        final User user = optUser.get();
+
+        final Response.ResponseBuilder responseBuilder = Response.noContent();
+
+        authenticateUser(responseBuilder, user);
+
+        return responseBuilder.build();
+    }
+
+    @Produces
+    @DELETE
+    @Path("/refresh_token")
+    public Response deleteRefreshToken(@CookieParam(JwtUtil.REFRESH_TOKEN_COOKIE_NAME) Cookie refreshCookie,
+                                       @QueryParam("allSessions") @DefaultValue("false") boolean allSessions) {
+
+        final Response.ResponseBuilder responseBuilder = Response.noContent();
+
+        if(refreshCookie != null) {
+            responseBuilder.cookie(
+                    new NewCookie(
+                            refreshCookie,
+                            null,
+                            0,
+                            new Date(System.currentTimeMillis() - 100000L),
+                            false,
+                            true)
+            );
+
+            if(allSessions) {
+                userService
+                        .findUserByRefreshToken(refreshCookie.getValue())
+                        .ifPresent(user -> userService.deleteUserRefreshToken(user));
+            }
+        }
 
         return responseBuilder.build();
     }

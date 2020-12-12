@@ -17,7 +17,7 @@ define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
         }).catch(function() { $location.path('/404') }); //con location.path redirijo
 
       },
-      templateUrl:'views/directives/movieFiltersHandlerDirective.html'
+      templateUrl:'resources/views/directives/movieFiltersHandlerDirective.html'
       };
     });
 });
