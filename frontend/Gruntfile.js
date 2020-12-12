@@ -8,9 +8,9 @@ module.exports = function (grunt) {
   require('time-grunt')(grunt);
 
   var appConfig = {
-    app: 'app/resources',
+    app: 'app',
     dist: 'dist/resources',
-    tmp: '.tmp/resources'
+    tmp: '.tmp'
   };
 
   grunt.initConfig({
@@ -325,11 +325,6 @@ module.exports = function (grunt) {
         }, {
           expand: true,
           cwd: '.',
-          src: 'bower_components/bootstrap-sass-official/assets/fonts/bootstrap/*',
-          dest: '<%= yeoman.dist %>'
-        }, {
-          expand: true,
-          cwd: '.',
           src: 'bower_components/requirejs/require.js',
           dest: '<%= yeoman.dist %>'
         }]
@@ -385,6 +380,18 @@ module.exports = function (grunt) {
             }
         }
     },
+
+    cssmin: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= yeoman.tmp %>/styles',
+          src: ['*.css', '!*.min.css'],
+          dest: '<%= yeoman.dist %>/styles',
+          ext: '.css'
+        }]
+      }
+    }
   });
 
   grunt.registerMultiTask('jsrev', 'Use filerev output to create require-js compatible path mappings', function () {
@@ -426,9 +433,9 @@ module.exports = function (grunt) {
           if (path.extname(longPath) !== '.js') {
               continue;
           }
-          var shortPath = path.relative(options.baseUrl, longPath);
+          var shortPath = path.relative(options.baseRoot, longPath);
           var shortModule = path.relative(options.baseRoot, longModule);
-          console.log(longModule, longPath);
+
           mappings[removeExtension(shortModule)] = removeExtension(shortPath);
       }
     }
@@ -494,7 +501,7 @@ module.exports = function (grunt) {
       // copies non-javascripty things
       'copy:dist',
       // minify css in: <<>> out: <<>>
-      'cssmin',
+      'cssmin:dist',
 
       // adds hash to file names in: <<>> out: <<>>
       'filerev',

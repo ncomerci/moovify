@@ -17,7 +17,7 @@ define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
         }).catch(function() { $location.path('/404') }); // TODO: A 500
 
       },
-      templateUrl: 'views/directives/userFiltersHandlerDirective.html'
+      templateUrl: 'resources/views/directives/userFiltersHandlerDirective.html'
     };
   });
 

@@ -35,7 +35,7 @@
 <!--          <packagingExcludes>**/logback-test.xml</packagingExcludes>-->
           <webResources>
             <resource>
-              <directory>${project.parent.basedir}/frontend/dist/</directory>
+              <directory>${project.parent.basedir}/frontend/dist/resources/</directory>
               <targetPath>resources</targetPath>
             </resource>
           </webResources>
