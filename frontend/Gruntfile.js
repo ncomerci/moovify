@@ -27,8 +27,11 @@ module.exports = function (grunt) {
           middleware: function (connect) {
             return [
             // Rewrite request to always return index.html
-            modRewrite(['!\\.html|\\.js|\\.svg|\\.css|\\.png$ /index.html [L]']),
-            connect.static('<%= yeoman.tmp %>'),
+            modRewrite([
+              '!\\.html|\\.js|\\.svg|\\.css|\\.png$ /index.html [L]',
+              '.*resources/(.*)$ /$1 [L]'
+            ]),
+            connect.static(appConfig.tmp),
             connect().use('/bower_components', connect.static('./bower_components')),
             connect.static(appConfig.app)
             ];
