@@ -8,8 +8,9 @@ module.exports = function (grunt) {
   require('time-grunt')(grunt);
 
   var appConfig = {
-    app: 'app',
-    dist: 'dist'
+    app: 'app/resources',
+    dist: 'dist/resources',
+    tmp: '.tmp/resources'
   };
 
   grunt.initConfig({
@@ -27,7 +28,7 @@ module.exports = function (grunt) {
             return [
             // Rewrite request to always return index.html
             modRewrite(['!\\.html|\\.js|\\.svg|\\.css|\\.png$ /index.html [L]']),
-            connect.static('.tmp'),
+            connect.static('<%= yeoman.tmp %>'),
             connect().use('/bower_components', connect.static('./bower_components')),
             connect.static(appConfig.app)
             ];
@@ -66,7 +67,7 @@ module.exports = function (grunt) {
         },
         files: [
           '<%= yeoman.app %>/**/*.html',
-          '.tmp/styles/**/*.css',
+          '<%= yeoman.tmp %>/styles/**/*.css',
           '<%= yeoman.app %>/images/**/*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
@@ -75,8 +76,8 @@ module.exports = function (grunt) {
     compass: {
       options: {
         sassDir: '<%= yeoman.app %>/styles',
-        cssDir: '.tmp/styles',
-        generatedImagesDir: '.tmp/images/generated',
+        cssDir: '<%= yeoman.tmp %>/styles',
+        generatedImagesDir: '<%= yeoman.tmp %>/images/generated',
         imagesDir: '<%= yeoman.app %>/images',
         javascriptsDir: '<%= yeoman.app %>/scripts',
         fontsDir: '<%= yeoman.app %>/styles/fonts',
@@ -90,7 +91,7 @@ module.exports = function (grunt) {
       },
       dist: {
         options: {
-          sassDir: ['.tmp/styles'],
+          sassDir: ['<%= yeoman.tmp %>/styles'],
           generatedImagesDir: '<%= yeoman.dist %>/images/generated'
         }
       },
@@ -117,13 +118,13 @@ module.exports = function (grunt) {
         files: [{
           dot: true,
           src: [
-          '.tmp',
+          '<%= yeoman.tmp %>',
           '<%= yeoman.dist %>/**/*',
           '!<%= yeoman.dist %>/.git*'
           ]
         }]
       },
-      server: '.tmp'
+      server: '<%= yeoman.tmp %>'
     },
 
     autoprefixer: {
@@ -133,9 +134,9 @@ module.exports = function (grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: '.tmp/styles/',
+          cwd: '<%= yeoman.tmp %>/styles/',
           src: '**/*.css',
-          dest: '.tmp/styles/'
+          dest: '<%= yeoman.tmp %>/styles/'
         }]
       }
     },
@@ -152,7 +153,7 @@ module.exports = function (grunt) {
         ignorePath: /(\.\.\/){1,2}bower_components\//
       },
       dist: {
-        src: ['.tmp/styles/main.scss'],
+        src: ['<%= yeoman.tmp %>/styles/main.scss'],
         ignorePath: /(\.\.\/){1,2}bower_components\//
       },
       options: {
@@ -206,7 +207,7 @@ module.exports = function (grunt) {
       css: ['<%= yeoman.dist %>/styles/**/*.css'],
       imagesAndViews: ['<%= yeoman.dist %>/scripts/**/*.js', '<%= yeoman.dist %>/views/**/*.html'],
       options: {
-        assetsDirs: ['<%= yeoman.dist %>', '<%= yeoman.dist %>/images'],
+        assetsDirs: ['dist', '<%= yeoman.dist %>', '<%= yeoman.dist %>/images'],
         patterns: {
           imagesAndViews: [
             [/(images\/.*?\.(?:gif|jpeg|jpg|png|webp))/gm, 'Update the JS to reference our revved images'],
@@ -280,7 +281,7 @@ module.exports = function (grunt) {
           expand: true,
           cwd: '<%= yeoman.app %>/scripts',
           src: ['**/*.js'],
-          dest: '.tmp/scripts'
+          dest: '<%= yeoman.tmp %>/scripts'
         }]
       }
     },
@@ -299,7 +300,7 @@ module.exports = function (grunt) {
           expand: true,
           cwd: '<%= yeoman.app %>/styles',
           src: ['**/*.scss'],
-          dest: '.tmp/styles'
+          dest: '<%= yeoman.tmp %>/styles'
         }]
       },
       dist: {
@@ -318,7 +319,7 @@ module.exports = function (grunt) {
           ]
         }, {
           expand: true,
-          cwd: '.tmp/images',
+          cwd: '<%= yeoman.tmp %>/images',
           dest: '<%= yeoman.dist %>/images',
           src: ['generated/*']
         }, {
@@ -353,15 +354,15 @@ module.exports = function (grunt) {
     requirejs: {
       compile: {
         options: {
-          mainConfigFile: '.tmp/scripts/build.js',
-          baseUrl: '.tmp/scripts',
+          mainConfigFile: '<%= yeoman.tmp %>/scripts/build.js',
+          baseUrl: '<%= yeoman.tmp %>/scripts',
           uglify2: {
             mangle: false
           },
           removeCombined: true,
           preserveLicenseComments: false,
           findNestedDependencies: true,
-          dir: 'dist/scripts',
+          dir: '<%= yeoman.dist %>/scripts',
           modules: [
             {
               name: 'build'
@@ -379,31 +380,11 @@ module.exports = function (grunt) {
         dist: {
             options: {
                 baseRoot: '<%= yeoman.dist %>/scripts',
-                baseUrl: 'scripts',
+                baseUrl: 'dist',
                 outputFile: '<%= yeoman.dist %>/scripts/paths.js'
             }
         }
     },
-
-    babel: {
-      options: {
-        sourceMap: true,
-        presets: ['env']
-      },
-      dist: {
-        files: [{
-          expand: true,
-          cwd: '<%= yeoman.dist %>/bower_components',
-          src: '**/*.js',
-          dest: '<%= yeoman.dist %>/bower_components'
-        }, {
-          expand: true,
-          cwd: '<%= yeoman.dist %>/scripts',
-          src: '**/*.js',
-          dest: '<%= yeoman.dist %>/scripts'
-        }]
-      }
-    }
   });
 
   grunt.registerMultiTask('jsrev', 'Use filerev output to create require-js compatible path mappings', function () {
@@ -445,16 +426,15 @@ module.exports = function (grunt) {
           if (path.extname(longPath) !== '.js') {
               continue;
           }
-
-          var shortPath = path.relative(options.baseRoot, longPath);
+          var shortPath = path.relative(options.baseUrl, longPath);
           var shortModule = path.relative(options.baseRoot, longModule);
-
+          console.log(longModule, longPath);
           mappings[removeExtension(shortModule)] = removeExtension(shortPath);
       }
     }
 
     var data = {
-      baseUrl: options.baseUrl,
+      // baseUrl: options.baseUrl,
       moduleMappings: mappings
     };
 
@@ -515,15 +495,17 @@ module.exports = function (grunt) {
       'copy:dist',
       // minify css in: <<>> out: <<>>
       'cssmin',
+
       // adds hash to file names in: <<>> out: <<>>
       'filerev',
-      // Creates file map from filerev result in: <<>> out: <<>>
+
+      // Creates file map from filerev result in: <<>> out: <<>> for require js :D
       'jsrev',
-      // ???
+      // // ???
       'cdnify',
       // minify js in: <<>> out: <<>>
       'uglify',
-      // uses filerev data to rewrire file urls
+      // // uses filerev data to rewrire file urls
       'usemin',
       // minify html
       'htmlmin'

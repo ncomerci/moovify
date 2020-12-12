@@ -18,18 +18,18 @@
 @import 'uikit/src/scss/variables.scss';
 @import 'uikit/src/scss/mixins.scss';
 
-@import "uikit/_variables.scss";
-@import "uikit/_navbar.scss";
-@import "uikit/_button.scss";
-@import "uikit/_search.scss";
-@import "uikit/_container.scss";
-@import "uikit/_link.scss";
-@import "uikit/_base.scss";
-@import "uikit/_text.scss";
-@import "uikit/_form.scss";
+@import "app/resources/styles/uikit/variables";
+@import "app/resources/styles/uikit/navbar";
+@import "app/resources/styles/uikit/button";
+@import "app/resources/styles/uikit/search";
+@import "app/resources/styles/uikit/container";
+@import "app/resources/styles/uikit/link";
+@import "app/resources/styles/uikit/base";
+@import "app/resources/styles/uikit/text";
+@import "app/resources/styles/uikit/form";
 
 @import 'uikit/src/scss/uikit.scss';
 
 
-@import 'moovify/_navBar.scss';
-@import "moovify/_extraStyle.scss";
+@import 'app/resources/styles/moovify/navBar';
+@import "app/resources/styles/moovify/extraStyle";
