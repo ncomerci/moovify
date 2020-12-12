@@ -28,7 +28,7 @@ module.exports = function (grunt) {
             return [
             // Rewrite request to always return index.html
             modRewrite([
-              '!\\.html|\\.js|\\.svg|\\.css|\\.png$ /index.html [L]',
+              '!\\.html|\\.js|\\.svg|\\.css|\\.png|\\.jpg$ /index.html [L]',
               '.*resources/(.*)$ /$1 [L]'
             ]),
             connect.static(appConfig.tmp),

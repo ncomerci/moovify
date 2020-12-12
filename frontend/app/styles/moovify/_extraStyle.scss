@@ -281,3 +281,41 @@ form {
 .disabled-primary {
   background-color: #F6C9A6;
 }
+
+// ====================================================================
+
+.main{position:relative;}
+
+.pink-div {
+  background: none repeat scroll 0 0 #feaec9;
+  height: 110px;
+}
+
+.yellow-div {
+  background: none repeat scroll 0 0 #b5e51d;
+  height: 110px;
+}
+
+.blue-cirle-div {
+  background: none repeat scroll 0 0;
+  border-radius: 110px;
+  display: block;
+  width: 180px;
+  height: 180px;
+  left: 15%;
+  margin: 0 auto;
+  position: absolute;
+  text-align: center;
+  top: 300px;
+  border: 5px solid #30475e;
+  vertical-align: middle;
+}
+
+
+.forsomeText {
+  display: block;
+  margin: 0 auto;
+  padding: 60px 37px 37px;
+  text-align: center;
+  vertical-align: middle;
+}

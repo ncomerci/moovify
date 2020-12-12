@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class JwtUtil {
 
-    private static final int EXPIRATION_TIME_MILLIS = 15 * 60 * 1000; // 15 minutes
+    private static final int EXPIRATION_TIME_MILLIS =  60 * 1000; // 15 minutes
 
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 
@@ -56,14 +56,12 @@ public class JwtUtil {
 
             final String username = body.getSubject();
 
-            final String password = body.get("password", String.class);
-
             final boolean enabled = Boolean.parseBoolean(body.get("enabled", String.class));
 
             final Collection<GrantedAuthority> roles =
                     deserializeRolesToGrantedAuthorities(body.get("roles", String.class));
 
-            return new org.springframework.security.core.userdetails.User(username, password, enabled,
+            return new org.springframework.security.core.userdetails.User(username, "", enabled,
                     false, false, false, roles);
 
         } catch (JwtException | ClassCastException e) {
@@ -76,7 +74,6 @@ public class JwtUtil {
         Claims claims = Jwts.claims();
 
         claims.setSubject(u.getUsername());
-        claims.put("password", u.getPassword());
         claims.put("enabled", String.valueOf(u.isEnabled()));
         claims.put("roles", serializeRoles(u.getRoles()));
 
@@ -93,11 +90,24 @@ public class JwtUtil {
         return new NewCookie(REFRESH_TOKEN_COOKIE_NAME,
                 token.getToken(),
                 "/",
-                null,
+                "127.0.0.1",
                 Cookie.DEFAULT_VERSION,
                 "Authentication Refresh Token",
                 (int) ChronoUnit.SECONDS.between(LocalDateTime.now(), token.getExpiryDate()),
                 null,
+                false,
+                true);
+    }
+
+    public NewCookie getDeleteRefreshCookie() {
+        return new NewCookie(REFRESH_TOKEN_COOKIE_NAME,
+                null,
+                "/",
+                null,
+                Cookie.DEFAULT_VERSION,
+                null,
+                0,
+                new Date(0),
                 false,
                 true);
     }
