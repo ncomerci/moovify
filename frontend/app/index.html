@@ -6,22 +6,17 @@
   <base href="/">
   <meta name="description" content="">
 
-  <link rel = "icon" href = "images/favicon.png" type = "image/x-icon" />
+  <link rel="icon" href="resources/images/favicon.ico" type="image/x-icon"/>
+  <link rel="stylesheet" href="resources/styles/main.css">
 
-  <!-- build:css(.tmp) styles/main.css -->
-  <link rel="stylesheet" href="styles/main.css">
-  <!-- endbuild -->
 
 </head>
 <body class="uk-padding-remove">
-  <!--[if lt IE 7]>
-  <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-  <![endif]-->
-  <!-- Add your site or application content here -->
 
+  <!-- Add your site or application content here -->
   <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
     <nav class="uk-navbar-container" uk-navbar>
-      <a class="uk-logo" href="/"><img id="nav-logo" src="images/logo.png" alt="Moovify"></a>
+      <a class="uk-logo" href="/"><img id="nav-logo" src="resources/images/logo.png" alt="Moovify"></a>
       <div class="uk-navbar-right">
         <ul class="uk-navbar-nav">
           <li class="uk-visible@s uk-flex uk-flex-middle">
@@ -98,14 +93,8 @@
     </div>
   </div>
 
- <!-- build:js(.) scripts/oldieshim.js -->
-  <!--[if lt IE 9]>
-  <script src="bower_components/es5-shim/es5-shim.js"></script>
-  <script src="bower_components/json3/lib/json3.js"></script>
-  <![endif]-->
-  <!-- endbuild -->
-  <script src="/scripts/paths.js"></script>
-  <script src="bower_components/requirejs/require.js" data-main="/scripts/build.js"></script>
+  <script src="resources/scripts/paths.js"></script>
+  <script src="resources/bower_components/requirejs/require.js" data-main="resources/scripts/build.js"></script>
 
 </body>
 </html>

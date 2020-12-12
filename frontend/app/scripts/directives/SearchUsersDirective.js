@@ -85,7 +85,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
       },
 
-      templateUrl: 'views/directives/searchUsersDirective.html'
+      templateUrl: 'resources/views/directives/searchUsersDirective.html'
     };
   });
 
