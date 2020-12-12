@@ -4,16 +4,18 @@ define(['frontend', 'services/RestFulResponseFactory'], function(frontend) {
   frontend.factory('LoggedUserFactory', function(RestFulResponse, $window, $q) {
     var loggedUser = {
       logged: false,
+      expDate: undefined
     };
     var mutex = {
       value: false
     }
 
-    var LoggedUserFactory =  {
+    return {
       getLoggedUser: function () {
         return loggedUser;
       },
-      saveToken: function (token) {
+      /*saveToken: function (token) {
+        console.log('Date', new Date(RestFulResponse.parseToken(token).exp * 1000))
         return $q(function(resolve, reject) {
           RestFulResponse.setDefaultHeaders({authorization: token});
           mutex.value = true;
@@ -29,25 +31,37 @@ define(['frontend', 'services/RestFulResponseFactory'], function(frontend) {
             reject(err);
           });
         });
-      },
+      },*/
       login: function (user, remember) {
-        return $q(function(resolve, reject) {
+        return $q(function (resolve, reject) {
           mutex.value = true;
-          RestFulResponse.all("user").post(user).then(function(resp) {
-            LoggedUserFactory.saveToken(resp.headers("authorization")).then(function(r) { resolve(r) });
-            if(remember) {
-              $window.localStorage.setItem("authorization", resp.headers("authorization"));
-            }
-          }).catch(function(err) {
+          RestFulResponse.noAuth().all("user").post(user).then(function (resp) {
+            loggedUser.expDate = RestFulResponse.setToken(resp.headers("authorization"));
+            loggedUser.logged = true;
+            RestFulResponse.withAuth(loggedUser).then(function (r) {
+              r.one("user").get().then(function (user) {
+                Object.assign(loggedUser, user.data ? user.data : user);
+                mutex.value = false;
+                resolve(loggedUser);
+              }).catch(function (err) {
+                mutex.value = false;
+                reject(err);
+              });
+            }).catch(function (err) {
+              mutex.value = false;
+              reject(err);
+            });
+
+          }).catch(function (err) {
             mutex.value = false;
             reject(err);
           });
-        })
+        });
       },
       isLogged: function () {
-        return $q(function(resolve, reject) {
+        return $q(function (resolve, reject) {
 
-          var f = function() {
+          var f = function () {
             if (!mutex.value) {
               return resolve(loggedUser.logged);
             }
@@ -56,10 +70,8 @@ define(['frontend', 'services/RestFulResponseFactory'], function(frontend) {
 
           f();
 
-        })
+        });
       }
-    }
-
-    return LoggedUserFactory;
+    };
   });
 });

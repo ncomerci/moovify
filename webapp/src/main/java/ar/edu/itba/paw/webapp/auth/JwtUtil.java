@@ -90,7 +90,7 @@ public class JwtUtil {
         return new NewCookie(REFRESH_TOKEN_COOKIE_NAME,
                 token.getToken(),
                 "/",
-                null,
+                "127.0.0.1",
                 Cookie.DEFAULT_VERSION,
                 "Authentication Refresh Token",
                 (int) ChronoUnit.SECONDS.between(LocalDateTime.now(), token.getExpiryDate()),
