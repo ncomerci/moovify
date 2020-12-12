@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend'], function(frontend) {
+define(['frontend', 'services/RestFulResponseFactory'], function(frontend) {
 
-  frontend.factory('LoggedUserFactory', function(Restangular, $window, $q) {
+  frontend.factory('LoggedUserFactory', function(RestFulResponse, $window, $q) {
     let loggedUser = {
       logged: false,
     };
@@ -15,9 +15,9 @@ define(['frontend'], function(frontend) {
       },
       saveToken: function (token) {
         return $q((resolve, reject) => {
-          Restangular.setDefaultHeaders({authorization: token});
+          RestFulResponse.setDefaultHeaders({authorization: token});
           mutex.value = true;
-          Restangular.one("user").get().then(function (user) {
+          RestFulResponse.one("user").get().then(function (user) {
             Object.assign(loggedUser, user.data ? user.data : user);
             loggedUser.logged = true;
             mutex.value = false;
@@ -25,7 +25,7 @@ define(['frontend'], function(frontend) {
           }).catch(err => {
             mutex.value = false;
             $window.localStorage.removeItem("authorization");
-            Restangular.setDefaultHeaders({});
+            RestFulResponse.setDefaultHeaders({});
             reject(err);
           });
         });
@@ -33,7 +33,7 @@ define(['frontend'], function(frontend) {
       login: function (user, remember) {
         return $q((resolve, reject) => {
           mutex.value = true;
-          Restangular.setFullResponse(true).all("user").post(user).then(function(resp) {
+          RestFulResponse.all("user").post(user).then(function(resp) {
             LoggedUserFactory.saveToken(resp.headers("authorization")).then(r => resolve(r));
             if(remember) {
               $window.localStorage.setItem("authorization", resp.headers("authorization"));
