@@ -51,8 +51,8 @@ public class UserVerificationTokenDaoImpl implements UserVerificationTokenDao {
         LOGGER.info("Find User Verification Token By User: {}", user.getId());
 
         return em.createQuery(
-                        "SELECT uvt FROM UserVerificationToken uvt WHERE uvt.user.id = :id",
-                        UserVerificationToken.class)
+                 "SELECT uvt FROM UserVerificationToken uvt WHERE uvt.user.id = :id",
+                 UserVerificationToken.class)
                 .setParameter("id", user.getId())
                 .getResultList()
                 .stream().findFirst();

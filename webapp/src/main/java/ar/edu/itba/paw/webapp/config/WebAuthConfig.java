@@ -97,6 +97,9 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.POST, "/api/user", "/api/user/")
                     .anonymous()
 
+                    .antMatchers("/api/user/refresh_token", "/api/user/refresh_token/")
+                    .permitAll()
+
                     .antMatchers(HttpMethod.POST, "/api/user/email_confirmation", "/api/user/email_confirmation/")
                     .hasRole("NOT_VALIDATED")
 

@@ -25,9 +25,6 @@ public interface UserDao {
 
     Optional<User> findUserByEmail(String email);
 
-    // TODO: Kill method
-    long getFollowerCount(User user);
-
     PaginatedCollection<User> getAllUsers(Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<User> getFollowedUsers(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
