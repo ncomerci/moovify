@@ -102,6 +102,16 @@ public class CommentDaoImpl implements CommentDao {
     }
 
     @Override
+    public PaginatedCollection<Comment> findPostChildrenComments(Post post, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Find Post Children Comments {} Order By {}. Page number {}, Page Size {}", post.getId(), sortCriteria, pageNumber, pageSize);
+
+        return queryComments(
+                "WHERE " + COMMENTS + ".post_id = ? AND " + COMMENTS + ".parent IS NULL",
+                enabled, sortCriteria, pageNumber, pageSize, new Object[]{ post.getId() });
+    }
+
+    @Override
     public PaginatedCollection<Comment> findCommentsByPost(Post post, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
 
         LOGGER.info("Find Comments By Post {} Order By {}. Page number {}, Page Size {}", post.getId(), sortCriteria, pageNumber, pageSize);

@@ -145,6 +145,12 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional(readOnly = true)
     @Override
+    public PaginatedCollection<Comment> findPostChildrenComments(Post post, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+        return commentDao.findPostChildrenComments(post, enabled, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public PaginatedCollection<Comment> findCommentsByPost(Post post, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
         return commentDao.findCommentsByPost(post, enabled, getCommentSortCriteria(sortCriteria), pageNumber, pageSize);
     }

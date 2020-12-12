@@ -30,6 +30,8 @@ public interface CommentService {
 
     PaginatedCollection<Comment> findCommentChildren(Comment comment, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
+    PaginatedCollection<Comment> findPostChildrenComments(Post post, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
+
     PaginatedCollection<Comment> findCommentsByPost(Post post, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> findCommentsByUser(User user, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
