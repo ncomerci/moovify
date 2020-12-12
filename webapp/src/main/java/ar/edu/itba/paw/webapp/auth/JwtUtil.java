@@ -1,5 +1,6 @@
 package ar.edu.itba.paw.webapp.auth;
 
+import ar.edu.itba.paw.models.AuthenticationRefreshToken;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import io.jsonwebtoken.Claims;
@@ -12,10 +13,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.FileCopyUtils;
 
+import javax.ws.rs.core.Cookie;
+import javax.ws.rs.core.NewCookie;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -23,7 +28,9 @@ import java.util.stream.Collectors;
 
 public class JwtUtil {
 
-    private static final int HOUR_MILLIS = 1000 * 60 * 60;
+    private static final int EXPIRATION_TIME_MILLIS = 15 * 60 * 1000; // 15 minutes
+
+    public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 
     final private Key secret;
 
@@ -77,9 +84,22 @@ public class JwtUtil {
                 Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 12 * HOUR_MILLIS))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME_MILLIS))
                 .signWith(secret)
                 .compact();
+    }
+
+    public NewCookie generateRefreshCookie(AuthenticationRefreshToken token) {
+        return new NewCookie(REFRESH_TOKEN_COOKIE_NAME,
+                token.getToken(),
+                "/",
+                null,
+                Cookie.DEFAULT_VERSION,
+                "Authentication Refresh Token",
+                (int) ChronoUnit.SECONDS.between(LocalDateTime.now(), token.getExpiryDate()),
+                null,
+                false,
+                true);
     }
 
     private String serializeRoles(Collection<Role> roles) {
