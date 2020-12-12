@@ -1,0 +1,130 @@
+<div>
+  <div class="uk-margin-auto uk-margin-top">
+    <h1 class="uk-article-title uk-margin-auto uk-text-center">
+      {{'POST_CREATE' | translate}}
+    </h1>
+    <hr class="uk-divider-icon">
+  </div>
+  <div>
+    <form name="createPostForm" class="uk-form-stacked uk-margin-auto uk-padding-large uk-padding-remove-vertical" id="post-create-form">
+      <div class="uk-margin-left uk-margin-bottom">
+        {{'POST_CREATE_CHOOSE_TITLE' | translate}}
+        <div class="uk-text-danger" ng-if="fieldRequired('title')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+        <div class="uk-text-danger" ng-if="createPostForm.title.$error.pattern">{{'FORM_NAME_PATTERN_ERROR' | translate}}</div>
+        <div class="uk-text-danger" ng-if="createPostForm.title.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: titleConstraints.minLen};}}</div>
+        <div class="uk-text-danger" ng-if="createPostForm.title.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: titleConstraints.maxLen};}}</div>
+        <label class="uk-form-label uk-text-secondary uk-margin-auto">
+          <input  class="uk-input"
+                  type="text"
+                  name="title"
+                  ng-model="post.title"
+                  placeholder="{{'POST_CREATE_TITLE_PLACEHOLDER' | translate}}"
+                  ng-pattern="titleConstraints.pattern"
+                  ng-minlength="{{titleConstraints.minLen}}"
+                  ng-maxlength="{{titleConstraints.maxLen}}"
+                  required
+          />
+        </label>
+      </div>
+
+      <div class="uk-margin-left uk-margin-bottom">
+        {{'POST_CREATE_CHOOSE_CATEGORY' | translate}}
+        <div class="uk-text-danger" ng-if="fieldRequired('category')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+        <label class="uk-form-label uk-text-secondary uk-margin-auto">
+          <select  class="uk-select"
+                   name="category"
+                   ng-model="post.category"
+                   ng-options="category.id as category.name for category in postCategories"
+                   required
+          >
+            <option value="">{{'POST_CREATE_CATEGORY_PLACEHOLDER' | translate}}</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="uk-margin-left uk-margin-bottom">
+        {{'POST_CREATE_WRITE_BODY' | translate}}
+        <div class="uk-text-danger" ng-if="fieldRequired('body')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+        <div class="uk-text-danger" ng-if="createPostForm.body.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: bodyConstraints.minLen};}}</div>
+        <div class="uk-text-danger" ng-if="createPostForm.body.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: bodyConstraints.maxLen};}}</div>
+        <label class="uk-form-label uk-text-secondary uk-margin-auto">
+          <input  class="uk-textarea"
+                  id="create-post-data"
+                  name="body"
+                  ng-model="post.body"
+                  placeholder="{{'POST_CREATE_BODY_PLACEHOLDER' | translate}}"
+                  ng-minlength="{{bodyConstraints.minLen}}"
+                  ng-maxlength="{{bodyConstraints.maxLen}}"
+                  required
+          />
+        </label>
+      </div>
+
+      <div class="uk-text-center">
+        <button id="open-modal-button" uk-toggle="target: #movies-modal" class="uk-button uk-button-primary uk-border-rounded uk-margin-bottom"
+                type="button">{{'POST_CREATE_BUTTON' | translate}}</button>
+      </div>
+      <div id="movies-modal" class="uk-modal-container" uk-modal>
+        <div class="uk-modal-dialog uk-modal-body uk-border-rounded">
+          <p class="uk-text-right uk-margin-remove">
+            <button class="uk-modal-close" type="button" uk-close></button>
+          </p>
+
+          <div>
+            <h1 class="uk-h1 uk-margin-remove-top">
+              {{'POST_CREATE_MOVIES_DISCUSSED' | translate}}
+            </h1>
+            <label for="add-movie-input">
+              {{'POST_CREATE_MOVIES_CONSTRAINS' | translate}}
+            </label>
+            <div class="uk-flex">
+              <input id="add-movie-input"
+                     name="movie"
+                     ng-model="post.movie"
+                     list="movie-list"
+                     class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+                     placeholder="{{'POST_CREATE_MOVIES_PLACEHOLDER' | translate}}">
+              <button id="add-movie-button" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
+                      type="button" ng-click="addMovie()">{{'POST_CREATE_ADD' | translate}}</button>
+            </div>
+          </div>
+          <div id="movies-selected" class="uk-width-3-4 uk-margin"></div>
+
+          <div class="uk-margin-medium">
+            <h1 class="uk-h2 uk-margin-remove-top">{{'POST_CREATE_TAGS' | translate}}</h1>
+            <label for="add-tag-input" class="uk-margin-bottom">
+              {{'POST_CREATE_TAGS_CONSTRAINS' | translate}}
+            </label>
+            <div class="uk-flex">
+              <input id="add-tag-input"
+                     name="tag"
+                     ng-model="post.tag"
+                     ng-pattern="tagsConstraints.pattern"
+                     ng-maxlength="{{tagsConstraints.maxLen}}"
+                     class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+                     placeholder="{{'POST_CREATE_TAGS_PLACEHOLDER' | translate}}">
+              <button id="add-tag-button" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
+                      ng-click="addTag()" type="button">{{'POST_CREATE_ADD' | translate}}</button>
+            </div>
+            <div class="uk-text-danger" ng-if="createPostForm.tag.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: tagsConstraints.maxLen};}}</div>
+          </div>
+
+          <div id="tags-selected" class="uk-margin uk-width-3-4"></div>
+
+          <p class="uk-text-center">
+            <input class="uk-button uk-button-primary uk-border-rounded extended-button uk-text-uppercase"
+                   type="submit"
+                   value="{{'POST_CREATE_SEND' | translate}}"
+                   ng-click="createPost(post)"/>
+          </p>
+        </div>
+
+        <datalist id="movie-list">
+          <option ng-repeat="movie in moviesTitles" ng-value="movie"></option>
+        </datalist>
+      </div>
+    </form>
+  </div>
+
+
+</div>
