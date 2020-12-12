@@ -48,7 +48,7 @@
             <a ng-if="!loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" ng-href="/post/create">{{'NAVBAR_CREATE_POST' | translate}}</a>
           </li>
           <li ng-if="loggedUser.logged" class="ng-cloak">
-            <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" ng-href="/user/profile">
+            <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" ng-href="/user">
 
               <img ng-src="{{loggedUser.avatar}}" class="uk-comment-avatar circle-navbar" width="45" height="45" alt="User Avatar">
               <span class="uk-text-bold uk-margin-small-left uk-text-uppercase">{{loggedUser.username}}</span>
@@ -57,7 +57,7 @@
             <div class="uk-navbar-dropdown m-bg-primary-lighter-5 m-rounded-bottom-10">
               <ul class="uk-nav uk-navbar-dropdown-nav">
                 <li>
-                  <a class="uk-text-normal uk-text-center m-text-primary" ng-href="/user/profile">
+                  <a class="uk-text-normal uk-text-center m-text-primary" ng-href="/user">
                     {{'USER_PROFILE' | translate}}
                   </a>
                 </li>

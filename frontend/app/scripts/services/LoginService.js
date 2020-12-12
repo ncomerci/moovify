@@ -33,7 +33,7 @@ define(['frontend', 'services/RestFulResponseFactory'], function(frontend) {
       login: function (user, remember) {
         return $q(function(resolve, reject) {
           mutex.value = true;
-          RestFulResponse.setFullResponse(true).all("user").post(user).then(function(resp) {
+          RestFulResponse.all("user").post(user).then(function(resp) {
             LoggedUserFactory.saveToken(resp.headers("authorization")).then(function(r) { resolve(r) });
             if(remember) {
               $window.localStorage.setItem("authorization", resp.headers("authorization"));
