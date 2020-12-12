@@ -8,21 +8,26 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/PostCategoriesS
     $scope.createPostBtnPressed = false;
     $scope.easyMDE;
 
-    PostCategoriesService.getPostCategories().then((optionArray) => {
+    PostCategoriesService.getPostCategories().then(function(optionArray) {
       $scope.postCategories = optionArray;
-    }).catch(() => $location.path('/404'));
+    }).catch(function() { $location.path('/404') });
 
     MovieFetchService.fetchMovies('/movies',
       null,null,100, 0).then(
-      resp => {
+
+      function(resp) {
+
         $scope.moviesList = new Map();
+
         Object.keys(resp.collection.plain()).forEach(function(paramKey) {
           $scope.moviesList.set(resp.collection[paramKey].title + ' - ' + resp.collection[paramKey].releaseDate, resp.collection[paramKey].id);
         });
-        for(var movie of $scope.moviesList.keys()){
+
+        $scope.moviesList.keys().forEach(function(movie) {
           $scope.moviesTitles.push(movie);
-        }
-      }).catch(() => $location.path('/404'));
+        });
+
+      }).catch(function() { $location.path('/404'); });
 
 
     $scope.titleConstraints = {
@@ -38,7 +43,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/PostCategoriesS
       pattern: /^[a-zA-Z ]*$/,
       maxLen: 50
     }
-    $scope.createPost = function (post) {
+    $scope.createPost = function(post) {
 
       $scope.createPostBtnPressed = true;
 
@@ -49,23 +54,24 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/PostCategoriesS
       // ){
         console.log($scope.post);
         // console.log($scope.fieldIsNotValid('title'));
-        post.tag = null;
-        post.movie = null;
-        var movies = post.movies.values();
-        post.movies = [];
-        for(var movie of movies){
-          post.movies.push(movie);
-        }
-        var tags = post.tags.keys();
-        post.tags = [];
-        for(var tag of tags){
-          post.tags.push(movie);
-        }
 
-        RestFulResponse.all('posts').post(post).then()
-          .catch(err => {
-            console.log(err);
-          });
+        post.tag = null;
+
+        post.movie = null;
+
+        var movies = post.movies.values();
+
+        post.movies = [];
+
+        movies.forEach(function(movie) { post.movies.push(movie); });
+
+        var tags = post.tags.keys();
+
+        post.tags = [];
+
+        tags.forEach(function(tag) { post.tags.push(tag); });
+
+        RestFulResponse.all('posts').post(post).then().catch(function(err) { console.log(err); });
 
     }
 
@@ -90,7 +96,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/PostCategoriesS
       var movieBadge = createBadge(moviesSelected, movieName);
 
       movieBadge.closeElem.addEventListener('click',
-        () => unselectMovie( movieName, moviesSelected, movieBadge.badgeElem), false);
+        function() { unselectMovie( movieName, moviesSelected, movieBadge.badgeElem); }, false);
       }
 
     function unselectMovie(movieName, moviesSelected, movieBadgeElem){
@@ -117,10 +123,10 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/PostCategoriesS
 
       $scope.post.tag = "";
 
-      let tagBadge = createBadge(tagsSelectedElem, tag);
+      var tagBadge = createBadge(tagsSelectedElem, tag);
 
       tagBadge.closeElem.addEventListener('click',
-        () => unselectTag(tag, tagsSelectedElem, tagBadge.badgeElem), false);
+        function() { unselectTag(tag, tagsSelectedElem, tagBadge.badgeElem); }, false);
     }
 
     function unselectTag(tag, tagsSelectedElem, tagBadgeElem){
@@ -132,13 +138,13 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/PostCategoriesS
     }
 
     function createBadge(parentElem, text) {
-      let closeElem = document.createElement("button");
+      var closeElem = document.createElement("button");
 
       closeElem.setAttribute('class', 'uk-margin-small-left uk-light');
       closeElem.setAttribute('type', 'button');
       closeElem.setAttribute('uk-close', '');
 
-      let badgeElem = document.createElement("span");
+      var badgeElem = document.createElement("span");
 
       badgeElem.setAttribute('class', 'uk-badge uk-primary disabled uk-padding-small uk-margin-small-right uk-margin-small-bottom');
 
@@ -147,16 +153,18 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/PostCategoriesS
 
       parentElem.appendChild(badgeElem);
 
-      return {badgeElem, closeElem};
+      // TODO: Esto es lo que querias hacer? Las propiedades de los objetos tienen que tener nombre si o si -Tobi
+      return {badgeElem: badgeElem, closeElem: closeElem};
     }
 
-    $scope.fieldRequired = function (field) {
+    $scope.fieldRequired = function(field) {
       return $scope.createPostBtnPressed && $scope.createPostForm[field].$error.required !== undefined;
     }
 
-    $scope.fieldIsNotValid = function (field) {
+    $scope.fieldIsNotValid = function(field) {
       console.log($scope.fieldRequired(field));
-      return $scope.fieldRequired(field) || $scope.signupForm[field].$error.pattern || $scope.signupForm[field].$error.minlength || $scope.signupForm[field].$error.maxlength;
+      return $scope.fieldRequired(field) || $scope.signupForm[field].$error.pattern ||
+        $scope.signupForm[field].$error.minlength || $scope.signupForm[field].$error.maxlength;
     }
 
   });

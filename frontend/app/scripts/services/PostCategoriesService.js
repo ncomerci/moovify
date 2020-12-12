@@ -1,17 +1,17 @@
 'use strict';
 define(['frontend', 'services/RestFulResponseFactory'], function (frontend) {
 
-  frontend.service('PostCategoriesService', function ($q, RestFulResponse) {
+  frontend.service('PostCategoriesService', function($q, RestFulResponse) {
 
-    let categories = null;
+    var categories = null;
 
     return {
-      getPostCategories: () => {
+      getPostCategories: function() {
 
-        return $q((resolve, reject) => {
+        return $q(function(resolve, reject) {
           if (!categories) {
-            RestFulResponse.all('/posts').all('categories').getList().then((response) => {
-              categories = response.data.map(entry => entry.originalElement);
+            RestFulResponse.all('/posts').all('categories').getList().then(function(response) {
+              categories = response.data.map(function(entry) { return entry.originalElement; });
               resolve(categories);
             }).catch(reject);
           } else {

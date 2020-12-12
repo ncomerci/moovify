@@ -32,7 +32,8 @@ define(['routes',
 				'RestangularProvider',
 				function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $translateProvider, $locationProvider, RestangularProvider) {
 
-					RestangularProvider.setBaseUrl('http://localhost/api');
+				  // TODO: Cambiar URL para el deploy
+					RestangularProvider.setBaseUrl('http://localhost:8080/api');
 
 					// El link del url viene con localhost:8080 :C
 					// RestangularProvider.setRestangularFields({

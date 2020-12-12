@@ -101,7 +101,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
                     $scope.loggedUser.avatar = aux;
                   });
               }
-              $location.path(`/`) // TODO: poner la ruta del perfil
+              $location.path('/') // TODO: poner la ruta del perfil
             })
           }).catch(function(err) {
             err.data.forEach(function(e){

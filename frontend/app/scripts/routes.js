@@ -25,7 +25,7 @@ define([], function() {
               controller: 'SignupCtrl',
             },
             '/post/create': {
-                templateUrl: '/views/post/PostCreateController.html',
+                templateUrl: 'resources/views/post/PostCreateController.html',
                 controller: 'PostCreateController'
             }
             /* ===== yeoman hook ===== */
