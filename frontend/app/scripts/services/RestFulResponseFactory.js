@@ -43,8 +43,11 @@ define(['frontend'], function(frontend) {
             resolve(ReqFullResponse);
           }
         });
-      }
+      },
 
+      clearHeaders: function () {
+        ReqFullResponse.setDefaultHeaders({});
+      }
     };
 
     // return Restangular.withConfig(function (RestangularConfigurer) {
