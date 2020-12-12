@@ -81,16 +81,38 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+  <filter-mapping>
+    <filter-name>StaticCacheFilter</filter-name>
+    <url-pattern>/resources/*</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>StaticCacheFilter</filter-name>
+    <filter-class>ar.edu.itba.paw.webapp.config.StaticCacheFilter</filter-class>
+  </filter>
+
   <servlet-mapping>
     <servlet-name>jersey-servlet</servlet-name>
     <url-pattern>/api/*</url-pattern>
   </servlet-mapping>
 
-<!-- TODO: Change -->
-  <error-page>
-    <error-code>404</error-code>
-    <location>/resources/index.html</location>
-  </error-page>
+  <servlet-mapping>
+    <servlet-name>default</servlet-name>
+    <url-pattern>/resources/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>index</servlet-name>
+    <jsp-file>/resources/index.html</jsp-file>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>index</servlet-name>
+    <url-pattern>/*</url-pattern>
+  </servlet-mapping>
+
+    <error-page>
+      <error-code>404</error-code>
+      <location>/resources/404.html</location>
+    </error-page>
 
   <mime-mapping>
     <extension>ico</extension>

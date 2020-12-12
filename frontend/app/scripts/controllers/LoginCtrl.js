@@ -7,7 +7,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
       $scope.loginBtnPressed = false;
       $scope.loginError = false;
 
-      LoggedUserFactory.isLogged().then(resp => {
+      LoggedUserFactory.isLogged().then(function(resp) {
         if(resp) {
           $window.location.href = '/';
         }
@@ -17,7 +17,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
         $scope.loginBtnPressed = true;
         LoggedUserFactory.login(user, $scope.checkValue).then(function () {
           $window.history.back();
-        }).catch(() => {
+        }).catch(function() {
           $scope.loginError = true;
           $scope.$apply();
         });

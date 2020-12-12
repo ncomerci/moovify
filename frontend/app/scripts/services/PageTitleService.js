@@ -2,7 +2,7 @@
 define(['frontend'], function(frontend) {
 
 	frontend.service('PageTitle', function($translate) {
-	  let title = {
+    var title = {
 	    value: 'Moovify'
     };
 	  return {
@@ -10,7 +10,7 @@ define(['frontend'], function(frontend) {
 	      return title;
       },
       setTitle: function (i18nKey) {
-	      $translate(i18nKey).then(t => title.value = t).catch(() => title.value = 'Moovify');
+	      $translate(i18nKey).then(function(t) { title.value = t }).catch(function() { title.value = 'Moovify' });
       }
     }
 	});

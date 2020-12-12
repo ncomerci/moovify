@@ -13,7 +13,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
 
     function fetchMovies(path, query, category, decade, enabled, orderBy, pageSize, pageNumber) {
 
-      let queryParams = {
+      var queryParams = {
         query: query,
         orderBy: orderBy,
         pageSize: pageSize ? pageSize : 5,
@@ -34,12 +34,12 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
         queryParams.enabled = enabled;
       }
 
-      return $q((resolve, reject) => {
-        RestFulResponse.all(path).getList(queryParams).then((movieResponse) => { //hago la query a la Api con queryparams de json
+      return $q(function(resolve, reject) {
+        RestFulResponse.all(path).getList(queryParams).then(function(movieResponse) { //hago la query a la Api con queryparams de json
 
-          let paginationParams = null;
-          let linkHeader = movieResponse.headers('link'); //pido los headers link
-          let movies = movieResponse.data;
+          var paginationParams = null;
+          var linkHeader = movieResponse.headers('link'); //pido los headers link
+          var movies = movieResponse.data;
 
           if(linkHeader) {
             paginationParams = LinkParserService.parse(linkHeader); //si tengo los convierto en datos de paginacion
@@ -47,7 +47,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
 
         resolve({collection: movies, paginationParams: paginationParams, queryParams: queryParams}); //devuelvo la informacion que junte e n el servicio
 
-        }).catch((response) => reject({status: response.status, message: 'MovieFetchService: FetchMovie'}));
+        }).catch(function(response) { reject({status: response.status, message: 'MovieFetchService: FetchMovie'}) });
 
       });
 

@@ -1,26 +1,33 @@
 'use strict';
-define(['frontend', 'directives/paginatedDisplay', 'controllers/FilteredPostCollectionController',
-    'controllers/FilteredUserCollectionController', 'controllers/FilteredMovieCollectionController'], function(frontend) {
+define(['frontend', 'directives/SearchMoviesDirective', 'directives/SearchUsersDirective',
+  'directives/SearchPostsDirective',], function(frontend) {
 
-    frontend.controller('SearchController', function($scope, $routeParams) {
+  var defaultType = 'posts';
 
-        console.log("Inicializando!");
+    frontend.controller('SearchController', function($scope, $routeParams, $location) {
 
-        $scope.query = {
-          value: $routeParams.query ? $routeParams.query : ''
-        }
-        // TODO: Ask if correct to delete
-        // $scope.$watch('searchOptions.contentType', function (newVal, oldVal) {
-        //   if(newVal !== oldVal){
-        //     $location.search({});
-        //     $location.search('type', $scope.searchOptions.contentType);
-        //     $location.search('query', $scope.query.value);
-        //   }
-        // });
+      console.log("Inicializando!");
 
-        $scope.searchOptions = {
-            contentType: $routeParams.contentType ? $routeParams.contentType : 'posts',
-        };
+      $scope.query = {
+        value: $routeParams.query ? $routeParams.query : ''
+      }
+
+      $scope.searchOptions = {
+        contentType: $routeParams.type
+      };
+
+      if(!$scope.searchOptions.contentType) {
+        $scope.searchOptions.contentType = defaultType;
+        $location.search('type', defaultType);
+      }
+
+      $scope.$watch('searchOptions.contentType', function(newParam, oldParam, scope) {
+
+        if(newParam !== oldParam)
+          $location.search('type', scope.searchOptions.contentType);
+
+      }, true);
+
     });
 
 });

@@ -6,45 +6,47 @@ define(['frontend'], function(frontend) {
 
     this.parse = function (link)  {
 
-      let linkexp = /<[^>]*>\s*(\s*;\s*[^\(\)<>@,;:"\/\[\]\?={} \t]+=(([^\(\)<>@,;:"\/\[\]\?={} \t]+)|("[^"]*")))*(,|$)/g;
-      let paramexp = /[^\(\)<>@,;:"\/\[\]\?={} \t]+=(([^\(\)<>@,;:"\/\[\]\?={} \t]+)|("[^"]*"))/g;
+      var linkexp = /<[^>]*>\s*(\s*;\s*[^\(\)<>@,;:"\/\[\]\?={} \t]+=(([^\(\)<>@,;:"\/\[\]\?={} \t]+)|("[^"]*")))*(,|$)/g;
+      var paramexp = /[^\(\)<>@,;:"\/\[\]\?={} \t]+=(([^\(\)<>@,;:"\/\[\]\?={} \t]+)|("[^"]*"))/g;
 
-      let matches = link.match(linkexp);
-      let rels = {};
-      for (let i = 0; i < matches.length; i++) {
-        let split = matches[i].split('>');
-        let href = split[0].substring(1);
-        let ps = split[1];
-        let s = ps.match(paramexp);
-        for (let j = 0; j < s.length; j++) {
-          let p = s[j];
-          let paramsplit = p.split('=');
-          let name = paramsplit[0];
-          let rel = paramsplit[1].replace(/["']/g, '');
+      var matches = link.match(linkexp);
+      var rels = {};
+      for (var i = 0; i < matches.length; i++) {
+        var split = matches[i].split('>');
+        var href = split[0].substring(1);
+        var ps = split[1];
+        var s = ps.match(paramexp);
+        for (var j = 0; j < s.length; j++) {
+          var p = s[j];
+          var paramsplit = p.split('=');
+          var name = paramsplit[0];
+          var rel = paramsplit[1].replace(/["']/g, '');
           rels[rel] = href;
         }
       }
 
-      rels = Object.entries(rels).map(([rel, link]) => {
+      rels = Object.keys(rels).map(function(rel) {
 
-        let ans = {rel: rel, url: link};
+        var link = rels[rel];
 
-        let urlParams = new URLSearchParams(link.match(/\?.*$/)[0]);
+        var ans = {rel: rel, url: link};
 
-        urlParams.forEach((value, key) => ans[key] = value);
+        var urlParams = new URLSearchParams(link.match(/\?.*$/)[0]);
+
+        urlParams.forEach(function(value, key) { ans[key] = value });
 
         return ans;
       });
 
-      let ans = {}
+      var ans = {}
 
-      rels.forEach(entry => ans[entry.rel] = Object.assign({}, entry));
+      rels.forEach(function(entry) { ans[entry.rel] = Object.assign({}, entry) });
 
-      Object.keys(ans).forEach(entry => delete ans[entry].rel);
+      Object.keys(ans).forEach(function(entry){ delete ans[entry].rel });
 
-      ans.isInFirstPage = () => ans.prev === undefined;
-      ans.isInLastPage = () => ans.next === undefined;
-      ans.isOnlyPage = () => ans.isInFirstPage() && ans.isInLastPage();
+      ans.isInFirstPage = function() { ans.prev === undefined };
+      ans.isInLastPage = function() { ans.next === undefined };
+      ans.isOnlyPage = function() { ans.isInFirstPage() && ans.isInLastPage() };
       ans.currentPage = ans.isInFirstPage() ? 0 : parseInt(ans.prev.pageNumber) + 1;
       ans.pageSize = parseInt(ans.first.pageSize);
 
