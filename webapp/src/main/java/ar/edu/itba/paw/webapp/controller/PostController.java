@@ -243,7 +243,7 @@ public class PostController {
 
         guaranteePostRelationshipAccessPermissions(securityContext, post);
 
-        final PaginatedCollection<Comment> comments = commentService.findCommentsByPost(post, enabled, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Comment> comments = commentService.findPostChildrenComments(post, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
