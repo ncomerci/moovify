@@ -6,11 +6,10 @@ define([], function() {
         routes: {
             '/': {
                 templateUrl: 'resources/views/home.html',
-                controller: 'HomeCtrl',
+                controller: 'HomeCtrl'
             },
             '/404': {
-                templateUrl: 'resources/404.html',
-                // controller: 'ErrorController'
+                templateUrl: 'resources/404.html'
             },
             '/search': {
                 templateUrl: 'resources/views/search/search.html',
@@ -18,11 +17,11 @@ define([], function() {
             },
             '/login': {
                 templateUrl: 'resources/views/login/login.html',
-                controller: 'LoginCtrl',
+                controller: 'LoginCtrl'
             },
             '/signup': {
               templateUrl: 'resources/views/login/signup.html',
-              controller: 'SignupCtrl',
+              controller: 'SignupCtrl'
             },
             '/user': {
                 templateUrl: 'resources/views/user/userProfile.html',

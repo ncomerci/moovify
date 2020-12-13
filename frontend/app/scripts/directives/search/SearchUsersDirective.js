@@ -1,6 +1,6 @@
 'use strict';
 define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/UserFetchService',
-  'directives/PaginationHandlerDirective', 'directives/UserFiltersHandlerDirective', 'directives/UserListEntryDirective'], function(frontend) {
+  'directives/PaginationHandlerDirective', 'directives/UserFiltersHandlerDirective', 'directives/listEntries/UserListEntryDirective'], function(frontend) {
 
   var defaultPageSize = 5;
 
@@ -30,7 +30,10 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
               $scope.paginationParams = resp.paginationParams;
 
               // Refresh URL
-              Object.keys(resp.queryParams).forEach(function(paramKey) { $location.search(paramKey, resp.queryParams[paramKey]) });
+              Object.keys(resp.queryParams)
+                .forEach(function(paramKey) { $location.search(paramKey, resp.queryParams[paramKey]) });
+
+              $scope.paginationMutex = false;
             }
           ).catch(function() { $location.path('/404') });
         } // TODO: Add 500 page
@@ -41,7 +44,12 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
         scope.users = [];
 
-        scope.paginationParams = {currentPage: init(parseInt($routeParams.pageNumber), 0), pageSize: init(parseInt($routeParams.pageSize), defaultPageSize)};
+        scope.paginationMutex = false;
+
+        scope.paginationParams = {
+          currentPage: init(parseInt($routeParams.pageNumber), 0),
+          pageSize: init(parseInt($routeParams.pageSize), defaultPageSize)
+        };
 
         scope.query = scope.$parent.query;
 

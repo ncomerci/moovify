@@ -1,0 +1,11 @@
+<div>
+  <div ng-show="posts.length > 0">
+    <div ng-repeat="post in posts">
+      <post-list-entry-directive post="post"></post-list-entry-directive>
+    </div>
+    <pagination-handler-directive pagination-params="paginationParams"
+                                  reset-pagination-fn="resetPagination"
+                                  search-fn="fetchPosts"
+                                  mutex="paginationMutex"/>
+  </div>
+</div>

@@ -31,13 +31,13 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
       return $q(function(resolve, reject) {
         RestFulResponse.noAuth().all(path).getList(queryParams).then(function(userResponse) {
 
-          var paginationParams = {pageSize: queryParams.pageSize, lastPage: 0};
+          var paginationParams = {lastPage: 0, pageSize: queryParams.pageSize, currentPage: queryParams.pageNumber};
           var linkHeader = userResponse.headers('Link');
           var users = userResponse.data;
 
           // Si no hay Link -> no habia contenido -> no me interesa paginar nada
           if(linkHeader){
-            paginationParams = LinkParserService.parse(linkHeader);
+            paginationParams.lastPage = LinkParserService.parse(linkHeader);
           }
 
           resolve({collection: users, paginationParams: paginationParams, queryParams: queryParams});

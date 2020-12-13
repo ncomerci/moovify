@@ -1,0 +1,11 @@
+<div>
+  <div ng-show="users.length > 0">
+    <div ng-repeat="user in users">
+      <user-list-entry-directive user="user"></user-list-entry-directive>
+    </div>
+    <pagination-handler-directive pagination-params="paginationParams"
+                                  reset-pagination-fn="resetPagination"
+                                  search-fn="fetchPosts"
+                                  mutex="paginationMutex"/>
+  </div>
+</div>

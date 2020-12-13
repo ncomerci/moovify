@@ -7,7 +7,7 @@ define(['frontend', 'services/DisplayService'], function(frontend) {
       scope: {
         movie: '='
       },
-      templateUrl: 'resources/views/directives/movieListEntryDirective.html',
+      templateUrl: 'resources/views/directives/listEntries/movieListEntryDirective.html',
       controller: function ($scope) {
         $scope.getYear = function (releaseDate) {
           return DisplayService.getYear(releaseDate);

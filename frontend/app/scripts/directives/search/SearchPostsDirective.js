@@ -1,6 +1,6 @@
 'use strict';
 define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/PostFetchService',
-  'directives/PaginationHandlerDirective', 'directives/PostsFiltersHandlerDirective', 'directives/PostListEntryDirective'], function(frontend) {
+  'directives/PaginationHandlerDirective', 'directives/PostsFiltersHandlerDirective', 'directives/listEntries/PostListEntryDirective'], function(frontend) {
 
   var defaultPageSize = 5;
 
@@ -30,7 +30,10 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
               $scope.paginationParams = resp.paginationParams;
 
               // Refresh URL
-              Object.keys(resp.queryParams).forEach(function(paramKey) { $location.search(paramKey, resp.queryParams[paramKey]) });
+              Object.keys(resp.queryParams)
+                .forEach(function(paramKey) { $location.search(paramKey, resp.queryParams[paramKey]) });
+
+              $scope.paginationMutex = false;
             }
           ).catch(function() { $location.path('/404') });
         } // TODO: Add 500 page
@@ -40,6 +43,8 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
       link: function (scope) {
 
         scope.posts = [];
+
+        scope.paginationMutex = false;
 
         scope.paginationParams = {
           currentPage: init(parseInt($routeParams.pageNumber), 0),
