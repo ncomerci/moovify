@@ -3,7 +3,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LoginService'],
 
   frontend.service('CommentFetchService', function (RestFulResponse, $q, LoggedUserFactory) {
 
-    // devolver comments con sus comments hijos cargados y el voto actual del user. Si user es null => voto null.
+    // devolver comments con sus comments hijos cargados.
 
     this.getPostCommentsWithUserVote = function (postId, userId, depth, orderBy, pageSize, pageNumber) {
 
@@ -11,12 +11,12 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LoginService'],
 
       return $q(function(resolve, reject) {
 
-        getRestangularInstanceAndExecute(function (Restangular){
-          Restangular.one('posts', postId).all('comments').getList(queryParams).then(function (response){
-            console.log('getPostCommentsWithUserVote', postId, depth);
-            handleCommentResponse(response, userId, depth, orderBy, pageSize, pageNumber, resolve, reject);
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser())
+          .then(function (Restangular){
+            Restangular.one('posts', postId).all('comments').getList(queryParams).then(function (response){
+              handleCommentResponse(response, userId, depth, orderBy, pageSize, pageNumber, resolve, reject);
+            }).catch(reject);
           }).catch(reject);
-        }, reject);
 
       });
     };
@@ -30,26 +30,13 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LoginService'],
 
       return $q(function(resolve, reject) {
 
-        getRestangularInstanceAndExecute(function (Restangular){
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular){
           Restangular.one('comments', commentId).all('children').getList(queryParams).then(function (response) {
-            console.log('getCommentCommentsWithUserVote', commentId, depth, response);
             handleCommentResponse(response, userId, depth, orderBy, pageSize, pageNumber, resolve, reject);
           }).catch(reject);
-        }, reject);
+        }).catch(reject);
 
       });
-    }
-
-    function getRestangularInstanceAndExecute(resolve, reject){
-
-      var loggedUser = LoggedUserFactory.getLoggedUser();
-
-      if(loggedUser.logged){
-        RestFulResponse.withAuth(loggedUser).then(resolve).catch(reject);
-      }
-      else {
-        resolve(RestFulResponse.noAuth());
-      }
     }
 
     function handleCommentResponse(response, userId, depth, orderBy, pageSize, pageNumber, resolve, reject) {
