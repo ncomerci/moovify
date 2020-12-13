@@ -1,7 +1,8 @@
 <div ng-if="supportedValues && filterParams">
-  <select ng-model='filterParams.postCategory'>
+  <select ng-model="filterParams.postCategory"
+          ng-options="option as option for option in supportedValues['postCategory']" >
       <option value="">{{'EMPTY'}}</option>
-      <option ng-repeat="option in supportedValues['postCategory']" ng-value="option">{{option}}</option>
+<!--      <option ng-repeat="option in supportedValues['postCategory']" ng-value="option">{{option}}</option>-->
   </select>
   <select ng-model='filterParams.postAge'>
       <option value="">{{'EMPTY'}}</option>

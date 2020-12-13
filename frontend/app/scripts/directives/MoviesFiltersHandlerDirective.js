@@ -13,7 +13,7 @@ define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
 
         DynamicOptionsService.getOptions('/movies').then(function(optionArray) {
           scope.supportedValues = {};
-          optionArray.forEach(function(opt){ scope.supportedValues[opt.name] = opt.options });
+          optionArray.forEach(function(opt){ scope.supportedValues[opt.name] = opt.values });
         }).catch(function() { $location.path('/404') }); //con location.path redirijo
 
       },
