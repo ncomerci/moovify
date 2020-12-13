@@ -10,56 +10,65 @@ define(['frontend', 'services/RestFulResponseFactory'], function(frontend) {
       value: false
     }
 
-    return {
+    var LoggedUserFactory = {
       getLoggedUser: function () {
         return loggedUser;
       },
-      /*saveToken: function (token) {
-        console.log('Date', new Date(RestFulResponse.parseToken(token).exp * 1000))
-        return $q(function(resolve, reject) {
-          RestFulResponse.setDefaultHeaders({authorization: token});
-          mutex.value = true;
-          RestFulResponse.one("user").get().then(function (user) {
-            Object.assign(loggedUser, user.data ? user.data : user);
-            loggedUser.logged = true;
-            mutex.value = false;
-            resolve(loggedUser);
-          }).catch(function(err) {
-            mutex.value = false;
-            $window.localStorage.removeItem("authorization");
-            RestFulResponse.setDefaultHeaders({});
-            reject(err);
-          });
-        });
-      },*/
-      login: function (user, remember) {
+      saveToken: function (token) {
         return $q(function (resolve, reject) {
           mutex.value = true;
-          RestFulResponse.noAuth().all("user").post(user).then(function (resp) {
-            loggedUser.expDate = RestFulResponse.setToken(resp.headers("authorization"));
-            loggedUser.logged = true;
-            RestFulResponse.withAuth(loggedUser).then(function (r) {
-              r.one("user").get().then(function (user) {
-                Object.assign(loggedUser, user.data ? user.data : user);
-                mutex.value = false;
-                resolve(loggedUser);
-              }).catch(function (err) {
-                mutex.value = false;
-                reject(err);
-              });
+          loggedUser.expDate = RestFulResponse.setToken(token);
+          RestFulResponse.withAuth(loggedUser).then(function (r) {
+            r.one("user").get().then(function (user) {
+              Object.assign(loggedUser, user.data ? user.data : user);
+              loggedUser.logged = true;
+              mutex.value = false;
+              resolve(loggedUser);
             }).catch(function (err) {
               mutex.value = false;
               reject(err);
             });
+          }).catch(function (err) {
+            mutex.value = false;
+            reject(err);
+          });
 
+        })
+      },
+      login: function (user) {
+        return $q(function (resolve, reject) {
+          mutex.value = true;
+          RestFulResponse.noAuth().all("user").post(user).then(function (resp) {
+            LoggedUserFactory.saveToken(resp.headers("authorization")).then(function (r) {
+              resolve(r);
+            }).catch(function (err) {
+              reject(err);
+            });
           }).catch(function (err) {
             mutex.value = false;
             reject(err);
           });
         });
       },
-      isLogged: function () {
+
+      logout: function () {
         return $q(function (resolve, reject) {
+          RestFulResponse.noAuth().one("/user/refresh_token").remove().then(function () {
+            var aux = {
+              logged: false,
+              expDate: undefined
+            };
+            Object.assign(loggedUser, aux);
+            RestFulResponse.clearHeaders();
+            resolve();
+          }).catch(function (err) {
+            reject(err)
+          })
+        });
+      },
+
+      isLogged: function () {
+        return $q(function (resolve) {
 
           var f = function () {
             if (!mutex.value) {
@@ -71,7 +80,18 @@ define(['frontend', 'services/RestFulResponseFactory'], function(frontend) {
           f();
 
         });
+      },
+
+    //  esto es solo debería usarse en index controller
+      startLoggedUserCheck: function () {
+        mutex.value = true;
+      },
+
+      finishLoggedUserCheck: function () {
+        mutex.value = false;
       }
     };
+
+    return LoggedUserFactory;
   });
 });

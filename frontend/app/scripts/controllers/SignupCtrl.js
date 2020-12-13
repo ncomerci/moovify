@@ -83,23 +83,22 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
           !$scope.passwordsNotEquals()
         )
         {
-          RestFulResponse.all('users').post(user).then(function() {
+          RestFulResponse.noAuth().all('users').post(user).then(function() {
             var aux_user = {
               username: user.username,
               password: user.password
             }
-            LoggedUserFactory.login(aux_user, false).then(function () {
+            LoggedUserFactory.login(aux_user).then(function (loggedUser) {
               if($scope.avatar.file !== undefined) {
                 var fd = new FormData();
                 fd.append('avatar', $scope.avatar.file);
-                RestFulResponse.all('/user/avatar')
-                  .customPUT(fd, undefined, undefined, Object.assign({'Content-Type': undefined}, RestFulResponse.defaultHeaders))
-                  .then(function () {
+                RestFulResponse.withAuth(loggedUser).then(function (r) {
+                  r.one('/user/avatar').customPUT(fd, undefined, undefined, {'Content-Type': undefined}).then(function (resp) {
                     // esto es para que angular detecte que hubo un cambio y pida de nuevo la imagen
-                    var aux = $scope.loggedUser.avatar;
-                    $scope.loggedUser.avatar = null;
-                    $scope.loggedUser.avatar = aux;
+                    $scope.loggedUser.avatar = resp.headers('Content-Location');
+                    $scope.$apply();
                   });
+                });
               }
               $location.path('/') // TODO: poner la ruta del perfil
             })
