@@ -59,7 +59,14 @@ define([], function() {
     POST_CREATE_TAGS: "Add some key words that describe this post",
     POST_CREATE_TAGS_CONSTRAINS: "You may add up to 5 tags (no more than 50 characters)",
     POST_CREATE_TAGS_PLACEHOLDER: "Write the tag here",
-    POST_CREATE_SEND: "SEND"
+    POST_CREATE_SEND: "SEND",
+
+
+
+
+
+
+    PAGINATION_PAGE_SIZE: "Showing",
 
 
 	};

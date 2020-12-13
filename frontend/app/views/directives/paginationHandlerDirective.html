@@ -1,8 +1,34 @@
-<div ng-show="paginationParams">
-  <input type='number' placeholder='Search'
-         ng-model='paginationParams.pageSize'
-         ng-model-options='{ debounce: 1000 }'/>
-  <input type='number' placeholder='Search'
-         ng-model='paginationParams.currentPage'
-         ng-model-options='{ debounce: 1000 }'/>
+<div ng-show="paginationParams" class="uk-flex uk-margin-small-top uk-flex-baseline">
+  <div class="uk-width-auto uk-flex uk-flex-wrap uk-flex-baseline">
+
+    <label for="pagination-page-size" class="uk-form-label uk-margin-small-right uk-width-auto">
+      {{'PAGINATION_PAGE_SIZE' | translate}}
+    </label>
+
+    <select id="pagination-page-size"
+            ng-model="paginationParams.pageSize"
+            ng-options="size as size for size in pageSizeOptions"
+            class="uk-select uk-form-blank uk-width-expand">
+    </select>
+  </div>
+
+  <ul ng-show="paginationParams.lastPage > 0" id="pagination-page-selector" class="uk-width-expand uk-pagination uk-flex-center" uk-margin>
+
+    <li ng-show="paginationParams.currentPage > 0">
+      <a ng-click="paginationParams.currentPage = paginationParams.currentPage - 1"><span uk-pagination-previous></span></a>
+    </li>
+
+    <li ng-repeat="page in [].constructor(paginationParams.lastPage + 1) track by $index"
+        ng-if="$index >= firstShownPage && $index <= lastShownPage"
+        ng-class="{ 'uk-active': $index === paginationParams.currentPage }">
+      <a ng-class="{ 'uk-disabled': $index === paginationParams.currentPage }"
+         ng-click="paginationParams.currentPage = $index"
+      >{{$index + 1}}</a>
+    </li>
+
+    <li ng-show="paginationParams.currentPage < paginationParams.lastPage">
+      <a ng-click="paginationParams.currentPage = paginationParams.currentPage + 1"><span uk-pagination-next></span></a>
+    </li>
+
+  </ul>
 </div>

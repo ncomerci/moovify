@@ -1,6 +1,6 @@
 'use strict';
-define(['frontend', 'directives/SearchMoviesDirective', 'directives/SearchUsersDirective',
-  'directives/SearchPostsDirective',], function(frontend) {
+define(['frontend', 'directives/search/SearchMoviesDirective', 'directives/search/SearchUsersDirective',
+  'directives/search/SearchPostsDirective'], function(frontend) {
 
   var defaultType = 'posts';
 

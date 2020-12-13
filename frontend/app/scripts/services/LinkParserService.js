@@ -4,7 +4,7 @@ define(['frontend'], function(frontend) {
 
   frontend.service('LinkParserService', function() {
 
-    this.parse = function (link)  {
+    this.parse = function (link) {
 
       var linkexp = /<[^>]*>\s*(\s*;\s*[^\(\)<>@,;:"\/\[\]\?={} \t]+=(([^\(\)<>@,;:"\/\[\]\?={} \t]+)|("[^"]*")))*(,|$)/g;
       var paramexp = /[^\(\)<>@,;:"\/\[\]\?={} \t]+=(([^\(\)<>@,;:"\/\[\]\?={} \t]+)|("[^"]*"))/g;
@@ -25,7 +25,7 @@ define(['frontend'], function(frontend) {
         }
       }
 
-      rels = Object.keys(rels).map(function(rel) {
+      rels = Object.keys(rels).map(function (rel) {
 
         var link = rels[rel];
 
@@ -33,24 +33,24 @@ define(['frontend'], function(frontend) {
 
         var urlParams = new URLSearchParams(link.match(/\?.*$/)[0]);
 
-        urlParams.forEach(function(value, key) { ans[key] = value });
+        urlParams.forEach(function (value, key) {
+          ans[key] = value
+        });
 
         return ans;
       });
 
-      var ans = {}
+      var relMap = {}
 
-      rels.forEach(function(entry) { ans[entry.rel] = Object.assign({}, entry) });
+      rels.forEach(function (entry) { relMap[entry.rel] = Object.assign({}, entry) });
 
-      Object.keys(ans).forEach(function(entry){ delete ans[entry].rel });
+      var isInFirstPage = relMap.prev === undefined;
 
-      ans.isInFirstPage = function() { return ans.prev === undefined };
-      ans.isInLastPage = function() { return ans.next === undefined };
-      ans.isOnlyPage = function() { ans.isInFirstPage() && ans.isInLastPage() };
-      ans.currentPage = ans.isInFirstPage() ? 0 : parseInt(ans.prev.pageNumber) + 1;
-      ans.pageSize = parseInt(ans.first.pageSize);
-
-      return ans;
+      return {
+        currentPage: isInFirstPage ? 0 : parseInt(relMap.prev.pageNumber) + 1,
+        pageSize: parseInt(relMap.first.pageSize),
+        lastPage: parseInt(relMap.last.pageNumber)
+      };
     }
 
   });

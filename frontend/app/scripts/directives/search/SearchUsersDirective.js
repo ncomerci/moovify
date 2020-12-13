@@ -49,7 +49,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
         scope.filterParams = {
           role: init($routeParams.role, null),
           orderBy: init($routeParams.orderBy, 'newest'),
-          enabled: scope.enabled,
+          enabled: scope.enabled
         };
 
         scope.resetPagination = null;
@@ -85,7 +85,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
 
       },
 
-      templateUrl: 'resources/views/directives/searchUsersDirective.html'
+      templateUrl: 'resources/views/directives/search/searchUsersDirective.html'
     };
   });
 
