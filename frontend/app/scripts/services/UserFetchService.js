@@ -31,7 +31,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
         queryParams.enabled = enabled;
 
       return $q(function(resolve, reject) {
-        RestFulResponse.all(path).getList(queryParams).then(function(userResponse) {
+        RestFulResponse.noAuth().all(path).getList(queryParams).then(function(userResponse) {
 
           var paginationParams = null;
           var linkHeader = userResponse.headers('Link');
