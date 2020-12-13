@@ -13,7 +13,7 @@ define(['frontend', 'services/RestFulResponseFactory'], function (frontend) {
           if(!optionsMap[endPoint]) {
 
             RestFulResponse.all(endPoint).all('options').getList().then(function(response) {
-              optionsMap[endPoint] = response.data.map(function(entry) { return entry.originalElement });
+              optionsMap[endPoint] = response.data.map(function(entry) { return entry.plain() });
               resolve(optionsMap[endPoint]);
             }).catch(reject);
           }
