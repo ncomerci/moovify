@@ -66,7 +66,6 @@ define(['frontend', 'services/MovieFetchService', 'services/PostCreateModalServi
         $scope.validateMovieMax = function () {
           return $scope.createPostBtnPressed && Object.keys($scope.tagMap).length  > 5;
         }
-
       },
       templateUrl: 'resources/views/directives/postCreateModalDirective.html'
     };

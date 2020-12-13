@@ -30,7 +30,7 @@
 
 
       <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
-        {{'MOVIES DISCUTIDAS'}}
+        {{'MOVIES_DISCUSSED' | translate}}
         <span ng-repeat="movie in post.movies">
           <a ng-href="/movies/{{movie.id}}">
             {{movie.title}}
@@ -40,7 +40,7 @@
     </div>
     <div class="uk-width-auto">
       <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
-        <span>{{getAgeMessageCode()}}</span>
+        <span>{{ getAgeMessage(post.creationDate) | translate }}</span>
       </p>
     </div>
   </div>

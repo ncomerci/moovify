@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'services/RestFulResponseFactory'], function(frontend) {
 
-  frontend.factory('LoggedUserFactory', function(RestFulResponse, $window, $q) {
+  frontend.factory('LoggedUserFactory', function(RestFulResponse, $window, $q, $location) {
     var loggedUser = {
       logged: false,
       expDate: undefined
@@ -60,25 +60,11 @@ define(['frontend', 'services/RestFulResponseFactory'], function(frontend) {
             };
             Object.assign(loggedUser, aux);
             RestFulResponse.clearHeaders();
+            $location.path('/');
             resolve();
           }).catch(function (err) {
             reject(err)
           })
-        });
-      },
-
-      isLogged: function () {
-        return $q(function (resolve) {
-
-          var f = function () {
-            if (!mutex.value) {
-              return resolve(loggedUser.logged);
-            }
-            setTimeout(f, 50);
-          };
-
-          f();
-
         });
       },
 

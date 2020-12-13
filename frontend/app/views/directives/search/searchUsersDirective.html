@@ -1,8 +1,11 @@
 <div>
   <user-filters-handler-directive filter-params="filterParams"></user-filters-handler-directive>
+  <div ng-show="users.length === 0" class="uk-margin-small-top">
+    <h1 class="uk-text-meta uk-text-center uk-text-bold">{{'USERS_NOT_FOUND' | translate}}</h1>
+  </div>
   <div ng-show="users.length > 0">
     <div ng-repeat="user in users">
-      {{user.username}}
+      <user-list-entry-directive user="user"></user-list-entry-directive>
     </div>
     <pagination-handler-directive pagination-params="paginationParams" reset-pagination-fn="resetPagination" search-fn="execSearch">
   </div>

@@ -32,12 +32,35 @@ define([], function() {
     USER_EMAILCONFIRM_TEXT: 'To be able to create a new post, you have to confirm your email address. Check your email box, we sent you a link!',
     USER_PROFILE_RESENDEMAIL: 'Resend email',
     USER_EMAILCONFIRM_CLOSEMODAL: 'Ok, got it!',
+    USER_NAME:'Name: {{name}}',
+    USER_DESCRIPTION: 'Description: {{description}}',
+    USER_DESCRIPTION_EMPTY: 'Description: This user does not have a description yet',
     SEARCH_TITLE:'Search',
     SEARCH_PLACEHOLDER: 'Search...',
-    POST_CATEGORIES: 'Type of post',
-    POST_AGE: 'From',
-    SEARCH_ORDER_BY: 'Order by',
+    ALL_POSTS: 'All posts',
+    POST_CATEGORIES: 'Type of post:',
+    POST_AGE: 'From:',
+    MOVIE_CATEGORY: 'Category:',
+    MOVIE_DECADE: 'Decade:',
+    USER_ROLE: 'Role:',
+    SEARCH_ORDER_BY: 'Order by:',
     POST_TAB_DISPLAY: 'Posts',
+    MOVIE_TAB_DISPLAY: 'Movies',
+    USER_TAB_DISPLAY: 'Users',
+    MOVIES_DISCUSSED: 'Movies discussed:',
+    LAST_HOUR:'An hour ago',
+    LAST_DAY:'A day ago',
+    LAST_WEEK:'A week ago',
+    LAST_MONTH:'A month ago',
+    LAST_YEAR: 'A year ago',
+    ANY_TIME: 'Any time',
+    MOVIE_YEAR: 'Year: {{year}}',
+    ALL: 'All',
+    ANY: 'Any',
+    CATEGORIES: 'Categories:',
+    POST_NOT_FOUND: 'There are no posts that match those requirements. Try changing the search parameters or looking for some new posts in the home screen.',
+    MOVIES_NOT_FOUND: 'There are no movies that match those requirements. Try changing the search parameters.',
+    USERS_NOT_FOUND: 'There are no users that match those requirements. Try changing the search parameters.',
     NAVBAR_CREATE_POST: 'Create post',
     FORM_FIELD_REQUIRED: 'Field required',
     FORM_BAD_CREDENTIALS: 'Incorrect user or password',
@@ -70,12 +93,6 @@ define([], function() {
     POST_CREATE_TAGS_CONSTRAINS: "You may add up to 5 tags (no more than 50 characters)",
     POST_CREATE_TAGS_PLACEHOLDER: "Write the tag here",
     POST_CREATE_SEND: "SEND",
-
-
-
-
-
-
     PAGINATION_PAGE_SIZE: "Showing",
 
 
