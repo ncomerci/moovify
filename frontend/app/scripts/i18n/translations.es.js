@@ -33,7 +33,7 @@ define([], function() {
     USER_PROFILE_RESENDEMAIL: 'Resend email',
     USER_EMAILCONFIRM_CLOSEMODAL: 'Ok, got it!',
     SEARCH_TITLE: 'Search',
-    NAVBAR_CREATE_POST: 'Create post',
+    NAVBAR_CREATE_POST: 'Crear post',
     FORM_FIELD_REQUIRED: 'Field required',
     FORM_BAD_CREDENTIALS: 'Incorrect user or password',
     FORM_MIN_LENGTH_ERROR: 'Minimum length is {{ minLen }} characters',

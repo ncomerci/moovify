@@ -8,7 +8,7 @@ define(['routes',
 	'angular-route',
 	'angular-translate',
 	'restangular',
-  'iconify'
+  'iconify',
 	],
 	function(config, dependencyResolverFor, i18n, UIkit, icons) {
 
@@ -18,7 +18,7 @@ define(['routes',
 		var frontend = angular.module('frontend', [
 			'ngRoute',
 			'pascalprecht.translate',
-			'restangular'
+			'restangular',
 		]);
 		frontend
 			.config(
