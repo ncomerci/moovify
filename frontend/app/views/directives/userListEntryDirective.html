@@ -1,0 +1,34 @@
+<div class="uk-grid-small" uk-grid>
+  <div class="uk-width-1-6 uk-margin-remove">
+    <a ng-href="{{user.url}}">
+    <img class="image-user-display" ng-src="{{user.avatar}}" alt="">
+    </a>
+  </div>
+  <div class="uk-width-3-5 margin-user-display uk-padding-remove-left">
+    <div class="uk-flex">
+      <div class="uk-width-expand">
+        <a ng-href="{{user.url}}" class="text-lead"><!-- TODO class="${user.admin ? 'uk-text-primary uk-text-middle text-lead' : 'text-lead'}"-->
+          <span ng-if="loggedUser.logged">
+            hola
+          </span>
+          {{user.username}}
+        </a>
+        <p class="uk-text-meta uk-margin-remove-vertical uk-text-truncate">
+          {{'USER_NAME' | translate:{name:user.name};}}
+          <span ng-if="user.description.length > 0">
+            {{'USER_DESCRIPTION' | translate:{description:user.description};}}
+          </span>
+          <span ng-if="user.description.length === 0">
+            {{'USER_DESCRIPTION_EMPTY' | translate}}}
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="uk-width-1-5">
+    <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
+        {{'USER_VOTES' | translate:{votes:user.totalLikes};}}
+    </p>
+  </div>
+</div>
+

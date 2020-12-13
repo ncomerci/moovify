@@ -1,6 +1,6 @@
 'use strict';
 define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/MovieFetchService',
-  'directives/PaginationHandlerDirective', 'directives/MoviesFiltersHandlerDirective'], function(frontend) {
+  'directives/PaginationHandlerDirective', 'directives/MoviesFiltersHandlerDirective', 'directives/MovieListEntryDirective'], function(frontend) {
 
   var defaultPageSize = 5;
 

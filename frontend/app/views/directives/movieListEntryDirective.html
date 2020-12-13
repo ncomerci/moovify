@@ -1,0 +1,20 @@
+<div class="uk-width-1-1">
+  <div class="uk-flex">
+    <div class="uk-width-expand uk-margin-small-top">
+      <a class="text-lead" ng-href="{{movie.url}}">
+        {{movie.title}}
+      </a>
+      <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
+        {{'CATEGORIES' | translate}}
+        <span ng-repeat="category in movie.categories">
+          - {{ category.name }}
+        </span>
+      </p>
+    </div>
+    <div class="uk-width-auto">
+      <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
+        <span>{{ 'MOVIE_YEAR' | translate :{year:getYear(movie.releaseDate)};}}</span>
+      </p>
+    </div>
+  </div>
+</div>

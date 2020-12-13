@@ -6,7 +6,7 @@ define(['frontend'], function(frontend) {
       restrict: 'E',
       scope: {
         tabSelected: '=',
-        tabs: '='
+        tabs: '<'
       },
       templateUrl: 'resources/views/directives/tabDisplayDirective.html',
       controller: function ($scope) {

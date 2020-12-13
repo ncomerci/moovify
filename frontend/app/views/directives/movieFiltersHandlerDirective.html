@@ -1,13 +1,30 @@
 <div ng-if="supportedValues && filterParams">
-  <select ng-model='filterParams.movieCategory'>
-    <option value="">{{'EMPTY'}}</option>
-    <option ng-repeat="option in supportedValues['movieCategory']" ng-value="option">{{option}}</option>
-  </select>
-  <select ng-model='filterParams.decade'>
-    <option value="">{{'EMPTY'}}</option>
-    <option ng-repeat="option in supportedValues['decade']" ng-value="option">{{option}}</option>
-  </select>
-  <select ng-model='filterParams.orderBy'>
-    <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{option}}</option>
-  </select>
+  <div class="uk-flex">
+    <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+      <label class="uk-padding-small-left uk-margin-small-top uk-form-label uk-margin-small-right uk-width-auto">
+        {{'MOVIE_CATEGORY' | translate}}
+      </label>
+      <select ng-model='filterParams.movieCategory' class="uk-select uk-form-blank uk-width-expand">
+        <option value="">{{'ALL' | translate}}</option>
+        <option ng-repeat="option in supportedValues['movieCategory']" ng-value="option">{{option}}</option>
+      </select>
+    </div>
+    <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+      <label class="uk-padding-small-left uk-margin-small-top uk-form-label uk-margin-small-right uk-width-auto">
+        {{'MOVIE_DECADE' | translate}}
+      </label>
+      <select ng-model='filterParams.decade' class="uk-select uk-form-blank uk-width-expand">
+        <option value="">{{'ANY' | translate}}</option>
+        <option ng-repeat="option in supportedValues['decade']" ng-value="option">{{option}}</option>
+      </select>
+    </div>
+    <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
+      <label class="uk-padding-small-left uk-margin-small-top uk-form-label uk-margin-small-right uk-width-auto">
+        {{'SEARCH_ORDER_BY' | translate}}
+      </label>
+      <select ng-model='filterParams.orderBy' class="uk-select uk-form-blank uk-width-expand">
+        <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{option}}</option>
+      </select>
+    </div>
+  </div>
 </div>

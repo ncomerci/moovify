@@ -17,11 +17,10 @@ define(['frontend', 'uikit', 'directives/search/SearchMoviesDirective', 'directi
       }
 
       $scope.tabs = [
-        {value:'posts', message:"'POST_TAB_DISPLAY'"},
-        {value:'movies', message:"'MOVIE_TAB_DISPLAY'"},
-        {value:'users', message:"'USER_TAB_DISPLAY'"}
+        {value:'posts', message:"{{'POST_TAB_DISPLAY' | translate }}"},
+        {value:'movies', message:"{{'MOVIE_TAB_DISPLAY' | translate }}"},
+        {value:'users', message:"{{'USER_TAB_DISPLAY' | translate }}"}
       ]
-
 
       if(!$scope.searchOptions.contentType) {
         $scope.searchOptions.contentType = defaultType;
