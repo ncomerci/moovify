@@ -44,6 +44,11 @@ define([], function() {
     FORM_PASSWORD_PATTERN_ERROR: "White spaces are not allowed",
     FORM_REPEAT_PASSWORD_ERROR: "Passwords don't match",
     FORM_DUPLICATED_FIELD_ERROR: "{{ field }} already exists, please choose another",
+    FORM_TITLE_REQUIRED:"You must write a title",
+    FORM_CATEGORY_REQUIRED:"You must pick a valid category",
+    FORM_BODY_REQUIRED:"Your post must have a body",
+    FORM_MOVIE_MIN_REQUIRED:"You must pick at least one movie",
+    FORM_MOVIE_MAX_REQUIRED:"You cannot pick more than 20 movies",
     POST_CREATE: "Create new post",
     POST_CREATE_CHOOSE_TITLE: "Choose a title for your post (At least 6 characters)",
     POST_CREATE_TITLE_PLACEHOLDER: "Title",
@@ -60,7 +65,5 @@ define([], function() {
     POST_CREATE_TAGS_CONSTRAINS: "You may add up to 5 tags (no more than 50 characters)",
     POST_CREATE_TAGS_PLACEHOLDER: "Write the tag here",
     POST_CREATE_SEND: "SEND"
-
-
 	};
 });

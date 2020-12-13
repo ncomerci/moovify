@@ -1,0 +1,75 @@
+<div id="movies-modal" class="uk-modal-container" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body uk-border-rounded">
+    <p class="uk-text-right uk-margin-remove">
+      <button class="uk-modal-close" type="button" uk-close></button>
+    </p>
+
+    <div>
+      <h1 class="uk-h1 uk-margin-remove-top">
+        {{'POST_CREATE_MOVIES_DISCUSSED' | translate}}
+      </h1>
+      <label for="add-movie-input">
+        {{'POST_CREATE_MOVIES_CONSTRAINS' | translate}}
+      </label>
+      <div class="uk-flex">
+        <input id="add-movie-input"
+               name="movie"
+               ng-model="post.movie"
+               list="movie-list"
+               class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+               placeholder="{{'POST_CREATE_MOVIES_PLACEHOLDER' | translate}}"
+               required
+        >
+        <button id="add-movie-button" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
+                type="button" ng-click="addMovie(post.movie)">{{'POST_CREATE_ADD' | translate}}</button>
+      </div>
+      <div class="uk-text-danger" ng-if="validateMovieMin()">{{'FORM_MOVIE_MIN_REQUIRED' | translate}}</div>
+      <div class="uk-text-danger" ng-if="validateMovieMax()">{{'FORM_MOVIE_MAX_REQUIRED' | translate}}</div>
+    </div>
+    <div id="movies-selected" class="uk-width-3-4 uk-margin">
+      <span ng-repeat="movie in moviesBadges" class="uk-badge uk-button-primary uk-padding-small uk-margin-small-right uk-margin-small-bottom">
+        <button  ng-click="unselectMovie(movie[0], movie[1])" class="uk-margin-small-left uk-light" type="button" uk-close>
+            {{movie[0]}}
+        </button>
+      </span>
+    </div>
+
+    <div class="uk-margin-medium">
+      <h1 class="uk-h2 uk-margin-remove-top">{{'POST_CREATE_TAGS' | translate}}</h1>
+      <label for="add-tag-input" class="uk-margin-bottom">
+        {{'POST_CREATE_TAGS_CONSTRAINS' | translate}}
+      </label>
+      <div class="uk-flex">
+        <input id="add-tag-input"
+               name="tag"
+               ng-model="post.tag"
+               ng-pattern="tagsConstraints.pattern"
+               ng-maxlength="{{tagsConstraints.maxLen}}"
+               class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+               placeholder="{{'POST_CREATE_TAGS_PLACEHOLDER' | translate}}">
+        <button id="add-tag-button" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
+                ng-click="addTag(post.tag)" type="button">{{'POST_CREATE_ADD' | translate}}</button>
+      </div>
+      <div class="uk-text-danger" ng-if="createPostForm.tag.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: tagsConstraints.maxLen};}}</div>
+    </div>
+
+    <div id="tags-selected" class="uk-margin uk-width-3-4">
+      <span ng-repeat="tag in tagsBadges" class="uk-badge uk-button-primary uk-padding-small uk-margin-small-right uk-margin-small-bottom">
+        <button  ng-click="unselectTag(tag)" class="uk-margin-small-left uk-light" type="button" uk-close>
+            {{tag}}
+        </button>
+      </span>
+    </div>
+
+    <p class="uk-text-center">
+      <input class="uk-button uk-button-primary uk-prim uk-border-rounded extended-button uk-text-uppercase"
+             type="submit"
+             value="{{'POST_CREATE_SEND' | translate}}"
+             ng-click="postCreateFn()"/>
+    </p>
+  </div>
+
+  <datalist id="movie-list">
+    <option ng-repeat="movie in moviesTitles" ng-value="movie"></option>
+  </datalist>
+</div>

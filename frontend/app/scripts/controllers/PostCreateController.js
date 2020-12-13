@@ -1,171 +1,152 @@
-define(['frontend', 'services/RestFulResponseFactory', 'services/PostCategoriesService', 'services/MovieFetchService'], function(frontend) {
+define(['frontend', 'uikit', 'easymde', 'purify', 'services/RestFulResponseFactory', 'services/PostCategoriesService', 'services/MovieFetchService'
+,'directives/PostCreateModalDirective'], function(frontend, UIkit, EasyMDE, DOMPurify) {
 
   'use strict';
   frontend.controller('PostCreateController', function($scope, PostCategoriesService, MovieFetchService, RestFulResponse, $location) {
 
     $scope.post = {};
     $scope.moviesTitles = [];
+    $scope.moviesList = {};
+    $scope.moviesBadges = {};
+    $scope.openModalBtnPressed = false;
     $scope.createPostBtnPressed = false;
-    $scope.easyMDE;
+    $scope.easyMde = configureEasyMDE();
 
     PostCategoriesService.getPostCategories().then(function(optionArray) {
       $scope.postCategories = optionArray;
     }).catch(function() { $location.path('/404') });
-
-    MovieFetchService.fetchMovies('/movies',
-      null,null,100, 0).then(
-
-      function(resp) {
-
-        $scope.moviesList = new Map();
-
-        Object.keys(resp.collection.plain()).forEach(function(paramKey) {
-          $scope.moviesList.set(resp.collection[paramKey].title + ' - ' + resp.collection[paramKey].releaseDate, resp.collection[paramKey].id);
-        });
-
-        $scope.moviesList.keys().forEach(function(movie) {
-          $scope.moviesTitles.push(movie);
-        });
-
-      }).catch(function() { $location.path('/404'); });
-
 
     $scope.titleConstraints = {
       pattern: /^[a-zA-Z ]*$/,
       minLen: 6,
       maxLen: 200
     }
-    $scope.bodyConstraints = {
-      minLen: 1,
-      maxLen: 10000,
-    }
     $scope.tagsConstraints = {
       pattern: /^[a-zA-Z ]*$/,
       maxLen: 50
     }
-    $scope.createPost = function(post) {
+    $scope.bodyConstraints = {
+      minLen: 6,
+      maxLen: 10000
+    }
+
+    function configureEasyMDE(){
+      return new EasyMDE({
+        element: document.getElementById("create-post-data"),
+        spellChecker: false,
+        autosave: {
+          enabled: true,
+          uniqueId: "source",
+          delay: 1000,
+          text: "Saved: ",
+        },
+        forceSync: true,
+        minHeight: "300px", // This is the default minHeight
+        parsingConfig: {
+          allowAtxHeaderWithoutSpace: true,
+          strikethrough: true,
+          underscoresBreakWords: true
+        },
+
+        // Upload Image Support Configurations
+
+        inputStyle: "textarea", // Could be contenteditable
+        theme: "easymde", // Default
+
+        toolbar: ["bold", "italic", "heading", "|",
+          "quote", "unordered-list", "ordered-list", "|",
+          "horizontal-rule", "strikethrough",
+          "link", "image", "|",
+          "preview", "side-by-side", "fullscreen", "|",
+          "clean-block", "guide", "|",
+          {
+            name: "upload",
+            action: function () { $scope.validateForm(); },
+            className: "fa fa-upload",
+            title: "Upload",
+          },
+        ],
+
+        renderingConfig: {
+          sanitizerFunction: function(dirtyHTML) {
+            DOMPurify.sanitize(dirtyHTML);
+          }
+        },
+
+        onToggleFullScreen: easyMdeFullscreenHandle,
+      });
+    }
+
+    function easyMdeFullscreenHandle(fullscreen){
+      document.getElementById('navbar').style.visibility = (fullscreen) ? 'hidden' : 'visible';
+    }
+
+
+    $scope.validateForm = function() {
+      $scope.post.body = document.getElementById('create-post-data').value;
+      $scope.openModalBtnPressed = true;
+
+      if(
+        !$scope.fieldIsNotValid($scope.openModalBtnPressed,'title') &&
+        !$scope.fieldIsNotValid($scope.openModalBtnPressed,'category') &&
+        !$scope.bodyValidation($scope.openModalBtnPressed,$scope.post.body)
+      ){
+        var modalElem = document.getElementById('movies-modal');
+        UIkit.modal(modalElem).show();
+      }
+    }
+
+    $scope.createPost = function () {
 
       $scope.createPostBtnPressed = true;
+      if (
+        (Object.keys($scope.post.movies).length > 0 && Object.keys($scope.post.movies).length <= 20) &&
+        (Object.keys($scope.post.tags).length <= 5)
+      ) {
 
-      // if(
-      //   !$scope.fieldIsNotValid('title') &&
-      //   !$scope.fieldIsNotValid('category') &&
-      //   !$scope.fieldIsNotValid('body')
-      // ){
-        console.log($scope.post);
-        // console.log($scope.fieldIsNotValid('title'));
+        var movies = $scope.post.movies;
+        $scope.post.movies = [];
 
-        post.tag = null;
+        Object.values(movies).forEach(function (movie) {
+          $scope.post.movies.push(movie);
+        })
 
-        post.movie = null;
+        var tags = $scope.post.tags;
+        $scope.post.tags = [];
+        Object.keys(tags).forEach(function (tag) {
+          $scope.post.tags.push(tag);
+        })
 
-        var movies = post.movies.values();
-
-        post.movies = [];
-
-        movies.forEach(function(movie) { post.movies.push(movie); });
-
-        var tags = post.tags.keys();
-
-        post.tags = [];
-
-        tags.forEach(function(tag) { post.tags.push(tag); });
-
-        RestFulResponse.all('posts').post(post).then().catch(function(err) { console.log(err); });
-
+        RestFulResponse.all('posts').post($scope.post).then(function (){
+          $scope.easyMde.clearAutosavedValue();}
+          ).catch(function (err) {
+          console.log(err);
+        });
+        }
     }
-
-    $scope.addMovie = function () {
-      var moviesSelected = document.getElementById('movies-selected')
-      var movieName = $scope.post.movie;
-      var movieId = $scope.moviesList.get($scope.post.movie);
-
-      if(!movieId)
-        return;
-
-      if(!$scope.post.movies)
-        $scope.post.movies = new Map();
-
-      if($scope.post.movies.has(movieName))
-        return;
-
-      $scope.post.movies.set(movieName, movieId);
-
-      $scope.post.movie = "";
-
-      var movieBadge = createBadge(moviesSelected, movieName);
-
-      movieBadge.closeElem.addEventListener('click',
-        function() { unselectMovie( movieName, moviesSelected, movieBadge.badgeElem); }, false);
+      $scope.bodyRequired = function (button, body) {
+        return button && body === undefined;
       }
 
-    function unselectMovie(movieName, moviesSelected, movieBadgeElem){
+      $scope.bodyMinLen = function (button, body) {
+        return button && body.length < $scope.bodyConstraints.minLen;
+      }
 
-      $scope.post.movies.delete(movieName);
+      $scope.bodyMaxLen = function (button, body) {
+        return button && body.length > $scope.bodyConstraints.maxLen;
+      }
 
-      if(moviesSelected && movieBadgeElem)
-        moviesSelected.removeChild(movieBadgeElem);
+      $scope.bodyValidation = function (button, body) {
+        return body === undefined || body.length < $scope.bodyConstraints.minLen || body.length > $scope.bodyConstraints.maxLen;
+      }
 
-    }
+      $scope.fieldRequired = function (button, field) {
+        return button && $scope.createPostForm[field].$error.required !== undefined;
+      }
 
-    $scope.addTag = function (){
-      var tag = $scope.post.tag;
-      var tagsSelectedElem = document.getElementById('tags-selected');
-
-
-      if(!$scope.post.tags)
-        $scope.post.tags = new Map();
-
-      if($scope.post.tags.has(tag))
-        return;
-
-      $scope.post.tags.set(tag, "");
-
-      $scope.post.tag = "";
-
-      var tagBadge = createBadge(tagsSelectedElem, tag);
-
-      tagBadge.closeElem.addEventListener('click',
-        function() { unselectTag(tag, tagsSelectedElem, tagBadge.badgeElem); }, false);
-    }
-
-    function unselectTag(tag, tagsSelectedElem, tagBadgeElem){
-      $scope.post.tags.delete(tag);
-
-      if(tagsSelectedElem && tagBadgeElem)
-        tagsSelectedElem.removeChild(tagBadgeElem);
-
-    }
-
-    function createBadge(parentElem, text) {
-      var closeElem = document.createElement("button");
-
-      closeElem.setAttribute('class', 'uk-margin-small-left uk-light');
-      closeElem.setAttribute('type', 'button');
-      closeElem.setAttribute('uk-close', '');
-
-      var badgeElem = document.createElement("span");
-
-      badgeElem.setAttribute('class', 'uk-badge uk-primary disabled uk-padding-small uk-margin-small-right uk-margin-small-bottom');
-
-      badgeElem.appendChild(document.createTextNode(text));
-      badgeElem.appendChild(closeElem);
-
-      parentElem.appendChild(badgeElem);
-
-      // TODO: Esto es lo que querias hacer? Las propiedades de los objetos tienen que tener nombre si o si -Tobi
-      return {badgeElem: badgeElem, closeElem: closeElem};
-    }
-
-    $scope.fieldRequired = function(field) {
-      return $scope.createPostBtnPressed && $scope.createPostForm[field].$error.required !== undefined;
-    }
-
-    $scope.fieldIsNotValid = function(field) {
-      console.log($scope.fieldRequired(field));
-      return $scope.fieldRequired(field) || $scope.signupForm[field].$error.pattern ||
-        $scope.signupForm[field].$error.minlength || $scope.signupForm[field].$error.maxlength;
-    }
-
+      $scope.fieldIsNotValid = function (button, field) {
+        return $scope.fieldRequired(button, field) || $scope.createPostForm[field].$error.pattern ||
+          $scope.createPostForm[field].$error.minlength || $scope.createPostForm[field].$error.maxlength;
+      }
   });
 });
