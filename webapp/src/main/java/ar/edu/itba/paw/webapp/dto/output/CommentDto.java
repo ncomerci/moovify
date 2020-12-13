@@ -29,6 +29,7 @@ public class CommentDto {
     private LocalDateTime lastEditTime;
     private Long totalVotes;
     private boolean enabled;
+    private Integer userVote;
 
     private String parent;
     private String children;
@@ -60,15 +61,19 @@ public class CommentDto {
         edited = comment.isEdited();
         lastEditTime = comment.getLastEditDate();
         totalVotes = comment.getTotalVotes();
+
+        if(securityContext.getUserPrincipal() != null)
+            userVote = comment.getVoteValue(comment.getUser());
         
-        if(comment.getParent() != null) {
+        if(comment.getParent() != null)
             parent = getCommentUriBuilder(comment.getParent(), uriInfo).build().toString();
-        }
-        else {
+
+        else
             parent = null;
-        }
+
         children = commentUriBuilder.clone().path("/children").build().toString();
         votes = commentUriBuilder.clone().path("/votes").build().toString();
+
     }
 
     public Long getId() {

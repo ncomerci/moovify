@@ -3,6 +3,7 @@ package ar.edu.itba.paw.interfaces.services;
 import ar.edu.itba.paw.interfaces.persistence.UserDao;
 import ar.edu.itba.paw.interfaces.persistence.exceptions.DuplicateUniqueUserAttributeException;
 import ar.edu.itba.paw.interfaces.services.exceptions.*;
+import ar.edu.itba.paw.models.AuthenticationRefreshToken;
 import ar.edu.itba.paw.models.PaginatedCollection;
 import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.User;
@@ -38,7 +39,11 @@ public interface UserService {
 
     User confirmRegistration(String token) throws InvalidEmailConfirmationTokenException;
 
+    AuthenticationRefreshToken getUserRefreshToken(User user);
+
     void createConfirmationEmail(User user, String confirmationMailTemplate);
+
+    void deleteUserRefreshToken(User user);
 
     void createPasswordResetEmail(User user, String passwordResetMailTemplate);
 
@@ -56,13 +61,13 @@ public interface UserService {
 
     boolean hasUserBookmarkedPost(User user, Post post);
 
-    long getFollowerCount(User user);
-
     Optional<User> findUserById(long id);
 
     Optional<User> findUserByUsername(String username);
 
     Optional<User> findUserByEmail(String email);
+
+    Optional<User> findUserByRefreshToken(String refreshToken);
 
     PaginatedCollection<User> getAllUsers(Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 

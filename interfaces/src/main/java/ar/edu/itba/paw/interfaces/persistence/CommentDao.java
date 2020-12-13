@@ -21,6 +21,8 @@ public interface CommentDao {
      */
     PaginatedCollection<Comment> findCommentChildren(Comment comment, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
+    PaginatedCollection<Comment> findPostChildrenComments(Post post, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
     PaginatedCollection<Comment> findCommentsByPost(Post post, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
     PaginatedCollection<Comment> findCommentsByUser(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);

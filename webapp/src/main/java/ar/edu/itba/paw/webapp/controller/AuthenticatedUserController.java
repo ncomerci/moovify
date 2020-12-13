@@ -12,6 +12,7 @@ import ar.edu.itba.paw.models.User;
 import ar.edu.itba.paw.webapp.auth.JwtUtil;
 import ar.edu.itba.paw.webapp.dto.error.BeanValidationErrorDto;
 import ar.edu.itba.paw.webapp.dto.error.DuplicateUniqueUserAttributeErrorDto;
+import ar.edu.itba.paw.webapp.dto.error.GenericErrorDto;
 import ar.edu.itba.paw.webapp.dto.generic.GenericBooleanResponseDto;
 import ar.edu.itba.paw.webapp.dto.input.*;
 import ar.edu.itba.paw.webapp.dto.input.validation.annotations.Image;
@@ -70,6 +71,8 @@ public class AuthenticatedUserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+
+
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response getUser() {
@@ -82,7 +85,7 @@ public class AuthenticatedUserController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response authenticateUser(final UserAuthenticationDto userAuthDto) {
+    public Response setAuthorizationHeader(final UserAuthenticationDto userAuthDto) {
 
         try {
             Authentication authenticate = authenticationManager
@@ -96,7 +99,9 @@ public class AuthenticatedUserController {
 
             final Response.ResponseBuilder responseBuilder = Response.noContent();
 
-            authenticateUser(responseBuilder, user);
+            setAuthorizationHeader(responseBuilder, user);
+
+            setRefreshTokenCookie(responseBuilder, user);
 
             return responseBuilder.build();
 
@@ -133,7 +138,56 @@ public class AuthenticatedUserController {
                 .contentLocation(UserDto.getUserUriBuilder(user, uriInfo).build());
 
         if(shouldRevalidateAuthentication)
-            authenticateUser(responseBuilder, user);
+            setAuthorizationHeader(responseBuilder, user);
+
+        return responseBuilder.build();
+    }
+
+    @Produces
+    @POST
+    @Path("/refresh_token")
+    public Response refreshAccessToken(@CookieParam(JwtUtil.REFRESH_TOKEN_COOKIE_NAME) String refreshToken) {
+
+        final Response.ResponseBuilder failedRefreshResponse =
+                Response.status(Response.Status.UNAUTHORIZED)
+                .entity(new GenericErrorDto(
+                        messageSource.getMessage("error.refreshJwt", null, LocaleContextHolder.getLocale()))
+                );
+
+        if(refreshToken == null)
+            return failedRefreshResponse.build();
+
+        final Optional<User> optUser = userService.findUserByRefreshToken(refreshToken);
+
+        if(!optUser.isPresent())
+            return failedRefreshResponse.build();
+
+        final User user = optUser.get();
+
+        final Response.ResponseBuilder responseBuilder = Response.noContent();
+
+        setAuthorizationHeader(responseBuilder, user);
+
+        return responseBuilder.build();
+    }
+
+    @Produces
+    @DELETE
+    @Path("/refresh_token")
+    public Response deleteRefreshToken(@CookieParam(JwtUtil.REFRESH_TOKEN_COOKIE_NAME) Cookie refreshCookie,
+                                       @QueryParam("allSessions") @DefaultValue("false") boolean allSessions) {
+
+        final Response.ResponseBuilder responseBuilder = Response.noContent();
+
+        if(refreshCookie != null) {
+            responseBuilder.cookie(jwtUtil.getDeleteRefreshCookie());
+
+            if(allSessions) {
+                userService
+                        .findUserByRefreshToken(refreshCookie.getValue())
+                        .ifPresent(user -> userService.deleteUserRefreshToken(user));
+            }
+        }
 
         return responseBuilder.build();
     }
@@ -408,10 +462,14 @@ public class AuthenticatedUserController {
 
         final Response.ResponseBuilder responseBuilder = Response.noContent();
 
-        if(user.isEnabled())
-            authenticateUser(responseBuilder, user);
+        if(user.isEnabled()) {
+            setAuthorizationHeader(responseBuilder, user);
 
-        return Response.noContent().build();
+            if(securityContext.getUserPrincipal() == null)
+                setRefreshTokenCookie(responseBuilder, user);
+        }
+
+        return responseBuilder.build();
     }
 
     @Consumes(MediaType.APPLICATION_JSON)
@@ -470,14 +528,9 @@ public class AuthenticatedUserController {
             return Response.status(Response.Status.BAD_REQUEST).entity(emailError).build();
         }
 
-        final User user = userService.updatePassword(passwordResetDto.getPassword(), passwordResetDto.getToken());
+        userService.updatePassword(passwordResetDto.getPassword(), passwordResetDto.getToken());
 
-        final Response.ResponseBuilder responseBuilder = Response.noContent();
-
-        if(user.isEnabled() && securityContext.getUserPrincipal() != null)
-            authenticateUser(responseBuilder, user);
-
-        return responseBuilder.build();
+        return Response.noContent().build();
     }
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
@@ -519,7 +572,11 @@ public class AuthenticatedUserController {
             response.link(baseUri.clone().queryParam(pageNumberParamName, next).build(), "next");
     }
 
-    private void authenticateUser(Response.ResponseBuilder responseBuilder, User user) {
+    private void setAuthorizationHeader(Response.ResponseBuilder responseBuilder, User user) {
         responseBuilder.header(HttpHeaders.AUTHORIZATION, jwtUtil.generateToken(user));
+    }
+
+    private void setRefreshTokenCookie(Response.ResponseBuilder responseBuilder, User user) {
+        responseBuilder.cookie(jwtUtil.generateRefreshCookie(userService.getUserRefreshToken(user)));
     }
 }

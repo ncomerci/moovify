@@ -24,6 +24,10 @@ define([], function() {
               templateUrl: 'resources/views/login/signup.html',
               controller: 'SignupCtrl',
             },
+            '/user': {
+                templateUrl: 'resources/views/user/userProfile.html',
+                controller: 'profileCtrl'
+            },
             '/post/create': {
                 templateUrl: 'resources/views/post/postCreate.html',
                 controller: 'PostCreateController'
