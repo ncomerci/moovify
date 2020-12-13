@@ -1,0 +1,15 @@
+<main ng-if="post">
+  <h1>{{post.title}}</h1>
+  <p>POST BY: {{post.user.username}}</p>
+  <article>
+    <p>{{post.body}}</p>
+  </article>
+  <div>
+    <span ng-repeat="movie in post.movies">{{movie.title}} - ({{movie.releaseDate}})</span>
+  </div>
+  <hr>
+  <section id="post-comments" ng-if="comments">
+    <h1>COMMENT SECTION</h1>
+    <comment-tree-directive comments="comments"></comment-tree-directive>
+  </section>
+</main>

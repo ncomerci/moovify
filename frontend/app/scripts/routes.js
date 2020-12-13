@@ -29,8 +29,12 @@ define([], function() {
                 controller: 'profileCtrl'
             },
             '/post/create': {
-                templateUrl: 'resources/views/post/PostCreateController.html',
+                templateUrl: 'resources/views/post/postCreate.html',
                 controller: 'PostCreateController'
+            },
+            '/post/:id': {
+                templateUrl: 'resources/views/post/PostViewController.html',
+                controller: 'PostViewController'
             }
             /* ===== yeoman hook ===== */
             /* Do not remove these commented lines! Needed for auto-generation */

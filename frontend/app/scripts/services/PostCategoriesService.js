@@ -10,8 +10,8 @@ define(['frontend', 'services/RestFulResponseFactory'], function (frontend) {
 
         return $q(function(resolve, reject) {
           if (!categories) {
-            RestFulResponse.all('/posts').all('categories').getList().then(function(response) {
-              categories = response.data.map(function(entry) { return entry.originalElement; });
+            RestFulResponse.noAuth().all('/posts').all('categories').getList().then(function(response) {
+              categories = response.data.map(function(entry) { return entry.plain(); });
               resolve(categories);
             }).catch(reject);
           } else {
