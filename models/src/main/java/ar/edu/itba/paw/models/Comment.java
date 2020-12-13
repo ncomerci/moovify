@@ -157,6 +157,13 @@ public class Comment {
                 .findFirst().orElse(0);
     }
 
+    public int getVoteValueByUsername(String username) {
+        return getVotes().stream()
+                .filter(commentLike -> commentLike.getUser().getUsername().equals(username))
+                .map(CommentVote::getValue)
+                .findFirst().orElse(0);
+    }
+
     public int getDescendantCount(long maxDepth) {
         if(maxDepth <= 1)
             return 0;
