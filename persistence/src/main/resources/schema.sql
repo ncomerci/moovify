@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS IMAGES
     image_id        SERIAL          PRIMARY KEY,
     image           BYTEA           NOT NULL,
     security_tag    VARCHAR(100)    NOT NULL
+--     type            VARCHAR(40)     default NULL
 );
 
 CREATE TABLE IF NOT EXISTS USERS
@@ -164,4 +165,21 @@ CREATE TABLE IF NOT EXISTS COMMENTS_LIKES
     FOREIGN KEY (comment_id) REFERENCES COMMENTS (comment_id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS USERS_FOLLOWS
+(
+    user_id                 INTEGER     NOT NULL,
+    user_follow_id          INTEGER     NOT NULL,
+    FOREIGN KEY (user_follow_id) REFERENCES USERS (user_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS USER_FAV_POST
+(
+    user_id                 INTEGER     NOT NULL,
+    post_id                 INTEGER     NOT NULL,
+    FOREIGN KEY (post_id) REFERENCES POSTS (post_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES USERS (user_id) ON DELETE CASCADE
+);
+
 

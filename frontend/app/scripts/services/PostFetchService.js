@@ -1,17 +1,38 @@
 'use strict';
-define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserService'], function(frontend) {
+define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserService', 'services/CommentFetchService'], function(frontend) {
 
-  frontend.service('PostFetchService', function(RestFulResponse, LinkParserService, $q) {
+  frontend.service('PostFetchService', function(RestFulResponse, LinkParserService, CommentFetchService, $q) {
 
     this.searchPosts = function(query, category, age, enabled, orderBy, pageSize, pageNumber) {
-      return fetchPosts('/posts', query, category, age, enabled, orderBy, pageSize, pageNumber);
+      return internalFetchPosts('/posts', query, category, age, enabled, orderBy, pageSize, pageNumber);
     }
 
     this.fetchPosts = function (path, enabled, orderBy, pageSize, pageNumber) {
-      return fetchPosts(path, null, null, null, enabled, orderBy, pageSize, pageNumber);
+      return internalFetchPosts(path, null, null, null, enabled, orderBy, pageSize, pageNumber);
     }
 
-    function fetchPosts(path, query, category, age, enabled, orderBy, pageSize, pageNumber) {
+    this.fetchFullPost = function (postId, userId) {
+
+      return $q(function(resolve, reject) {
+        RestFulResponse.noAuth().one('posts', postId).get().then(function (response) {
+
+          var post = response.data.plain();
+
+          if(userId) {
+             RestFulResponse.noAuth().one('posts', postId).one('votes', userId).get().then(function(response) {
+               post.userVote = response.data.plain();
+               resolve(post);
+            }).catch(reject);
+          }
+
+          else {
+            resolve(post);
+          }
+        }).catch(reject);
+      });
+    }
+
+    function internalFetchPosts(path, query, category, age, enabled, orderBy, pageSize, pageNumber) {
 
       // Obligatory params
       var queryParams = {

@@ -1,0 +1,7 @@
+<div>
+  <p>{{comment.user.username}}</p>
+  <p>{{comment.body}}</p>
+  <div ng-if="comment.children.length > 0">
+    <comment-tree-directive comments="comment.children"></comment-tree-directive>
+  </div>
+</div>

@@ -214,8 +214,6 @@ public class CommentController {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
-        guaranteeCommentRelationshipAccessPermissions(securityContext, comment);
-
         final PaginatedCollection<Comment> comments = commentService.findCommentChildren(comment, enabled, orderBy, pageNumber, pageSize);
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);

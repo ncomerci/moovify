@@ -107,7 +107,7 @@ public class CommentDaoImpl implements CommentDao {
         LOGGER.info("Find Post Children Comments {} Order By {}. Page number {}, Page Size {}", post.getId(), sortCriteria, pageNumber, pageSize);
 
         return queryComments(
-                "WHERE " + COMMENTS + ".post_id = ? AND " + COMMENTS + ".parent IS NULL",
+                "WHERE " + COMMENTS + ".post_id = ? AND " + COMMENTS + ".parent_id IS NULL",
                 enabled, sortCriteria, pageNumber, pageSize, new Object[]{ post.getId() });
     }
 
