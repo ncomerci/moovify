@@ -15,7 +15,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
 
       $scope.login = function (user) {
         $scope.loginBtnPressed = true;
-        LoggedUserFactory.login(user, $scope.checkValue).then(function () {
+        LoggedUserFactory.login(user).then(function () {
           $window.history.back();
         }).catch(function() {
           $scope.loginError = true;

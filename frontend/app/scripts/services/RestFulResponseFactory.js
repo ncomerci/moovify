@@ -18,7 +18,7 @@ define(['frontend'], function(frontend) {
       return JSON.parse(jsonPayload);
     };
 
-    return {
+    var RestFulResponse = {
 
       setToken: function (token) {
         ReqFullResponse.setDefaultHeaders({authorization: token});
@@ -33,7 +33,7 @@ define(['frontend'], function(frontend) {
         return $q(function (resolve, reject) {
           if(new Date() > loggedUser.expDate) {
             ReqFullResponse.all('/user/refresh_token').post().then(function (resp) {
-              loggedUser.expDate = this.setToken(resp.headers("authorization"));
+              loggedUser.expDate = RestFulResponse.setToken(resp.headers("authorization"));
               resolve(ReqFullResponse);
             }).catch(function (err) {
               reject(err);
@@ -43,12 +43,13 @@ define(['frontend'], function(frontend) {
             resolve(ReqFullResponse);
           }
         });
-      }
+      },
 
+      clearHeaders: function () {
+        ReqFullResponse.setDefaultHeaders({});
+      }
     };
 
-    // return Restangular.withConfig(function (RestangularConfigurer) {
-    //   RestangularConfigurer.setFullResponse(true);
-    // });
+    return RestFulResponse;
   });
 });

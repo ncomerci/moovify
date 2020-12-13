@@ -7,27 +7,16 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
     PageTitle.setTitle('asdasd'); // TODO: cambiar key
     $scope.title = PageTitle.getTitle();
 
-    /*var token = $window.localStorage.getItem("authorization");
-
-    if(token) {
-      LoggedUserFactory.saveToken(token).then(/!*nothing to do*!/);
-    }*/
-
+    LoggedUserFactory.startLoggedUserCheck();
     RestFulResponse.noAuth().all('/user/refresh_token').post().then(function (resp) {
-      $scope.loggedUser.expDate = this.setToken(resp.headers("authorization"));
-    }).catch(function (err) {
-      console.log(err);
+      LoggedUserFactory.saveToken(resp.headers("authorization")).then(function (user) {
+        $scope.loggedUser = user;
+      });
+    }).catch(function () {
+      LoggedUserFactory.finishLoggedUserCheck();
     });
 
-    $scope.logout = function () {
-      var loggedUser = LoggedUserFactory.getLoggedUser();
-      var aux = {
-        logged: false
-      };
-      Object.assign(loggedUser, aux);
-      RestFulResponse.setDefaultHeaders({});
-      $window.localStorage.removeItem("authorization");
-    }
+    $scope.logout = LoggedUserFactory.logout
 
   });
 
