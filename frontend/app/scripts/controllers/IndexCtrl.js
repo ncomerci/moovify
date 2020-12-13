@@ -7,13 +7,16 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
     PageTitle.setTitle('asdasd'); // TODO: cambiar key
     $scope.title = PageTitle.getTitle();
 
+    $scope.waitLogin = true;
     LoggedUserFactory.startLoggedUserCheck();
     RestFulResponse.noAuth().all('/user/refresh_token').post().then(function (resp) {
       LoggedUserFactory.saveToken(resp.headers("authorization")).then(function (user) {
         $scope.loggedUser = user;
+        $scope.waitLogin = false;
       });
     }).catch(function () {
       LoggedUserFactory.finishLoggedUserCheck();
+      $scope.waitLogin = false;
     });
 
     $scope.logout = LoggedUserFactory.logout

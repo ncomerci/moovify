@@ -37,7 +37,7 @@ define([], function() {
     POST_AGE: 'From',
     SEARCH_ORDER_BY: 'Order by',
     SEARCH_PLACEHOLDER: 'Search...',
-    NAVBAR_CREATE_POST: 'Create post',
+    NAVBAR_CREATE_POST: 'Crear post',
     FORM_FIELD_REQUIRED: 'Field required',
     FORM_BAD_CREDENTIALS: 'Incorrect user or password',
     FORM_MIN_LENGTH_ERROR: 'Minimum length is {{ minLen }} characters',
