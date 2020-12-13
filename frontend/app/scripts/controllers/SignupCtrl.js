@@ -4,11 +4,9 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
     frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, $window, PageTitle, RestFulResponse, $location, $translate, $document) {
       PageTitle.setTitle('asd') //TODO: cambiar la key
 
-      LoggedUserFactory.isLogged().then(function(resp){
-        if(resp) {
-          $window.location.href = '/';
-        }
-      });
+      if(LoggedUserFactory.getLoggedUser().logged) {
+        $window.location.href = '/';
+      }
 
       $scope.signUpBtnPressed = false;
       $scope.signUpError = false;

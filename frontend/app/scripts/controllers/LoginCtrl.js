@@ -7,11 +7,9 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService'], funct
       $scope.loginBtnPressed = false;
       $scope.loginError = false;
 
-      LoggedUserFactory.isLogged().then(function(resp) {
-        if(resp) {
-          $window.location.href = '/';
-        }
-      });
+      if(LoggedUserFactory.getLoggedUser().logged) {
+        $window.location.href = '/';
+      }
 
       $scope.login = function (user) {
         $scope.loginBtnPressed = true;

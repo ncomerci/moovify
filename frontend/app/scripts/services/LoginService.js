@@ -67,21 +67,6 @@ define(['frontend', 'services/RestFulResponseFactory'], function(frontend) {
         });
       },
 
-      isLogged: function () {
-        return $q(function (resolve) {
-
-          var f = function () {
-            if (!mutex.value) {
-              return resolve(loggedUser.logged);
-            }
-            setTimeout(f, 50);
-          };
-
-          f();
-
-        });
-      },
-
     //  esto es solo debería usarse en index controller
       startLoggedUserCheck: function () {
         mutex.value = true;
