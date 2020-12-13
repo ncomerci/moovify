@@ -11,28 +11,9 @@
         </label>
       </div>
     </div>
-    <tab-display-directive change-type-fn="changeType" content-type="searchOptions.contentType" tabs="tabs"></tab-display-directive>
-<!--    <div class="uk-margin-medium-top">-->
-<!--      <ul class="uk-child-width-expand uk-text-uppercase uk-tab">-->
-<!--        <li class="{{searchOptions.contentType == 'posts' ? 'uk-active' : ''}}">-->
-<!--          <a ng-click="changeType('posts')">posts</a>-->
-<!--        </li>-->
-<!--        <li class="{{searchOptions.contentType == 'movies' ? 'uk-active' : ''}}">-->
-<!--          <a ng-click="changeType('movies')">movies</a>-->
-<!--        </li>-->
-<!--        <li class="{{searchOptions.contentType == 'users' ? 'uk-active' : ''}}">-->
-<!--          <a ng-click="changeType('users')">users</a>-->
-<!--        </li>-->
-<!--      </ul>-->
-<!--    </div>-->
+    <tab-display-directive tab-selected="searchOptions.contentType" tabs="tabs"></tab-display-directive>
   </section>
   <section id="search-results" class="uk-margin-top">
-
-    <!--      <select ng-model='searchOptions.contentType'>-->
-    <!--        <option value="posts">posts</option>-->
-    <!--        <option value="movies">movies</option>-->
-    <!--        <option value="users">users</option>-->
-    <!--      </select>-->
     <div class="uk-grid">
       <div class="uk-width-expand uk-margin-small-top">
         <div ng-show="searchOptions.contentType === 'posts'">

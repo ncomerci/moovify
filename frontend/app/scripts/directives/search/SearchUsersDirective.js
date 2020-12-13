@@ -1,6 +1,6 @@
 'use strict';
 define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/UserFetchService',
-  'directives/PaginationHandlerDirective', 'directives/UserFiltersHandlerDirective'], function(frontend) {
+  'directives/PaginationHandlerDirective', 'directives/UserFiltersHandlerDirective', 'directives/UserListEntryDirective'], function(frontend) {
 
   var defaultPageSize = 5;
 
@@ -12,7 +12,6 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
     return {
 
       restrict: 'E',
-
       scope: {
         query: '=',
         enabled: '@'
