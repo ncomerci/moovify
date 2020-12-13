@@ -15,6 +15,18 @@ define(['frontend'], function(frontend) {
 
       link: function(scope) {
 
+        scope.pageSizeOptions = [2, 5, 10, 25, 35];
+
+        var width = 5;
+
+        scope.firstShownPage = scope.paginationParams.currentPage - width;
+        if(scope.firstShownPage < 0)
+          scope.firstShownPage = 0;
+
+        scope.lastShownPage = scope.paginationParams.currentPage + width;
+        if(scope.lastShownPage > scope.paginationParams.lastPage)
+          scope.lastShownPage = scope.paginationParams.lastPage;
+
         scope.searchFn = scope.searchFn();
 
         scope.resetPaginationFn = function() {
@@ -35,8 +47,6 @@ define(['frontend'], function(frontend) {
             if(newPageSize){
               scope.resetPaginationFn();
             }
-
-            console.log("search");
 
             scope.searchFn();
           }

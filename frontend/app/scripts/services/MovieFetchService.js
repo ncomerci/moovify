@@ -35,7 +35,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
       return $q(function(resolve, reject) {
         RestFulResponse.noAuth().all(path).getList(queryParams).then(function(movieResponse) { //hago la query a la Api con queryparams de json
 
-          var paginationParams = null;
+          var paginationParams = {pageSize: queryParams.pageSize, lastPage: 0};
           var linkHeader = movieResponse.headers('link'); //pido los headers link
           var movies = movieResponse.data;
 

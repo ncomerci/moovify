@@ -55,7 +55,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
       return $q(function(resolve, reject) {
         RestFulResponse.noAuth().all(path).getList(queryParams).then(function(postResponse) {
 
-          var paginationParams = {pageSize: queryParams.pageSize};
+          var paginationParams = {pageSize: queryParams.pageSize, lastPage: 0};
           var linkHeader = postResponse.headers('Link');
           var posts = postResponse.data;
 

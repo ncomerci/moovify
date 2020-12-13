@@ -9,7 +9,7 @@ define(['frontend'], function(frontend) {
       },
       templateUrl: 'resources/views/directives/postListEntryDirective.html',
       link: function (scope) {
-        console.log(scope.post);
+        // console.log(scope.post);
       },
       controller: function ($scope) {
         $scope.getAgeMessageCode = function () {

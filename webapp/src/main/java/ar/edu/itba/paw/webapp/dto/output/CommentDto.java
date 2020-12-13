@@ -124,7 +124,7 @@ public class CommentDto {
         this.user = user;
     }
 
-    public Boolean isEdited() {
+    public Boolean getEdited() {
         return edited;
     }
 
@@ -178,5 +178,13 @@ public class CommentDto {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Integer getUserVote() {
+        return userVote;
+    }
+
+    public void setUserVote(Integer userVote) {
+        this.userVote = userVote;
     }
 }

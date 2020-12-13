@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 
 public class JwtUtil {
 
-    private static final int EXPIRATION_TIME_MILLIS =  60 * 1000; // 15 minutes
+    private static final int EXPIRATION_TIME_MILLIS =  15 * 60 * 1000; // 15 minutes
 
     public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 

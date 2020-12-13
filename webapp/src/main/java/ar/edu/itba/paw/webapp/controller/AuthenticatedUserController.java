@@ -71,8 +71,6 @@ public class AuthenticatedUserController {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-
-
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response getUser() {

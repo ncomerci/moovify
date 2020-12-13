@@ -5,15 +5,15 @@ import java.util.Collection;
 public class SearchOptionDto {
 
     private String name;
-    private Collection<String> options;
+    private Collection<String> values;
 
     public SearchOptionDto() {
         //For Jersey Reflection- Do not use
     }
 
-    public SearchOptionDto(String name, Collection<String> options) {
+    public SearchOptionDto(String name, Collection<String> values) {
         this.name = name;
-        this.options = options;
+        this.values = values;
     }
 
     public String getName() {
@@ -24,12 +24,12 @@ public class SearchOptionDto {
         this.name = name;
     }
 
-    public Collection<String> getOptions() {
-        return options;
+    public Collection<String> getValues() {
+        return values;
     }
 
-    public void setOptions(Collection<String> options) {
-        this.options = options;
+    public void setValues(Collection<String> values) {
+        this.values = values;
     }
 
 }
