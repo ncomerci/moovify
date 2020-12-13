@@ -11,10 +11,10 @@
 
 
 </head>
-<body class="uk-padding-remove" ng-show="!waitLogin">
+<body class="uk-padding-remove">
 
   <!-- Add your site or application content here -->
-  <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar">
+  <header id="navbar" uk-sticky="sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; bottom: #transparent-sticky-navbar" ng-if="!waitLogin">
     <nav class="uk-navbar-container" uk-navbar>
       <a class="uk-logo" href="/"><img id="nav-logo" src="resources/images/logo.png" alt="Moovify"></a>
       <div class="uk-navbar-right">
@@ -79,7 +79,7 @@
     </nav>
   </header>
 
-  <div ng-view=""></div>
+  <div ng-view="" ng-if="!waitLogin"></div>
 
   <!-- Confirm email modal -->
   <div class="ng-cloak" ng-if="loggedUser && loggedUser.roles.includes('NOT_VALIDATED')" id="confirm-email-modal" uk-modal>
