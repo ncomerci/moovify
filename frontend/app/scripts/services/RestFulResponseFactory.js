@@ -36,13 +36,21 @@ define(['frontend'], function(frontend) {
               loggedUser.expDate = RestFulResponse.setToken(resp.headers("authorization"));
               resolve(ReqFullResponse);
             }).catch(function (err) {
-              reject(err);
+              reject(err); // TODO login redirect
             });
           }
           else {
             resolve(ReqFullResponse);
           }
         });
+      },
+
+      withAuthIfPossible: function(loggedUser) {
+
+        if(loggedUser.logged){
+          return this.withAuth(loggedUser);
+        }
+        return $q.resolve(this.noAuth());
       },
 
       clearHeaders: function () {

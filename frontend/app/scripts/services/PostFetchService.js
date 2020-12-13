@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserService', 'services/CommentFetchService'], function(frontend) {
+define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserService', 'services/CommentFetchService', 'services/LoginService'], function(frontend) {
 
-  frontend.service('PostFetchService', function(RestFulResponse, LinkParserService, CommentFetchService, $q) {
+  frontend.service('PostFetchService', function(RestFulResponse, LinkParserService, CommentFetchService, LoggedUserFactory, $q) {
 
     this.searchPosts = function(query, category, age, enabled, orderBy, pageSize, pageNumber) {
       return internalFetchPosts('/posts', query, category, age, enabled, orderBy, pageSize, pageNumber);
@@ -14,20 +14,23 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
     this.fetchFullPost = function (postId, userId) {
 
       return $q(function(resolve, reject) {
-        RestFulResponse.noAuth().one('posts', postId).get().then(function (response) {
 
-          var post = response.data.plain();
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
+          Restangular.one('posts', postId).get().then(function (response) {
 
-          if(userId) {
-             RestFulResponse.noAuth().one('posts', postId).one('votes', userId).get().then(function(response) {
-               post.userVote = response.data.plain();
-               resolve(post);
-            }).catch(reject);
-          }
+            var post = response.data.plain();
 
-          else {
-            resolve(post);
-          }
+            if(userId) {
+              RestFulResponse.noAuth().one('posts', postId).one('votes', userId).get().then(function(response) {
+                post.userVote = response.data.plain();
+                resolve(post);
+              }).catch(reject);
+            }
+            else {
+              resolve(post);
+            }
+
+          }).catch(reject);
         }).catch(reject);
       });
     }

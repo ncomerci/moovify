@@ -1,4 +1,4 @@
-'use strict';
+'use strict';upVote
 define(['frontend', 'services/RestFulResponseFactory'], function (frontend) {
 
   frontend.service('PostCategoriesService', function($q, RestFulResponse) {
