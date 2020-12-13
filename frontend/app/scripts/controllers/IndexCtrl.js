@@ -13,7 +13,7 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
       LoggedUserFactory.saveToken(resp.headers("authorization")).then(function (user) {
         $scope.loggedUser = user;
         $scope.waitLogin = false;
-      });
+      }).catch(console.log);
     }).catch(function () {
       LoggedUserFactory.finishLoggedUserCheck();
       $scope.waitLogin = false;
