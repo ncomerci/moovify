@@ -5,13 +5,14 @@ define(['frontend'], function(frontend) {
     return {
       restrict: 'E',
       scope: {
-        contentType: '=',
-        tabs: '=',
-        changeTypeFn: '&'
+        tabSelected: '=',
+        tabs: '='
       },
       templateUrl: 'resources/views/directives/tabDisplayDirective.html',
-      link: function (scope) {
-        scope.changeTypeFn = scope.changeTypeFn();
+      controller: function ($scope) {
+        $scope.changeType = function (type) {
+          $scope.tabSelected = type;
+        }
       }
     }
   })
