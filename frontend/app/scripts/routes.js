@@ -29,7 +29,7 @@ define([], function() {
                 controller: 'profileCtrl'
             },
             '/post/create': {
-                templateUrl: 'resources/views/post/PostCreateController.html',
+                templateUrl: 'resources/views/post/postCreate.html',
                 controller: 'PostCreateController'
             },
             '/post/:id': {

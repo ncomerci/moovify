@@ -16,7 +16,9 @@ require.config({
         uikit: '../../bower_components/uikit/dist/js/uikit',
         uikiticons: '../../bower_components/uikit/dist/js/uikit-icons',
         'uikit-icons': '../../bower_components/uikit/dist/js/uikit-icons',
-        iconify: 'external_dependencies/iconify/iconify'
+        iconify: 'external_dependencies/iconify/iconify',
+        easymde: 'external_dependencies/easymde/easyMde',
+        purify: 'external_dependencies/purify/purify'
     },
     shim: {
         angular: {
