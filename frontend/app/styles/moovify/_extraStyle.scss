@@ -319,3 +319,27 @@ form {
   text-align: center;
   vertical-align: middle;
 }
+
+a.like-post-button, a.like-comment-button{
+  text-decoration: none;
+}
+
+button.like-post-button, button.like-comment-button{
+  border: none;
+  background-color: transparent;
+}
+
+button.like-post-button:hover, button.like-comment-button:hover{
+  cursor: pointer;
+}
+
+
+
+#parsedBody img {
+
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: available;
+  max-height: 506px;
+}
