@@ -1,8 +1,13 @@
 package ar.edu.itba.paw.webapp.dto.input;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 public class UserAuthenticationDto {
 
+    @NotEmpty
     private String username;
+
+    @NotEmpty
     private String password;
 
     public String getUsername() {

@@ -80,6 +80,9 @@ public class Post {
     @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "post", cascade = CascadeType.ALL)
     private Set<PostVote> votes;
 
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "bookmarkedPosts")
+    private Set<User> bookmarkedBy;
+
     @Transient
     private Long totalVotes;
 
@@ -88,12 +91,12 @@ public class Post {
 
     private static final int EN_WORDS_PER_MINUTE = 150;
 
-    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean edited, LocalDateTime lastEditDate, boolean enabled, Set<PostVote> votes, Set<Movie> movies, Set<Comment> comments) {
-        this(creationDate, title, body, wordCount, category, user, tags, edited, lastEditDate, enabled, votes, movies, comments);
+    public Post(long id, LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean edited, LocalDateTime lastEditDate, boolean enabled, Set<PostVote> votes, Set<User> bookmarkedBy, Set<Movie> movies, Set<Comment> comments) {
+        this(creationDate, title, body, wordCount, category, user, tags, edited, lastEditDate, enabled, votes, bookmarkedBy, movies, comments);
         this.id = id;
     }
 
-    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean edited, LocalDateTime lastEditDate, boolean enabled, Set<PostVote> votes, Set<Movie> movies, Set<Comment> comments) {
+    public Post(LocalDateTime creationDate, String title, String body, int wordCount, PostCategory category, User user, Set<String> tags, boolean edited, LocalDateTime lastEditDate, boolean enabled, Set<PostVote> votes, Set<User> bookmarkedBy, Set<Movie> movies, Set<Comment> comments) {
         this.creationDate = creationDate;
         this.title = title;
         this.body = body;
@@ -105,6 +108,7 @@ public class Post {
         this.lastEditDate = lastEditDate;
         this.enabled = enabled;
         this.votes = votes;
+        this.bookmarkedBy = bookmarkedBy;
         this.movies = movies;
         this.comments = comments;
     }
@@ -180,6 +184,10 @@ public class Post {
         return tags;
     }
 
+    public Set<User> getBookmarkedBy() {
+        return bookmarkedBy;
+    }
+
     public boolean isEdited() {
         return edited;
     }
@@ -222,6 +230,14 @@ public class Post {
                 .filter(postLike -> postLike.getUser().getUsername().equals(username))
                 .map(PostVote::getValue)
                 .findFirst().orElse(0);
+    }
+
+    public boolean hasBookmarked(User user) {
+        return getBookmarkedBy().stream().anyMatch(u -> u.equals(user));
+    }
+
+    public boolean hasBookmarked(String username) {
+        return getBookmarkedBy().stream().anyMatch(u -> u.getUsername().equals(username));
     }
 
     public void delete() {

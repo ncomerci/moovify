@@ -3,24 +3,29 @@ package ar.edu.itba.paw.webapp.dto.input;
 import ar.edu.itba.paw.webapp.dto.input.validation.annotations.TagSize;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
 public class PostCreateDto {
 
+    @NotNull
     @Size(min = 6, max = 200)
     private String title;
 
+    @NotNull
     @Size(min = 1, max = 100000)
     private String body;
 
     @Min(1)
     private long category;
 
+    @NotNull
     @Size(max = 5)
     @TagSize(max = 50)
     private Set<String> tags;
 
+    @NotNull
     @Size(min=1, max = 20)
     private Set<Long> movies;
 

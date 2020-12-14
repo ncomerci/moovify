@@ -268,10 +268,12 @@ public class User {
 
     public void bookmarkPost(Post post) {
         bookmarkedPosts.add(post);
+        post.getBookmarkedBy().add(this);
     }
 
     public void unbookmarkPost(Post post) {
         bookmarkedPosts.remove(post);
+        post.getBookmarkedBy().remove(this);
     }
 
     public Collection<User> getFollowingUsers() {

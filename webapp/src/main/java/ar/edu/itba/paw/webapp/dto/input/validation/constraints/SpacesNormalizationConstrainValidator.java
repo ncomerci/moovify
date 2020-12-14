@@ -8,11 +8,10 @@ import javax.validation.ConstraintValidatorContext;
 public class SpacesNormalizationConstrainValidator implements ConstraintValidator<SpacesNormalization, String> {
     @Override
     public void initialize(SpacesNormalization spacesNormalization) {
-
     }
 
     @Override
     public boolean isValid(String s, ConstraintValidatorContext constraintValidatorContext) {
-        return  s != null && !s.replaceAll("[ \t\r\n]+", "").equals("");
+        return  s == null || !s.replaceAll("[ \t\r\n]+", "").equals("");
     }
 }

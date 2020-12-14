@@ -4,22 +4,23 @@ import ar.edu.itba.paw.webapp.dto.input.validation.annotations.SpacesNormalizati
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class UserCreateDto {
 
-    // TODO: Los mensajes de pattern son meh
+    @NotNull
     @Size(min = 6, max = 50)
     @Pattern(regexp = "^[a-zA-Z0-9#_]+$")
     private String username;
 
-    // TODO: Se repiten los mensajes de tamanio
+    @NotNull
     @Pattern(regexp = "^[^\\s]+$")
     @Size(min=12, max=30)
     private String password;
 
-    // TODO: El string de spaces normalization no se muestra bien
+    @NotNull
     @Pattern(regexp = "^[a-zA-Z ]+$")
     @SpacesNormalization(message = "invalid use of spaces")
     @Size(min = 2, max = 50)
@@ -29,6 +30,7 @@ public class UserCreateDto {
     @NotEmpty
     private String email;
 
+    @NotNull
     @Size(max=400)
     private String description;
 

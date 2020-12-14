@@ -29,6 +29,7 @@ public abstract class BasePostDto {
     private Long totalLikes;
     private Boolean isOwner;
     private int userVote;
+    private Boolean hasUserBookmarked;
 
     // Relations
     private String comments;
@@ -67,6 +68,7 @@ public abstract class BasePostDto {
             final String authenticatedUserUsername = securityContext.getUserPrincipal().getName();
 
             isOwner = post.getUser().getUsername().equals(authenticatedUserUsername);
+            hasUserBookmarked = post.hasBookmarked(authenticatedUserUsername);
             userVote = post.getVoteValue(authenticatedUserUsername);
         }
 
@@ -212,5 +214,13 @@ public abstract class BasePostDto {
 
     public void setUserVote(int userVote) {
         this.userVote = userVote;
+    }
+
+    public Boolean getHasUserBookmarked() {
+        return hasUserBookmarked;
+    }
+
+    public void setHasUserBookmarked(Boolean hasUserBookmarked) {
+        this.hasUserBookmarked = hasUserBookmarked;
     }
 }

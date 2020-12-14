@@ -83,7 +83,7 @@ public class AuthenticatedUserController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response setAuthorizationHeader(final UserAuthenticationDto userAuthDto) {
+    public Response setAuthorizationHeader(@Valid final UserAuthenticationDto userAuthDto) {
 
         try {
             Authentication authenticate = authenticationManager
