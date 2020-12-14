@@ -1,4 +1,7 @@
 <div>
+  <div ng-show="movies.length === 0" class="uk-margin-small-top">
+    <h1 class="uk-text-meta uk-text-center uk-text-bold">{{'MOVIES_NOT_FOUND' | translate}}</h1>
+  </div>
   <div ng-show="movies.length > 0">
     <div ng-repeat="movie in movies">
       <movie-list-entry-directive movie="movie"></movie-list-entry-directive>

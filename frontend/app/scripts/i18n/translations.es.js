@@ -110,7 +110,15 @@ define([], function() {
     UPDATE_INFO_MODAL_CANCEL: "Cancel",
     UPDATE_INFO_MODAL_ACCEPT: "Accept",
     MIN_USER_DISPLAY_META_NAME_VOTES: "Name: {{name}} - Total votes: {{totalVotes}}",
-
+    MOVIE_VIEW_TITLE:'{{title}} ({{year}})',
+    MOVIE_POSTER:'{{title}} poster',
+    MOVIE_ORIGINAL_TITLE:'Original title',
+    MOVIE_RELEASE_DATE:'Release date',
+    MOVIE_ORIGINAL_LANGUAGE:'Original language',
+    MOVIE_VOTE_AVERAGE:'Average vote',
+    MOVIE_CATEGORIES:'Movie categories',
+    MOVIE_OVERVIEW:'Overview',
+    MOVIE_POST_ABOUT:'Posts about this movie:',
 
 
 
