@@ -1,16 +1,20 @@
 <div>
   <div style="border: 2px solid black;">
-    <p>ID: {{comment.id}} - {{comment.user.username}}</p>
+    <p>ID: {{comment.id}} - {{comment.user.username}} - enabled {{comment.enabled}}</p>
 
-    <editable-comment-body-directive is-owner="comment.isOwner" body="comment.body" send-update-fn="callbackFunctions.edit"></editable-comment-body-directive>
+    <editable-comment-body-directive is-editable="isUser && comment.isOwner" body="comment.body" send-update-fn="callbackFunctions.edit"></editable-comment-body-directive>
 
-    <button ng-click="writtingReply.value = true">REPLY</button>
+    <button ng-if="isAdmin" ng-click="deleteComment()">DELETE</button>
 
-    <comment-like-handler-directive user-vote="comment.userVote" send-vote-fn="callbackFunctions.vote"></comment-like-handler-directive>
+    <div ng-if="isUser">
+      <button ng-click="writtingReply.value = true">REPLY</button>
 
-    <div ng-if="writtingReply.value">
-      <button ng-click="writtingReply.value = false">HIDE REPLY</button>
-      <comment-reply-directive parent-id="{{comment.id}}" send-comment-fn="callbackFunctions.reply"></comment-reply-directive>
+      <comment-like-handler-directive user-vote="comment.userVote" send-vote-fn="callbackFunctions.vote"></comment-like-handler-directive>
+
+      <div ng-if="writtingReply.value">
+        <button ng-click="writtingReply.value = false">HIDE REPLY</button>
+        <comment-reply-directive parent-id="{{comment.id}}" send-comment-fn="callbackFunctions.reply"></comment-reply-directive>
+      </div>
     </div>
 
   </div>

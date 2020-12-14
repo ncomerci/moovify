@@ -50,6 +50,12 @@ define(['routes',
 
             return newResponse;
           });
+          RestangularProvider.setRequestInterceptor(function(elem, operation) {
+            if (operation === "remove") {
+              return undefined;
+            }
+            return elem;
+          });
 
 					$locationProvider.html5Mode(true);
 

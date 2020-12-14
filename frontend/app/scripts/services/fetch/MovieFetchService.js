@@ -11,6 +11,17 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
       return fetchMovies(path, null, null, null, enabled, orderBy, pageSize, pageNumber);
     }
 
+    this.fetchMovieById = function (movieId) {
+      return $q(function (resolve, reject) {
+        RestFulResponse.noAuth().one('movies', movieId).get().then(function (response) {
+
+          var movie = response.data.plain();
+          resolve(movie);
+        }).catch(reject);
+
+      });
+    }
+
     function fetchMovies(path, query, category, decade, enabled, orderBy, pageSize, pageNumber) {
 
       var queryParams = {

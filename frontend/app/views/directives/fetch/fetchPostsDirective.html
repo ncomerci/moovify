@@ -1,4 +1,7 @@
 <div>
+  <div ng-show="posts.length === 0" class="uk-margin-small-top">
+    <h1 class="uk-text-meta uk-text-center uk-text-bold">{{'POST_NOT_FOUND' | translate}}</h1>
+  </div>
   <div ng-show="posts.length > 0">
     <div ng-repeat="post in posts">
       <post-list-entry-directive post="post"></post-list-entry-directive>

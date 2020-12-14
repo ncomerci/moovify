@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
+define(['frontend', 'services/DynamicOptionsService', 'services/utilities/MovieCategoryService'], function(frontend) {
 
-  frontend.directive('moviesFiltersHandlerDirective', function (DynamicOptionsService, $location) {
+  frontend.directive('moviesFiltersHandlerDirective', function (DynamicOptionsService, $location, MovieCategoriesService) {
     return {
       restrict: 'E',
       scope: {
@@ -26,30 +26,8 @@ define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
           "title":"{{ 'TITLE' | translate }}"
         }
 
-        $scope.categoryMap = {
-          "action": "{{'ACTION' | translate }}",
-          "adventure": "{{'ADVENTURE' | translate }}",
-          "animation": "{{'ANIMATION' | translate }}",
-          "comedy": "{{'COMEDY' | translate }}",
-          "crime": "{{'CRIME' | translate }}",
-          "documentary":"{{'DOCUMENTARY' | translate }}",
-          "drama": "{{'DRAMA' | translate }}",
-          "family": "{{'FAMILY' | translate }}",
-          "fantasy": "{{'FANTASY' | translate }}",
-          "history": "{{'HISTORY' | translate }}",
-          "horror": "{{'HORROR' | translate }}",
-          "music": "{{'MUSIC' | translate }}",
-          "mystery": "{{'MYSTERY' | translate }}",
-          "romance": "{{'ROMANCE' | translate }}",
-          "scienceFiction": "{{'SCIENCE_FICTION' | translate }}",
-          "tvMovie": "{{'TV_MOVIE' | translate }}",
-          "thriller": "{{'THRILLER' | translate }}",
-          "war": "{{'WAR' | translate }}",
-          "western": "{{'WESTERN' | translate }}"
-        }
-
         $scope.getCategory = function(option) {
-          return $scope.categoryMap[option];
+          return MovieCategoriesService.getMovieCategory(option);
         }
 
         $scope.getOrder = function(option) {
