@@ -105,27 +105,30 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateName(User user, String name) {
-        if(!user.getName().equals(name))
+        if(name != null && !user.getName().equals(name))
             user.setName(name);
     }
 
     @Transactional
     @Override
     public void updateUsername(User user, String username) throws DuplicateUniqueUserAttributeException {
-        if(!user.getUsername().equals(username))
+        if(username != null && !user.getUsername().equals(username))
             userDao.updateUsername(user, username);
     }
 
     @Transactional
     @Override
     public void updateDescription(User user, String description) {
-        if(!user.getDescription().equals(description))
+        if(!description.equals("") && !user.getDescription().equals(description))
             user.setDescription(description);
     }
 
     @Transactional
     @Override
     public void updatePassword(User user, String password) {
+
+        if(password == null)
+            return;
 
         final String encodedPassword = passwordEncoder.encode(password);
 
