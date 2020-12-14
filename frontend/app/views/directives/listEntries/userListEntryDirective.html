@@ -9,7 +9,8 @@
       <div class="uk-width-expand">
         <a ng-href="{{user.url}}" class="text-lead" ng-class="{'uk-text-secondary uk-text-bold uk-text-middle': isAdmin(user)}">
           <span ng-if="loggedUser.logged && user.userFollowing">
-            te sigo pa-
+            <span class="iconify small-iconify" data-icon="ri:user-follow-line" data-inline="false" title="{{'FOLLOW_TITLE'| translate}}"></span>
+            <span>-</span>
           </span>
           {{user.username}}
         </a>

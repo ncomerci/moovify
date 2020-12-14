@@ -11,7 +11,7 @@
         </span>
 
         <span>{{post.postCategory.name}}</span>
-        <span ng-if="isAdmin(post.user)">adminBadge-</span>
+        <span ng-if="isAdmin(post.user)" class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
         <span> {{post.user.enabled ? post.user.username : 'INVALID'}}</span>
 
         <span>{{'VOTES_DISPLAY' |translate:{votes:post.totalLikes};}}</span>
@@ -24,7 +24,10 @@
       </p>
 
       <a class="text-lead" ng-href="/posts/{{post.id}}">
-        <span ng-if="post.hasUserBookmarked">bookmarked-</span>
+        <span ng-if="post.hasUserBookmarked">
+          <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false" title="{{'FOLLOW_TITLE' | translate}}"></span>
+          <span>-</span>
+        </span>
         <span>{{post.title}}</span>
       </a>
 
