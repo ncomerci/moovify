@@ -10,7 +10,6 @@ define(['frontend', 'directives/CommentDisplayDirective'], function(frontend) {
       },
       templateUrl:'resources/views/directives/commentTreeDirective.html',
       link: function (scope){
-        console.log(scope.comments);
       }
     }
   });

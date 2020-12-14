@@ -1,9 +1,17 @@
 <div>
-  <p>{{comment.user.username}}</p>
-  <p>{{comment.body}}</p>
-  <a ng-click="upVote()">UpVote</a>
-  <a ng-click="downVote()">DownVote</a>
-  <div ng-if="comment.children.length > 0">
+  <div style="border: 2px solid black;">
+    <p>ID: {{comment.id}} - {{comment.user.username}}</p>
+    <p>{{comment.body}}</p>
+    <button ng-click="writtingReply.value = true">REPLY</button>
+    <comment-like-handler-directive user-vote="comment.userVote" send-vote-fn="sendVote"></comment-like-handler-directive>
+
+    <div ng-if="writtingReply.value">
+      <button ng-click="writtingReply.value = false">HIDE REPLY</button>
+      <comment-reply-directive parent-id="{{comment.id}}" send-comment-fn="sendComment.fn"></comment-reply-directive>
+    </div>
+
+  </div>
+  <div ng-if="hasChildren()">
     <comment-tree-directive comments="comment.children"></comment-tree-directive>
   </div>
 </div>
