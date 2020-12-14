@@ -35,7 +35,6 @@ define(['routes',
 				  // TODO: Cambiar URL para el deploy
 					RestangularProvider.setBaseUrl('http://localhost/api');
 
-					// El link del url viene con localhost:8080 :C
 					RestangularProvider.setRestangularFields({
             selfLink: 'url'
           });

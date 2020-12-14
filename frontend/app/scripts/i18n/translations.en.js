@@ -105,6 +105,7 @@ define([], function() {
     UPDATE_AVATAR_MODAL_BODY: "File name: ",
     UPDATE_AVATAR_MODAL_CANCEL: "No",
     UPDATE_AVATAR_MODAL_ACCEPT: "Yes",
+    MIN_USER_DISPLAY_META_NAME_VOTES: "Name: {{name}} - Total votes: {{totalVotes}}",
 
 
 

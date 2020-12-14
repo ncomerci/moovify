@@ -17,15 +17,15 @@
     <div class="uk-grid">
       <div class="uk-width-expand uk-margin-small-top">
         <div ng-show="searchOptions.contentType === 'posts'">
-          <search-posts-directive query="query" enabled="{{true}}"></search-posts-directive>
+          <search-posts-directive query="query" enabled="{{true}}" refresh-url-fn="setPostSearchUrl" ></search-posts-directive>
         </div>
 
         <div ng-show="searchOptions.contentType === 'users'">
-          <search-users-directive query="query" enabled="{{true}}"></search-users-directive>
+          <search-users-directive query="query" enabled="{{true}}" refresh-url-fn="setUserSearchUrl" ></search-users-directive>
         </div>
 
         <div ng-show="searchOptions.contentType === 'movies'">
-          <search-movies-directive query="query" enabled="{{true}}"></search-movies-directive>
+          <search-movies-directive query="query" enabled="{{true}}" refresh-url-fn="setMovieSearchUrl" ></search-movies-directive>
         </div>
       </div>
     </div>

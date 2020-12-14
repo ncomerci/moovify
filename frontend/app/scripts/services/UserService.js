@@ -7,6 +7,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory'], function (fron
       if(!user){
         return false;
       }
+
        return user.roles.includes(role);
     }
   });

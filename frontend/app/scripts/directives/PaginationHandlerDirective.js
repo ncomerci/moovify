@@ -33,7 +33,6 @@ define(['frontend'], function(frontend) {
         scope.searchFn = scope.searchFn();
 
         scope.resetPaginationFn = function() {
-          console.log("resetPagination");
           scope.paginationParams.currentPage = 0;
         }
 

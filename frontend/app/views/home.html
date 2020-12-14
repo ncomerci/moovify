@@ -4,13 +4,19 @@
   <div class="uk-grid">
     <div class="uk-width-expand uk-margin-small-top">
       <div ng-show="order.value === 'hottest'">
-        <fetch-posts-directive default-page-size="35" order="order.value" enabled="true" path="/posts" ></fetch-posts-directive>
+        <fetch-posts-directive default-page-size="25" order="'hottest'" enabled="true" path="/posts" refresh-url-fn="setHottestUrl" ></fetch-posts-directive>
       </div>
 
       <div ng-show="order.value === 'newest'">
-        <fetch-posts-directive default-page-size="35" order="order.value" enabled="true" path="/posts" ></fetch-posts-directive>
+        <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/posts" refresh-url-fn="setNewestUrl" ></fetch-posts-directive>
       </div>
     </div>
+      <div ng-show="users.length > 0">
+        <div ng-repeat="user in users">
+          <min-user-list-entry-directive user="user"></min-user-list-entry-directive>
+        </div>
+      </div>
   </div>
+
 
 </div>

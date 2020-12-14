@@ -15,8 +15,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         order: '<',
         enabled: '<',
         defaultPageSize: '<',
-        path: '@'
-
+        path: '@',
+        refreshUrlFn: '='
       },
 
       controller: function ($scope, UserFetchService) {
@@ -29,16 +29,24 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
             function(resp) {
               $scope.users = resp.collection;
               $scope.paginationParams = resp.paginationParams;
+              $scope.queryParams = resp.queryParams;
 
-              Object.keys(resp.queryParams)
-                .forEach(function(paramKey) { $location.search(paramKey, resp.queryParams[paramKey]) });
+              if($scope.firstSearchDone)
+                $scope.refreshUrlFn();
+              else
+                $scope.firstSearchDone = true;
 
               $scope.paginationMutex = false;
             }
 
           ).catch(function() { $location.path('/404') });
 
-        }
+        };
+
+        $scope.refreshUrlFn = function() {
+          Object.keys($scope.queryParams)
+            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
+        };
 
       },
 
@@ -48,12 +56,16 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
         scope.paginationMutex = false;
 
+        scope.firstSearchDone = false;
+
         scope.paginationParams = {
           currentPage: init(parseInt($routeParams.pageNumber), 0),
           pageSize: init(parseInt($routeParams.pageSize), scope.defaultPageSize)
         };
 
         scope.resetPagination = null;
+
+        scope.queryParams = null;
 
         // Execute first fetch
         scope.fetchUsers();

@@ -14,7 +14,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       restrict: 'E',
       scope: {
         query: '=',
-        enabled: '@'
+        enabled: '@',
+        refreshUrlFn: '='
       },
 
       controller: function ($scope, UserFetchService) {
@@ -28,15 +29,22 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
             function(resp) {
               $scope.users = resp.collection;
               $scope.paginationParams = resp.paginationParams;
+              $scope.queryParams = resp.queryParams;
 
-              // Refresh URL
-              Object.keys(resp.queryParams)
-                .forEach(function(paramKey) { $location.search(paramKey, resp.queryParams[paramKey]) });
+              if($scope.firstSearchDone)
+                $scope.refreshUrlFn();
+              else
+                $scope.firstSearchDone = true;
 
               $scope.paginationMutex = false;
             }
           ).catch(function() { $location.path('/404') });
-        } // TODO: Add 500 page
+        };
+
+        $scope.refreshUrlFn = function() {
+          Object.keys($scope.queryParams)
+            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
+        };
 
       },
 
@@ -45,6 +53,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         scope.users = [];
 
         scope.paginationMutex = false;
+
+        scope.firstSearchDone = false;
 
         scope.paginationParams = {
           currentPage: init(parseInt($routeParams.pageNumber), 0),
@@ -60,6 +70,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         };
 
         scope.resetPagination = null;
+
+        scope.queryParams = null;
 
         scope.$watch('query.value', function(newParam, oldParam, scope) {
 
