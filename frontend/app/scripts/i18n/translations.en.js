@@ -39,6 +39,7 @@ define([], function() {
     COMMENT_BY:'By: {{username}}',
     COMMENT_BY_REMOVED: 'This user was removed',
     COMMENT_META: 'Post: {{title}} - Votes: {{votes}}',
+    VOTES_DISPLAY:'-Votes: {{votes}}',
     SEARCH_TITLE:'Search',
     SEARCH_PLACEHOLDER: 'Search...',
     ALL_POSTS: 'All posts',

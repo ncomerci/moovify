@@ -58,7 +58,9 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
         queryParams.enabled = enabled;
 
       return $q(function(resolve, reject) {
-        RestFulResponse.noAuth().all(path).getList(queryParams).then(function(postResponse) {
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
+
+        Restangular.all(path).getList(queryParams).then(function(postResponse) {
 
           var paginationParams = {lastPage: 0, pageSize: queryParams.pageSize, currentPage: queryParams.pageNumber};
           var linkHeader = postResponse.headers('Link');
@@ -71,8 +73,10 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
 
           resolve({collection: posts, paginationParams: paginationParams, queryParams: queryParams});
 
-        }).catch(function(response) { reject({status: response.status, message: 'PostFetchService: FetchPost'}) });
-      });
+        }).catch(function(response) { reject({status: response.status, message: 'PostFetchService: FetchPost'})
+        });
+      }).catch(reject);
+    });
     }
   });
 });

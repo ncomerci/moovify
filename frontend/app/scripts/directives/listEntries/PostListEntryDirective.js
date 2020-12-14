@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'services/DisplayService'], function(frontend) {
+define(['frontend', 'services/DisplayService', 'services/UserService'], function(frontend) {
 
-  frontend.directive('postListEntryDirective', function(DisplayService) {
+  frontend.directive('postListEntryDirective', function(DisplayService, UserService) {
     return {
       restrict: 'E',
       scope: {
@@ -11,6 +11,10 @@ define(['frontend', 'services/DisplayService'], function(frontend) {
       controller: function ($scope) {
         $scope.getAgeMessage = function (creationDate) {
           return DisplayService.getAgeMessageCode(creationDate);
+        }
+
+        $scope.isAdmin = function (user){
+          return UserService.userHasRole(user, 'ADMIN');
         }
       }
     }
