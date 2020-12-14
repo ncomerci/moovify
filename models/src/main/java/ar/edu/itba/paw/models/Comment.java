@@ -157,7 +157,7 @@ public class Comment {
                 .findFirst().orElse(0);
     }
 
-    public int getVoteValueByUsername(String username) {
+    public int getVoteValue(String username) {
         return getVotes().stream()
                 .filter(commentLike -> commentLike.getUser().getUsername().equals(username))
                 .map(CommentVote::getValue)

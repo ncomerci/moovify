@@ -8,7 +8,8 @@ define(['frontend'], function(frontend) {
       scope: {
         paginationParams: '=',
         searchFn: '&',
-        resetPaginationFn: '='
+        resetPaginationFn: '=',
+        mutex: '='
       },
 
       templateUrl: 'resources/views/directives/paginationHandlerDirective.html',
@@ -16,6 +17,8 @@ define(['frontend'], function(frontend) {
       link: function(scope) {
 
         scope.pageSizeOptions = [2, 5, 10, 25, 35];
+
+        scope.mutex = false;
 
         var width = 5;
 
@@ -30,11 +33,13 @@ define(['frontend'], function(frontend) {
         scope.searchFn = scope.searchFn();
 
         scope.resetPaginationFn = function() {
+          console.log("resetPagination");
           scope.paginationParams.currentPage = 0;
         }
 
         scope.$watchCollection('paginationParams', function(newParams, oldParams, scope) {
 
+          console.log(newParams, oldParams);
           if(!newParams || !oldParams){
             return;
           }
@@ -44,10 +49,13 @@ define(['frontend'], function(frontend) {
 
           if(newPageSize || newPageNumber){
 
+            scope.mutex = true;
+
             if(newPageSize){
               scope.resetPaginationFn();
             }
 
+            console.log("paginationSearch");
             scope.searchFn();
           }
         });

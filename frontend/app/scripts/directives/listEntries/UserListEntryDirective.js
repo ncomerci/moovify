@@ -7,7 +7,7 @@ define(['frontend', 'services/DisplayService', 'services/LoginService'], functio
       scope: {
         user: '='
       },
-      templateUrl: 'resources/views/directives/userListEntryDirective.html',
+      templateUrl: 'resources/views/directives/listEntries/userListEntryDirective.html',
       controller: function ($scope) {
         $scope.getYear = function (releaseDate) {
           return DisplayService.getYear(releaseDate);

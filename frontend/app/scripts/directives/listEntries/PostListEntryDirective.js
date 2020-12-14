@@ -7,7 +7,7 @@ define(['frontend', 'services/DisplayService'], function(frontend) {
       scope: {
         post: '='
       },
-      templateUrl: 'resources/views/directives/postListEntryDirective.html',
+      templateUrl: 'resources/views/directives/listEntries/postListEntryDirective.html',
       controller: function ($scope) {
         $scope.getAgeMessage = function (creationDate) {
           return DisplayService.getAgeMessageCode(creationDate);

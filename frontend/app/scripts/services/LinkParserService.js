@@ -40,17 +40,9 @@ define(['frontend'], function(frontend) {
         return ans;
       });
 
-      var relMap = {}
+      var lastPage = parseInt(rels.find(function(entry) { return entry.rel === 'last' }).pageNumber);
 
-      rels.forEach(function (entry) { relMap[entry.rel] = Object.assign({}, entry) });
-
-      var isInFirstPage = relMap.prev === undefined;
-
-      return {
-        currentPage: isInFirstPage ? 0 : parseInt(relMap.prev.pageNumber) + 1,
-        pageSize: parseInt(relMap.first.pageSize),
-        lastPage: parseInt(relMap.last.pageNumber)
-      };
+      return lastPage;
     }
 
   });

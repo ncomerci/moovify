@@ -31,6 +31,7 @@ public class UserDto {
     private Integer followerCount;
     private boolean enabled;
     private Collection<Role> roles;
+    private Boolean userFollowing;
 
     // Relations
     private String avatar;
@@ -65,6 +66,10 @@ public class UserDto {
         totalLikes = user.getTotalLikes();
         followerCount = user.getFollowerCount();
         roles = user.getRoles();
+
+        if(securityContext.getUserPrincipal() != null) {
+            userFollowing = user.isUserFollowing(securityContext.getUserPrincipal().getName());
+        }
 
         avatar = userUriBuilder.clone().path("/avatar").build().toString();
         posts = userUriBuilder.clone().path("/posts").build().toString();
@@ -207,5 +212,13 @@ public class UserDto {
 
     public void setBookmarkedPosts(String bookmarkedPosts) {
         this.bookmarkedPosts = bookmarkedPosts;
+    }
+
+    public Boolean getUserFollowing() {
+        return userFollowing;
+    }
+
+    public void setUserFollowing(Boolean userFollowing) {
+        this.userFollowing = userFollowing;
     }
 }

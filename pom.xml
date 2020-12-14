@@ -24,7 +24,9 @@
 
 <!--  Spring Dependencies -->
     <org.springframework.version>4.2.5.RELEASE</org.springframework.version>
-    <spring-security.version>4.0.4.RELEASE</spring-security.version>
+
+<!--    CHANGE BACK TO 4.0.4 BEFORE DEPLOYMENT - CORS  -->
+    <spring-security.version>4.2.0.RELEASE</spring-security.version>
 
 <!--  Jersey Dependencies -->
     <jersey.version>3.0-SNAPSHOT</jersey.version>

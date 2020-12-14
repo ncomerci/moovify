@@ -27,6 +27,8 @@ public abstract class BasePostDto {
     private Collection<String> tags;
     private boolean enabled;
     private Long totalLikes;
+    private Boolean isOwner;
+    private int userVote;
 
     // Relations
     private String comments;
@@ -60,6 +62,13 @@ public abstract class BasePostDto {
         postCategory = new PostCategoryDto(post.getCategory());
         tags = post.getTags();
         totalLikes = post.getTotalVotes();
+
+        if(securityContext.getUserPrincipal() != null) {
+            final String authenticatedUserUsername = securityContext.getUserPrincipal().getName();
+
+            isOwner = post.getUser().getUsername().equals(authenticatedUserUsername);
+            userVote = post.getVoteValue(authenticatedUserUsername);
+        }
 
         comments = postUriBuilder.clone().path("comments").build().toString();
         votes = postUriBuilder.clone().path("votes").build().toString();
@@ -187,5 +196,21 @@ public abstract class BasePostDto {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Boolean getOwner() {
+        return isOwner;
+    }
+
+    public void setOwner(Boolean owner) {
+        isOwner = owner;
+    }
+
+    public int getUserVote() {
+        return userVote;
+    }
+
+    public void setUserVote(int userVote) {
+        this.userVote = userVote;
     }
 }

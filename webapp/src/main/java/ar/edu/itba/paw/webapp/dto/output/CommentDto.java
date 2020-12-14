@@ -62,8 +62,9 @@ public class CommentDto {
         lastEditTime = comment.getLastEditDate();
         totalVotes = comment.getTotalVotes();
 
-        if(securityContext.getUserPrincipal() != null)
-            userVote = comment.getVoteValueByUsername(securityContext.getUserPrincipal().getName());
+        if(securityContext.getUserPrincipal() != null) {
+            userVote = comment.getVoteValue(securityContext.getUserPrincipal().getName());
+        }
         
         if(comment.getParent() != null)
             parent = getCommentUriBuilder(comment.getParent(), uriInfo).build().toString();

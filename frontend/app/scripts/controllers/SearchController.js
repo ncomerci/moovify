@@ -1,12 +1,10 @@
 'use strict';
 define(['frontend', 'uikit', 'directives/search/SearchMoviesDirective', 'directives/search/SearchUsersDirective',
-  'directives/search/SearchPostsDirective', 'directives/tabDisplayDirective'], function(frontend) {
+  'directives/search/SearchPostsDirective', 'directives/TabDisplayDirective'], function(frontend) {
 
   var defaultType = 'posts';
 
     frontend.controller('SearchController', function($scope, $routeParams, $location) {
-
-      console.log("Inicializando!");
 
       $scope.query = {
         value: $routeParams.query ? $routeParams.query : ''
