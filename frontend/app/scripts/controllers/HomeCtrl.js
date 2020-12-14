@@ -1,32 +1,59 @@
 'use strict';
-define(['frontend', 'services/utilities/PageTitleService', 'directives/TabDisplayDirective', 'directives/fetch/FetchPostsDirective',
-  'services/fetch/UserFetchService', 'directives/listEntries/MinUserListEntryDirective'], function(frontend) {
+define(['frontend', 'services/utilities/PageTitleService', 'services/LoginService', 'directives/TabDisplayDirective',
+  'directives/fetch/FetchPostsDirective', 'services/fetch/UserFetchService',
+  'directives/listEntries/MinUserListEntryDirective'], function(frontend) {
 
 	frontend.controller('HomeCtrl', function($scope, PageTitle, $routeParams, $location, UserFetchService) {
 
     PageTitle.setTitle('Moovify'); // TODO: cambiar key
 
-    $scope.postOrders = [
-      { value: 'hottest', message: 'POST_ORDER_HOTTEST' },
-      { value: 'newest', message: 'POST_ORDER_NEWEST' }
+    $scope.showingValues = [
+      { value: 'hottestPosts', message: 'POST_ORDER_HOTTEST' },
+      { value: 'newestPosts', message: 'POST_ORDER_NEWEST' }
       ];
 
-    $scope.order = {
-      value: $routeParams.orderBy ? $routeParams.orderBy : $scope.postOrders[0].value
+    if($scope.loggedUser.logged) {
+      $scope.showingValues.push({ value: 'myFeed', message: 'INDEX_MY_FEED' });
+    }
+
+    $scope.$watch('loggedUser.logged', function(newParam, oldParam, scope) {
+      console.log(newParam, oldParam);
+      if(oldParam === true && newParam === false) {
+        scope.showingValues.pop();
+
+        if(scope.showing.value === 'myFeed') {
+          scope.showing.value = 'hottestPosts';
+        }
+      }
+    });
+
+    $scope.showing = {
+      value: $routeParams.showing ? $routeParams.showing : $scope.showingValues[0].value
     };
 
-    $scope.setHottestUrl = null;
-    $scope.setHottestUrl = null;
+    if($scope.showing.value === 'myFeed' && !$scope.loggedUser.logged) {
+      $scope.showing.value = 'hottestPosts';
+      $location.search('showing', $scope.showing.value);
+    }
 
-    $scope.$watch('order.value', function(newParam, oldParam, scope) {
+    $scope.setHottestUrl = null;
+    $scope.setNewestUrl = null;
+    $scope.setFeedUrl = null;
+
+    $scope.$watch('showing.value', function(newParam, oldParam, scope) {
 
       if(newParam !== oldParam) {
 
-        if(newParam === 'hottest' && scope.setHottestUrl !== null) {
+        $location.search({ showing: scope.showing.value });
+
+        if(newParam === 'hottestPosts' && scope.setHottestUrl !== null) {
           scope.setHottestUrl();
         }
-        else if(newParam === 'newest' && scope.setNewestUrl !== null) {
+        else if(newParam === 'newestPosts' && scope.setNewestUrl !== null) {
           scope.setNewestUrl();
+        }
+        else if(newParam === 'myFeed' && scope.loggedUser.logged && scope.setFeedUrl !== null) {
+          scope.setFeedUrl();
         }
 
       }

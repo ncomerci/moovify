@@ -171,7 +171,10 @@
       <input class="uk-button uk-button-primary uk-border-rounded extended-button uk-text-uppercase"
              type="submit"
              value="{{'USER_CREATE_BUTTON' | translate}}"
-             ng-click="signup(user)"/>
+             ng-click="signup(user)"
+             ng-class="{'uk-disabled': loading, 'disabled-primary': loading}"
+      />
+      <div uk-spinner class="uk-margin-top" ng-show="loading"></div>
     </div>
     <div class="uk-text-center uk-text-bold uk-text-muted uk-margin">
       {{'USER_CREATE_ALREADYACCOUNT' | translate}}

@@ -10,6 +10,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       $scope.signUpBtnPressed = false;
       $scope.signUpError = false;
+      $scope.loading = false;
 
       $scope.user = {};
 
@@ -72,6 +73,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
           !$scope.passwordsNotEquals()
         )
         {
+          $scope.loading = true;
           RestFulResponse.noAuth().all('users').post(user).then(function() {
             var aux_user = {
               username: user.username,
@@ -81,16 +83,22 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
               if($scope.avatar.file !== undefined) {
                 UpdateAvatar.uploadAvatar();
               }
+              $scope.loading = false;
               $location.path('/user');
             })
           }).catch(function(err) {
-            err.data.forEach(function(e){
+            $scope.loading = false;
+            if(err.data) {
+              err.data.forEach(function (e) {
                 $translate(fieldErrors[e['attribute']].i18nKey).then(function(field) {
                   $translate('FORM_DUPLICATED_FIELD_ERROR', {field: field}).then(function(msg) {
                     fieldErrors[e['attribute']].message = msg;
                   }).catch(function(err) { console.log('inside', err) });
                 }).catch(function(err){ console.log('outside', err) });
               });
+            } else {
+              console.log(err);
+            }
           });
         }
       }
