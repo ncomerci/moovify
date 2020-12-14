@@ -72,6 +72,7 @@ define([], function() {
     FORM_PASSWORD_PATTERN_ERROR: "White spaces are not allowed",
     FORM_REPEAT_PASSWORD_ERROR: "Passwords don't match",
     FORM_DUPLICATED_FIELD_ERROR: "{{ field }} already exists, please choose another",
+    FORM_AVATAR_SIZE_ERROR: "Max size 1MB",
     FORM_TITLE_REQUIRED:"You must write a title",
     FORM_CATEGORY_REQUIRED:"You must pick a valid category",
     FORM_BODY_REQUIRED:"Your post must have a body",
@@ -95,6 +96,10 @@ define([], function() {
     POST_CREATE_SEND: "SEND",
     POST_ORDER_HOTTEST: "Hottest",
     POST_ORDER_NEWEST: "Newest",
+    UPDATE_AVATAR_MODAL_TITLE: "Are you sure you want to update your avatar?",
+    UPDATE_AVATAR_MODAL_BODY: "File name: ",
+    UPDATE_AVATAR_MODAL_CANCEL: "No",
+    UPDATE_AVATAR_MODAL_ACCEPT: "Yes",
 
 
 
@@ -102,7 +107,8 @@ define([], function() {
 
 
     PAGINATION_PAGE_SIZE: "Showing",
-
-
+    PROFILE_POST_TAB_DISPLAY: "Your posts",
+    PROFILE_COMMENTS_TAB_DISPLAY: "Your comments",
+    PROFILE_BOOK_TAB_DISPLAY: "Your bookmarked posts",
 	};
 });
