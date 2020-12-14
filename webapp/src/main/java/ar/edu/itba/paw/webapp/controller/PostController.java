@@ -7,6 +7,7 @@ import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.dto.generic.GenericIntegerValueDto;
+import ar.edu.itba.paw.webapp.dto.input.CommentCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.PostCreateDto;
 import ar.edu.itba.paw.webapp.dto.input.PostEditDto;
 import ar.edu.itba.paw.webapp.dto.output.*;
@@ -256,6 +257,21 @@ public class PostController {
             linkUriBuilder.queryParam("enabled", enabled);
 
         return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/{id}/comments")
+    public Response createPostComment(@PathParam("id") long postId, @Valid final CommentCreateDto commentCreateDto){
+
+        final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
+
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+
+        final Comment comment = commentService.register(post, null, commentCreateDto.getBody(), user, "newCommentEmail");
+
+        return Response.created(CommentDto.getCommentUriBuilder(comment, uriInfo).build()).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)

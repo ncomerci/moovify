@@ -10,44 +10,13 @@ public class CommentCreateDto {
     @NotNull
     @Size(min = 1, max = 400)
     @SpacesNormalization
-    private String commentBody;
+    private String body;
 
-    @Size(min = 1)
-    private long postId;
-
-    private Long parentId;
-
-    private long userId;
-
-    public long getPostId() {
-        return postId;
+    public String getBody() {
+        return body;
     }
 
-    public void setPostId(long postId) {
-        this.postId = postId;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
-    }
-
-    public String getCommentBody() {
-        return commentBody;
-    }
-
-    public void setCommentBody(String commentBody) {
-        this.commentBody = commentBody;
+    public void setBody(String body) {
+        this.body = body;
     }
 }
