@@ -131,6 +131,14 @@ public class CommentDaoImpl implements CommentDao {
                 enabled, sortCriteria, pageNumber, pageSize, new Object[]{ user.getId() });
     }
 
+    @Override
+    public PaginatedCollection<Comment> searchComments(String query, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize) {
+
+        LOGGER.info("Search Comments with body {} Order By {}. Page number {}, Page Size {}", query, sortCriteria, pageNumber, pageSize);
+
+        return queryComments("WHERE LOWER(" + COMMENTS + ".body) LIKE '%' || LOWER(?) || '%'", enabled, sortCriteria, pageNumber, pageSize, new Object[]{ query });
+    }
+
     private String buildNativeFromStatement() {
         return NATIVE_BASE_COMMENT_FROM + " " + NATIVE_TOTAL_LIKES_FROM;
     }

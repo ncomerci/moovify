@@ -1,6 +1,7 @@
 package ar.edu.itba.paw.webapp.controller;
 
 import ar.edu.itba.paw.interfaces.services.CommentService;
+import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
 import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
@@ -15,6 +16,7 @@ import ar.edu.itba.paw.webapp.dto.output.CommentVoteDto;
 import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.ForbiddenEntityRelationshipAccessException;
+import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,14 +43,24 @@ public class CommentController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SearchService searchService;
+
     @Produces
     @GET
-    public Response listComments(@QueryParam("enabled") Boolean enabled,
+    public Response listComments(@QueryParam("query") @DefaultValue("") String query,
+                                 @QueryParam("enabled") Boolean enabled,
                                  @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
                                  @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
                                  @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
 
-        final PaginatedCollection<Comment> comments = commentService.getAllComments(enabled, orderBy, pageNumber, pageSize);
+        final PaginatedCollection<Comment> comments;
+
+        if(!query.equals(""))
+            comments = searchService.searchComments(query, enabled, orderBy, pageNumber, pageSize).orElseThrow(InvalidSearchArgumentsException::new);
+
+        else
+            comments = commentService.getAllComments(enabled, orderBy, pageNumber, pageSize);
 
         final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
 
