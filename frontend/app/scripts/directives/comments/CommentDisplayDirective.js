@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'directives/comments/CommentTreeDirective', 'services/CommentInteractionService',
   'services/fetch/CommentFetchService', 'directives/comments/CommentReplyDirective', 'directives/comments/EditableCommentBodyDirective',
-  'directives/comments/CommentLikeHandlerDirective'], function(frontend) {
+  'directives/comments/CommentLikeHandlerDirective', 'services/UserService', 'services/LoginService'], function(frontend) {
 
   frontend.directive('commentDisplayDirective', function (){
 
@@ -15,7 +15,16 @@ define(['frontend', 'directives/comments/CommentTreeDirective', 'services/Commen
         scope.writtingReply = {value: false};
         scope.showChildren = {value: false};
       },
-      controller: function($scope, CommentInteractionService, CommentFetchService, $q) {
+      controller: function($scope, CommentInteractionService, CommentFetchService, $q, UserService, LoggedUserFactory) {
+
+        $scope.isUser = false;
+        $scope.isAdmin = false;
+        var loggedUser = LoggedUserFactory.getLoggedUser();
+
+        if(loggedUser.logged) {
+          $scope.isAdmin = UserService.userHasRole(loggedUser, 'ADMIN');
+          $scope.isUser = UserService.userHasRole(loggedUser, 'USER');
+        }
 
         if(!$scope.comment.childrenFetched){
           CommentFetchService.getCommentCommentsWithUserVote($scope.comment.id).then(function (comment) {
@@ -43,9 +52,10 @@ define(['frontend', 'directives/comments/CommentTreeDirective', 'services/Commen
           });
         }
 
-        $scope.callbackFunctions.reply = function(content) {
+        $scope.callbackFunctions.reply = function(newCommentBody) {
           return $q(function (resolve, reject) {
-            CommentInteractionService.sendReply($scope.comment.originalElement.post.id, $scope.comment.id, content).then(function(newComment) {
+
+            CommentInteractionService.sendReply($scope.comment, newCommentBody).then(function(newComment) {
               // debugger;
               if(Array.isArray($scope.comment.children)){
                 $scope.comment.children.unshift(newComment);
@@ -53,16 +63,25 @@ define(['frontend', 'directives/comments/CommentTreeDirective', 'services/Commen
               else {
                 $scope.comment.children = [newComment];
               }
+
               $scope.showChildren.value = true;
               resolve(newComment);
+
             }).catch(reject);
           });
         }
 
         $scope.callbackFunctions.edit = function(newBody) {
-          console.log('Pre and recieved', $scope.comment.body, newBody);
+
           $scope.comment.body = newBody;
           return $scope.comment.put();
+        }
+
+        $scope.deleteComment = function () {
+
+          $q.resolve($scope.comment.all('enabled').remove()).then(function(response) {
+            $scope.comment.enabled = false;
+          }).catch(console.log);
         }
       }
     }

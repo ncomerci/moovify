@@ -8,7 +8,7 @@ define(['frontend'], function(frontend) {
       scope: {
         body: '=',
         sendUpdateFn: '&',
-        isOwner: '='
+        isEditable: '='
       },
       templateUrl:'resources/views/directives/comments/editableCommentBodyDirective.html',
       link: function (scope){

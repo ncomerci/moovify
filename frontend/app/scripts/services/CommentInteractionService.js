@@ -15,33 +15,17 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       })
     }
 
-    this.sendReply = function(postId, commentId, newCommentBody) {
+    this.sendReply = function(comment, newCommentBody) {
 
-      var loggedUser = LoggedUserFactory.getLoggedUser();
-
-      if(!loggedUser.logged){
-        return $q.reject({message: 'User not logged'});
-      }
-
-      var postBody = {
-        commentBody: newCommentBody,
-        postId: postId,
-        parentId: commentId,
-        userId: loggedUser.id
-      }
-
-      return $q(function(resolve, reject){
-        RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
-          Restangular.all('comments').post(postBody).then(function(response) {
-
-              var id = new URL(response.headers('Location')).pathname.match(/\d*$/);
-
-              Restangular.one('comments', id).get().then(function(response) {
-                resolve(response.data.plain());
-              }).catch(reject);
+    return $q(function(resolve, reject){
+      RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
+        comment.all('children').post({body: newCommentBody}).then(function(response) {
+            Restangular.oneUrl('comments', response.headers('Location')).get().then(function(response) {
+              resolve(response.data);
             }).catch(reject);
           }).catch(reject);
-      });
+        }).catch(reject);
+    });
     }
   });
 });
