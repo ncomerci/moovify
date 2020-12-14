@@ -94,6 +94,18 @@ define([], function() {
     POST_CREATE_TAGS_CONSTRAINS: "You may add up to 5 tags (no more than 50 characters)",
     POST_CREATE_TAGS_PLACEHOLDER: "Write the tag here",
     POST_CREATE_SEND: "SEND",
+    POST_ORDER_HOTTEST: "Hottest",
+    POST_ORDER_NEWEST: "Newest",
+    UPDATE_AVATAR_MODAL_TITLE: "Are you sure you want to update your avatar?",
+    UPDATE_AVATAR_MODAL_BODY: "File name: ",
+    UPDATE_AVATAR_MODAL_CANCEL: "No",
+    UPDATE_AVATAR_MODAL_ACCEPT: "Yes",
+
+
+
+
+
+
     PAGINATION_PAGE_SIZE: "Showing",
     PROFILE_POST_TAB_DISPLAY: "Your posts",
     PROFILE_COMMENTS_TAB_DISPLAY: "Your comments",
