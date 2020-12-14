@@ -6,11 +6,13 @@ require.config({
         angular: '../../bower_components/angular/angular',
         'angular-route': '../../bower_components/angular-route/angular-route',
         'angular-translate': '../../bower_components/angular-translate/angular-translate',
+        'angular-sanitize': '../../bower_components/angular-sanitize/angular-sanitize',
         'es5-shim': '../../bower_components/es5-shim/es5-shim',
         jquery: '../../bower_components/jquery/dist/jquery',
         json3: '../../bower_components/json3/lib/json3',
         lodash: '../../bower_components/lodash/dist/lodash',
         moment: '../../bower_components/moment/moment',
+        marked: '../../bower_components/marked/lib/marked',
         requirejs: '../../bower_components/requirejs/require',
         restangular: '../../bower_components/restangular/dist/restangular',
         uikit: '../../bower_components/uikit/dist/js/uikit',
@@ -40,6 +42,11 @@ require.config({
         'angular-translate': {
             deps: [
                 'angular'
+            ]
+        },
+        'angular-sanitize': {
+            deps: [
+              'angular'
             ]
         }
     },

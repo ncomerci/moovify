@@ -7,6 +7,7 @@ define(['routes',
 	'angular',
 	'angular-route',
 	'angular-translate',
+	'angular-sanitize',
 	'restangular',
   'iconify',
 	],
@@ -19,6 +20,7 @@ define(['routes',
 			'ngRoute',
 			'pascalprecht.translate',
 			'restangular',
+      'ngSanitize'
 		]);
 		frontend
 			.config(

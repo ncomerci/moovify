@@ -1,4 +1,5 @@
-define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFetchService', 'directives/comments/CommentTreeDirective', 'services/CommentInteractionService'], function(frontend) {
+define(['frontend', 'marked', 'purify','services/fetch/PostFetchService', 'services/fetch/CommentFetchService',
+  'directives/comments/CommentTreeDirective', 'services/CommentInteractionService'], function(frontend, marked, DOMPurify) {
 
   'use strict';
   frontend.controller('PostViewController', function ($scope, PostFetchService, $location, CommentFetchService, $q, CommentInteractionService, $routeParams) {
@@ -12,9 +13,16 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
     var commentsPageSize = 5;
     var commentsPageNumber = 0;
 
+    marked.setOptions({
+      gfm: true,
+      breaks: true,
+      sanitizer: DOMPurify.sanitize,
+      //  silent: true,
+    });
 
     PostFetchService.fetchPost(postId).then(function(post) {
       $scope.post = post;
+      $scope.post.body = marked($scope.post.body);
     }).catch(console.log);
 
     CommentFetchService.getPostCommentsWithUserVote(postId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
@@ -32,5 +40,6 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
       });
 
     }
+
   });
 });

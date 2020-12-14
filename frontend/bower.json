@@ -9,11 +9,11 @@
     "json3": "~3.3.1",
     "jquery": "~3.5.1",
     "moment": "~2.8.3",
+    "marked": "~1.2.6",
     "requirejs": "~2.1.11",
     "uikit": "git://github.com/uikit/uikit.git#3.x",
-    "restangular": "~1.6.1"
+    "restangular": "~1.6.1",
+    "angular-sanitize": "~1.5.0"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
-

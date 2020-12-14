@@ -1,8 +1,8 @@
 <main ng-if="post" class="uk-container-small uk-margin-auto">
   <h1>{{post.title}}</h1>
   <p>POST BY: {{post.user.username}}</p>
-  <article>
-    <p>{{post.body}}</p>
+
+  <article ng-if="post.body" ng-bind-html="post.body">
   </article>
   <div>
     <span ng-repeat="movie in post.movies">{{movie.title}} - ({{movie.releaseDate}})</span>
