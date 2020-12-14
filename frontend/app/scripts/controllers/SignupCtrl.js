@@ -1,7 +1,7 @@
-define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/RestFulResponseFactory'], function(frontend) {
+define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/RestFulResponseFactory', 'services/UpdateAvatarService'], function(frontend) {
 
     'use strict';
-    frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, PageTitle, RestFulResponse, $location, $translate, $document) {
+    frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, PageTitle, RestFulResponse, $location, $translate, UpdateAvatar) {
       PageTitle.setTitle('asd') //TODO: cambiar la key
 
       if(LoggedUserFactory.getLoggedUser().logged) {
@@ -50,21 +50,12 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
         },
       }
 
-      $scope.avatar = {
-        file: undefined,
-        error: false
-      }
+      $scope.avatar = UpdateAvatar.getAvatar();
 
       var inputFile = angular.element(document.getElementById('avatar'))[0];
 
       inputFile.addEventListener('change', function () {
-        $scope.avatar.file = inputFile.files[0];
-        if($scope.avatar.file !== undefined && $scope.avatar.file.size > 1000000) {
-          $scope.avatar.file = undefined;
-          $scope.avatar.error = true;
-        } else {
-          $scope.avatar.error = false;
-        }
+        UpdateAvatar.setFile(inputFile.files[0]);
         $scope.$apply();
       });
 
@@ -86,19 +77,11 @@ define(['frontend', 'services/LoginService', 'services/PageTitleService', 'servi
               username: user.username,
               password: user.password
             }
-            LoggedUserFactory.login(aux_user).then(function (loggedUser) {
+            LoggedUserFactory.login(aux_user).then(function () {
               if($scope.avatar.file !== undefined) {
-                var fd = new FormData();
-                fd.append('avatar', $scope.avatar.file);
-                RestFulResponse.withAuth(loggedUser).then(function (r) {
-                  r.one('/user/avatar').customPUT(fd, undefined, undefined, {'Content-Type': undefined}).then(function (resp) {
-                    // esto es para que angular detecte que hubo un cambio y pida de nuevo la imagen
-                    $scope.loggedUser.avatar = resp.headers('Content-Location');
-                    $scope.$apply();
-                  });
-                });
+                UpdateAvatar.uploadAvatar();
               }
-              $location.path('/') // TODO: poner la ruta del perfil
+              $location.path('/user');
             })
           }).catch(function(err) {
             err.data.forEach(function(e){

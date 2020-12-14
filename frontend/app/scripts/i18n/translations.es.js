@@ -40,9 +40,14 @@ define([], function() {
     COMMENT_BY_REMOVED: 'This user was removed',
     COMMENT_META: 'Post: {{title}} - Votes: {{votes}}',
     SEARCH_TITLE:'Search',
-    POST_CATEGORIES: 'Type of post',
-    POST_AGE: 'From',
-    SEARCH_ORDER_BY: 'Order by',
+    SEARCH_PLACEHOLDER: 'Search...',
+    ALL_POSTS: 'All posts',
+    POST_CATEGORIES: 'Type of post:',
+    POST_AGE: 'From:',
+    MOVIE_CATEGORY: 'Category:',
+    MOVIE_DECADE: 'Decade:',
+    USER_ROLE: 'Role:',
+    SEARCH_ORDER_BY: 'Order by:',
     POST_TAB_DISPLAY: 'Posts',
     MOVIE_TAB_DISPLAY: 'Movies',
     USER_TAB_DISPLAY: 'Users',
@@ -57,15 +62,10 @@ define([], function() {
     ALL: 'All',
     ANY: 'Any',
     CATEGORIES: 'Categories:',
-    MOVIE_CATEGORY: 'Category',
-    MOVIE_DECADE: 'Decade',
-    USER_ROLE: 'Role:',
     POST_NOT_FOUND: 'There are no posts that match those requirements. Try changing the search parameters or looking for some new posts in the home screen.',
     MOVIES_NOT_FOUND: 'There are no movies that match those requirements. Try changing the search parameters.',
     USERS_NOT_FOUND: 'There are no users that match those requirements. Try changing the search parameters.',
-    SEARCH_PLACEHOLDER: 'Search...',
-    NAVBAR_CREATE_POST: 'Crear post',
-    ALL_POSTS: 'All posts',
+    NAVBAR_CREATE_POST: 'Create post',
     FORM_FIELD_REQUIRED: 'Field required',
     FORM_BAD_CREDENTIALS: 'Incorrect user or password',
     FORM_MIN_LENGTH_ERROR: 'Minimum length is {{ minLen }} characters',
@@ -76,6 +76,7 @@ define([], function() {
     FORM_PASSWORD_PATTERN_ERROR: "White spaces are not allowed",
     FORM_REPEAT_PASSWORD_ERROR: "Passwords don't match",
     FORM_DUPLICATED_FIELD_ERROR: "{{ field }} already exists, please choose another",
+    FORM_AVATAR_SIZE_ERROR: "Max size 1MB",
     FORM_TITLE_REQUIRED:"You must write a title",
     FORM_CATEGORY_REQUIRED:"You must pick a valid category",
     FORM_BODY_REQUIRED:"Your post must have a body",
@@ -97,6 +98,18 @@ define([], function() {
     POST_CREATE_TAGS_CONSTRAINS: "You may add up to 5 tags (no more than 50 characters)",
     POST_CREATE_TAGS_PLACEHOLDER: "Write the tag here",
     POST_CREATE_SEND: "SEND",
+    POST_ORDER_HOTTEST: "Hottest",
+    POST_ORDER_NEWEST: "Newest",
+    UPDATE_AVATAR_MODAL_TITLE: "Are you sure you want to update your avatar?",
+    UPDATE_AVATAR_MODAL_BODY: "File name: ",
+    UPDATE_AVATAR_MODAL_CANCEL: "No",
+    UPDATE_AVATAR_MODAL_ACCEPT: "Yes",
+
+
+
+
+
+
     WATCHLIST:'Watchlist',
     CRITIQUE:"Critique",
     DEBATE:"Debate",
@@ -135,6 +148,8 @@ define([], function() {
     USER: 'User',
     ADMIN: 'Admin',
     PAGINATION_PAGE_SIZE: "Showing",
-
+    PROFILE_POST_TAB_DISPLAY: "Your posts",
+    PROFILE_COMMENTS_TAB_DISPLAY: "Your comments",
+    PROFILE_BOOK_TAB_DISPLAY: "Your bookmarked posts",
   };
 });
