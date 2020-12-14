@@ -16,7 +16,6 @@ import ar.edu.itba.paw.webapp.dto.output.CommentVoteDto;
 import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.ForbiddenEntityRelationshipAccessException;
-import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -69,24 +68,6 @@ public class CommentController {
     }
 
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @POST
-    public Response createComment(@Valid final CommentCreateDto commentCreateDto){
-
-        final Post post = postService.findPostById(commentCreateDto.getPostId()).orElseThrow(PostNotFoundException::new);
-
-        final User user = userService.findUserById(commentCreateDto.getUserId()).orElseThrow(UserNotFoundException::new);
-
-        final Comment parent = (commentCreateDto.getParentId() != null) ?
-                commentService.findCommentById(commentCreateDto.getParentId()).orElseThrow(CommentNotFoundException::new) :
-                null;
-
-        final Comment comment = commentService.register(post, parent, commentCreateDto.getCommentBody(), user, "newCommentEmail");
-
-        return Response.created(CommentDto.getCommentUriBuilder(comment, uriInfo).build()).build();
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/options")
     public Response getCommentSearchOptions(){
@@ -123,6 +104,49 @@ public class CommentController {
         return Response.noContent()
                 .contentLocation(CommentDto.getCommentUriBuilder(comment, uriInfo).build())
                 .build();
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("/{id}/children")
+    public  Response getCommentChildren(@PathParam("id") long id,
+                                        @QueryParam("enabled") Boolean enabled,
+                                        @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
+                                        @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
+                                        @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
+
+        final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
+
+        final PaginatedCollection<Comment> comments = commentService.findCommentChildren(comment, enabled, orderBy, pageNumber, pageSize);
+
+        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
+
+        final UriBuilder linkUriBuilder = uriInfo
+                .getAbsolutePathBuilder()
+                .queryParam("pageSize", pageSize)
+                .queryParam("orderBy", orderBy);
+
+        if(enabled != null)
+            linkUriBuilder.queryParam("enabled", enabled);
+
+        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
+    }
+
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @POST
+    @Path("/{id}/children")
+    public Response createCommentChild(@PathParam("id") long parentId, @Valid final CommentCreateDto commentCreateDto){
+
+        final Comment parent = commentService.findCommentById(parentId).orElseThrow(CommentNotFoundException::new);
+
+        final Post post = parent.getPost();
+
+        final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
+
+        final Comment comment = commentService.register(post, parent, commentCreateDto.getBody(), user, "newCommentEmail");
+
+        return Response.created(CommentDto.getCommentUriBuilder(comment, uriInfo).build()).build();
     }
 
     @Produces(MediaType.APPLICATION_JSON)
@@ -201,32 +225,6 @@ public class CommentController {
         int value = commentService.getVoteValue(comment, user);
 
         return Response.ok(new GenericIntegerValueDto(value)).build();
-    }
-
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    @Path("/{id}/children")
-    public  Response getCommentChildren(@PathParam("id") long id,
-                                        @QueryParam("enabled") Boolean enabled,
-                                        @QueryParam("orderBy") @DefaultValue("newest") String orderBy,
-                                        @QueryParam("pageNumber") @DefaultValue("0") int pageNumber,
-                                        @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
-
-        final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
-
-        final PaginatedCollection<Comment> comments = commentService.findCommentChildren(comment, enabled, orderBy, pageNumber, pageSize);
-
-        final Collection<CommentDto> commentsDto = CommentDto.mapCommentsToDto(comments.getResults(), uriInfo, securityContext);
-
-        final UriBuilder linkUriBuilder = uriInfo
-                .getAbsolutePathBuilder()
-                .queryParam("pageSize", pageSize)
-                .queryParam("orderBy", orderBy);
-
-        if(enabled != null)
-            linkUriBuilder.queryParam("enabled", enabled);
-
-        return buildGenericPaginationResponse(comments, new GenericEntity<Collection<CommentDto>>(commentsDto) {}, linkUriBuilder);
     }
 
     private <Entity, Dto> Response buildGenericPaginationResponse(PaginatedCollection<Entity> paginatedResults,
