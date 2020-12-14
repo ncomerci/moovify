@@ -15,17 +15,30 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       })
     }
 
-    this.sendReply = function(comment, newCommentBody) {
+    this.sendCommentReply = function(comment, newCommentBody) {
 
-    return $q(function(resolve, reject){
-      RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
-        comment.all('children').post({body: newCommentBody}).then(function(response) {
+      return $q(function(resolve, reject){
+        RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
+          comment.all('children').post({body: newCommentBody}).then(function(response) {
+              Restangular.oneUrl('comments', response.headers('Location')).get().then(function(response) {
+                resolve(response.data);
+              }).catch(reject);
+            }).catch(reject);
+          }).catch(reject);
+      });
+    }
+
+    this.sendPostReply = function(post, newCommentBody) {
+
+      return $q(function(resolve, reject){
+        RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
+          post.all('comments').post({body: newCommentBody}).then(function(response) {
             Restangular.oneUrl('comments', response.headers('Location')).get().then(function(response) {
               resolve(response.data);
             }).catch(reject);
           }).catch(reject);
         }).catch(reject);
-    });
+      });
     }
   });
 });

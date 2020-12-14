@@ -1,5 +1,7 @@
 <div>
-  <div style="border: 2px solid black;">
+  <!-- enabled comment view -->
+  <div ng-if="comment.enabled" style="border: 2px solid black;">
+
     <p>ID: {{comment.id}} - {{comment.user.username}} - enabled {{comment.enabled}}</p>
 
     <editable-comment-body-directive is-editable="isUser && comment.isOwner" body="comment.body" send-update-fn="callbackFunctions.edit"></editable-comment-body-directive>
@@ -16,10 +18,17 @@
         <comment-reply-directive parent-id="{{comment.id}}" send-comment-fn="callbackFunctions.reply"></comment-reply-directive>
       </div>
     </div>
-
   </div>
 
-  <div ng-if="hasChildren()" ng-init="s">
+  <!-- deleted comment view -->
+  <div ng-if="!comment.enabled">
+    <p style="color: red">DELETED COMMENT</p>
+    <div ng-if="isAdmin">
+      <p>[COMMENT BODY] {{comment.body}}</p>
+    </div>
+  </div>
+
+  <div ng-if="hasChildren()">
 
     <button ng-if="!showChildren.value" ng-click="showChildren.value = true">SHOW CHILDREN</button>
     <div ng-if="showChildren.value">
