@@ -1,5 +1,7 @@
 'use strict';
-define(['frontend', 'directives/CommentTreeDirective', 'services/CommentInteractionService', 'directives/CommentReplyDirective', 'directives/CommentLikeHandlerDirective'], function(frontend) {
+define(['frontend', 'directives/CommentTreeDirective', 'services/CommentInteractionService',
+  'services/CommentFetchService', 'directives/CommentReplyDirective', 'directives/EditableCommentBodyDirective',
+  'directives/CommentLikeHandlerDirective'], function(frontend) {
 
   frontend.directive('commentDisplayDirective', function (){
 
@@ -11,15 +13,25 @@ define(['frontend', 'directives/CommentTreeDirective', 'services/CommentInteract
       templateUrl:'resources/views/directives/commentDisplayDirective.html',
       link: function(scope) {
         scope.writtingReply = {value: false};
+        scope.showChildren = {value: false};
       },
-      controller: function($scope, CommentInteractionService, $q) {
+      controller: function($scope, CommentInteractionService, CommentFetchService, $q) {
+
+        console.log($scope.comment);
+
+        if(!$scope.comment.childrenFetched){
+          CommentFetchService.getCommentCommentsWithUserVote($scope.comment.id).then(function (comment) {
+            $scope.comment.children = comment;
+          })
+        }
 
         $scope.hasChildren = function () {
           return Array.isArray($scope.comment.children) && $scope.comment.children.length > 0;
         }
 
+        $scope.callbackFunctions = {};
 
-        $scope.sendVote = function(value) {
+        $scope.callbackFunctions.vote = function(value) {
 
           if($scope.comment.userVote === value) {
             value = 0;
@@ -33,8 +45,7 @@ define(['frontend', 'directives/CommentTreeDirective', 'services/CommentInteract
           });
         }
 
-        $scope.sendComment = {};
-        $scope.sendComment.fn = function(content) {
+        $scope.callbackFunctions.reply = function(content) {
           return $q(function (resolve, reject) {
             CommentInteractionService.sendReply($scope.comment.originalElement.post.id, $scope.comment.id, content).then(function(newComment) {
               // debugger;
@@ -44,10 +55,16 @@ define(['frontend', 'directives/CommentTreeDirective', 'services/CommentInteract
               else {
                 $scope.comment.children = [newComment];
               }
-
+              $scope.showChildren.value = true;
               resolve(newComment);
             }).catch(reject);
           });
+        }
+
+        $scope.callbackFunctions.edit = function(newBody) {
+          console.log('Pre and recieved', $scope.comment.body, newBody);
+          $scope.comment.body = newBody;
+          return $scope.comment.put();
         }
       }
     }

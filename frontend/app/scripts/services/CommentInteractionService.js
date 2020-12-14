@@ -15,7 +15,7 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LoginService'],
       })
     }
 
-    this.sendReply =  function(postId, commentId, newCommentBody) {
+    this.sendReply = function(postId, commentId, newCommentBody) {
 
       var loggedUser = LoggedUserFactory.getLoggedUser();
 

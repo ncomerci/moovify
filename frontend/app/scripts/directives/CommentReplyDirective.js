@@ -25,27 +25,16 @@ define(['frontend', 'services/LocalStorageService'], function(frontend) {
         $scope.newComment = !$scope.comment;
         $scope.sendingComment = false;
 
-        $scope.body = {content: ''};
-
-        if($scope.newComment) {
-          $scope.body.content = LocalStorageService.get(getReplyStorageKey($scope.parentId));
-        }
-        else {
-          $scope.body.content = comment.body;
-        }
+        $scope.body = {content: LocalStorageService.get(getReplyStorageKey($scope.parentId))};
 
         $scope.sendComment = function () {
-
-          console.log('Sending');
 
           $scope.sendingComment = true;
           $scope.sendCommentFn($scope.body.content).then(function () {
             $scope.sendingComment = false;
             LocalStorageService.delete(getReplyStorageKey($scope.parentId));
             $scope.body.content = '';
-          }).catch(function () {
-            $scope.sendingComment = false;
-          });
+          }).catch(console.log);
         }
 
         $scope.$on('$destroy', function() {

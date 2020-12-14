@@ -11,17 +11,19 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
       return internalFetchPosts(path, null, null, null, enabled, orderBy, pageSize, pageNumber);
     }
 
-    this.fetchFullPost = function (postId, userId) {
+    this.fetchFullPost = function (postId) {
 
       return $q(function(resolve, reject) {
 
-        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
+        var loggedUser = LoggedUserFactory.getLoggedUser();
+
+        RestFulResponse.withAuthIfPossible(loggedUser).then(function(Restangular) {
           Restangular.one('posts', postId).get().then(function (response) {
 
             var post = response.data.plain();
 
-            if(userId) {
-              RestFulResponse.noAuth().one('posts', postId).one('votes', userId).get().then(function(response) {
+            if(loggedUser.logged) {
+              RestFulResponse.noAuth().one('posts', postId).one('votes', loggedUser.id).get().then(function(response) {
                 post.userVote = response.data.plain();
                 resolve(post);
               }).catch(reject);

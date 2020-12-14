@@ -1,8 +1,7 @@
 <form name="replyForm">
   <fieldset class="uk-fieldset">
     <div class="uk-margin">
-      <label for="textarea"></label>
-      <textarea id="textarea" class="uk-textarea"
+      <textarea class="uk-textarea"
                 rows="5" name="replyBody"
                 ng-model="body.content"
                 placeholder="REPLY PLACE HOLDER"
@@ -11,7 +10,7 @@
                 ng-disabled="sendingComment">
       </textarea>
     </div>
-    <p id="reply-counter" class="uk-text-muted uk-align-left">{{body.content.length}}/{{maxLen}}</p>
+    <p class="uk-text-muted uk-align-left">{{body.content.length}}/{{maxLen}}</p>
     <div class="uk-align-right">
       <button class="uk-button uk-button-primary uk-border-rounded"
               ng-disabled="body.content.length > 400 || sendingComment || body.content.length <= 0" type="button"
