@@ -27,6 +27,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @EnableWebSecurity
 @ComponentScan({ "ar.edu.itba.paw.webapp.auth", })
@@ -204,14 +206,28 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 //    TODO: CORS
     @Bean
     public CorsFilter corsFilter() {
+
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
+
         CorsConfiguration config = new CorsConfiguration();
+
+        final List<String> exposedHeaders = new ArrayList<>();
+
+        exposedHeaders.add("Content-Length");
+        exposedHeaders.add("Content-Range");
+        exposedHeaders.add("Link");
+        exposedHeaders.add("Authorization");
+        exposedHeaders.add("Location");
+
         config.setAllowCredentials(true);
         config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
+        config.setExposedHeaders(exposedHeaders);
+
         source.registerCorsConfiguration("/**", config);
+
         return new CorsFilter(source);
     }
 
