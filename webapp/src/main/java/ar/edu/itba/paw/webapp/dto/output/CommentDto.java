@@ -30,6 +30,7 @@ public class CommentDto {
     private Long totalVotes;
     private boolean enabled;
     private Integer userVote;
+    private Boolean isOwner;
 
     private String parent;
     private String children;
@@ -63,7 +64,10 @@ public class CommentDto {
         totalVotes = comment.getTotalVotes();
 
         if(securityContext.getUserPrincipal() != null) {
-            userVote = comment.getVoteValue(securityContext.getUserPrincipal().getName());
+            final String loggedUserUsername = securityContext.getUserPrincipal().getName();
+
+            userVote = comment.getVoteValue(loggedUserUsername);
+            isOwner = comment.getUser().getUsername().equals(loggedUserUsername);
         }
         
         if(comment.getParent() != null)
@@ -187,5 +191,13 @@ public class CommentDto {
 
     public void setUserVote(Integer userVote) {
         this.userVote = userVote;
+    }
+
+    public Boolean getOwner() {
+        return isOwner;
+    }
+
+    public void setOwner(Boolean owner) {
+        isOwner = owner;
     }
 }
