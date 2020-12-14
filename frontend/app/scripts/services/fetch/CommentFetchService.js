@@ -38,14 +38,24 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       return getCommentCommentsWithUserVoteInternal(comment, depth, orderBy, pageSize, pageNumber)
     };
 
-    this.fetchComments = function(path, enabled, orderBy, pageSize, pageNumber) {
+    this.searchComments = function (query, enabled, orderBy, pageSize, pageNumber) {
+      return fetchComments('/comments', query, enabled, orderBy, pageSize, pageNumber);
+    }
 
+    this.fetchComments = function(path, enabled, orderBy, pageSize, pageNumber) {
+      return fetchComments(path, null, enabled, orderBy, pageSize, pageNumber);
+    }
+
+    function fetchComments (path, query, enabled, orderBy, pageSize, pageNumber) {
       // Obligatory params
       var queryParams = {
         orderBy: orderBy,
         pageSize: pageSize ? pageSize : 5,
         pageNumber: pageNumber ? pageNumber : 0
       };
+
+      if(query)
+        queryParams.query = query;
 
       if(enabled !== null)
         queryParams.enabled = enabled;
@@ -70,7 +80,40 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
           });
         }).catch(reject);
       });
+    }
+
+    this.getPostCommentsWithUserVote = function (postId, depth, orderBy, pageSize, pageNumber) {
+
+      var queryParams = {orderBy: orderBy, pageSize: pageSize, pageNumber: pageNumber};
+
+      return $q(function(resolve, reject) {
+
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser())
+          .then(function (Restangular){
+            Restangular.one('posts', postId).all('comments').getList(queryParams).then(function (response){
+              handleCommentResponse(response, depth, orderBy, pageSize, pageNumber, resolve, reject);
+            }).catch(reject);
+          }).catch(reject);
+
+      });
     };
+
+    this.getCommentCommentsWithUserVote = function (commentId, depth, orderBy, pageSize, pageNumber){
+
+      if(depth)
+        depth = 0
+
+      if(!orderBy)
+        orderBy = 'hottest';
+
+      if(!pageSize)
+        pageSize = 5;
+
+      if(!pageNumber)
+        pageNumber = 0;
+
+      return getCommentCommentsWithUserVoteInternal(commentId, depth, orderBy, pageSize, pageNumber)
+    }
 
     function getCommentCommentsWithUserVoteInternal(comment, depth, orderBy, pageSize, pageNumber) {
 

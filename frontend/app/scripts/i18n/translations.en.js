@@ -43,6 +43,8 @@ define([], function() {
     USER_DESCRIPTION_EMPTY: 'Description: This user does not have a description yet',
     USER_DESCRIPTION_PLACEHOLDER: 'Description',
     USER_VOTES: 'Total votes: {{votes}}',
+    USER_UPDATE_PASSWORD: 'New password',
+    USER_UPDATE_PASSWORD_CHECK: 'Repeat new password',
     COMMENT_BY:'By: {{username}}',
     COMMENT_BY_REMOVED: 'This user was removed',
     COMMENT_META: 'Post: {{title}} - Votes: {{votes}}',
@@ -59,6 +61,7 @@ define([], function() {
     POST_TAB_DISPLAY: 'Posts',
     MOVIE_TAB_DISPLAY: 'Movies',
     USER_TAB_DISPLAY: 'Users',
+    COMMENT_TAB_DISPLAY: 'Comments',
     MOVIES_DISCUSSED: 'Movies discussed:',
     LAST_HOUR:'An hour ago',
     LAST_DAY:'A day ago',
@@ -120,6 +123,11 @@ define([], function() {
     MOVIE_POSTER:'{{title}} poster',
     MOVIE_OVERVIEW:'Overview',
     MOVIE_POST_ABOUT:'Posts about this movie:',
+    CHANGE_PASSWORD_TITLE: 'Change password',
+    RECOVER_POST_DELETED:'Recover deleted posts',
+    RECOVER_COMMENT_DELETED:'Recover deleted comments',
+    RECOVER_USER_DELETED:'Recover deleted users',
+    RESTORE:'Restore',
 
 
 
@@ -166,6 +174,7 @@ define([], function() {
     PROFILE_COMMENTS_TAB_DISPLAY: "Your comments",
     PROFILE_BOOK_TAB_DISPLAY: "Your bookmarked posts",
     PROFILE_FOLLOWED_USERS: "Your followed users",
-    PROFILE_EDIT_DETAILS: "EDIT INFORMATION"
+    PROFILE_EDIT_DETAILS: "Edit information",
+    PROFILE_SETTINGS_MODAL: "Settings",
 	};
 });

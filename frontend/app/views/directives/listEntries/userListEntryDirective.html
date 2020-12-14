@@ -1,10 +1,17 @@
 <div class="uk-grid-small" uk-grid>
+  <div ng-if="adminControls" class="uk-width-auto uk-margin-auto-vertical">
+    <button class="uk-button uk-button-default uk-border-rounded uk-margin-right restore-btn"
+            type="button" ng-click="recoverUser()"
+    >
+      {{'RESTORE' | translate}}
+    </button>
+  </div>
   <div class="uk-width-1-6 uk-margin-remove">
     <a ng-href="{{user.url}}">
-    <img class="image-user-display" ng-src="{{user.avatar}}" alt="">
+      <img class="image-user-display" ng-src="{{user.avatar}}" alt="">
     </a>
   </div>
-  <div class="uk-width-3-5 margin-user-display uk-padding-remove-left">
+  <div class="uk-width-expand margin-user-display uk-padding-remove-left">
     <div class="uk-flex">
       <div class="uk-width-expand">
         <a ng-href="{{user.url}}" class="text-lead" ng-class="{'uk-text-secondary uk-text-bold uk-text-middle': isAdmin(user)}">
@@ -26,9 +33,9 @@
       </div>
     </div>
   </div>
-  <div class="uk-width-1-5">
+  <div class="uk-width-auto">
     <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
-        {{'USER_VOTES' | translate:{votes:user.totalLikes};}}
+      {{'USER_VOTES' | translate:{votes:user.totalLikes};}}
     </p>
   </div>
 </div>

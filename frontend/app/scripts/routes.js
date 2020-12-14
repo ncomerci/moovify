@@ -38,6 +38,10 @@ define([], function() {
             '/movie/:id': {
                 templateUrl: 'resources/views/movie/movieView.html',
                 controller: 'MovieViewController'
+            },
+            '/admin': {
+                templateUrl: 'resources/views/admin/admin.html',
+                controller: 'AdminController'
             }
             /* ===== yeoman hook ===== */
             /* Do not remove these commented lines! Needed for auto-generation */
