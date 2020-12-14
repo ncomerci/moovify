@@ -9,7 +9,7 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
     var postId = 6;
     var depth = 1;
 
-    PostFetchService.fetchFullPost(postId).then(function(post) {
+    PostFetchService.fetchPost(postId).then(function(post) {
       $scope.post = post;
     }).catch(console.log);
 

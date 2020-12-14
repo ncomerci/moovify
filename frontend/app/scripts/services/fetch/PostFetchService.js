@@ -11,7 +11,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
       return internalFetchPosts(path, null, null, null, enabled, orderBy, pageSize, pageNumber);
     }
 
-    this.fetchFullPost = function (postId) {
+    this.fetchPost = function (postId) {
 
       return $q(function(resolve, reject) {
 
@@ -19,19 +19,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
 
         RestFulResponse.withAuthIfPossible(loggedUser).then(function(Restangular) {
           Restangular.one('posts', postId).get().then(function (response) {
-
-            var post = response.data.plain();
-
-            if(loggedUser.logged) {
-              RestFulResponse.noAuth().one('posts', postId).one('votes', loggedUser.id).get().then(function(response) {
-                post.userVote = response.data.plain();
-                resolve(post);
-              }).catch(reject);
-            }
-            else {
-              resolve(post);
-            }
-
+            resolve(response.data);
           }).catch(reject);
         }).catch(reject);
       });
