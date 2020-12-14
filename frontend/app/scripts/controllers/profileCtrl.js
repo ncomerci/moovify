@@ -1,8 +1,11 @@
-define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateAvatarService', 'services/utilities/RestFulResponseFactory']
+define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateAvatarService',
+    'services/utilities/RestFulResponseFactory', 'directives/fetch/FetchPostsDirective',
+    'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective']
   , function(frontend, UIkit) {
 
     'use strict';
-    frontend.controller('profileCtrl', function($scope, UpdateAvatar, $locale, RestFulResponse, $translate) {
+    frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
+                                                UpdateAvatar, RestFulResponse) {
 
       $scope.tabs = [
         {value:'posts', message:"{{'PROFILE_POST_TAB_DISPLAY' | translate }}"},
@@ -11,9 +14,36 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         {value:'following', message:"{{'PROFILE_FOLLOWED_USERS' | translate }}"},
       ];
 
-      $scope.selectedTab = {
-        value: 'posts' // default selected tab
-      }
+      $scope.showing = {
+        value: $routeParams.showing ? $routeParams.showing : $scope.tabs[0].value
+      };
+
+      $scope.setPostsUrl = null;
+      $scope.setCommentsUrl = null;
+      $scope.setBookmarksUrl = null;
+      $scope.setFollowingUrl = null;
+
+      $scope.$watch('showing.value', function(newParam, oldParam, scope) {
+
+        if(newParam !== oldParam) {
+
+          $location.search({ showing: scope.showing.value });
+
+          if(newParam === 'posts' && scope.setPostsUrl !== null) {
+            scope.setPostsUrl();
+          }
+          else if(newParam === 'comments' && scope.setCommentsUrl !== null) {
+            scope.setCommentsUrl();
+          }
+          else if(newParam === 'bookmarks' && scope.setBookmarksUrl !== null) {
+            scope.setBookmarksUrl();
+          }
+          else if(newParam === 'following' && scope.setFollowingUrl !== null) {
+            scope.setFollowingUrl();
+          }
+        }
+
+      }, true);
 
       if($locale.id === 'es') {
         $scope.followForms = {
@@ -54,7 +84,6 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       $scope.descriptionConstrains = {
         maxLen: 400
       }
-
 
       var fieldErrors = {
         name: {

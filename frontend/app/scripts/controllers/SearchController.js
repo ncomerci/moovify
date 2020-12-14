@@ -11,7 +11,7 @@ define(['frontend', 'uikit', 'directives/search/SearchMoviesDirective', 'directi
       };
 
       $scope.searchOptions = {
-        contentType: $routeParams.type
+        contentType: $routeParams.showing
       };
 
       $scope.tabs = [
@@ -26,13 +26,13 @@ define(['frontend', 'uikit', 'directives/search/SearchMoviesDirective', 'directi
 
       if(!$scope.searchOptions.contentType) {
         $scope.searchOptions.contentType = defaultType;
-        $location.search('type', defaultType);
+        $location.search('showing', defaultType);
       }
 
       $scope.$watch('searchOptions.contentType', function(newParam, oldParam, scope) {
 
         if(newParam !== oldParam) {
-          $location.search({ type: scope.searchOptions.contentType });
+          $location.search({ showing: scope.searchOptions.contentType });
 
           if(newParam === 'posts' && scope.setPostSearchUrl !== null){
             scope.setPostSearchUrl();

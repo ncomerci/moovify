@@ -5,7 +5,7 @@ define(['frontend', 'services/DisplayService'], function (frontend) {
     return {
       restrict: 'E',
       scope: {
-        user: '='
+        comment: '='
       },
       templateUrl: 'resources/views/directives/listEntries/commentListEntryDirective.html',
       controller: function ($scope) {

@@ -17,7 +17,6 @@ define(['frontend', 'services/utilities/PageTitleService', 'services/LoginServic
     }
 
     $scope.$watch('loggedUser.logged', function(newParam, oldParam, scope) {
-      console.log(newParam, oldParam);
       if(oldParam === true && newParam === false) {
         scope.showingValues.pop();
 
