@@ -1,4 +1,4 @@
-<main ng-if="post" class="uk-container-small">
+<main ng-if="post" class="uk-container-small uk-margin-auto">
   <h1>{{post.title}}</h1>
   <p>POST BY: {{post.user.username}}</p>
   <article>
@@ -8,6 +8,9 @@
     <span ng-repeat="movie in post.movies">{{movie.title}} - ({{movie.releaseDate}})</span>
   </div>
   <hr>
+
+  <comment-reply-directive post-id="{{post.id}}" send-comment-fn="newComment.fn"></comment-reply-directive>
+
   <section id="post-comments" ng-if="comments">
     <h1>COMMENT SECTION</h1>
     <comment-tree-directive comments="comments"></comment-tree-directive>

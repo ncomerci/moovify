@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.*;
-import ar.edu.itba.paw.interfaces.services.MovieService;
-import ar.edu.itba.paw.interfaces.services.PostService;
-import ar.edu.itba.paw.interfaces.services.SearchService;
-import ar.edu.itba.paw.interfaces.services.UserService;
+import ar.edu.itba.paw.interfaces.services.*;
 import ar.edu.itba.paw.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +29,9 @@ public class SearchServiceImpl implements SearchService {
     private MovieService movieService;
 
     @Autowired
+    private CommentService commentService;
+
+    @Autowired
     private PostDao postDao;
 
     @Autowired
@@ -39,6 +39,9 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private CommentDao commentDao;
 
     private enum PostSearchOptions {
         BY_CATEGORY, OLDER_THAN
@@ -207,6 +210,21 @@ public class SearchServiceImpl implements SearchService {
             return Optional.of(userDao.searchUsersByRole(query, userRoleOptionsMap.get(role), enabled, sc, pageNumber, pageSize));
 
         return Optional.empty();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<PaginatedCollection<Comment>> searchComments(String query, Boolean enabled, String sortCriteria, int pageNumber, int pageSize) {
+
+        if(query == null)
+            return Optional.empty();
+
+        final CommentDao.SortCriteria sc = commentService.getCommentSortCriteria(sortCriteria);
+
+        LOGGER.debug("Search Comments using Sort Criteria {}", sc);
+
+        return Optional.of(commentDao.searchComments(query, enabled, sc, pageNumber, pageSize));
+
     }
 
     @Override

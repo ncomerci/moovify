@@ -27,5 +27,7 @@ public interface CommentDao {
 
     PaginatedCollection<Comment> findCommentsByUser(User user, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
 
+    PaginatedCollection<Comment> searchComments(String query, Boolean enabled, SortCriteria sortCriteria, int pageNumber, int pageSize);
+
     PaginatedCollection<CommentVote> getCommentVotes(Comment comment, int pageNumber, int pageSize);
 }

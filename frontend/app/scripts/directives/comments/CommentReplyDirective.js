@@ -3,16 +3,19 @@ define(['frontend', 'services/utilities/LocalStorageService'], function(frontend
 
   frontend.directive('commentReplyDirective', function () {
 
-    function getReplyStorageKey(id){
+    function getCommentReplyStorageKey(id){
       return "comment-reply-parent-id-" + id;
+    }
+    function getPostReplyStorageKey(id){
+      return "post-reply-parent-id-" + id;
     }
 
     return {
       restrict: 'E',
       scope: {
-        comment: '=?',
+        postId: '@?',
         sendCommentFn: '&',
-        parentId: '@'
+        parentId: '@?'
       },
       templateUrl:'resources/views/directives/comments/commentReplyDirective.html',
       link: function (scope){
@@ -22,24 +25,30 @@ define(['frontend', 'services/utilities/LocalStorageService'], function(frontend
       },
       controller: function ($scope, LocalStorageService){
 
-        $scope.newComment = !$scope.comment;
         $scope.sendingComment = false;
 
-        $scope.body = {content: LocalStorageService.get(getReplyStorageKey($scope.parentId))};
+        if($scope.postId) {
+          $scope.storageKey = getPostReplyStorageKey($scope.postId);
+        }
+        else {
+          $scope.storageKey = getCommentReplyStorageKey($scope.parentId);
+        }
+
+        $scope.body = {content: LocalStorageService.get($scope.storageKey)};
 
         $scope.sendComment = function () {
 
           $scope.sendingComment = true;
           $scope.sendCommentFn($scope.body.content).then(function () {
             $scope.sendingComment = false;
-            LocalStorageService.delete(getReplyStorageKey($scope.parentId));
+            LocalStorageService.delete($scope.storageKey);
             $scope.body.content = '';
           }).catch(console.log);
         }
 
         $scope.$on('$destroy', function() {
-          if($scope.body.content.length > 0){
-            LocalStorageService.save(getReplyStorageKey($scope.parentId), $scope.body.content);
+          if($scope.body.content && $scope.body.content.length > 0){
+            LocalStorageService.save($scope.storageKey, $scope.body.content);
           }
         });
       }
