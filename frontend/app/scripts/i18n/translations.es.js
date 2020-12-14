@@ -43,6 +43,8 @@ define([], function() {
     USER_DESCRIPTION_EMPTY: 'Description: This user does not have a description yet',
     USER_DESCRIPTION_PLACEHOLDER: 'Description',
     USER_VOTES: 'Total votes: {{votes}}',
+    USER_UPDATE_PASSWORD: 'New password',
+    USER_UPDATE_PASSWORD_CHECK: 'Repeat new password',
     COMMENT_BY:'By: {{username}}',
     COMMENT_BY_REMOVED: 'This user was removed',
     COMMENT_META: 'Post: {{title}} - Votes: {{votes}}',

@@ -125,7 +125,7 @@
                      type="password"
                      name="password"
                      ng-model="editPass.password"
-                     placeholder="{{'USER_CREATE_PASSWORD' | translate}}"
+                     placeholder="{{'USER_UPDATE_PASSWORD' | translate}}"
                      ng-class="{'uk-form-danger': fieldIsNotValid('changePassForm', 'password')}"
                      ng-pattern="passwordConstrains.pattern"
                      ng-minlength="{{passwordConstrains.minLen}}"
@@ -145,7 +145,7 @@
                      type="password"
                      name="repeatPassword"
                      ng-model="editPass.repeatPassword"
-                     placeholder="{{'USER_CREATE_REPEATPASSWORD' | translate}}"
+                     placeholder="{{'USER_UPDATE_PASSWORD_CHECK' | translate}}"
                      ng-class="{'uk-form-danger': fieldIsNotValid('changePassForm', 'repeatPassword') || passwordsNotEquals()}"
                      ng-pattern="passwordConstrains.pattern"
                      ng-minlength="{{passwordConstrains.minLen}}"
@@ -162,8 +162,8 @@
         </form>
       </div>
       <div class="uk-modal-footer uk-text-right">
-        <button class="uk-button uk-button-default uk-modal-close uk-text-primary" type="button">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
-        <button class="uk-button uk-button-primary" type="button" ng-click="updatePassword()">{{'UPDATE_AVATAR_MODAL_ACCEPT' | translate}}</button>
+        <button class="uk-button uk-button-default uk-modal-close uk-text-primary" type="button">{{'UPDATE_INFO_MODAL_CANCEL' | translate}}</button>
+        <button class="uk-button uk-button-primary" type="button" ng-click="updatePassword()">{{'UPDATE_INFO_MODAL_ACCEPT' | translate}}</button>
       </div>
     </div>
   </div>
