@@ -18,11 +18,10 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
               handleCommentResponse(response, depth, orderBy, pageSize, pageNumber, resolve, reject);
             }).catch(reject);
           }).catch(reject);
-
       });
     };
 
-    this.getCommentCommentsWithUserVote = function (commentId, depth, orderBy, pageSize, pageNumber){
+    this.getCommentCommentsWithUserVote = function (comment, depth, orderBy, pageSize, pageNumber){
 
       if(depth)
         depth = 0
@@ -36,7 +35,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       if(!pageNumber)
         pageNumber = 0;
 
-      return getCommentCommentsWithUserVoteInternal(commentId, depth, orderBy, pageSize, pageNumber)
+      return getCommentCommentsWithUserVoteInternal(comment, depth, orderBy, pageSize, pageNumber)
     };
 
     this.fetchComments = function(path, enabled, orderBy, pageSize, pageNumber) {
@@ -73,14 +72,16 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       });
     };
 
-    function getCommentCommentsWithUserVoteInternal(commentId, depth, orderBy, pageSize, pageNumber) {
+    function getCommentCommentsWithUserVoteInternal(comment, depth, orderBy, pageSize, pageNumber) {
 
       var queryParams = {orderBy: orderBy, pageSize: pageSize, pageNumber: pageNumber};
+
+      comment.childrenFetched = true;
 
       return $q(function(resolve, reject) {
 
         RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular){
-          Restangular.one('comments', commentId).all('children').getList(queryParams).then(function (response) {
+          comment.all('children').getList(queryParams).then(function (response) {
             handleCommentResponse(response, depth, orderBy, pageSize, pageNumber, resolve, reject);
           }).catch(reject);
         }).catch(reject);
@@ -92,14 +93,35 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
 
       var comments = response.data;
 
+      var linkHeader = response.headers('Link');
+
+      comments.hasNext = false;
+
+      if(linkHeader){
+        var linkMap = LinkParserService.getLinksMaps(linkHeader);
+
+        comments.hasNext = linkMap.hasOwnProperty('next');
+
+        if(comments.hasNext){
+          comments.getNext = function(depth) {
+
+            return $q(function(resolve, reject) {
+              RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular){
+                Restangular.allUrl('comments', linkMap.next.url).getList().then(function (response) {
+                  handleCommentResponse(response, depth, linkMap.orderBy,
+                    parseInt(linkMap.pageSize), parseInt(linkMap.pageNumber), resolve, reject);
+                }).catch(reject);
+              }).catch(reject);
+
+            });
+          }
+        }
+      }
       var promiseArray;
 
       if(depth > 0) {
         promiseArray = comments.map(function (comment) {
           return loadChildComments(comment, depth, orderBy, pageSize, pageNumber);
-        });
-        comments.forEach(function (comment) {
-          comment.childrenFetched = true;
         });
       }
       else {
@@ -119,20 +141,13 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
 
       return $q(function(resolve, reject) {
 
-        getCommentCommentsWithUserVoteInternal(comment.id, depth - 1, orderBy, pageSize, pageNumber)
+        getCommentCommentsWithUserVoteInternal(comment, depth - 1, orderBy, pageSize, pageNumber)
           .then(function (response) {
 
-            if (response) {
-              comment.children = response;
-            }
-            else {
-              comment.children = [];
-            }
-
+            comment.children = response;
             comment.loadingChildren = false;
 
             resolve(comment);
-
           }).catch(reject);
 
       });

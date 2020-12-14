@@ -7,7 +7,7 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
     $scope.comments = null;
 
     var postId = $routeParams.id;
-    var commentDepth = 1;
+    var commentDepth = 0;
     var commentsOrder = 'newest';
     var commentsPageSize = 5;
     var commentsPageNumber = 0;

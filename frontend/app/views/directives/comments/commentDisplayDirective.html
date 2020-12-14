@@ -2,7 +2,7 @@
   <!-- enabled comment view -->
   <div ng-if="comment.enabled" style="border: 2px solid black;">
 
-    <p>ID: {{comment.id}} - {{comment.user.username}} - enabled {{comment.enabled}}</p>
+    <p>ID: {{comment.id}} - {{comment.user.username}}</p>
 
     <editable-comment-body-directive is-editable="isUser && comment.isOwner" body="comment.body" send-update-fn="callbackFunctions.edit"></editable-comment-body-directive>
 

@@ -1,7 +1,12 @@
-<ul class="ul">
-  <li class="li" ng-repeat="comment in comments">
-    <div>
-      <comment-display-directive comment="comment"></comment-display-directive>
-    </div>
-  </li>
-</ul>
+<div>
+  <ul class="ul">
+    <li class="li" ng-repeat="comment in comments">
+      <div>
+        <comment-display-directive comment="comment"></comment-display-directive>
+      </div>
+    </li>
+  </ul>
+  <span ng-if="comments.hasNext">
+    <button ng-disabled="loadingMore" ng-click="loadMore()">LOAD MORE</button>
+  </span>
+</div>

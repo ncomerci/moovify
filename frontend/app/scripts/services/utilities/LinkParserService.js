@@ -6,6 +6,27 @@ define(['frontend'], function(frontend) {
 
     this.parse = function (link) {
 
+      var rels = parseHeader(link);
+
+      var lastPage = parseInt(rels.find(function(entry) { return entry.rel === 'last' }).pageNumber);
+
+      return lastPage;
+    }
+
+    this.getLinksMaps = function (link) {
+
+      var rels = parseHeader(link);
+
+      var relMap = {}
+
+      rels.forEach(function (entry) { relMap[entry.rel] = Object.assign({}, entry) });
+
+      return relMap;
+    }
+
+
+    function parseHeader(link) {
+
       var linkexp = /<[^>]*>\s*(\s*;\s*[^\(\)<>@,;:"\/\[\]\?={} \t]+=(([^\(\)<>@,;:"\/\[\]\?={} \t]+)|("[^"]*")))*(,|$)/g;
       var paramexp = /[^\(\)<>@,;:"\/\[\]\?={} \t]+=(([^\(\)<>@,;:"\/\[\]\?={} \t]+)|("[^"]*"))/g;
 
@@ -40,9 +61,7 @@ define(['frontend'], function(frontend) {
         return ans;
       });
 
-      var lastPage = parseInt(rels.find(function(entry) { return entry.rel === 'last' }).pageNumber);
-
-      return lastPage;
+      return rels;
     }
 
   });

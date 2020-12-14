@@ -26,8 +26,8 @@ define(['frontend', 'directives/comments/CommentTreeDirective', 'services/Commen
           $scope.isUser = UserService.userHasRole(loggedUser, 'USER');
         }
 
-        if(!$scope.comment.childrenFetched){
-          CommentFetchService.getCommentCommentsWithUserVote($scope.comment.id).then(function (comment) {
+        if(!$scope.comment.childrenFetched) {
+          CommentFetchService.getCommentCommentsWithUserVote($scope.comment).then(function (comment) {
             $scope.comment.children = comment;
           })
         }
