@@ -14,40 +14,10 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       restrict: 'E',
       scope: {
         query: '=',
-        enabled: '@',
-        refreshUrlFn: '='
+        enabled: '<',
+        refreshUrlFn: '=',
+        adminControls:'<'
       },
-
-      controller: function ($scope, UserFetchService) {
-
-        $scope.execSearch = function() {
-
-          UserFetchService.searchUsers(
-            $scope.query.value, $scope.filterParams.role, $scope.filterParams.enabled, $scope.filterParams.orderBy,
-            $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
-
-            function(resp) {
-              $scope.users = resp.collection;
-              $scope.paginationParams = resp.paginationParams;
-              $scope.queryParams = resp.queryParams;
-
-              if($scope.firstSearchDone)
-                $scope.refreshUrlFn();
-              else
-                $scope.firstSearchDone = true;
-
-              $scope.paginationMutex = false;
-            }
-          ).catch(function() { $location.path('/404') });
-        };
-
-        $scope.refreshUrlFn = function() {
-          Object.keys($scope.queryParams)
-            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
-        };
-
-      },
-
       link: function(scope) {
 
         scope.users = [];
@@ -104,6 +74,42 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       },
 
+      controller: function ($scope, UserFetchService) {
+
+        $scope.execSearch = function() {
+
+          UserFetchService.searchUsers(
+            $scope.query.value, $scope.filterParams.role, $scope.filterParams.enabled, $scope.filterParams.orderBy,
+            $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
+
+            function(resp) {
+              $scope.users = resp.collection;
+              $scope.paginationParams = resp.paginationParams;
+              $scope.queryParams = resp.queryParams;
+
+              if($scope.firstSearchDone)
+                $scope.refreshUrlFn();
+              else
+                $scope.firstSearchDone = true;
+
+              $scope.paginationMutex = false;
+            }
+          ).catch(function() { $location.path('/404') });
+        };
+
+        $scope.refreshUrlFn = function() {
+          Object.keys($scope.queryParams)
+            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
+        };
+
+        $scope.removeUser = function (user) {
+          var index = $scope.users.indexOf(user);
+          if (index > -1) {
+            $scope.users.splice(index, 1);
+          }
+        }
+
+      },
       templateUrl: 'resources/views/directives/search/searchUsersDirective.html'
     };
   });

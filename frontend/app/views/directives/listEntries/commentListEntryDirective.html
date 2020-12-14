@@ -1,6 +1,13 @@
 <div class="uk-flex uk-flex-wrap">
   <div class="uk-width-1-1">
     <div class="uk-flex">
+      <div ng-if="adminControls" class="uk-width-auto uk-margin-auto-vertical">
+        <button class="uk-button uk-button-default uk-border-rounded uk-margin-right restore-btn"
+                type="button" ng-click="recoverComment()"
+        >
+          {{'RESTORE' | translate}}
+        </button>
+      </div>
       <div class="uk-width-expand uk-margin-small-top uk-text-truncate">
         <a class="uk-text-italic text-lead" ng-href="{{comment.url}}">
           {{getBodyFormatted(comment.body)}}

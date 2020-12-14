@@ -1,0 +1,41 @@
+<div class="uk-margin-auto uk-margin-top">
+  <h2 class="uk-article-title uk-margin-auto uk-text-center">
+    <span ng-show="showing.value === 'posts'">{{'RECOVER_POST_DELETED' | translate}}</span>
+    <span ng-show="showing.value === 'comments'">{{'RECOVER_COMMENT_DELETED' | translate}}</span>
+    <span ng-show="showing.value === 'users'">{{'RECOVER_USER_DELETED' | translate}}</span>
+  </h2>
+  <hr class="uk-divider-icon">
+</div>
+<main class="uk-container-small uk-margin-auto uk-padding-small">
+  <section id="search-controllers">
+    <div class="uk-flex uk-flex-middle">
+      <div class="uk-search uk-search-large uk-width-expand">
+        <label>
+          <span uk-search-icon></span>
+          <input class="uk-search-input search-query-input" type="search" placeholder="{{'SEARCH_PLACEHOLDER' | translate}}"
+                 ng-model='query.value'
+                 ng-model-options='{ debounce: 1000 }'
+          />
+        </label>
+      </div>
+    </div>
+    <tab-display-directive tab-selected="showing.value" tabs="showingValues"></tab-display-directive>
+  </section>
+  <section id="search-results" class="uk-margin-top">
+    <div class="uk-grid">
+      <div class="uk-width-expand uk-margin-small-top">
+        <div ng-show="showing.value === 'posts'"><!--{{getCategoryUrl('/users', {query:query.value})}}-->
+          <search-posts-directive query="query" admin-controls="true" enabled="false" refresh-url-fn="postDisabledUrl" ></search-posts-directive>
+        </div>
+
+        <div ng-show="showing.value === 'comments'">
+          <search-comments-directive query="query" admin-controls="true" enabled="false" refresh-url-fn="commentsDisabledtUrl" ></search-comments-directive>
+        </div>
+
+        <div ng-show="showing.value === 'users'">
+          <search-users-directive query="query" admin-controls="true" enabled="false" refresh-url-fn="usersDisabledUrl" ></search-users-directive>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

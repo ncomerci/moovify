@@ -17,14 +17,13 @@
 </div>
 
 <main class="uk-container uk-container-large main-page">
-  <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom uk-margin-top" uk-grid>
+  <!--  Tabs  -->
 
-<!--  Tabs  -->
-    <tab-display-directive tabs="showingValues" tab-selected="showing.value" ></tab-display-directive>
+  <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom uk-margin-top" uk-grid>
 
     <div class="uk-grid">
       <div class="uk-width-expand uk-margin-small-top">
-
+        <tab-display-directive tabs="showingValues" tab-selected="showing.value" ></tab-display-directive>
 <!--    Hottest Posts    -->
         <div ng-show="showing.value === 'hottestPosts'">
           <fetch-posts-directive default-page-size="25" order="'hottest'" enabled="true" path="/posts" refresh-url-fn="setHottestUrl" ></fetch-posts-directive>

@@ -18,38 +18,6 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         enabled: '@',
         refreshUrlFn: '='
       },
-
-      controller: function ($scope, MovieFetchService) {
-
-        $scope.execSearch = function() {
-
-          MovieFetchService.searchMovies($scope.query.value, $scope.filterParams.movieCategory,
-            $scope.filterParams.decade, $scope.filterParams.enabled, $scope.filterParams.orderBy,
-            $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
-
-            function(resp) {
-
-              $scope.movies = resp.collection;
-              $scope.paginationParams = resp.paginationParams;
-              $scope.queryParams = resp.queryParams;
-
-              if($scope.firstSearchDone)
-                $scope.refreshUrlFn();
-              else
-                $scope.firstSearchDone = true;
-
-              $scope.paginationMutex = true;
-            }
-          ).catch(function(){ $location.path('/404') });
-        };
-
-        $scope.refreshUrlFn = function() {
-          Object.keys($scope.queryParams)
-            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
-        };
-
-      },
-
       link: function(scope){
 
         scope.movies = [];
@@ -107,6 +75,37 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       },
 
+      controller: function ($scope, MovieFetchService) {
+
+        $scope.execSearch = function() {
+
+          MovieFetchService.searchMovies($scope.query.value, $scope.filterParams.movieCategory,
+            $scope.filterParams.decade, $scope.filterParams.enabled, $scope.filterParams.orderBy,
+            $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
+
+            function(resp) {
+
+              $scope.movies = resp.collection;
+              $scope.paginationParams = resp.paginationParams;
+              $scope.queryParams = resp.queryParams;
+
+              if($scope.firstSearchDone)
+                $scope.refreshUrlFn();
+              else
+                $scope.firstSearchDone = true;
+
+              $scope.paginationMutex = true;
+            }
+          ).catch(function(){ $location.path('/404') });
+        };
+
+        $scope.refreshUrlFn = function() {
+          Object.keys($scope.queryParams)
+            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
+        };
+
+
+      },
       templateUrl: 'resources/views/directives/search/searchMoviesDirective.html'
     };
   });

@@ -59,6 +59,7 @@ define([], function() {
     POST_TAB_DISPLAY: 'Posts',
     MOVIE_TAB_DISPLAY: 'Movies',
     USER_TAB_DISPLAY: 'Users',
+    COMMENT_TAB_DISPLAY: 'Comments',
     MOVIES_DISCUSSED: 'Movies discussed:',
     LAST_HOUR:'An hour ago',
     LAST_DAY:'A day ago',
@@ -73,6 +74,7 @@ define([], function() {
     POST_NOT_FOUND: 'There are no posts that match those requirements. Try changing the search parameters or looking for some new posts in the home screen.',
     MOVIES_NOT_FOUND: 'There are no movies that match those requirements. Try changing the search parameters.',
     USERS_NOT_FOUND: 'There are no users that match those requirements. Try changing the search parameters.',
+    COMMENT_NOT_FOUND:'There are no comments that match those requirements. try changing the search parameters.',
     NAVBAR_CREATE_POST: 'Create post',
     FORM_FIELD_REQUIRED: 'Field required',
     FORM_BAD_CREDENTIALS: 'Incorrect user or password',
@@ -124,6 +126,9 @@ define([], function() {
     MOVIE_CATEGORIES:'Movie categories',
     MOVIE_OVERVIEW:'Overview',
     MOVIE_POST_ABOUT:'Posts about this movie:',
+    RECOVER_POST_DELETED:'Recover deleted posts',
+    RECOVER_COMMENT_DELETED:'Recover deleted comments',
+    RECOVER_USER_DELETED:'Recover deleted users',
 
 
 

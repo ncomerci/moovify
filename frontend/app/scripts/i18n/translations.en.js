@@ -59,6 +59,7 @@ define([], function() {
     POST_TAB_DISPLAY: 'Posts',
     MOVIE_TAB_DISPLAY: 'Movies',
     USER_TAB_DISPLAY: 'Users',
+    COMMENT_TAB_DISPLAY: 'Comments',
     MOVIES_DISCUSSED: 'Movies discussed:',
     LAST_HOUR:'An hour ago',
     LAST_DAY:'A day ago',
@@ -120,6 +121,10 @@ define([], function() {
     MOVIE_POSTER:'{{title}} poster',
     MOVIE_OVERVIEW:'Overview',
     MOVIE_POST_ABOUT:'Posts about this movie:',
+    RECOVER_POST_DELETED:'Recover deleted posts',
+    RECOVER_COMMENT_DELETED:'Recover deleted comments',
+    RECOVER_USER_DELETED:'Recover deleted users',
+    RESTORE:'Restore',
 
 
 

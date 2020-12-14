@@ -9,9 +9,10 @@
       <div class="uk-width-expand">
         <a href="/user/{{user.id}}" ng-class="{'uk-text-primary': isAdmin, 'uk-text-middle': isAdmin}">
           {{user.username}}
-          <div ng-if="isAdmin" >
-            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{ADMIN_TITLE | translate}}"></span>
-          </div>
+            <span ng-if="isAdmin">
+                <span>-</span>
+               <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{ADMIN_TITLE | translate}}"></span>
+            </span>
           <div ng-if="loggedUser.logged && user.userFollowed">
             <span class="iconify small-iconify" data-icon="ri:user-follow-line" data-inline="false" title="{{ADMIN_TITLE | translate}}" ></span>
           </div>

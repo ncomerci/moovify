@@ -1,0 +1,13 @@
+<div ng-if="supportedValues && filterParams">
+  <div class="uk-flex">
+    <div class="uk-width-1-1 uk-flex uk-flex-wrap uk-flex-baseline">
+      <label class="uk-padding-small-left uk-margin-small-top uk-form-label uk-margin-small-right uk-width-auto">
+        {{'SEARCH_ORDER_BY' | translate}}
+      </label>
+      <select ng-model='filterParams.postCategory' class="uk-select uk-form-blank uk-width-expand">
+        <option value="">{{'ALL_POSTS' | translate}}</option>
+        <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{getOrder(option) | translate}}</option>
+      </select>
+    </div>
+  </div>
+</div>
