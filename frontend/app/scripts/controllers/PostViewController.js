@@ -7,14 +7,13 @@ define(['frontend', 'services/PostFetchService', 'services/CommentFetchService',
     $scope.comments = null;
 
     var postId = 6;
-    var userId = 10;
-    var depth = 2;
+    var depth = 1;
 
-    PostFetchService.fetchFullPost(postId, userId, 3).then(function(post) {
+    PostFetchService.fetchFullPost(postId).then(function(post) {
       $scope.post = post;
     }).catch(console.log);
 
-    CommentFetchService.getPostCommentsWithUserVote(postId, userId, depth, 'newest', 5, 0).then(function(comments) {
+    CommentFetchService.getPostCommentsWithUserVote(postId, depth, 'newest', 5, 0).then(function(comments) {
       $scope.comments = comments;
     }).catch(console.log);
   });
