@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend'], function(frontend) {
 
-  frontend.factory('RestFulResponse', function (Restangular, $q) {
+  frontend.factory('RestFulResponse', function (Restangular, $q, $location) {
 
     var ReqFullResponse = Restangular.withConfig(function (RestangularConfigurer) {
       RestangularConfigurer.setFullResponse(true);
@@ -36,7 +36,8 @@ define(['frontend'], function(frontend) {
               loggedUser.expDate = RestFulResponse.setToken(resp.headers("authorization"));
               resolve(ReqFullResponse);
             }).catch(function (err) {
-              reject(err); // TODO login redirect
+              $location.path('/login');
+              reject(err);
             });
           }
           else {

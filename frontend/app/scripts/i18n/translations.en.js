@@ -28,6 +28,7 @@ define([], function() {
     USER_CREATE_BUTTON: 'Create account',
     USER_CREATE_ALREADYACCOUNT: 'Already have an account?',
     USER_PROFILE: 'My profile',
+    USER_PROFILE_CREATION_DATE: 'In Moovify since:',
     USER_EMAILCONFIRM_TITLE: 'Email confirmation requiered',
     USER_EMAILCONFIRM_TEXT: 'To be able to create a new post, you have to confirm your email address. Check your email box, we sent you a link!',
     USER_PROFILE_RESENDEMAIL: 'Resend email',
@@ -35,6 +36,7 @@ define([], function() {
     USER_NAME:'Name: {{name}}',
     USER_DESCRIPTION: 'Description: {{description}}',
     USER_DESCRIPTION_EMPTY: 'Description: This user does not have a description yet',
+    USER_DESCRIPTION_PLACEHOLDER: 'Description',
     USER_VOTES: 'Total votes: {{votes}}',
     COMMENT_BY:'By: {{username}}',
     COMMENT_BY_REMOVED: 'This user was removed',
@@ -105,6 +107,8 @@ define([], function() {
     UPDATE_AVATAR_MODAL_BODY: "File name: ",
     UPDATE_AVATAR_MODAL_CANCEL: "No",
     UPDATE_AVATAR_MODAL_ACCEPT: "Yes",
+    UPDATE_INFO_MODAL_CANCEL: "Cancel",
+    UPDATE_INFO_MODAL_ACCEPT: "Accept",
     MIN_USER_DISPLAY_META_NAME_VOTES: "Name: {{name}} - Total votes: {{totalVotes}}",
 
 
@@ -153,5 +157,7 @@ define([], function() {
     PROFILE_POST_TAB_DISPLAY: "Your posts",
     PROFILE_COMMENTS_TAB_DISPLAY: "Your comments",
     PROFILE_BOOK_TAB_DISPLAY: "Your bookmarked posts",
+    PROFILE_FOLLOWED_USERS: "Your followed users",
+    PROFILE_EDIT_DETAILS: "EDIT INFORMATION"
 	};
 });
