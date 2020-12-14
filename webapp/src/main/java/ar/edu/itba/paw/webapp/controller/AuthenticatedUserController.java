@@ -111,7 +111,7 @@ public class AuthenticatedUserController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
-    public Response updateUser(final UserEditDto userEditDto) {
+    public Response updateUser(@Valid final UserEditDto userEditDto) {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
