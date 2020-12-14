@@ -292,6 +292,10 @@ public class User {
         return getFollowingUsers().contains(user);
     }
 
+    public boolean isUserFollowing(String username) {
+        return getFollowingUsers().stream().anyMatch(user -> user.getUsername().equals(username));
+    }
+
     public Collection<User> getFollowers() {
         return followers;
     }

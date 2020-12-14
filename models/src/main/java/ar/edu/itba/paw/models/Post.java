@@ -217,6 +217,13 @@ public class Post {
                 .findFirst().orElse(0);
     }
 
+    public int getVoteValue(String username) {
+        return getVotes().stream()
+                .filter(postLike -> postLike.getUser().getUsername().equals(username))
+                .map(PostVote::getValue)
+                .findFirst().orElse(0);
+    }
+
     public void delete() {
         this.enabled = false;
     }
