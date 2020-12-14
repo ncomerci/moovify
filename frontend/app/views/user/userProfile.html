@@ -24,33 +24,42 @@
             <span ng-if="loggedUser.roles.includes('ADMIN')" class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
           </div>
 
-          <div class="uk-grid-column uk-child-width-1-2  uk-margin-small-bottom uk-margin-small-top" uk-grid>
-            <div class="uk-text-right"><span class="uk-text-bold">@</span>{{loggedUser.username}}</div>
-            <div class="uk-text-left"><span class="uk-text-bold">{{loggedUser.totalLikes}}</span> Votes</div>
-          </div>
+          <div class="uk-margin-small-top"><span class="uk-text-bold">@</span>{{loggedUser.username}}</div>
+
 
           <hr class="uk-divider-icon">
 
           <div class="uk-grid-column uk-child-width-1-2 uk-margin-small-bottom" uk-grid>
-            <div class="uk-text-right"><span class="uk-text-bold">{{loggedUser.followerCount}}</span> Followers</div>
-            <div class="uk-text-left"><span class="uk-text-bold">{{loggedUser.followerCount}}</span> Following</div>
-            <div class="uk-text-bold uk-text-right uk-margin-small-top">In Moovify since:</div>
+            <div class="uk-text-right">
+              <span class="uk-text-bold">{{loggedUser.followerCount}} </span>
+              <ng-pluralize count="loggedUser.followerCount" when="followForms"></ng-pluralize>
+            </div>
+            <div class="uk-text-left">
+              <span class="uk-text-bold">{{loggedUser.totalLikes}}</span>
+              <ng-pluralize count="loggedUser.totalLikes" when="voteForms"></ng-pluralize>
+            </div>
+            <div class="uk-text-bold uk-text-right uk-margin-small-top">{{'USER_PROFILE_CREATION_DATE' | translate}}</div>
             <div class="uk-text-left uk-margin-small-top">{{ loggedUser.creationDate | date: 'MMM yyyy' }}</div>
-            <div class="uk-text-bold uk-text-right uk-margin-small-top">Email:</div>
+            <div class="uk-text-bold uk-text-right uk-margin-small-top uk-text-capitalize">{{'USER_CREATE_EMAIL' | translate}}:</div>
             <div class="uk-text-left uk-margin-small-top">{{loggedUser.email}}</div>
           </div>
-          <div class="uk-text-italic uk-margin-small-bottom">
+          <div class="uk-text-italic uk-margin-bottom">
             {{loggedUser.description}}
           </div>
         </div>
+
+        <a class="uk-button uk-button-default uk-border-rounded uk-text-uppercase uk-margin-bottom" href="#edit-info-modal" uk-toggle>
+          {{'PROFILE_EDIT_DETAILS' | translate}}
+        </a>
       </div>
       <div class="uk-width-2-3">
-        <tab-display-directive tab-selected="selectedTab.value" tabs="tabs" ></tab-display-directive>
+        <tab-display-directive tab-selected="selectedTab.value" tabs="tabs"></tab-display-directive>
       </div>
     </div>
   </div>
 
 
+<!-- UPDATE AVATAR MODAL -->
   <div id="avatar-update-modal" uk-modal>
     <div class="uk-modal-dialog">
       <div class="uk-modal-header">
@@ -63,6 +72,88 @@
       <div class="uk-modal-footer uk-text-right">
         <button class="uk-button uk-button-default uk-modal-close uk-text-primary" type="button" ng-click="avatar.file = undefined">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
         <button class="uk-button uk-button-primary" type="button" ng-click="uploadAvatar()">{{'UPDATE_AVATAR_MODAL_ACCEPT' | translate}}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT INFO MODAL -->
+  <div id="edit-info-modal" uk-modal>
+    <div class="uk-modal-dialog">
+      <div class="uk-modal-header">
+        <h2 class="uk-modal-title">{{'PROFILE_EDIT_DETAILS' | translate}}</h2>
+      </div>
+      <div class="uk-modal-body">
+        <form name="editForm">
+          <label>
+            <input class="uk-input"
+                   type="text"
+                   name="name"
+                   ng-model="editInfo.name"
+                   placeholder="{{'USER_CREATE_NAME' | translate}}"
+                   ng-class="{'uk-form-danger': fieldIsNotValid('name') || checkFieldError('name')}"
+                   ng-pattern="nameConstrains.pattern"
+                   ng-minlength="{{nameConstrains.minLen}}"
+                   ng-maxlength="{{nameConstrains.maxLen}}"
+                   ng-change="resetFieldErrors('name')"
+                   required
+            >
+          </label>
+          <div class="uk-text-danger" ng-if="fieldRequired('name')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+          <div class="uk-text-danger" ng-if="editForm.name.$error.pattern">{{'FORM_NAME_PATTERN_ERROR' | translate}}</div>
+          <div class="uk-text-danger" ng-if="editForm.name.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: nameConstrains.minLen};}}</div>
+          <div class="uk-text-danger" ng-if="editForm.name.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: nameConstrains.maxLen};}}</div>
+          <div class="uk-text-danger" ng-if="checkFieldError('name')">{{getFieldErrors('name')}}</div>
+
+          <label>
+            <input class="uk-input uk-margin-top"
+                   name="username"
+                   type="text"
+                   ng-model="editInfo.username"
+                   placeholder="{{'USER_CREATE_USERNAME' | translate}}"
+                   ng-class="{'uk-form-danger': fieldIsNotValid('username') || checkFieldError('username')}"
+                   ng-pattern="usernameConstrains.pattern"
+                   ng-minlength="{{usernameConstrains.minLen}}"
+                   ng-maxlength="{{usernameConstrains.maxLen}}"
+                   ng-change="resetFieldErrors('username')"
+                   required
+            />
+          </label>
+          <div class="uk-text-danger" ng-if="fieldRequired('username')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+          <div class="uk-text-danger" ng-if="editForm.username.$error.pattern">{{'FORM_USERNAME_PATTERN_ERROR' | translate}}</div>
+          <div class="uk-text-danger" ng-if="editForm.username.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: usernameConstrains.minLen};}}</div>
+          <div class="uk-text-danger" ng-if="editForm.username.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: usernameConstrains.maxLen};}}</div>
+          <div class="uk-text-danger" ng-if="checkFieldError('username')">{{getFieldErrors('username')}}</div>
+
+          <label>
+            <textarea class="uk-textarea uk-margin-top"
+                   rows="5"
+                   name="description"
+                   type="text"
+                   ng-model="editInfo.description"
+                   placeholder="{{'USER_DESCRIPTION_PLACEHOLDER' | translate}}"
+                   ng-class="{'uk-form-danger': descriptionIsNotValid() || checkFieldError('description')}"
+                   ng-maxlength="{{descriptionConstrains.maxLen}}"
+                   ng-change="resetFieldErrors('description')"
+            ></textarea>
+          </label>
+          <div class="uk-text-danger" ng-if="editForm.description.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: descriptionConstrains.maxLen};}}</div>
+          <div class="uk-text-danger" ng-if="checkFieldError('description')">{{getFieldErrors('description')}}</div>
+        </form>
+      </div>
+      <div class="uk-modal-footer uk-text-right">
+        <button class="uk-button uk-button-default uk-modal-close uk-text-primary"
+                type="button"
+        >
+          {{'UPDATE_INFO_MODAL_CANCEL' | translate}}
+        </button>
+        <button class="uk-button uk-button-primary"
+                type="button"
+                ng-click="updateUserInfo()"
+                ng-class="{'uk-disabled': loading, 'disabled-primary': loading}"
+        >
+          {{'UPDATE_INFO_MODAL_ACCEPT' | translate}}
+        </button>
+        <div uk-spinner ng-show="loading"></div>
       </div>
     </div>
   </div>
