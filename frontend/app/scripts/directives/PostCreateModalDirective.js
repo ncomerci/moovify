@@ -22,7 +22,8 @@ define(['frontend', 'services/MovieFetchService', 'services/PostCreateModalServi
         scope.postCreateFn = scope.postCreateFn();
 
         MovieFetchService.fetchMovies('/movies',
-          null,null,100, 0).then(function (resp) {
+          null,null,1000, 0).then(function (resp) {
+            console.log(resp);
             resp.collection.plain().forEach(function(movie) {
               scope.moviesList[movie.title + ' - ' + movie.releaseDate.substring(0, movie.releaseDate.indexOf("-"))] = movie.id;
             });
