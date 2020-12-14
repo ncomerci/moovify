@@ -115,7 +115,8 @@ public class AuthenticatedUserController {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        final boolean shouldRevalidateAuthentication = !userEditDto.getUsername().equals(user.getUsername());
+        final boolean shouldRevalidateAuthentication = userEditDto.getUsername() != null &&
+                !userEditDto.getUsername().equals(user.getUsername());
 
         try {
             userService.updateUser(user, userEditDto.getName(), userEditDto.getUsername(), userEditDto.getDescription(),
