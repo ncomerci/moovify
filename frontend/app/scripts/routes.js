@@ -27,11 +27,11 @@ define([], function() {
                 templateUrl: 'resources/views/user/userProfile.html',
                 controller: 'profileCtrl'
             },
-            '/post/create': {
+            '/posts/create': {
                 templateUrl: 'resources/views/post/postCreate.html',
                 controller: 'PostCreateController'
             },
-            '/post/:id': {
+            '/posts/:id': {
                 templateUrl: 'resources/views/post/PostViewController.html',
                 controller: 'PostViewController'
             }
