@@ -1,4 +1,4 @@
-define(['frontend', 'services/PostFetchService', 'services/CommentFetchService', 'directives/CommentTreeDirective'], function(frontend) {
+define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFetchService', 'directives/comments/CommentTreeDirective'], function(frontend) {
 
   'use strict';
   frontend.controller('PostViewController', function ($scope, PostFetchService, $location, CommentFetchService) {

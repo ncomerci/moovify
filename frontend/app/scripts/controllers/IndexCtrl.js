@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/RestFulResponseFactory'], function(frontend) {
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/utilities/RestFulResponseFactory'], function(frontend) {
 
   frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $route, PageTitle, $window, RestFulResponse) {
 

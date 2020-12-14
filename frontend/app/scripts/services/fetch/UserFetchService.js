@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/RestFulResponseFactory', 'services/LoginService', 'services/LinkParserService'], function(frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/LoginService', 'services/utilities/LinkParserService'], function(frontend) {
 
   frontend.service('UserFetchService', function(RestFulResponse, LinkParserService, $q, LoggedUserFactory) {
 

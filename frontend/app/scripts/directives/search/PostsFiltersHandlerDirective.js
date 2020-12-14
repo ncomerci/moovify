@@ -53,7 +53,7 @@ define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
         }
 
       },
-      templateUrl: 'resources/views/directives/postFiltersHandlerDirective.html'
+      templateUrl: 'resources/views/directives/search/postFiltersHandlerDirective.html'
     };
   });
 

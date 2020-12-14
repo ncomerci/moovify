@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'directives/CommentDisplayDirective'], function(frontend) {
+define(['frontend', 'directives/comments/CommentDisplayDirective'], function(frontend) {
 
   frontend.directive('commentTreeDirective', function (){
 
@@ -8,7 +8,7 @@ define(['frontend', 'directives/CommentDisplayDirective'], function(frontend) {
       scope: {
         comments: '='
       },
-      templateUrl:'resources/views/directives/commentTreeDirective.html',
+      templateUrl:'resources/views/directives/comments/commentTreeDirective.html',
       link: function (scope){
       }
     }

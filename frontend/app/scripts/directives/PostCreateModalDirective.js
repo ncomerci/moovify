@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/MovieFetchService', 'services/PostCreateModalService'], function(frontend) {
+define(['frontend', 'services/fetch/MovieFetchService', 'services/PostCreateModalService'], function(frontend) {
 
   frontend.directive('postCreateModalDirective', function(MovieFetchService, PostCreateModalService, $location) {
     return {

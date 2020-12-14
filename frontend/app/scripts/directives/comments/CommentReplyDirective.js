@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/LocalStorageService'], function(frontend) {
+define(['frontend', 'services/utilities/LocalStorageService'], function(frontend) {
 
   frontend.directive('commentReplyDirective', function () {
 
@@ -14,7 +14,7 @@ define(['frontend', 'services/LocalStorageService'], function(frontend) {
         sendCommentFn: '&',
         parentId: '@'
       },
-      templateUrl:'resources/views/directives/commentReplyDirective.html',
+      templateUrl:'resources/views/directives/comments/commentReplyDirective.html',
       link: function (scope){
 
         scope.sendCommentFn = scope.sendCommentFn();

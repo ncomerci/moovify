@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserService'], function(frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utilities/LinkParserService'], function(frontend) {
 
   frontend.service('MovieFetchService', function (RestFulResponse, LinkParserService, $q){
 

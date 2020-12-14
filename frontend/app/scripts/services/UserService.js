@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/RestFulResponseFactory'], function (frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory'], function (frontend) {
 
   frontend.service('UserService', function (RestFulResponse) {
 

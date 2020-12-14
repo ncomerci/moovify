@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/PageTitleService', 'directives/TabDisplayDirective', 'directives/fetch/FetchPostsDirective'], function(frontend) {
+define(['frontend', 'services/utilities/PageTitleService', 'directives/TabDisplayDirective', 'directives/fetch/FetchPostsDirective'], function(frontend) {
 
 	frontend.controller('HomeCtrl', function($scope, PageTitle, $routeParams, $location) {
 

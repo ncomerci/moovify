@@ -7,7 +7,7 @@ define(['frontend', 'services/DisplayService'], function (frontend) {
       scope: {
         user: '='
       },
-      templateUrl: 'resources/views/directives/commentListEntryDirective.html',
+      templateUrl: 'resources/views/directives/listEntries/commentListEntryDirective.html',
       controller: function ($scope) {
           $scope.getBodyFormatted = function (body){
             return DisplayService.getBodyFormatted(body);

@@ -1,6 +1,6 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/PostFetchService',
-  'directives/PaginationHandlerDirective', 'directives/PostsFiltersHandlerDirective', 'directives/listEntries/PostListEntryDirective'], function(frontend) {
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/fetch/PostFetchService',
+  'directives/PaginationHandlerDirective', 'directives/search/PostsFiltersHandlerDirective', 'directives/listEntries/PostListEntryDirective'], function(frontend) {
 
   var defaultPageSize = 5;
 

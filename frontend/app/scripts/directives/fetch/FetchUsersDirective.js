@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/UserFetchService',
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/fetch/UserFetchService',
   'directives/PaginationHandlerDirective', 'directives/listEntries/UserListEntryDirective'], function(frontend) {
 
   function init(value, defaultVal){

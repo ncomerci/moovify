@@ -9,7 +9,7 @@ define(['frontend'], function(frontend) {
         userVote: '=',
         sendVoteFn: '&'
       },
-      templateUrl:'resources/views/directives/commentLikeHandlerDirective.html',
+      templateUrl:'resources/views/directives/comments/commentLikeHandlerDirective.html',
       link: function (scope){
         scope.sendVoteFn = scope.sendVoteFn();
         scope.sendingVote = false;

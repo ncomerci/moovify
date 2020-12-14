@@ -1,4 +1,4 @@
-define(['frontend', 'services/LoginService', 'services/PageTitleService', 'services/RestFulResponseFactory', 'services/UpdateAvatarService'], function(frontend) {
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/utilities/RestFulResponseFactory', 'services/UpdateAvatarService'], function(frontend) {
 
     'use strict';
     frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, PageTitle, RestFulResponse, $location, $translate, UpdateAvatar) {

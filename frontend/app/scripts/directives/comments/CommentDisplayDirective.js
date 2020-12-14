@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'directives/CommentTreeDirective', 'services/CommentInteractionService',
-  'services/CommentFetchService', 'directives/CommentReplyDirective', 'directives/EditableCommentBodyDirective',
-  'directives/CommentLikeHandlerDirective'], function(frontend) {
+define(['frontend', 'directives/comments/CommentTreeDirective', 'services/CommentInteractionService',
+  'services/fetch/CommentFetchService', 'directives/comments/CommentReplyDirective', 'directives/comments/EditableCommentBodyDirective',
+  'directives/comments/CommentLikeHandlerDirective'], function(frontend) {
 
   frontend.directive('commentDisplayDirective', function (){
 
@@ -10,14 +10,12 @@ define(['frontend', 'directives/CommentTreeDirective', 'services/CommentInteract
       scope: {
         comment: '='
       },
-      templateUrl:'resources/views/directives/commentDisplayDirective.html',
+      templateUrl:'resources/views/directives/comments/commentDisplayDirective.html',
       link: function(scope) {
         scope.writtingReply = {value: false};
         scope.showChildren = {value: false};
       },
       controller: function($scope, CommentInteractionService, CommentFetchService, $q) {
-
-        console.log($scope.comment);
 
         if(!$scope.comment.childrenFetched){
           CommentFetchService.getCommentCommentsWithUserVote($scope.comment.id).then(function (comment) {

@@ -1,4 +1,4 @@
-define(['frontend', 'uikit', 'directives/tabDisplayDirective', 'services/UpdateAvatarService'], function(frontend, UIkit) {
+define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateAvatarService'], function(frontend, UIkit) {
 
     'use strict';
     frontend.controller('profileCtrl', function($scope, UpdateAvatar) {

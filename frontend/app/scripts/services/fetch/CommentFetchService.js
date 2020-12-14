@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/RestFulResponseFactory', 'services/LoginService'], function(frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/LoginService'], function(frontend) {
 
   frontend.service('CommentFetchService', function (RestFulResponse, $q, LoggedUserFactory) {
 

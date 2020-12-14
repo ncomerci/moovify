@@ -56,7 +56,7 @@ define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
           return $scope.orderMap[option];
         }
       },
-      templateUrl:'resources/views/directives/movieFiltersHandlerDirective.html'
+      templateUrl:'resources/views/directives/search/movieFiltersHandlerDirective.html'
       };
     });
 });

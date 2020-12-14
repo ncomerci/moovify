@@ -10,7 +10,7 @@ define(['frontend'], function(frontend) {
         sendUpdateFn: '&',
         isOwner: '='
       },
-      templateUrl:'resources/views/directives/editableCommentBodyDirective.html',
+      templateUrl:'resources/views/directives/comments/editableCommentBodyDirective.html',
       link: function (scope){
         scope.sendUpdateFn = scope.sendUpdateFn();
         scope.maxLen = 400;

@@ -1,6 +1,6 @@
 'use strict';
 define(['routes',
-	'services/dependencyResolverFor',
+	'services/utilities/dependencyResolverFor',
 	'i18n/i18nLoader!',
 	'uikit',
 	'uikiticons',

@@ -1,4 +1,4 @@
-define(['frontend', 'services/LoginService', 'services/PageTitleService'], function(frontend) {
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService'], function(frontend) {
 
     'use strict';
     frontend.controller('LoginCtrl', function($scope, LoggedUserFactory, $location, PageTitle) {

@@ -39,7 +39,7 @@ define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
           return $scope.roleMap[option];
         }
       },
-      templateUrl: 'resources/views/directives/userFiltersHandlerDirective.html'
+      templateUrl: 'resources/views/directives/search/userFiltersHandlerDirective.html'
     };
   });
 

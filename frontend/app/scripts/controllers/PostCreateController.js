@@ -1,4 +1,4 @@
-define(['frontend', 'uikit', 'easymde', 'purify', 'services/RestFulResponseFactory', 'services/PostCategoriesService', 'services/MovieFetchService'
+define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulResponseFactory', 'services/PostCategoriesService', 'services/fetch/MovieFetchService'
   ,'directives/PostCreateModalDirective', 'services/LoginService'], function(frontend, UIkit, EasyMDE, DOMPurify) {
 
   'use strict';
