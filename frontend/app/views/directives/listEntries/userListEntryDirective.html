@@ -7,9 +7,9 @@
   <div class="uk-width-3-5 margin-user-display uk-padding-remove-left">
     <div class="uk-flex">
       <div class="uk-width-expand">
-        <a ng-href="{{user.url}}" class="text-lead"><!-- TODO class="${user.admin ? 'uk-text-primary uk-text-middle text-lead' : 'text-lead'}"-->
-          <span ng-if="loggedUser.logged">
-            hola
+        <a ng-href="{{user.url}}" class="text-lead" ng-class="{'uk-text-secondary uk-text-bold uk-text-middle': isAdmin(user)}">
+          <span ng-if="loggedUser.logged && user.userFollowing">
+            te sigo pa-
           </span>
           {{user.username}}
         </a>
@@ -19,7 +19,7 @@
             {{'USER_DESCRIPTION' | translate:{description:user.description};}}
           </span>
           <span ng-if="user.description.length === 0">
-            {{'USER_DESCRIPTION_EMPTY' | translate}}}
+            {{'USER_DESCRIPTION_EMPTY' | translate}}
           </span>
         </p>
       </div>

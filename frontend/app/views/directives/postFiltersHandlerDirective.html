@@ -6,7 +6,7 @@
       </label>
       <select ng-model='filterParams.postCategory' class="uk-select uk-form-blank uk-width-expand">
         <option value="">{{'ALL_POSTS' | translate}}</option>
-        <option ng-repeat="option in supportedValues['postCategory']" ng-value="option">{{option}}</option>
+        <option ng-repeat="option in supportedValues['postCategory']" ng-value="option">{{getCategory(option) | translate}}</option>
       </select>
     </div>
     <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
@@ -15,7 +15,7 @@
       </label>
       <select ng-model='filterParams.postAge' class="uk-select uk-form-blank uk-width-expand">
         <option value="">{{'ANY_TIME' | translate }}</option>
-        <option ng-repeat="option in supportedValues['postAge']" ng-value="option">{{option}}</option>
+        <option ng-repeat="option in supportedValues['postAge']" ng-value="option">{{getAge(option) | translate}}</option>
       </select>
 
     </div>
@@ -24,7 +24,7 @@
         {{'SEARCH_ORDER_BY' | translate}}
       </label>
       <select ng-model='filterParams.orderBy' class="uk-select uk-form-blank uk-width-expand">
-        <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{option}}</option>
+        <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{getOrder(option) | translate}}</option>
       </select>
 
     </div>

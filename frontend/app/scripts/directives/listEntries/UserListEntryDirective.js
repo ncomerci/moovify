@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'services/DisplayService', 'services/LoginService'], function(frontend) {
+define(['frontend', 'services/DisplayService', 'services/UserService', 'services/LoginService'], function(frontend) {
 
-  frontend.directive('userListEntryDirective', function (DisplayService, LoggedUserFactory) {
+  frontend.directive('userListEntryDirective', function (DisplayService, UserService, LoggedUserFactory) {
     return {
       restrict: 'E',
       scope: {
@@ -14,6 +14,10 @@ define(['frontend', 'services/DisplayService', 'services/LoginService'], functio
         }
 
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
+
+        $scope.isAdmin = function (user){
+          return UserService.userHasRole(user, 'ADMIN');
+        }
       }
     }
   });

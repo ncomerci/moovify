@@ -22,6 +22,9 @@ define(['frontend'], function (frontend) {
       },
       getYear: function (releaseDate){
         return releaseDate.substring(0, releaseDate.indexOf("-"));
+      },
+      getBodyFormatted: function (body){
+        return body.length <= 80 ? body: body.substring(0, 80) + '[...]';
       }
     }
   });

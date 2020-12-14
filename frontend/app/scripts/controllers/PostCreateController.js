@@ -12,6 +12,13 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/RestFulResponseFacto
     $scope.createPostBtnPressed = false;
     $scope.easyMde = configureEasyMDE();
 
+    $scope.categoryMap = {
+      "watchlist": "{{'WATCHLIST' | translate }}",
+      "critique":"{{'CRITIQUE' | translate }}",
+      "debate":"{{'DEBATE' | translate }}",
+      "news":"{{'NEWS' | translate }}"
+    }
+
     PostCategoriesService.getPostCategories().then(function(optionArray) {
       $scope.postCategories = optionArray;
     }).catch(function() { $location.path('/404') });
@@ -80,7 +87,9 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/RestFulResponseFacto
     function easyMdeFullscreenHandle(fullscreen){
       document.getElementById('navbar').style.visibility = (fullscreen) ? 'hidden' : 'visible';
     }
-
+    $scope.getCategory = function(option) {
+      return $scope.categoryMap[option];
+    }
 
     $scope.validateForm = function() {
       $scope.post.body = document.getElementById('create-post-data').value;

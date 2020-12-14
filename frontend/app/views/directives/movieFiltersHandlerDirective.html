@@ -6,7 +6,7 @@
       </label>
       <select ng-model='filterParams.movieCategory' class="uk-select uk-form-blank uk-width-expand">
         <option value="">{{'ALL' | translate}}</option>
-        <option ng-repeat="option in supportedValues['movieCategory']" ng-value="option">{{option}}</option>
+        <option ng-repeat="option in supportedValues['movieCategory']" ng-value="option">{{getCategory(option) | translate}}</option>
       </select>
     </div>
     <div class="uk-width-1-3 uk-flex uk-flex-wrap uk-flex-baseline">
@@ -23,7 +23,7 @@
         {{'SEARCH_ORDER_BY' | translate}}
       </label>
       <select ng-model='filterParams.orderBy' class="uk-select uk-form-blank uk-width-expand">
-        <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{option}}</option>
+        <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{getOrder(option) | translate}}</option>
       </select>
     </div>
   </div>

@@ -39,7 +39,6 @@ define(['frontend'], function(frontend) {
 
         scope.$watchCollection('paginationParams', function(newParams, oldParams, scope) {
 
-          console.log(newParams, oldParams);
           if(!newParams || !oldParams){
             return;
           }
