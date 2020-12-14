@@ -34,10 +34,10 @@
           <select  class="uk-select"
                    name="category"
                    ng-model="post.category"
-                   ng-options="category.id as category.name for category in postCategories"
                    required
           >
             <option value="">{{'POST_CREATE_CATEGORY_PLACEHOLDER' | translate}}</option>
+            <option ng-repeat="category in postCategories" ng-value="category.id">{{getCategory(category.name) | translate}}</option>
           </select>
         </label>
       </div>

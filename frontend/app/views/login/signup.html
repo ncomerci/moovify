@@ -158,7 +158,7 @@
           <p ng-show="avatar.file === undefined"
              ng-class="{'uk-text-danger': avatar.error}"
           >
-            {{'USER_CREATE_NOAVATARSELECTED' | translate}}<span class="uk-text-danger" ng-show="avatar.error"> - Max size 1MB</span>
+            {{'USER_CREATE_NOAVATARSELECTED' | translate}}<span class="uk-text-danger" ng-show="avatar.error"> - {{'FORM_AVATAR_SIZE_ERROR' | translate}}</span>
           </p>
           <p ng-show="avatar.file !== undefined">{{'USER_CREATE_AVATARSELECTED' | translate}}
             <span id="file-name">{{avatar.file.name}}</span>

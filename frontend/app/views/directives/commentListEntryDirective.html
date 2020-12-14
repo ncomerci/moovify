@@ -1,0 +1,26 @@
+<div class="uk-flex uk-flex-wrap">
+  <div class="uk-width-1-1">
+    <div class="uk-flex">
+      <div class="uk-width-expand uk-margin-small-top uk-text-truncate">
+        <a class="uk-text-italic text-lead" ng-href="{{comment.url}}">
+          {{getBodyFormatted(comment.body)}}
+        </a>
+        <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical uk-text-truncate">
+          <span ng-if="comment.user.enabled">
+           {{'COMMENT_BY' | translate:{username:comment.user.username};}}
+          </span>
+          <span ng-if="!comment.user.enabled">
+            {{'COMMENT_BY_REMOVED' | translate }}
+          </span>
+          {{'COMMENT_META' | translate:{title:comment.post.title, votes:comment.totalLikes};}}
+          <span uk-icon="icon: {{comment.totalLikes >= 0 ? 'chevron-up' : 'chevron-down'}}; ratio: 0.8"></span>
+        </p>
+      </div>
+      <div class="uk-width-auto">
+        <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
+          <span>{{ getAgeMessage(comment.creationDate) | translate }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

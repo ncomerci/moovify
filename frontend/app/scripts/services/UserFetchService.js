@@ -1,9 +1,9 @@
 'use strict';
-define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserService'], function(frontend) {
+define(['frontend', 'services/RestFulResponseFactory', 'services/LoginService', 'services/LinkParserService'], function(frontend) {
 
-  frontend.service('UserFetchService', function(RestFulResponse, LinkParserService, $q) {
+  frontend.service('UserFetchService', function(RestFulResponse, LinkParserService, $q, LoggedUserFactory) {
 
-    this.searchUsers = function(query, role, enabled, orderBy, pageSize, pageNumber) {
+    this.searchUsers = function (query, role, enabled, orderBy, pageSize, pageNumber) {
       return fetchUsersInternal('/users', query, role, enabled, orderBy, pageSize, pageNumber);
     }
 
@@ -22,27 +22,32 @@ define(['frontend', 'services/RestFulResponseFactory', 'services/LinkParserServi
       };
 
       // Optional Params
-      if(role)
+      if (role)
         queryParams.role = role;
 
-      if(enabled !== null)
+      if (enabled !== null)
         queryParams.enabled = enabled;
 
-      return $q(function(resolve, reject) {
-        RestFulResponse.noAuth().all(path).getList(queryParams).then(function(userResponse) {
+      return $q(function (resolve, reject) {
 
-          var paginationParams = {lastPage: 0, pageSize: queryParams.pageSize, currentPage: queryParams.pageNumber};
-          var linkHeader = userResponse.headers('Link');
-          var users = userResponse.data;
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
 
-          // Si no hay Link -> no habia contenido -> no me interesa paginar nada
-          if(linkHeader){
-            paginationParams.lastPage = LinkParserService.parse(linkHeader);
-          }
+          Restangular.all(path).getList(queryParams).then(function (userResponse) {
 
-          resolve({collection: users, paginationParams: paginationParams, queryParams: queryParams});
+            var paginationParams = {lastPage: 0, pageSize: queryParams.pageSize, currentPage: queryParams.pageNumber};
+            var linkHeader = userResponse.headers('Link');
+            var users = userResponse.data;
+            console.log(users);
+            // Si no hay Link -> no habia contenido -> no me interesa paginar nada
+            if (linkHeader) {
+              paginationParams.lastPage = LinkParserService.parse(linkHeader);
+            }
+            resolve({collection: users, paginationParams: paginationParams, queryParams: queryParams});
 
-        }).catch(function(response) { reject({status: response.status, message: 'UserFetchService: FetchUsers'}) });
+          }).catch(function (response) {
+            reject({status: response.status, message: 'UserFetchService: FetchUsers'})
+          });
+        }).catch(reject);
       });
     }
   });
