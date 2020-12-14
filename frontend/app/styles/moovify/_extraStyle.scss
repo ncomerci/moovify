@@ -345,8 +345,6 @@ button.like-post-button:hover, button.like-comment-button:hover{
   cursor: pointer;
 }
 
-
-
 #parsedBody img {
 
   display: block;
@@ -354,4 +352,8 @@ button.like-post-button:hover, button.like-comment-button:hover{
   margin-right: auto;
   max-width: available;
   max-height: 506px;
+}
+
+.separator {
+  border-bottom: 2px solid #ECECEC
 }

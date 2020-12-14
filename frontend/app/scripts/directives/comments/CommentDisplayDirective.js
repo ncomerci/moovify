@@ -55,7 +55,7 @@ define(['frontend', 'directives/comments/CommentTreeDirective', 'services/Commen
         $scope.callbackFunctions.reply = function(newCommentBody) {
           return $q(function (resolve, reject) {
 
-            CommentInteractionService.sendReply($scope.comment, newCommentBody).then(function(newComment) {
+            CommentInteractionService.sendCommentReply($scope.comment, newCommentBody).then(function(newComment) {
               // debugger;
               if(Array.isArray($scope.comment.children)){
                 $scope.comment.children.unshift(newComment);
