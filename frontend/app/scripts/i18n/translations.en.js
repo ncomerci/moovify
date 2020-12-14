@@ -2,6 +2,9 @@
 define([], function() {
 
 	return {
+    INDEX_WELCOME: 'Welcome to Moovify!',
+	  INDEX_SLOGAN: 'The movie is over?',
+    INDEX_MY_FEED: 'My Feed',
     ADMIN_TITLE: 'Admin',
     ADMIN_PANEL_BTN: 'Admin panel',
     USER_LOGIN_TITLE: 'Moovify | Login',

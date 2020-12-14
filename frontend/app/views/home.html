@@ -1,22 +1,55 @@
-<div class="jumbotron">
 
-	<tab-display-directive tabs="postOrders" tab-selected="order.value" ></tab-display-directive>
-  <div class="uk-grid">
-    <div class="uk-width-expand uk-margin-small-top">
-      <div ng-show="order.value === 'hottest'">
-        <fetch-posts-directive default-page-size="25" order="'hottest'" enabled="true" path="/posts" refresh-url-fn="setHottestUrl" ></fetch-posts-directive>
-      </div>
-
-      <div ng-show="order.value === 'newest'">
-        <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/posts" refresh-url-fn="setNewestUrl" ></fetch-posts-directive>
-      </div>
+<div ng-if="loggedUser.logged">
+  <div class="uk-height-medium uk-background-cover uk-light uk-flex uk-flex-top uk-background-fixed" uk-parallax="bgy: -50" style="background-image: url(/resources/images/banner.jpg);">
+    <div class="uk-width-1-2@m uk-text-center uk-margin-auto uk-margin-auto-vertical">
+      <h1 class="m-text-white uk-text-bold">{{'INDEX_SLOGAN' | translate}}</h1>
+      <h1 class="m-text-white uk-text-bold">{{'INDEX_WELCOME' | translate}}</h1>
     </div>
-      <div ng-show="users.length > 0">
-        <div ng-repeat="user in users">
-          <min-user-list-entry-directive user="user"></min-user-list-entry-directive>
-        </div>
-      </div>
   </div>
-
-
 </div>
+<div ng-if="!loggedUser.logged">
+  <div class="uk-height-large uk-background-cover uk-overflow-hidden uk-flex uk-flex-top uk-background-fixed" uk-parallax="bgy: -50" style="background-image: url(/resources/images/banner.jpg);">
+    <div class="uk-width-1-2@m uk-text-center uk-margin-auto uk-margin-auto-vertical">
+      <h1 class="m-text-white uk-text-bold uk-animation-scale-up">{{'INDEX_SLOGAN' | translate}}</h1>
+      <h1 class="m-text-white uk-text-bold" uk-parallax="opacity: 0,8; y: 100,0; scale: 1,1; viewport: 0.3;">{{'INDEX_WELCOME' | translate}}</h1>
+    </div>
+  </div>
+</div>
+
+<main class="uk-container uk-container-large main-page">
+  <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center uk-margin-bottom uk-margin-top" uk-grid>
+
+<!--  Tabs  -->
+    <tab-display-directive tabs="showingValues" tab-selected="showing.value" ></tab-display-directive>
+
+    <div class="uk-grid">
+      <div class="uk-width-expand uk-margin-small-top">
+
+<!--    Hottest Posts    -->
+        <div ng-show="showing.value === 'hottestPosts'">
+          <fetch-posts-directive default-page-size="25" order="'hottest'" enabled="true" path="/posts" refresh-url-fn="setHottestUrl" ></fetch-posts-directive>
+        </div>
+
+<!--    Newest Posts    -->
+        <div ng-show="showing.value === 'newestPosts'">
+          <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/posts" refresh-url-fn="setNewestUrl" ></fetch-posts-directive>
+        </div>
+
+<!--    My Feed    -->
+        <div ng-if="loggedUser.logged" ng-show="showing.value === 'myFeed'">
+          <fetch-posts-directive default-page-size="25" order="'hottest'" enabled="true" path="/user/following/posts" refresh-url-fn="setFeedUrl" ></fetch-posts-directive>
+        </div>
+
+      </div>
+
+<!--    Hottest Users  -->
+        <div ng-show="users.length > 0">
+          <div ng-repeat="user in users">
+            <min-user-list-entry-directive user="user"></min-user-list-entry-directive>
+          </div>
+        </div>
+
+    </div>
+
+  </div>
+</main>
