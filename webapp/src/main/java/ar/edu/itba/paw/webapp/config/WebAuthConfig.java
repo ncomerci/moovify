@@ -54,6 +54,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetails).passwordEncoder(passwordEncoder());
     }
 
+    // TODO: DISABLE CORS BEFORE DEPLOYMENT
     // Spring Security Unresolved Issues
     @Override
     protected void configure(HttpSecurity http) throws Exception {
