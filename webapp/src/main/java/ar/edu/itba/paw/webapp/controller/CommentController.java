@@ -118,7 +118,7 @@ public class CommentController {
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
-        commentService.editComment(user, comment, commentEditDto.getCommentBody());
+        commentService.editComment(user, comment, commentEditDto.getBody());
 
         return Response.noContent()
                 .contentLocation(CommentDto.getCommentUriBuilder(comment, uriInfo).build())

@@ -28,6 +28,7 @@ public class PostTest {
     private static final boolean DEFAULT_ENABLED = true;
     private static final Set<PostVote> DEFAULT_LIKES = Collections.emptySet();
     private static final Set<Movie> DEFAULT_MOVIES = Collections.emptySet();
+    private static final Set<User> DEFAULT_BOOKMARKED = Collections.emptySet();
     private static final Set<Comment> DEFAULT_COMMENTS = Collections.emptySet();
 
 
@@ -63,7 +64,7 @@ public class PostTest {
         likes.add(like);
 
         Post post = new Post(DEFAULT_ID, DEFAULT_CREATION_DATE, DEFAULT_TITLE, DEFAULT_BODY, DEFAULT_WORD_COUNT, DEFAULT_POST_CATEGORY,
-                DEFAULT_USER, DEFAULT_TAGS, DEFAULT_EDITED, DEFAULT_LAST_EDIT_DATE, DEFAULT_ENABLED, likes,
+                DEFAULT_USER, DEFAULT_TAGS, DEFAULT_EDITED, DEFAULT_LAST_EDIT_DATE, DEFAULT_ENABLED, likes, DEFAULT_BOOKMARKED,
                 DEFAULT_MOVIES, DEFAULT_COMMENTS);
 
         // Exercise
@@ -108,7 +109,7 @@ public class PostTest {
         likes.add(like);
 
         Post post = new Post(DEFAULT_ID, DEFAULT_CREATION_DATE, DEFAULT_TITLE, DEFAULT_BODY, DEFAULT_WORD_COUNT, DEFAULT_POST_CATEGORY,
-                DEFAULT_USER, DEFAULT_TAGS, DEFAULT_EDITED, DEFAULT_LAST_EDIT_DATE, DEFAULT_ENABLED, likes,
+                DEFAULT_USER, DEFAULT_TAGS, DEFAULT_EDITED, DEFAULT_LAST_EDIT_DATE, DEFAULT_ENABLED, likes, DEFAULT_BOOKMARKED,
                 DEFAULT_MOVIES, DEFAULT_COMMENTS);
 
         // Exercise
@@ -138,7 +139,7 @@ public class PostTest {
         likes.add(fakeLike);
 
         Post post = new Post(DEFAULT_ID, DEFAULT_CREATION_DATE, DEFAULT_TITLE, DEFAULT_BODY, DEFAULT_WORD_COUNT, DEFAULT_POST_CATEGORY,
-                DEFAULT_USER, DEFAULT_TAGS, DEFAULT_EDITED, DEFAULT_LAST_EDIT_DATE, DEFAULT_ENABLED, likes,
+                DEFAULT_USER, DEFAULT_TAGS, DEFAULT_EDITED, DEFAULT_LAST_EDIT_DATE, DEFAULT_ENABLED, likes, DEFAULT_BOOKMARKED,
                 DEFAULT_MOVIES, DEFAULT_COMMENTS);
 
         // Exercise
@@ -157,7 +158,7 @@ public class PostTest {
     public void testLikeCreation() {
 
         Post post = new Post(DEFAULT_ID, DEFAULT_CREATION_DATE, DEFAULT_TITLE, DEFAULT_BODY, DEFAULT_WORD_COUNT, DEFAULT_POST_CATEGORY,
-                DEFAULT_USER, DEFAULT_TAGS, DEFAULT_EDITED, DEFAULT_LAST_EDIT_DATE, DEFAULT_ENABLED, new HashSet<>(),
+                DEFAULT_USER, DEFAULT_TAGS, DEFAULT_EDITED, DEFAULT_LAST_EDIT_DATE, DEFAULT_ENABLED, new HashSet<>(), DEFAULT_BOOKMARKED,
                 DEFAULT_MOVIES, DEFAULT_COMMENTS);
 
         User user = Mockito.mock(User.class);
@@ -184,7 +185,7 @@ public class PostTest {
         likes.add(like);
 
         Post post = new Post(DEFAULT_ID, DEFAULT_CREATION_DATE, DEFAULT_TITLE, DEFAULT_BODY, DEFAULT_WORD_COUNT, DEFAULT_POST_CATEGORY,
-                DEFAULT_USER, DEFAULT_TAGS, DEFAULT_EDITED, DEFAULT_LAST_EDIT_DATE, DEFAULT_ENABLED, likes,
+                DEFAULT_USER, DEFAULT_TAGS, DEFAULT_EDITED, DEFAULT_LAST_EDIT_DATE, DEFAULT_ENABLED, likes, DEFAULT_BOOKMARKED,
                 DEFAULT_MOVIES, DEFAULT_COMMENTS);
 
         // Exercise

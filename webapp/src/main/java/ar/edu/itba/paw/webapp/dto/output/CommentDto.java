@@ -193,11 +193,11 @@ public class CommentDto {
         this.userVote = userVote;
     }
 
-    public Boolean getOwner() {
+    public Boolean getIsOwner() {
         return isOwner;
     }
 
-    public void setOwner(Boolean owner) {
+    public void setIsOwner(Boolean owner) {
         isOwner = owner;
     }
 }

@@ -10,14 +10,14 @@ public class CommentEditDto {
     @NotNull
     @Size( min = 1, max = 400)
     @SpacesNormalization
-    private String commentBody;
+    private String body;
 
-    public String getCommentBody() {
-        return commentBody;
+    public String getBody() {
+        return body;
     }
 
-    public void setCommentBody(String commentBody) {
-        this.commentBody = commentBody;
+    public void setBody(String body) {
+        this.body = body;
     }
 
 }
