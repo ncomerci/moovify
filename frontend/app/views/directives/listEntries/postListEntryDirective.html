@@ -11,10 +11,10 @@
         </span>
 
         <span>{{post.postCategory.name}}</span>
-        <!-- TODO badge de admin-->
+        <span ng-if="isAdmin(post.user)">adminBadge-</span>
         <span> {{post.user.enabled ? post.user.username : 'INVALID'}}</span>
 
-        <span>{{post.totalLikes}}</span>
+        <span>{{'VOTES_DISPLAY' |translate:{votes:post.totalLikes};}}</span>
 
         <span>
           <span ng-if="post.totalLikes >= 0" uk-icon="icon: chevron-up; ratio: 0.8"></span>
@@ -24,7 +24,7 @@
       </p>
 
       <a class="text-lead" ng-href="/posts/{{post.id}}">
-      <!-- TODO bookmarked-->
+        <span ng-if="post.hasUserBookmarked">bookmarked-</span>
         <span>{{post.title}}</span>
       </a>
 

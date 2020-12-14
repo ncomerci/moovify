@@ -1,8 +1,8 @@
 define(['frontend', 'uikit', 'easymde', 'purify', 'services/RestFulResponseFactory', 'services/PostCategoriesService', 'services/MovieFetchService'
-,'directives/PostCreateModalDirective'], function(frontend, UIkit, EasyMDE, DOMPurify) {
+  ,'directives/PostCreateModalDirective', 'services/LoginService'], function(frontend, UIkit, EasyMDE, DOMPurify) {
 
   'use strict';
-  frontend.controller('PostCreateController', function($scope, PostCategoriesService, MovieFetchService, RestFulResponse, $location) {
+  frontend.controller('PostCreateController', function($scope, PostCategoriesService, MovieFetchService, RestFulResponse, $location, LoggedUserFactory) {
 
     $scope.post = {};
     $scope.moviesTitles = [];
@@ -126,36 +126,39 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/RestFulResponseFacto
           $scope.post.tags.push(tag);
         })
 
-        RestFulResponse.all('posts').post($scope.post).then(function (){
-          $scope.easyMde.clearAutosavedValue();}
+        RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function (Restful) {
+          Restful.all('posts').post($scope.post).then(function () {
+              $scope.easyMde.clearAutosavedValue();
+            }
           ).catch(function (err) {
-          console.log(err);
-        });
-        }
+            console.log(err);
+          });
+        }).then().catch();
+      }
     }
-      $scope.bodyRequired = function (button, body) {
-        return button && body === undefined;
-      }
+    $scope.bodyRequired = function (button, body) {
+      return button && body === undefined;
+    }
 
-      $scope.bodyMinLen = function (button, body) {
-        return button && body.length < $scope.bodyConstraints.minLen;
-      }
+    $scope.bodyMinLen = function (button, body) {
+      return button && body.length < $scope.bodyConstraints.minLen;
+    }
 
-      $scope.bodyMaxLen = function (button, body) {
-        return button && body.length > $scope.bodyConstraints.maxLen;
-      }
+    $scope.bodyMaxLen = function (button, body) {
+      return button && body.length > $scope.bodyConstraints.maxLen;
+    }
 
-      $scope.bodyValidation = function (button, body) {
-        return body === undefined || body.length < $scope.bodyConstraints.minLen || body.length > $scope.bodyConstraints.maxLen;
-      }
+    $scope.bodyValidation = function (button, body) {
+      return body === undefined || body.length < $scope.bodyConstraints.minLen || body.length > $scope.bodyConstraints.maxLen;
+    }
 
-      $scope.fieldRequired = function (button, field) {
-        return button && $scope.createPostForm[field].$error.required !== undefined;
-      }
+    $scope.fieldRequired = function (button, field) {
+      return button && $scope.createPostForm[field].$error.required !== undefined;
+    }
 
-      $scope.fieldIsNotValid = function (button, field) {
-        return $scope.fieldRequired(button, field) || $scope.createPostForm[field].$error.pattern ||
-          $scope.createPostForm[field].$error.minlength || $scope.createPostForm[field].$error.maxlength;
-      }
+    $scope.fieldIsNotValid = function (button, field) {
+      return $scope.fieldRequired(button, field) || $scope.createPostForm[field].$error.pattern ||
+        $scope.createPostForm[field].$error.minlength || $scope.createPostForm[field].$error.maxlength;
+    }
   });
 });

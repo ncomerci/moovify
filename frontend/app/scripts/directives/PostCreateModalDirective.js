@@ -22,8 +22,7 @@ define(['frontend', 'services/MovieFetchService', 'services/PostCreateModalServi
         scope.postCreateFn = scope.postCreateFn();
 
         MovieFetchService.fetchMovies('/movies',
-          null,null,1000, 0).then(function (resp) {
-            console.log(resp);
+          null,null, 1100, 0).then(function (resp) {
             resp.collection.plain().forEach(function(movie) {
               scope.moviesList[movie.title + ' - ' + movie.releaseDate.substring(0, movie.releaseDate.indexOf("-"))] = movie.id;
             });
@@ -36,6 +35,7 @@ define(['frontend', 'services/MovieFetchService', 'services/PostCreateModalServi
           $scope.post.movie = "";
           $scope.moviesTitles = Object.keys($scope.moviesList);
           $scope.moviesBadges = Object.entries($scope.movieMap);
+          console.log($scope.moviesTitles);
         }
 
         $scope.unselectMovie = function (movieName, movieId) {
