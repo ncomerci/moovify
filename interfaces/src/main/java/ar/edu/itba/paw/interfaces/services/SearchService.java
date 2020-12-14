@@ -1,9 +1,6 @@
 package ar.edu.itba.paw.interfaces.services;
 
-import ar.edu.itba.paw.models.Movie;
-import ar.edu.itba.paw.models.PaginatedCollection;
-import ar.edu.itba.paw.models.Post;
-import ar.edu.itba.paw.models.User;
+import ar.edu.itba.paw.models.*;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -22,6 +19,8 @@ public interface SearchService {
     Optional<PaginatedCollection<Movie>> searchMovies(String query, String category, String decade, String sortCriteria, int pageNumber, int pageSize);
 
     Optional<PaginatedCollection<User>> searchUsers(String query, String role, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
+
+    Optional<PaginatedCollection<Comment>> searchComments(String query, Boolean enabled, String sortCriteria, int pageNumber, int pageSize);
 
     /**
      * Available options for search methods
