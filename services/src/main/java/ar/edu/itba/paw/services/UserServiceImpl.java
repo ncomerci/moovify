@@ -90,9 +90,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUser(User user, String name, String username, String description, String password) throws DuplicateUniqueUserAttributeException {
 
-        if(description == null)
-            description = "";
-
         updateUsername(user, username);
 
         updateName(user, name);
@@ -119,7 +116,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updateDescription(User user, String description) {
-        if(!description.equals("") && !user.getDescription().equals(description))
+        if(description != null && !user.getDescription().equals(description))
             user.setDescription(description);
     }
 
