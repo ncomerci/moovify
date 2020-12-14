@@ -48,9 +48,19 @@
           </div>
         </div>
 
-        <a class="uk-button uk-button-default uk-border-rounded uk-text-uppercase uk-margin-bottom" href="#edit-info-modal" uk-toggle>
-          {{'PROFILE_EDIT_DETAILS' | translate}}
-        </a>
+        <div class="uk-grid-column uk-child-width-1-2 uk-margin-small-bottom" uk-grid>
+          <div>
+            <a class="uk-button uk-button-default uk-border-rounded uk-text-uppercase uk-margin-bottom" href="#edit-info-modal" uk-toggle>
+              {{'PROFILE_EDIT_DETAILS' | translate}}
+            </a>
+          </div>
+          <div>
+            <a class="uk-button uk-button-default uk-border-rounded uk-text-uppercase uk-margin-bottom" href="#change-password-modal" uk-toggle>
+              {{'CHANGE_PASSWORD_TITLE' | translate}}
+            </a>
+          </div>
+        </div>
+
       </div>
       <div class="uk-width-2-3">
         <tab-display-directive tab-selected="showing.value" tabs="tabs"></tab-display-directive>
@@ -101,6 +111,63 @@
     </div>
   </div>
 
+  <!-- CHANGE PASSWORD MODAL -->
+  <div id="change-password-modal" uk-modal>
+    <div class="uk-modal-dialog">
+      <div class="uk-modal-header">
+        <h2 class="uk-modal-title">{{'CHANGE_PASSWORD_TITLE' | translate}}</h2>
+      </div>
+      <div class="uk-modal-body">
+        <form name="changePassForm">
+          <div class="uk-inline uk-width-expand">
+            <label>
+              <input class="uk-input"
+                     type="password"
+                     name="password"
+                     ng-model="editPass.password"
+                     placeholder="{{'USER_CREATE_PASSWORD' | translate}}"
+                     ng-class="{'uk-form-danger': fieldIsNotValid('changePassForm', 'password')}"
+                     ng-pattern="passwordConstrains.pattern"
+                     ng-minlength="{{passwordConstrains.minLen}}"
+                     ng-maxlength="{{passwordConstrains.maxLen}}"
+                     required
+              />
+            </label>
+          </div>
+          <div class="uk-text-danger" ng-if="fieldRequired('changePassForm', 'password')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+          <div class="uk-text-danger" ng-if="changePassForm.password.$error.pattern">{{'FORM_PASSWORD_PATTERN_ERROR' | translate}}</div>
+          <div class="uk-text-danger" ng-if="changePassForm.password.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: passwordConstrains.minLen};}}</div>
+          <div class="uk-text-danger" ng-if="changePassForm.password.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: passwordConstrains.maxLen};}}</div>
+
+          <div class="uk-inline uk-width-expand uk-margin-top">
+            <label>
+              <input class="uk-input"
+                     type="password"
+                     name="repeatPassword"
+                     ng-model="editPass.repeatPassword"
+                     placeholder="{{'USER_CREATE_REPEATPASSWORD' | translate}}"
+                     ng-class="{'uk-form-danger': fieldIsNotValid('changePassForm', 'repeatPassword') || passwordsNotEquals()}"
+                     ng-pattern="passwordConstrains.pattern"
+                     ng-minlength="{{passwordConstrains.minLen}}"
+                     ng-maxlength="{{passwordConstrains.maxLen}}"
+                     required
+              />
+            </label>
+          </div>
+          <div class="uk-text-danger" ng-if="fieldRequired('changePassForm', 'repeatPassword')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+          <div class="uk-text-danger" ng-if="changePassForm.repeatPassword.$error.pattern">{{'FORM_PASSWORD_PATTERN_ERROR' | translate}}</div>
+          <div class="uk-text-danger" ng-if="changePassForm.repeatPassword.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: passwordConstrains.minLen};}}</div>
+          <div class="uk-text-danger" ng-if="changePassForm.repeatPassword.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: passwordConstrains.maxLen};}}</div>
+          <div class="uk-text-danger" ng-if="passwordsNotEquals()">{{'FORM_REPEAT_PASSWORD_ERROR' | translate}}</div>
+        </form>
+      </div>
+      <div class="uk-modal-footer uk-text-right">
+        <button class="uk-button uk-button-default uk-modal-close uk-text-primary" type="button">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
+        <button class="uk-button uk-button-primary" type="button" ng-click="updatePassword()">{{'UPDATE_AVATAR_MODAL_ACCEPT' | translate}}</button>
+      </div>
+    </div>
+  </div>
+
   <!-- EDIT INFO MODAL -->
   <div id="edit-info-modal" uk-modal>
     <div class="uk-modal-dialog">
@@ -115,7 +182,7 @@
                    name="name"
                    ng-model="editInfo.name"
                    placeholder="{{'USER_CREATE_NAME' | translate}}"
-                   ng-class="{'uk-form-danger': fieldIsNotValid('name') || checkFieldError('name')}"
+                   ng-class="{'uk-form-danger': fieldIsNotValid('editForm', 'name') || checkFieldError('name')}"
                    ng-pattern="nameConstrains.pattern"
                    ng-minlength="{{nameConstrains.minLen}}"
                    ng-maxlength="{{nameConstrains.maxLen}}"
@@ -123,7 +190,7 @@
                    required
             >
           </label>
-          <div class="uk-text-danger" ng-if="fieldRequired('name')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+          <div class="uk-text-danger" ng-if="fieldRequired('editForm', 'name')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
           <div class="uk-text-danger" ng-if="editForm.name.$error.pattern">{{'FORM_NAME_PATTERN_ERROR' | translate}}</div>
           <div class="uk-text-danger" ng-if="editForm.name.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: nameConstrains.minLen};}}</div>
           <div class="uk-text-danger" ng-if="editForm.name.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: nameConstrains.maxLen};}}</div>
@@ -135,7 +202,7 @@
                    type="text"
                    ng-model="editInfo.username"
                    placeholder="{{'USER_CREATE_USERNAME' | translate}}"
-                   ng-class="{'uk-form-danger': fieldIsNotValid('username') || checkFieldError('username')}"
+                   ng-class="{'uk-form-danger': fieldIsNotValid('editForm', 'username') || checkFieldError('username')}"
                    ng-pattern="usernameConstrains.pattern"
                    ng-minlength="{{usernameConstrains.minLen}}"
                    ng-maxlength="{{usernameConstrains.maxLen}}"
@@ -143,7 +210,7 @@
                    required
             />
           </label>
-          <div class="uk-text-danger" ng-if="fieldRequired('username')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+          <div class="uk-text-danger" ng-if="fieldRequired('editForm', 'username')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
           <div class="uk-text-danger" ng-if="editForm.username.$error.pattern">{{'FORM_USERNAME_PATTERN_ERROR' | translate}}</div>
           <div class="uk-text-danger" ng-if="editForm.username.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: usernameConstrains.minLen};}}</div>
           <div class="uk-text-danger" ng-if="editForm.username.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: usernameConstrains.maxLen};}}</div>

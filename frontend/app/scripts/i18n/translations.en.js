@@ -120,6 +120,7 @@ define([], function() {
     MOVIE_POSTER:'{{title}} poster',
     MOVIE_OVERVIEW:'Overview',
     MOVIE_POST_ABOUT:'Posts about this movie:',
+    CHANGE_PASSWORD_TITLE: 'Change password',
 
 
 
@@ -166,6 +167,7 @@ define([], function() {
     PROFILE_COMMENTS_TAB_DISPLAY: "Your comments",
     PROFILE_BOOK_TAB_DISPLAY: "Your bookmarked posts",
     PROFILE_FOLLOWED_USERS: "Your followed users",
-    PROFILE_EDIT_DETAILS: "EDIT INFORMATION"
+    PROFILE_EDIT_DETAILS: "Edit information",
+    PROFILE_SETTINGS_MODAL: "Settings",
 	};
 });

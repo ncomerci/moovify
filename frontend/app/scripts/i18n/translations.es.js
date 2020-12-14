@@ -73,6 +73,7 @@ define([], function() {
     POST_NOT_FOUND: 'There are no posts that match those requirements. Try changing the search parameters or looking for some new posts in the home screen.',
     MOVIES_NOT_FOUND: 'There are no movies that match those requirements. Try changing the search parameters.',
     USERS_NOT_FOUND: 'There are no users that match those requirements. Try changing the search parameters.',
+    COMMENT_NOT_FOUND_PROFILE: 'You have no comments yet',
     NAVBAR_CREATE_POST: 'Create post',
     FORM_FIELD_REQUIRED: 'Field required',
     FORM_BAD_CREDENTIALS: 'Incorrect user or password',
@@ -117,14 +118,9 @@ define([], function() {
     MIN_USER_DISPLAY_META_NAME_VOTES: "Name: {{name}} - Total votes: {{totalVotes}}",
     MOVIE_VIEW_TITLE:'{{title}} ({{year}})',
     MOVIE_POSTER:'{{title}} poster',
-    MOVIE_ORIGINAL_TITLE:'Original title',
-    MOVIE_RELEASE_DATE:'Release date',
-    MOVIE_ORIGINAL_LANGUAGE:'Original language',
-    MOVIE_VOTE_AVERAGE:'Average vote',
-    MOVIE_CATEGORIES:'Movie categories',
     MOVIE_OVERVIEW:'Overview',
     MOVIE_POST_ABOUT:'Posts about this movie:',
-
+    CHANGE_PASSWORD_TITLE: 'Change password',
 
 
 
@@ -171,6 +167,7 @@ define([], function() {
     PROFILE_COMMENTS_TAB_DISPLAY: "Your comments",
     PROFILE_BOOK_TAB_DISPLAY: "Your bookmarked posts",
     PROFILE_FOLLOWED_USERS: "Your followed users",
-    PROFILE_EDIT_DETAILS: "EDIT INFORMATION"
+    PROFILE_EDIT_DETAILS: "Edit information",
+    PROFILE_SETTINGS_MODAL: "Settings",
   };
 });
