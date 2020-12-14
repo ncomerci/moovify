@@ -71,6 +71,7 @@ define([], function() {
     POST_NOT_FOUND: 'There are no posts that match those requirements. Try changing the search parameters or looking for some new posts in the home screen.',
     MOVIES_NOT_FOUND: 'There are no movies that match those requirements. Try changing the search parameters.',
     USERS_NOT_FOUND: 'There are no users that match those requirements. Try changing the search parameters.',
+    COMMENT_NOT_FOUND_PROFILE: 'You have no comments yet',
     NAVBAR_CREATE_POST: 'Create post',
     FORM_FIELD_REQUIRED: 'Field required',
     FORM_BAD_CREDENTIALS: 'Incorrect user or password',

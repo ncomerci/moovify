@@ -1,7 +1,8 @@
 'use strict';
-define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/LoginService'], function(frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/LoginService',
+  'services/utilities/LinkParserService'], function(frontend) {
 
-  frontend.service('CommentFetchService', function (RestFulResponse, $q, LoggedUserFactory) {
+  frontend.service('CommentFetchService', function (RestFulResponse, $q, LoggedUserFactory, LinkParserService) {
 
     // devolver comments con sus comments hijos cargados.
 
@@ -36,7 +37,41 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
         pageNumber = 0;
 
       return getCommentCommentsWithUserVoteInternal(commentId, depth, orderBy, pageSize, pageNumber)
-    }
+    };
+
+    this.fetchComments = function(path, enabled, orderBy, pageSize, pageNumber) {
+
+      // Obligatory params
+      var queryParams = {
+        orderBy: orderBy,
+        pageSize: pageSize ? pageSize : 5,
+        pageNumber: pageNumber ? pageNumber : 0
+      };
+
+      if(enabled !== null)
+        queryParams.enabled = enabled;
+
+      return $q(function(resolve, reject) {
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
+
+          Restangular.all(path).getList(queryParams).then(function(commentResponse) {
+
+            var paginationParams = {lastPage: 0, pageSize: queryParams.pageSize, currentPage: queryParams.pageNumber};
+            var linkHeader = commentResponse.headers('Link');
+            var comments = commentResponse.data;
+
+            // Si no hay Link -> no habia contenido -> no me interesa paginar nada
+            if(linkHeader){
+              paginationParams.lastPage = LinkParserService.parse(linkHeader);
+            }
+
+            resolve({collection: comments, paginationParams: paginationParams, queryParams: queryParams});
+
+          }).catch(function(response) { reject({status: response.status, message: 'CommentFetchService: FetchComment'})
+          });
+        }).catch(reject);
+      });
+    };
 
     function getCommentCommentsWithUserVoteInternal(commentId, depth, orderBy, pageSize, pageNumber) {
 

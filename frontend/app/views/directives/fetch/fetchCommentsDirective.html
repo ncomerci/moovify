@@ -1,0 +1,14 @@
+<div>
+  <div ng-show="comments.length === 0" class="uk-margin-small-top">
+    <h1 class="uk-text-meta uk-text-center uk-text-bold">{{'COMMENT_NOT_FOUND_PROFILE' | translate}}</h1>
+  </div>
+  <div ng-show="comments.length > 0">
+    <div ng-repeat="comment in comments">
+      <comment-list-entry-directive comment="comment"></comment-list-entry-directive>
+    </div>
+    <pagination-handler-directive pagination-params="paginationParams"
+                                  reset-pagination-fn="resetPagination"
+                                  search-fn="fetchComments"
+                                  mutex="paginationMutex"/>
+  </div>
+</div>
