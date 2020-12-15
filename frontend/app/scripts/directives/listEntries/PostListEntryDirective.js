@@ -1,5 +1,6 @@
 'use strict';
-define(['frontend', 'services/DisplayService', 'services/UserService', 'services/utilities/RestFulResponseFactory','services/LoginService'], function(frontend) {
+define(['frontend', 'services/DisplayService', 'services/UserService', 'directives/PrettyDateDirective',
+  'services/utilities/RestFulResponseFactory','services/LoginService'], function(frontend) {
 
   frontend.directive('postListEntryDirective', function(DisplayService, LoggedUserFactory, RestFulResponse, UserService, $q) {
     return {
