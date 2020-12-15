@@ -397,3 +397,10 @@ button.link-muted, a.link-muted{
   color: $moovify-disabled;
   cursor: none;
 }
+
+.disabled-button,
+.disabled-button:disabled,
+.disabled-button:hover,
+.disabled-button:hover:disabled{
+  color: $moovify-disabled;
+}

@@ -2,19 +2,21 @@
   <div class="post-header">
     <div class="post-meta">
       <h1>
-        <button ng-if="isUser" ng-disabled="mutex.bookmark" ng-click="toggleBookmark()" class="no-style-button primary-button">
-      <span ng-show="post.hasUserBookmarked">
-        <span class="iconify large-iconify"
-              data-icon="mdi-bookmark-check"
-              data-inline="false"></span>
-      </span>
-          <span ng-show="!post.hasUserBookmarked">
-        <span class="iconify large-iconify"
-              data-icon="mdi-bookmark-check-outline"
-              data-inline="false"></span>
-      </span>
-        </button>
-        <span> - </span>
+        <span ng-if="isUser">
+          <button ng-disabled="mutex.bookmark" ng-click="toggleBookmark()" class="no-style-button primary-button">
+            <span ng-show="post.hasUserBookmarked">
+              <span class="iconify large-iconify"
+                    data-icon="mdi-bookmark-check"
+                    data-inline="false"></span>
+            </span>
+                <span ng-show="!post.hasUserBookmarked">
+              <span class="iconify large-iconify"
+                    data-icon="mdi-bookmark-check-outline"
+                    data-inline="false"></span>
+            </span>
+          </button>
+          <span> - </span>
+        </span>
         {{post.title}}
       </h1>
       <p>POST BY: {{post.user.username}}</p>

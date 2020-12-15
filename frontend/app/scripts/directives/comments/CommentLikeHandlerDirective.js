@@ -23,8 +23,19 @@ define(['frontend', 'services/LoginService', 'services/UserService'], function(f
         if(loggedUser.logged) {
           $scope.isUser = UserService.userHasRole(loggedUser, 'USER');
         }
+        else {
+          $scope.userVote = 0;
+        }
+
+        console.log('Comment like directive', $scope);
 
         $scope.sendVote = function (value){
+
+          console.log('Comment like directive', $scope);
+
+          if(!$scope.isUser){
+            return;
+          }
 
           $scope.sendingVote = true;
           $scope.sendVoteFn(value).then(function () {
