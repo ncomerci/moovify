@@ -8,7 +8,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
     frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
                                                 UpdateAvatar, RestFulResponse, LoggedUserFactory, UserService) {
 
-      if($scope.loggedUser.roles.includes('NOT_VALIDATED')) {
+      if(UserService.userHasRole($scope.loggedUser, 'NOT_VALIDATED')) {
         UIkit.modal(document.getElementById('confirm-email-profile-modal')).show();
       }
 

@@ -1,8 +1,6 @@
 <div class="color-div">
   <div class="uk-height-medium uk-flex uk-flex-center uk-flex-middle uk-background-cover uk-light pink-div"></div>
 
-<!--  TODO: MODAL DE CONFIMARCIÓN DE USUARIO-->
-
   <div class="uk-width-1-3 image-profile-position">
     <div class="uk-transition-toggle" tabindex="0">
       <div class="image-profile-shape elevation-effect" uk-form-custom>
@@ -56,7 +54,7 @@
 
         <div class="uk-grid-column uk-child-width-1-2 uk-margin-small-bottom" uk-grid>
           <div>
-            <a class="uk-button uk-button-default uk-align-right uk-border-rounded uk-text-uppercase uk-margin-bottom" href="#edit-info-modal" uk-toggle>
+            <a class="uk-button uk-button-default uk-align-right uk-border-rounded uk-text-uppercase uk-margin-bottom uk-margin-remove-left" href="#edit-info-modal" uk-toggle>
               {{'PROFILE_EDIT_DETAILS' | translate}}
             </a>
           </div>
@@ -255,6 +253,14 @@
       </div>
     </div>
   </div>
+</div>
+
+<div style="position: fixed; bottom: 0; padding: 8px 8px;"
+     class="uk-width-expand uk-background-primary uk-text-bold uk-text-center"
+     ng-show="loggedUser.roles.includes('NOT_VALIDATED')"
+>
+  {{'CONFIRM_EMAIL_FOOTER' | translate}}
+  <a class="uk-text-secondary" href="#confirm-email-profile-modal" uk-toggle>{{'CONFIRM_EMAIL_BTN_MODAL' | translate}}</a>
 </div>
 
 <!-- Confirm email modal -->
