@@ -46,7 +46,7 @@ require.config({
         },
         'angular-sanitize': {
             deps: [
-              'angular'
+                'angular'
             ]
         }
     },

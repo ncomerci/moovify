@@ -24,8 +24,6 @@ define(['frontend', 'services/LoginService', 'services/UserService'], function(f
           $scope.isUser = UserService.userHasRole(loggedUser, 'USER');
         }
 
-        console.log($scope.isUser, $scope.totalVotes);
-
         $scope.sendVote = function (value){
 
           $scope.sendingVote = true;
