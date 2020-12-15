@@ -46,7 +46,7 @@
             <div class="uk-text-left uk-margin-small-top">{{loggedUser.email}}</div>
           </div>
           <div class="uk-text-italic uk-margin-bottom">
-            {{loggedUser.description}}
+            {{loggedUser.description ? loggedUser.description : ('PROFILE_NO_DESCRIPTION' | translate)}}
           </div>
         </div>
 
@@ -251,5 +251,38 @@
       </div>
     </div>
   </div>
+</div>
 
+<!-- Confirm email modal -->
+<div id="confirm-email-profile-modal" ng-show="loggedUser.roles.includes('NOT_VALIDATED')" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body">
+    <button class="uk-modal-close-default" type="button" uk-close></button>
+    <h2 class="uk-modal-title">{{'USER_EMAILCONFIRM_TITLE' | translate}}</h2>
+    <p>{{'USER_EMAILCONFIRM_PROFILE' | translate}} <a ng-click="resendEmail()">{{'USER_PROFILE_RESENDEMAIL' | translate}}</a></p>
+    <div class="uk-text-center uk-text-danger" ng-if="resendError">{{'MAIL_FEEDBACK_ERROR' | translate}}</div>
+    <div class="uk-text-center uk-text-success" ng-if="resendSuccess">{{'MAIL_FEEDBACK_SUCCESS' | translate}}</div>
+    <form name="confirmMailForm" class="uk-grid-small uk-margin-top" uk-grid>
+      <div class="uk-width-3-4">
+        <label>
+          <input class="uk-input"
+                 type="text"
+                 name="token"
+                 ng-model="confirmEmail.token"
+                 placeholder="{{'UPDATE_PASS_TOKEN' | translate}}"
+                 ng-class="{'uk-form-danger': fieldRequired('confirmMailForm', 'token')}"
+                 required
+          />
+        </label>
+        <div class="uk-text-danger" ng-if="fieldRequired('confirmMailForm', 'token')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+        <div class="uk-text-danger" ng-if="tokenError">{{'USER_TOKEN_ERROR' | translate}}</div>
+      </div>
+      <div class="uk-width-1-4">
+        <input class="uk-button uk-button-primary uk-border-rounded uk-text-uppercase"
+               type="submit"
+               value="{{'USER_TOKEN_CONFIRM' | translate}}"
+               ng-click="sendConfirmation()"
+        />
+      </div>
+    </form>
+  </div>
 </div>

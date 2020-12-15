@@ -12,7 +12,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       $scope.signUpError = false;
       $scope.loading = false;
 
-      $scope.user = {};
+      $scope.user = {description: ''};
 
       $scope.nameConstrains = {
         pattern: /^[a-zA-Z ]*$/,
