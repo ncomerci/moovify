@@ -17,8 +17,6 @@ define(['frontend','easymde', 'marked', 'purify'], function(frontend,EasyMDE,mar
           maxLen: 100000,
           minLen: 0
         };
-
-
       },
       controller: function ($scope){
 
