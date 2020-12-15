@@ -1,11 +1,14 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/utilities/RestFulResponseFactory'], function(frontend) {
+define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTitleService',
+  'services/utilities/RestFulResponseFactory'], function(frontend, UIkit) {
 
-  frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $route, PageTitle, $window, RestFulResponse) {
+  frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $location, PageTitle, $window, RestFulResponse) {
 
     $scope.loggedUser = LoggedUserFactory.getLoggedUser();
     PageTitle.setTitle('asdasd'); // TODO: cambiar key
     $scope.title = PageTitle.getTitle();
+
+    $scope.search = {query: ''};
 
     $scope.waitLogin = true;
     LoggedUserFactory.startLoggedUserCheck();
@@ -18,6 +21,14 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       LoggedUserFactory.finishLoggedUserCheck();
       $scope.waitLogin = false;
     });
+
+    $scope.execSearch = function () {
+      document.activeElement.blur();
+      UIkit.drop(document.getElementById('navbar-search-drop')).hide(0);
+      $location.path('search');
+      $location.search('query', $scope.search.query);
+      $scope.search.query = '';
+    }
 
     $scope.logout = LoggedUserFactory.logout
 
