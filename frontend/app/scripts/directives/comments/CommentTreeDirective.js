@@ -13,20 +13,30 @@ define(['frontend', 'directives/comments/CommentDisplayDirective'], function(fro
       },
       controller: function($scope) {
 
-        $scope.loadingMore = false;
-        $scope.loadMore = function() {
+        $scope.newReplyCount = 0;
+        $scope.newComments = null;
 
-          $scope.loadingMore = true;
+        function loadMore() {
+
           $scope.comments.getNext(0).then(function(comments) {
+            $scope.newReplyCount = comments.length;
+            $scope.newComments = comments;
+          }).catch(console.log);
+        }
 
-            $scope.comments.hasNext = comments.hasNext;
-            if(comments.hasNext) {
-              $scope.comments.getNext = comments.getNext;
-            }
+        if($scope.comments.hasNext){
+          loadMore();
+        }
 
-            Array.prototype.push.apply($scope.comments, comments);
-            $scope.loadingMore = false;
-          })
+        $scope.showMore = function () {
+
+          $scope.comments.hasNext = $scope.newComments.hasNext;
+          if($scope.newComments.hasNext) {
+            $scope.comments.getNext = $scope.newComments.getNext;
+            loadMore()
+          }
+          $scope.newReplyCount = 0;
+          Array.prototype.push.apply($scope.comments, $scope.newComments);
         }
       }
     }
