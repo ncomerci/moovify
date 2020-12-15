@@ -22,8 +22,6 @@ public interface MovieService {
 
     PaginatedCollection<Movie> getAllMovies(String sortCriteria, int pageNumber, int pageSize);
 
-    Collection<Movie> getAllMoviesNotPaginated();
-
     Collection<MovieCategory> getAvailableCategories();
 
     MovieDao.SortCriteria getMovieSortCriteria(String sortCriteriaName);

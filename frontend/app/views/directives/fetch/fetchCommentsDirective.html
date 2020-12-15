@@ -4,7 +4,7 @@
   </div>
   <div ng-show="comments.length > 0">
     <div ng-repeat="comment in comments">
-      <comment-list-entry-directive comment="comment"></comment-list-entry-directive>
+      <comment-list-entry-directive admin-controls="false" comment="comment"></comment-list-entry-directive>
     </div>
     <pagination-handler-directive pagination-params="paginationParams"
                                   reset-pagination-fn="resetPagination"

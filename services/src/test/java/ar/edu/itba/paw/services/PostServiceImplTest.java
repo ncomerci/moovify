@@ -134,4 +134,10 @@ public class PostServiceImplTest {
 
         postService.guaranteePostEditionPermissions(user, post);
     }
+
+    @Test(expected = InvalidSortCriteriaException.class)
+    public void testGetInvalidSortCriteria() throws InvalidSortCriteriaException {
+
+        postService.getPostSortCriteria("INVALID");
+    }
 }

@@ -103,7 +103,11 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public void deleteComment(Comment comment) {
+    public void deleteComment(Comment comment) throws DeletedDisabledModelException {
+
+        if(!comment.isEnabled())
+            throw new DeletedDisabledModelException();
+
         LOGGER.info("Delete Comment {}", comment.getId());
         comment.setEnabled(false);
     }

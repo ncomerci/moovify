@@ -2,10 +2,7 @@ package ar.edu.itba.paw.services;
 
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
 import ar.edu.itba.paw.interfaces.services.MailService;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
-import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
-import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.Comment;
 import ar.edu.itba.paw.models.User;
 import org.junit.Test;
@@ -37,7 +34,7 @@ public class CommentServiceImplTest {
      */
 
     @Test(expected = IllegalCommentEditionException.class)
-    public void testLikeEditDisabledComment() throws MissingCommentEditPermissionException, IllegalCommentEditionException {
+    public void testEditDisabledComment() throws MissingCommentEditPermissionException, IllegalCommentEditionException {
 
         Comment comment = Mockito.mock(Comment.class);
         User user = Mockito.mock(User.class);
@@ -48,7 +45,7 @@ public class CommentServiceImplTest {
     }
 
     @Test(expected = MissingCommentEditPermissionException.class)
-    public void testLikeEditEditorWithoutPermission() throws MissingCommentEditPermissionException, IllegalCommentEditionException {
+    public void testEditEditorWithoutPermission() throws MissingCommentEditPermissionException, IllegalCommentEditionException {
 
         Comment comment = Mockito.mock(Comment.class);
         User user = Mockito.mock(User.class);
@@ -60,7 +57,7 @@ public class CommentServiceImplTest {
     }
 
     @Test
-    public void testLikeCommentRemove() throws IllegalCommentLikeException {
+    public void testCommentRemove() throws IllegalCommentLikeException {
 
         Comment comment = Mockito.mock(Comment.class);
         User user = Mockito.mock(User.class);
@@ -74,7 +71,7 @@ public class CommentServiceImplTest {
     }
 
     @Test
-    public void testLikeCommentGiveUpVote() throws IllegalCommentLikeException {
+    public void testCommentGiveUpVote() throws IllegalCommentLikeException {
 
         Comment comment = Mockito.mock(Comment.class);
         User user = Mockito.mock(User.class);
@@ -88,7 +85,7 @@ public class CommentServiceImplTest {
     }
 
     @Test
-    public void testLikeCommentGiveDownVote() throws IllegalCommentLikeException {
+    public void testCommentGiveDownVote() throws IllegalCommentLikeException {
 
         Comment comment = Mockito.mock(Comment.class);
         User user = Mockito.mock(User.class);
@@ -112,6 +109,15 @@ public class CommentServiceImplTest {
         commentService.likeComment(comment, user, DOWN_VOTE_VALUE);
     }
 
+    @Test(expected = DeletedDisabledModelException.class)
+    public void testDeleteDisabledComment() throws DeletedDisabledModelException {
+
+        Comment comment = Mockito.mock(Comment.class);
+        Mockito.when(comment.isEnabled()).thenReturn(false);
+
+        commentService.deleteComment(comment);
+    }
+
     @Test(expected = RestoredEnabledModelException.class)
     public void testRestoreEnabledComment() throws RestoredEnabledModelException {
 
@@ -119,5 +125,11 @@ public class CommentServiceImplTest {
         Mockito.when(comment.isEnabled()).thenReturn(true);
 
         commentService.restoreComment(comment);
+    }
+
+    @Test(expected = InvalidSortCriteriaException.class)
+    public void testGetInvalidSortCriteria() throws InvalidSortCriteriaException {
+
+        commentService.getCommentSortCriteria("INVALID");
     }
 }

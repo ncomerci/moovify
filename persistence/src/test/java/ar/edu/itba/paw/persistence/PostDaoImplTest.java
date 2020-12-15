@@ -127,7 +127,8 @@ public class PostDaoImplTest {
         final Optional<Post> post = postDao.findPostById(postId);
 
         // Post conditions
-        Assert.assertFalse(post.isPresent());
+        Assert.assertTrue(post.isPresent());
+        Assert.assertFalse(post.get().isEnabled());
     }
 
     @Test

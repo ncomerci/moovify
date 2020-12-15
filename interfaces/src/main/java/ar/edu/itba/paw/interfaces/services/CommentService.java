@@ -1,10 +1,7 @@
 package ar.edu.itba.paw.interfaces.services;
 
 import ar.edu.itba.paw.interfaces.persistence.CommentDao;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
-import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
-import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
 
 import java.util.Collection;
@@ -18,7 +15,7 @@ public interface CommentService {
 
     void likeComment(Comment comment, User user, int value) throws IllegalCommentLikeException;
 
-    void deleteComment(Comment comment);
+    void deleteComment(Comment comment) throws DeletedDisabledModelException;
 
     void restoreComment(Comment comment) throws RestoredEnabledModelException;
 

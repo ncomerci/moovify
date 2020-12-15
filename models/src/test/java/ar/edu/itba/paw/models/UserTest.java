@@ -33,7 +33,6 @@ public class UserTest {
     private static final Set<User> DEFAULT_FOLLOWERS = Collections.emptySet();
     private static final Set<Post> DEFAULT_FAVOURITE_POSTS = Collections.emptySet();
 
-
     @Test
     public void testCalculateTotalLikes() {
 

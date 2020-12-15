@@ -11,8 +11,8 @@ define(['frontend', 'services/DisplayService', 'services/UserService', 'services
       },
       templateUrl: 'resources/views/directives/listEntries/postListEntryDirective.html',
       link: function (scope) {
-        scope.removePostFn = scope.removePostFn();
-        console.log(scope.removePostFn);
+        if(scope.removePostFn)
+          scope.removePostFn = scope.removePostFn();
       },
       controller: function ($scope, $q) {
         $scope.getAgeMessage = function (creationDate) {
