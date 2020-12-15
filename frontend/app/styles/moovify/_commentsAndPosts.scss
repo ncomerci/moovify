@@ -42,3 +42,8 @@
   border-left: 2px solid #c9c9c9;
   margin-left: 1em;
 }
+
+.post-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+}
