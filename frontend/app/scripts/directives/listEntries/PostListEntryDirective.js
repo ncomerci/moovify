@@ -1,8 +1,8 @@
 'use strict';
-define(['frontend', 'services/DisplayService', 'services/UserService', 'directives/PrettyDateDirective',
+define(['frontend', 'services/UserService', 'directives/PrettyDateDirective',
   'services/utilities/RestFulResponseFactory','services/LoginService'], function(frontend) {
 
-  frontend.directive('postListEntryDirective', function(DisplayService, LoggedUserFactory, RestFulResponse, UserService, $q) {
+  frontend.directive('postListEntryDirective', function(LoggedUserFactory, RestFulResponse, UserService, $q) {
     return {
       restrict: 'E',
       scope: {
@@ -16,10 +16,6 @@ define(['frontend', 'services/DisplayService', 'services/UserService', 'directiv
           scope.removePostFn = scope.removePostFn();
       },
       controller: function ($scope, $q) {
-        $scope.getAgeMessage = function (creationDate) {
-          return DisplayService.getAgeMessageCode(creationDate);
-        }
-
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
 
         $scope.isAdmin = function (user){

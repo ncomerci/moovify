@@ -141,69 +141,7 @@ define(['frontend', 'js-joda'], function (frontend, JSJoda) {
         }
         else
           return this.getMinutesSinceCreation(creationDate);
-      },
-
-      getYearsMessage: function (id) {
-        if(id === 'es'){
-          return {
-            1: 'Hace 1 año',
-            other: 'Hace {} años'
-          }
-        }
-        return {
-          1: 'A year ago',
-          other: '{} years ago'
-        }
-      },
-      getMonthsMessage: function (id) {
-        if(id === 'es'){
-          return {
-            1: 'Hace 1 mes',
-            other: 'Hace {} meses'
-          }
-        }
-        return {
-          1: 'A month ago',
-          other: '{} months ago'
-        }
-      },
-      getWeeksMessage: function (id) {
-        if(id === 'es'){
-          return {
-            1: 'Hace 1 semana',
-            other: 'Hace {} semanas'
-          }
-        }
-        return {
-          1: 'A week ago',
-          other: '{} weeks ago'
-        }
-      },
-      getDaysMessage: function (id) {
-        if(id === 'es'){
-          return {
-            1: 'Hace 1 día',
-            other: 'Hace {} días'
-          }
-        }
-        return {
-          1: 'A day ago',
-          other: '{} days ago'
-        }
-      },
-
-      getMinutesMessage: function (id) {
-        if(id === 'es'){
-          return {
-            1: 'Hace 1 minuto',
-            other: 'Hace {} minutos'
-          }
-        }
-        return {
-          1: 'A minute ago',
-          other: '{} minutes ago'
-        }
-      },
+      }
     }
   });
 });

@@ -1,8 +1,10 @@
 define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulResponseFactory', 'services/PostCategoriesService',
-  'services/fetch/MovieFetchService', 'directives/PostCreateModalDirective', 'services/LoginService'], function(frontend, UIkit, EasyMDE, DOMPurify) {
+  'services/fetch/MovieFetchService', 'directives/PostCreateModalDirective', 'services/LoginService', 'services/utilities/PageTitleService'
+], function(frontend, UIkit, EasyMDE, DOMPurify) {
 
   'use strict';
-  frontend.controller('PostCreateController', function($scope, PostCategoriesService, MovieFetchService, RestFulResponse, $location, LoggedUserFactory) {
+  frontend.controller('PostCreateController', function($scope, PostCategoriesService, MovieFetchService, PageTitle, RestFulResponse, $location, LoggedUserFactory) {
+    PageTitle.setTitle('POST_CREATE_TITLE');
 
     $scope.post = {};
     $scope.moviesTitles = [];

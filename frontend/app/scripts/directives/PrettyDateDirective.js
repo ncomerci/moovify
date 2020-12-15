@@ -19,7 +19,6 @@ define(['frontend', 'services/TimeService'], function(frontend) {
         $scope.getTimeForm = function(){
           return TimeService.getTimeForm($scope.creationDate, $locale.id);
         }
-
       }
     }
   });

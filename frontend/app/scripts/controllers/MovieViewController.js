@@ -1,13 +1,27 @@
 define(['frontend', 'services/fetch/MovieFetchService', 'services/fetch/PostFetchService', 'services/DisplayService'
-  ,'services/utilities/MovieCategoryService', 'directives/fetch/FetchPostsDirective'], function(frontend) {
+  ,'services/utilities/MovieCategoryService', 'directives/fetch/FetchPostsDirective', 'services/utilities/PageTitleService'], function(frontend) {
 
   'use strict';
-  frontend.controller('MovieViewController', function($scope, $routeParams, $httpParamSerializer, MovieFetchService, PostFetchService, DisplayService, MovieCategoriesService) {
+  frontend.controller('MovieViewController', function($scope, $routeParams, $httpParamSerializer, $locale, MovieFetchService, PostFetchService, PageTitle, DisplayService, MovieCategoriesService) {
+
 
     $scope.movie = null;
     $scope.posts = null;
     $scope.setNewUrl = null;
     $scope.postsPath = getPostsUrl($routeParams.id);
+
+    if($locale.id === 'es') {
+      $scope.categoriesForm = {
+        1: 'Categoría',
+        other: 'Categorías'
+      }
+    }
+    else {
+      $scope.categoriesForm = {
+        1: 'Category',
+        other: 'Categories'
+      }
+    }
 
     $scope.getYear = function (date){
       if(!date)
@@ -36,6 +50,7 @@ define(['frontend', 'services/fetch/MovieFetchService', 'services/fetch/PostFetc
 
     MovieFetchService.fetchMovieById($routeParams.id).then(function (movie) {
       $scope.movie = movie;
+      PageTitle.setTitle('MOVIE_TITLE', {movie:$scope.movie.title});
     }).catch(console.log);
   });
 });

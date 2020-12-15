@@ -31,8 +31,6 @@
           </div>
 
           <div class="uk-margin-small-top uk-text-center"><span class="uk-text-bold">@</span>{{loggedUser.username}}</div>
-
-
           <hr class="uk-divider-icon">
 
           <div class="uk-grid-column uk-child-width-1-2 uk-margin-small-bottom" uk-grid>
@@ -47,7 +45,7 @@
             <div class="uk-text-bold uk-text-right uk-margin-small-top">{{'USER_PROFILE_CREATION_DATE' | translate}}</div>
             <div class="uk-text-left uk-margin-small-top">{{ loggedUser.creationDate | date: 'MMM yyyy' }}</div>
             <div class="uk-text-bold uk-text-right uk-margin-small-top uk-text-capitalize">{{'USER_CREATE_EMAIL' | translate}}:</div>
-            <div class="uk-text-left uk-margin-small-top">{{loggedUser.email}}</div>
+            <div class="uk-text-left uk-margin-small-top uk-text-break">{{loggedUser.email}}</div>
           </div>
           <div class="uk-text-italic uk-text-center uk-margin-bottom uk-text-break">
             {{loggedUser.description ? loggedUser.description : ('PROFILE_NO_DESCRIPTION' | translate)}}
