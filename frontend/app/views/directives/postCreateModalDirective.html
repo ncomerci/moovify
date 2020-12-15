@@ -45,11 +45,12 @@
                ng-model="post.tag"
                ng-pattern="tagsConstraints.pattern"
                class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
-               ng-class="{'uk-text-danger':createPostForm.tag.$error.maxlength}"
+               ng-class="{'uk-text-danger':createPostForm.tag.$error.maxlength || createPostForm.tag.$error.pattern}"
                ng-maxlength="{{tagsConstraints.maxLen}}"
-               placeholder="{{'POST_CREATE_TAGS_PLACEHOLDER' | translate}}">
+               placeholder="{{'POST_CREATE_TAGS_PLACEHOLDER' | translate}}"
+               ng-keydown="$event.keyCode === 13 && !createPostForm.tag.$error.maxlength && !createPostForm.tag.$error.pattern && addTag(post.tag)">
         <button id="add-tag-button" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
-                ng-class="{'uk-disabled':createPostForm.tag.$error.maxlength}"
+                ng-class="{'uk-disabled':createPostForm.tag.$error.maxlength || !createPostForm.tag.$error.pattern}"
                 ng-click="addTag(post.tag)"
                 type="button">{{'POST_CREATE_ADD' | translate}}</button>
       </div>
@@ -57,6 +58,7 @@
         <p id="reply-counter" class="uk-text-muted uk-align-left" ng-class="{'uk-text-danger':createPostForm.tag.$error.maxlength}">{{!createPostForm.tag.$error.maxlength ? post.tag.length: 50}}/{{tagsConstraints.maxLen}}</p>
       </div>
       <div class="uk-text-danger" ng-if="createPostForm.tag.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: tagsConstraints.maxLen};}}</div>
+      <div class="uk-text-danger" ng-if="createPostForm.tag.$error.pattern">{{'FORM_NAME_PATTERN_ERROR' | translate}}</div>
     </div>
 
     <div id="tags-selected" class="uk-margin uk-width-3-4">

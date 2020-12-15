@@ -37,7 +37,10 @@ define([], function() {
     USER_PROFILE_CREATION_DATE: 'In Moovify since:',
     USER_EMAILCONFIRM_TITLE: 'Email confirmation requiered',
     USER_EMAILCONFIRM_TEXT: 'To be able to create a new post, you have to confirm your email address. Check your email box, we sent you a link!',
+    USER_EMAILCONFIRM_PROFILE: "Please insert here the Token you received by email after you signed up. If you don't have a it ",
     USER_PROFILE_RESENDEMAIL: 'Resend email',
+    USER_TOKEN_CONFIRM: "Confirm",
+    USER_TOKEN_ERROR: "Invalid Token",
     USER_EMAILCONFIRM_CLOSEMODAL: 'Ok, got it!',
     USER_NAME:'Name: {{name}}',
     USER_DESCRIPTION: 'Description: {{description}}',
@@ -50,6 +53,7 @@ define([], function() {
     USER_RESETPASSWORD_VALIDATEDEMAIL: 'Important: your email must have been validated to be able to change your password',
     USER_RESETPASSWORD_SEND: "Send email",
     USER_RESETPASSWORD_EMAIL: "Enter email",
+    OWNER_DELETED: 'Owner deleted',
     COMMENT_BY:'By: {{username}}',
     COMMENT_BY_REMOVED: 'This user was removed',
     COMMENT_META: 'Post: {{title}} - Votes: {{votes}}',
@@ -187,6 +191,6 @@ define([], function() {
     PROFILE_BOOK_TAB_DISPLAY: "Your bookmarked posts",
     PROFILE_FOLLOWED_USERS: "Your followed users",
     PROFILE_EDIT_DETAILS: "Edit information",
-    PROFILE_SETTINGS_MODAL: "Settings",
+    PROFILE_NO_DESCRIPTION: "You don't have a description yet!",
   };
 });

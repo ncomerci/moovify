@@ -1,23 +1,22 @@
 package ar.edu.itba.paw.webapp.config;
 
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
-// TODO: Ver si lo puedo hacer sin tocar el web.xml mediante interfaces de Jersey
-@Component
-public class AcceptHeaderLocaleFilter extends OncePerRequestFilter {
+@Provider
+public class AcceptHeaderLocaleFilter implements ContainerRequestFilter {
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        LocaleContextHolder.setLocale(request.getLocale());
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        final List<Locale> acceptableLanguages = requestContext.getAcceptableLanguages();
 
-        filterChain.doFilter(request, response);
+        if(!acceptableLanguages.isEmpty())
+            LocaleContextHolder.setLocale(acceptableLanguages.get(0));
     }
 }

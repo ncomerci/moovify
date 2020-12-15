@@ -35,9 +35,8 @@
                             <tr>
                                 <td style="padding: 20px 0 30px 0; font-family: Arial, sans-serif; font-size: 16px; line-height: 20px;">
 <!--                                    TODO: Just show code  -->
-                                    <a style="text-align: end; color: #222831"
-                                       th:href="@{__${applicationBasePath}__/user/registrationConfirm(token=${token})}"
-                                       th:text="#{mail.confirmation.confirmLink}"></a>
+                                    <p style="text-align: center; color: #222831"
+                                       th:text="${token}"></p>
                                 </td>
                             </tr>
                         </table>

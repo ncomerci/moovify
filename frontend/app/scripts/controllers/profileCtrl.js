@@ -1,11 +1,16 @@
 define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateAvatarService',
     'services/utilities/RestFulResponseFactory', 'directives/fetch/FetchPostsDirective',
-    'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService']
+    'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService',
+    'services/UserService']
   , function(frontend, UIkit) {
 
     'use strict';
     frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
-                                                UpdateAvatar, RestFulResponse, LoggedUserFactory) {
+                                                UpdateAvatar, RestFulResponse, LoggedUserFactory, UserService) {
+
+      if($scope.loggedUser.roles.includes('NOT_VALIDATED')) {
+        UIkit.modal(document.getElementById('confirm-email-profile-modal')).show();
+      }
 
       $scope.tabs = [
         {value:'posts', message:"{{'PROFILE_POST_TAB_DISPLAY' | translate }}"},
@@ -111,6 +116,8 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         repeatPassword: ''
       };
 
+      $scope.isAdmin = UserService.userHasRole($scope.loggedUser, 'ADMIN');
+
       $scope.avatar = UpdateAvatar.getAvatar();
       var inputFile = angular.element(document.getElementById('avatar'))[0];
 
@@ -128,7 +135,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       };
 
       $scope.updateUserInfo = function () {
-        $scope.editBtnPressed = true;
+        $scope.btnPressed = true;
 
         if(
           !$scope.fieldIsNotValid('editForm', 'name') &&
@@ -148,7 +155,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
                .then(function () {
                  $scope.loading = false;
                  Object.assign($scope.loggedUser, aux);
-                 $scope.editBtnPressed = false;
+                 $scope.btnPressed = false;
                  UIkit.modal(document.getElementById('edit-info-modal')).hide();
                  if(aux.username !== undefined) {
                    LoggedUserFactory.logout().then(function () {
@@ -179,7 +186,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       }
 
       $scope.fieldRequired = function (form, field) {
-        return $scope.editBtnPressed && $scope[form][field].$error.required !== undefined;
+        return $scope.btnPressed && $scope[form][field].$error.required !== undefined;
       }
 
       // fieldRequired || cons1 || cons2 || ... || consN
@@ -218,12 +225,12 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
           description: $scope.loggedUser.description
         }
 
-        $scope.editBtnPressed = false;
+        $scope.btnPressed = false;
         $scope.loading = false;
       }
 
       $scope.updatePassword = function () {
-        $scope.editBtnPressed = true;
+        $scope.btnPressed = true;
 
         if(
           !$scope.fieldIsNotValid('changePassForm', 'password') &&
@@ -236,7 +243,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
             r.one('/user').customPUT($scope.editPass, undefined, undefined, {'Content-Type': 'application/json'})
               .then(function () {
                 $scope.loading = false;
-                $scope.editBtnPressed = false;
+                $scope.btnPressed = false;
                 UIkit.modal(document.getElementById('change-password-modal')).hide();
                 LoggedUserFactory.logout().then(function () {
                   $location.path('/login');
@@ -253,6 +260,45 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       }
 
       $scope.resetInfoModal();
+
+      $scope.confirmEmail = {};
+      $scope.tokenError = false;
+
+      $scope.sendConfirmation = function () {
+        $scope.btnPressed = true;
+        if(
+          !$scope.fieldRequired('confirmMailForm', 'token')
+        ) {
+          RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
+            r.all('/user/email_confirmation').customPUT($scope.confirmEmail, undefined, undefined, {'Content-Type': 'application/json'})
+              .then(function () {
+                var idx = $scope.loggedUser.roles.indexOf('NOT_VALIDATED');
+                $scope.loggedUser.roles[idx] = 'USER';
+                UIkit.modal(document.getElementById('confirm-email-profile-modal')).hide();
+              })
+              .catch(function (err) {
+                $scope.tokenError = true;
+                console.log(err);
+              })
+          })
+        }
+      }
+
+      $scope.resendSuccess = false;
+      $scope.resendError = false;
+
+      $scope.resendEmail = function () {
+        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
+          r.all('/user/email_confirmation').post().then(function () {
+            $scope.resendSuccess = true;
+          }).catch(function (err) {
+            $scope.resendError = true;
+            console.log(err);
+          })
+        })
+      }
+
+
     });
 
 });
