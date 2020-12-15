@@ -4,7 +4,7 @@
   </div>
   <div ng-show="users.length > 0">
     <div ng-repeat="user in users">
-      <user-list-entry-directive user="user"></user-list-entry-directive>
+      <user-list-entry-directive admin-controls="false" user="user"></user-list-entry-directive>
     </div>
     <pagination-handler-directive pagination-params="paginationParams"
                                   reset-pagination-fn="resetPagination"

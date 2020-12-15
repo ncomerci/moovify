@@ -24,7 +24,7 @@ define(['frontend'], function (frontend) {
         return releaseDate.substring(0, releaseDate.indexOf("-"));
       },
       getBodyFormatted: function (body){
-        return body.length <= 80 ? body: body.substring(0, 80) + '[...]';
+        return body.length <= 40 ? '\"' + body + '\"': '\"' + body.substring(0, 40) + '\" ' + '[...]';
       }
     }
   });

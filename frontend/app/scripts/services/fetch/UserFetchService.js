@@ -37,7 +37,6 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
             var paginationParams = {lastPage: 0, pageSize: queryParams.pageSize, currentPage: queryParams.pageNumber};
             var linkHeader = userResponse.headers('Link');
             var users = userResponse.data;
-
             // Si no hay Link -> no habia contenido -> no me interesa paginar nada
             if (linkHeader) {
               paginationParams.lastPage = LinkParserService.parse(linkHeader);

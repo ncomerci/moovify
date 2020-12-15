@@ -225,7 +225,6 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public boolean isFollowingUser(User user, User other) {
-
         return user.isEnabled() && other.isEnabled() && user.isUserFollowing(other);
     }
 

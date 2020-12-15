@@ -12,6 +12,7 @@ public class UserEditDto {
     private String username;
 
     @Size(min = 12, max = 30)
+    @Pattern(regexp = "^[^\\s]+$")
     private String password;
 
     @Size(min = 2, max = 50)

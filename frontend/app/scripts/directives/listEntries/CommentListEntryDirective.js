@@ -11,7 +11,8 @@ define(['frontend', 'services/DisplayService', 'services/utilities/RestFulRespon
       },
       templateUrl: 'resources/views/directives/listEntries/commentListEntryDirective.html',
       link: function (scope) {
-        scope.removeCommentFn = scope.removeCommentFn();
+        if(removeCommentFn)
+          scope.removeCommentFn = scope.removeCommentFn();
       },
       controller: function ($scope, $q) {
         $scope.getBodyFormatted = function (body){

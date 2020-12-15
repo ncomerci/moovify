@@ -298,4 +298,34 @@ public class CommentDaoImplTest {
         Assert.assertArrayEquals(new Long[]{comment3ID, comment2ID}, deletedComments.getResults().stream().map(Comment::getId).toArray());
         Assert.assertEquals(4, deletedComments.getTotalCount());
     }
+
+    @Test
+    @Sql("classpath:user1.sql")
+    @Sql("classpath:user2.sql")
+    @Sql("classpath:user3.sql")
+    @Sql("classpath:categories.sql")
+    @Sql("classpath:post1.sql")
+    @Sql("classpath:post2.sql")
+    @Sql("classpath:post3.sql")
+    public void testSearchComments() {
+
+        // Pre conditions
+        JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, Comment.TABLE_NAME,
+                "LOWER(body) LIKE 'search'");
+
+        long comment1ID = helper.insertComment(true, null, POST1_ID, USER1_ID, "searching");
+        long comment2ID = helper.insertComment(false, null, POST2_ID, USER2_ID, "searching");
+        long comment3ID = helper.insertComment(false, null, POST1_ID, USER1_ID, "hola");
+        long comment4ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "sear");
+        long comment5ID = helper.insertComment(false, null, POST3_ID, USER3_ID, "sad");
+        long comment6ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "ensearchingfs");
+        long comment7ID = helper.insertComment(true, null, POST1_ID, USER2_ID, "ensearchingfsasfdf");
+
+//        2. ejercitar
+        final PaginatedCollection<Comment> deletedComments = commentDao.searchComments("search", true, CommentDao.SortCriteria.OLDEST, 0, 2);
+
+//        3. post-condiciones
+        Assert.assertArrayEquals(new Long[]{comment1ID, comment6ID}, deletedComments.getResults().stream().map(Comment::getId).toArray());
+        Assert.assertEquals(3, deletedComments.getTotalCount());
+    }
 }
