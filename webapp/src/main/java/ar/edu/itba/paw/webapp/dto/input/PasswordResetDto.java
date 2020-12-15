@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 public class PasswordResetDto {
 
     @NotNull
-    @Pattern(regexp = "[a-zA-Z0-9#_]+")
+    @Pattern(regexp = "^[^\\s]+$")
     @Size(min = 12, max = 30)
     private String password;
 

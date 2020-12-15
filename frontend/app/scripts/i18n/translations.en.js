@@ -45,6 +45,10 @@ define([], function() {
     USER_VOTES: 'Total votes: {{votes}}',
     USER_UPDATE_PASSWORD: 'New password',
     USER_UPDATE_PASSWORD_CHECK: 'Repeat new password',
+    USER_RESET_PASSWORD_HEADER: "Enter your e-mail to reset your password",
+    USER_RESETPASSWORD_VALIDATEDEMAIL: 'Important: your email must have been validated to be able to change your password',
+    USER_RESETPASSWORD_SEND: "Send email",
+    USER_RESETPASSWORD_EMAIL: "Enter E-mail",
     COMMENT_BY:'By: {{username}}',
     COMMENT_BY_REMOVED: 'This user was removed',
     COMMENT_META: 'Post: {{title}} - Votes: {{votes}}',
@@ -128,6 +132,8 @@ define([], function() {
     RECOVER_COMMENT_DELETED:'Recover deleted comments',
     RECOVER_USER_DELETED:'Recover deleted users',
     RESTORE:'Restore',
+    MAIL_FEEDBACK_SUCCESS: 'Mail sent successfully, check your mailbox!',
+    MAIL_FEEDBACK_ERROR: 'Mail not sent, try again later...',
 
 
 
