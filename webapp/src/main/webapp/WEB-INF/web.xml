@@ -29,7 +29,10 @@
 
     <init-param>
       <param-name>jersey.config.server.provider.packages</param-name>
-      <param-value>ar.edu.itba.paw.webapp.controller</param-value>
+      <param-value>
+        ar.edu.itba.paw.webapp.controller,
+        ar.edu.itba.paw.webapp.config,
+      </param-value>
     </init-param>
 
     <init-param>
@@ -90,14 +93,14 @@
     <url-pattern>/resources/*</url-pattern>
   </filter-mapping>
 
-  <filter>
-    <filter-name>AcceptHeaderLocaleFilter</filter-name>
-    <filter-class>ar.edu.itba.paw.webapp.config.AcceptHeaderLocaleFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>AcceptHeaderLocaleFilter</filter-name>
-    <url-pattern>/api/*</url-pattern>
-  </filter-mapping>
+<!--  <filter>-->
+<!--    <filter-name>AcceptHeaderLocaleFilter</filter-name>-->
+<!--    <filter-class>ar.edu.itba.paw.webapp.config.AcceptHeaderLocaleFilter</filter-class>-->
+<!--  </filter>-->
+<!--  <filter-mapping>-->
+<!--    <filter-name>AcceptHeaderLocaleFilter</filter-name>-->
+<!--    <url-pattern>/api/*</url-pattern>-->
+<!--  </filter-mapping>-->
 
   <servlet-mapping>
     <servlet-name>jersey-servlet</servlet-name>
