@@ -495,7 +495,8 @@ public class AuthenticatedUserController {
                                 messageSource.getMessage(errorMessageCode, null, LocaleContextHolder.getLocale()))
                     );
 
-            return Response.status(Response.Status.BAD_REQUEST).entity(emailError).build();
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new GenericEntity<Collection<BeanValidationErrorDto>>(emailError) {}).build();
         }
 
         final User user = optUser.get();
@@ -524,7 +525,8 @@ public class AuthenticatedUserController {
                             )
                     );
 
-            return Response.status(Response.Status.BAD_REQUEST).entity(emailError).build();
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new GenericEntity<Collection<BeanValidationErrorDto>>(emailError) {}).build();
         }
 
         userService.updatePassword(passwordResetDto.getPassword(), passwordResetDto.getToken());
