@@ -1,11 +1,12 @@
 define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateAvatarService',
     'services/utilities/RestFulResponseFactory', 'directives/fetch/FetchPostsDirective',
-    'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService']
+    'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService',
+    'services/UserService']
   , function(frontend, UIkit) {
 
     'use strict';
     frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
-                                                UpdateAvatar, RestFulResponse, LoggedUserFactory) {
+                                                UpdateAvatar, RestFulResponse, LoggedUserFactory, UserService) {
 
       if($scope.loggedUser.roles.includes('NOT_VALIDATED')) {
         UIkit.modal(document.getElementById('confirm-email-profile-modal')).show();
@@ -114,6 +115,8 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         password: '',
         repeatPassword: ''
       };
+
+      $scope.isAdmin = UserService.userHasRole($scope.loggedUser, 'ADMIN');
 
       $scope.avatar = UpdateAvatar.getAvatar();
       var inputFile = angular.element(document.getElementById('avatar'))[0];
@@ -294,6 +297,8 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
           })
         })
       }
+
+
     });
 
 });

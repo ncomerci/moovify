@@ -53,6 +53,7 @@ define([], function() {
     USER_RESETPASSWORD_VALIDATEDEMAIL: 'Important: your email must have been validated to be able to change your password',
     USER_RESETPASSWORD_SEND: "Send email",
     USER_RESETPASSWORD_EMAIL: "Enter email",
+    OWNER_DELETED: 'Owner deleted',
     COMMENT_BY:'By: {{username}}',
     COMMENT_BY_REMOVED: 'This user was removed',
     COMMENT_META: 'Post: {{title}} - Votes: {{votes}}',

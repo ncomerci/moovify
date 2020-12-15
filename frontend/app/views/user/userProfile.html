@@ -16,17 +16,21 @@
   </div>
 
   <div class="main-page">
-    <div class="uk-padding-remove uk-text-center" uk-grid>
+    <div class="uk-padding-remove" uk-grid>
       <div class="uk-width-1-3">
         <br><br><br><br><br>
         <div class="profile-details-position uk-text-primary">
           <div class="uk-text-danger" ng-show="avatar.error">{{'FORM_AVATAR_SIZE_ERROR' | translate}}</div>
           <div class="uk-flex uk-flex-middle uk-flex-center">
-            <span class="uk-text-bold uk-text-large">{{loggedUser.name}} </span>
-            <span ng-if="loggedUser.roles.includes('ADMIN')" class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
+            <h2 class="uk-text-bold uk-margin-remove-bottom uk-text-large uk-text-primary">{{loggedUser.name}}
+            <span ng-if="isAdmin">
+              <span>-</span>
+               <span class="iconify admin-badge-profile" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
+            </span>
+            </h2>
           </div>
 
-          <div class="uk-margin-small-top"><span class="uk-text-bold">@</span>{{loggedUser.username}}</div>
+          <div class="uk-margin-small-top uk-text-center"><span class="uk-text-bold">@</span>{{loggedUser.username}}</div>
 
 
           <hr class="uk-divider-icon">
@@ -45,14 +49,14 @@
             <div class="uk-text-bold uk-text-right uk-margin-small-top uk-text-capitalize">{{'USER_CREATE_EMAIL' | translate}}:</div>
             <div class="uk-text-left uk-margin-small-top">{{loggedUser.email}}</div>
           </div>
-          <div class="uk-text-italic uk-margin-bottom">
+          <div class="uk-text-italic uk-text-center uk-margin-bottom uk-text-break">
             {{loggedUser.description ? loggedUser.description : ('PROFILE_NO_DESCRIPTION' | translate)}}
           </div>
         </div>
 
         <div class="uk-grid-column uk-child-width-1-2 uk-margin-small-bottom" uk-grid>
           <div>
-            <a class="uk-button uk-button-default uk-border-rounded uk-text-uppercase uk-margin-bottom" href="#edit-info-modal" uk-toggle>
+            <a class="uk-button uk-button-default uk-align-right uk-border-rounded uk-text-uppercase uk-margin-bottom" href="#edit-info-modal" uk-toggle>
               {{'PROFILE_EDIT_DETAILS' | translate}}
             </a>
           </div>
