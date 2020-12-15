@@ -127,8 +127,10 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulRes
         })
 
         RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function (Restful) {
-          Restful.all('posts').post($scope.post).then(function () {
+          Restful.all('posts').post($scope.post).then(function (postResponse) {
               $scope.easyMde.clearAutosavedValue();
+              var link = postResponse.headers('Location');
+              $location.path(link.substring(link.indexOf("api/") + 1));
             }
           ).catch(function (err) {
             console.log(err);

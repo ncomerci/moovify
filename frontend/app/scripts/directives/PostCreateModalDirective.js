@@ -21,6 +21,7 @@ define(['frontend', 'services/fetch/MovieFetchService', 'services/PostCreateModa
         scope.tagMap = {};
         scope.postCreateFn = scope.postCreateFn();
 
+
         MovieFetchService.fetchMovies('/movies',
           null,null, 1100, 0).then(function (resp) {
             resp.collection.plain().forEach(function(movie) {

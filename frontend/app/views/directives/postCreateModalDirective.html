@@ -44,11 +44,17 @@
                name="tag"
                ng-model="post.tag"
                ng-pattern="tagsConstraints.pattern"
-               ng-maxlength="{{tagsConstraints.maxLen}}"
                class="uk-input uk-margin-right uk-input uk-border-rounded uk-width-expand"
+               ng-class="{'uk-text-danger':createPostForm.tag.$error.maxlength}"
+               ng-maxlength="{{tagsConstraints.maxLen}}"
                placeholder="{{'POST_CREATE_TAGS_PLACEHOLDER' | translate}}">
         <button id="add-tag-button" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
-                ng-click="addTag(post.tag)" type="button">{{'POST_CREATE_ADD' | translate}}</button>
+                ng-class="{'uk-disabled':createPostForm.tag.$error.maxlength}"
+                ng-click="addTag(post.tag)"
+                type="button">{{'POST_CREATE_ADD' | translate}}</button>
+      </div>
+      <div>
+        <p id="reply-counter" class="uk-text-muted uk-align-left" ng-class="{'uk-text-danger':createPostForm.tag.$error.maxlength}">{{!createPostForm.tag.$error.maxlength ? post.tag.length: 50}}/{{tagsConstraints.maxLen}}</p>
       </div>
       <div class="uk-text-danger" ng-if="createPostForm.tag.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: tagsConstraints.maxLen};}}</div>
     </div>
