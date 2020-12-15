@@ -5,6 +5,7 @@ define([], function() {
     INDEX_WELCOME: 'Welcome to Moovify!',
     INDEX_SLOGAN: 'The movie is over?',
     INDEX_MY_FEED: 'My Feed',
+    HOTTEST_USERS: 'Hottest users',
     ADMIN_TITLE: 'Admin',
     FOLLOW_TITLE: 'Follow',
     BOOKMARKED_TITLE:'Bookmarked',

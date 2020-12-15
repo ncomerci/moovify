@@ -16,7 +16,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         enabled: '<',
         defaultPageSize: '<',
         path: '@',
-        refreshUrlFn: '='
+        refreshUrlFn: '=',
       },
 
       controller: function ($scope, CommentFetchService) {

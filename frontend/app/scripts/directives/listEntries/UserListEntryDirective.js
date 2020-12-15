@@ -10,12 +10,15 @@ define(['frontend', 'services/DisplayService', 'services/UserService', 'services
         removeUserFn:'&'
       },
       link: function (scope) {
-        scope.removeUserFn = scope.removeUserFn();
+        if(scope.removeUserFn)
+          scope.removeUserFn = scope.removeUserFn();
       },
       controller: function ($scope, $q) {
         $scope.getYear = function (releaseDate) {
           return DisplayService.getYear(releaseDate);
         }
+
+        $scope.avatar = null;
 
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
 
