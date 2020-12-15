@@ -40,6 +40,6 @@
   <hr>
   <section id="movie-posts">
     <h1 class="uk-h2">{{'MOVIE_POST_ABOUT' | translate}}</h1>
-    <fetch-posts-directive default-page-size="defaultPageSize" order="order" enabled="enabled" path="{{postsPath}}" refresh-url-fn="setNewUrl" ></fetch-posts-directive>
+    <fetch-posts-directive default-page-size="10" order="'newest'" enabled="true" path="{{postsPath}}" refresh-url-fn="setNewUrl" ></fetch-posts-directive>
   </section>
 </main>

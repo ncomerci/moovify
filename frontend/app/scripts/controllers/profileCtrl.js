@@ -1,11 +1,11 @@
 define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateAvatarService',
     'services/utilities/RestFulResponseFactory', 'directives/fetch/FetchPostsDirective',
-    'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective']
+    'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService']
   , function(frontend, UIkit) {
 
     'use strict';
     frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
-                                                UpdateAvatar, RestFulResponse) {
+                                                UpdateAvatar, RestFulResponse, LoggedUserFactory) {
 
       $scope.tabs = [
         {value:'posts', message:"{{'PROFILE_POST_TAB_DISPLAY' | translate }}"},
@@ -85,6 +85,12 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         maxLen: 400
       }
 
+      $scope.passwordConstrains = {
+        pattern: /^[^\s]+$/,
+        minLen: 12,
+        maxLen: 30
+      }
+
       var fieldErrors = {
         name: {
           i18nKey: 'USER_CREATE_NAME',
@@ -99,6 +105,11 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
           message: ''
         },
       }
+
+      $scope.editPass = {
+        password: '',
+        repeatPassword: ''
+      };
 
       $scope.avatar = UpdateAvatar.getAvatar();
       var inputFile = angular.element(document.getElementById('avatar'))[0];
@@ -120,8 +131,8 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         $scope.editBtnPressed = true;
 
         if(
-          !$scope.fieldIsNotValid('name') &&
-          !$scope.fieldIsNotValid('username') &&
+          !$scope.fieldIsNotValid('editForm', 'name') &&
+          !$scope.fieldIsNotValid('editForm', 'username') &&
           !$scope.descriptionIsNotValid()
         ) {
           $scope.loading = true;
@@ -139,6 +150,11 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
                  Object.assign($scope.loggedUser, aux);
                  $scope.editBtnPressed = false;
                  UIkit.modal(document.getElementById('edit-info-modal')).hide();
+                 if(aux.username !== undefined) {
+                   LoggedUserFactory.logout().then(function () {
+                     $location.path('/login');
+                   });
+                 }
                })
                .catch(function (err) {
                  $scope.loading = false;
@@ -162,17 +178,21 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         }
       }
 
-      $scope.fieldRequired = function (field) {
-        return $scope.editBtnPressed && $scope.editForm[field].$error.required !== undefined;
+      $scope.fieldRequired = function (form, field) {
+        return $scope.editBtnPressed && $scope[form][field].$error.required !== undefined;
       }
 
       // fieldRequired || cons1 || cons2 || ... || consN
-      $scope.fieldIsNotValid = function (field) {
-        return $scope.fieldRequired(field) || $scope.editForm[field].$error.pattern || $scope.editForm[field].$error.minlength || $scope.editForm[field].$error.maxlength;
+      $scope.fieldIsNotValid = function (form, field) {
+        return $scope.fieldRequired(form, field) || ($scope[form])[field].$error.pattern || ($scope[form])[field].$error.minlength || ($scope[form])[field].$error.maxlength;
       }
 
       $scope.descriptionIsNotValid = function () {
-        return $scope.fieldRequired("description") || $scope.editForm.description.$error.maxlength;
+        return $scope.fieldRequired('editForm',"description") || $scope.editForm.description.$error.maxlength;
+      }
+
+      $scope.passwordsNotEquals = function () {
+        return $scope.editPass.password !== $scope.editPass.repeatPassword && !($scope.editPass.password === undefined || $scope.editPass.repeatPassword === undefined);
       }
 
       $scope.checkFieldError = function (field) {
@@ -200,6 +220,36 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
 
         $scope.editBtnPressed = false;
         $scope.loading = false;
+      }
+
+      $scope.updatePassword = function () {
+        $scope.editBtnPressed = true;
+
+        if(
+          !$scope.fieldIsNotValid('changePassForm', 'password') &&
+          !$scope.fieldIsNotValid('changePassForm', 'repeatPassword') &&
+          !$scope.passwordsNotEquals()
+        ) {
+          $scope.loading = true;
+          RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
+            delete $scope.editPass.repeatPassword
+            r.one('/user').customPUT($scope.editPass, undefined, undefined, {'Content-Type': 'application/json'})
+              .then(function () {
+                $scope.loading = false;
+                $scope.editBtnPressed = false;
+                UIkit.modal(document.getElementById('change-password-modal')).hide();
+                LoggedUserFactory.logout().then(function () {
+                  $location.path('/login');
+                });
+              }).catch(function (err) {
+              $scope.loading = false;
+              console.log(err);
+            })
+          }).catch(function (err) {
+            $scope.loading = false;
+            console.log(err);
+          });
+        }
       }
 
       $scope.resetInfoModal();

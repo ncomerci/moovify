@@ -15,39 +15,10 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       scope: {
         query: '=',
-        enabled: '@',
-        refreshUrlFn: '='
+        enabled: '<',
+        refreshUrlFn: '=',
+        adminControls:'<'
       },
-      controller: function ($scope, PostFetchService) {
-
-        $scope.execSearch = function() {
-
-          PostFetchService.searchPosts(
-            $scope.query.value, $scope.filterParams.postCategory, $scope.filterParams.postAge, $scope.filterParams.enabled,
-            $scope.filterParams.orderBy, $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
-
-            function(resp) {
-              $scope.posts = resp.collection;
-              $scope.paginationParams = resp.paginationParams;
-              $scope.queryParams = resp.queryParams;
-
-              if($scope.firstSearchDone)
-                $scope.refreshUrlFn();
-              else
-                $scope.firstSearchDone = true;
-
-              $scope.paginationMutex = false;
-            }
-          ).catch(function() { $location.path('/404') });
-        };
-
-        $scope.refreshUrlFn = function() {
-          Object.keys($scope.queryParams)
-            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
-        };
-
-      },
-
       link: function (scope) {
 
         scope.posts = [];
@@ -67,7 +38,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
           postCategory: init($routeParams.postCategory, null),
           postAge: init($routeParams.postAge, null),
           orderBy: init($routeParams.orderBy, 'newest'),
-          enabled: true
+          enabled: scope.enabled
         };
 
         scope.resetPagination = null;
@@ -104,7 +75,42 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         scope.execSearch();
 
       },
+      controller: function ($scope, PostFetchService) {
 
+        $scope.execSearch = function() {
+
+          PostFetchService.searchPosts(
+            $scope.query.value, $scope.filterParams.postCategory, $scope.filterParams.postAge, $scope.filterParams.enabled,
+            $scope.filterParams.orderBy, $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
+
+            function(resp) {
+              $scope.posts = resp.collection;
+              $scope.paginationParams = resp.paginationParams;
+              $scope.queryParams = resp.queryParams;
+
+              if($scope.firstSearchDone)
+                $scope.refreshUrlFn();
+              else
+                $scope.firstSearchDone = true;
+
+              $scope.paginationMutex = false;
+            }
+          ).catch(function() { $location.path('/404') });
+        };
+
+        $scope.refreshUrlFn = function() {
+          Object.keys($scope.queryParams)
+            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
+        };
+
+        $scope.removePost = function (post) {
+          var index = $scope.posts.indexOf(post);
+          if (index > -1) {
+            $scope.posts.splice(index, 1);
+          }
+        }
+
+      },
       templateUrl: 'resources/views/directives/search/searchPostsDirective.html'
     };
   });

@@ -9,10 +9,6 @@ define(['frontend', 'services/fetch/MovieFetchService', 'services/fetch/PostFetc
     $scope.setNewUrl = null;
     $scope.postsPath = getPostsUrl($routeParams.id);
 
-    var order = 'newest';
-    var defaultPageSize = 10;
-    var enabled = true;
-
     $scope.getYear = function (date){
       if(!date)
         return;

@@ -6,6 +6,50 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
 
     // devolver comments con sus comments hijos cargados.
 
+    this.searchComments = function (query, enabled, orderBy, pageSize, pageNumber) {
+      return fetchComments('/comments', query, enabled, orderBy, pageSize, pageNumber);
+    }
+
+    this.fetchComments = function(path, enabled, orderBy, pageSize, pageNumber) {
+      return fetchComments(path, null, enabled, orderBy, pageSize, pageNumber);
+    }
+
+    function fetchComments (path, query, enabled, orderBy, pageSize, pageNumber) {
+      // Obligatory params
+      var queryParams = {
+        orderBy: orderBy,
+        pageSize: pageSize ? pageSize : 5,
+        pageNumber: pageNumber ? pageNumber : 0
+      };
+
+      if(query)
+        queryParams.query = query;
+
+      if(enabled !== null)
+        queryParams.enabled = enabled;
+
+      return $q(function(resolve, reject) {
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
+
+          Restangular.all(path).getList(queryParams).then(function(commentResponse) {
+
+            var paginationParams = {lastPage: 0, pageSize: queryParams.pageSize, currentPage: queryParams.pageNumber};
+            var linkHeader = commentResponse.headers('Link');
+            var comments = commentResponse.data;
+
+            // Si no hay Link -> no habia contenido -> no me interesa paginar nada
+            if(linkHeader){
+              paginationParams.lastPage = LinkParserService.parse(linkHeader);
+            }
+
+            resolve({collection: comments, paginationParams: paginationParams, queryParams: queryParams});
+
+          }).catch(function(response) { reject({status: response.status, message: 'CommentFetchService: FetchComment'})
+          });
+        }).catch(reject);
+      });
+    }
+
     this.getPostCommentsWithUserVote = function (postId, depth, orderBy, pageSize, pageNumber) {
 
       var queryParams = {orderBy: orderBy, pageSize: pageSize, pageNumber: pageNumber};
@@ -37,40 +81,6 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
         pageNumber = 0;
 
       return getCommentCommentsWithUserVoteInternal(commentId, depth, orderBy, pageSize, pageNumber)
-    };
-
-    this.fetchComments = function(path, enabled, orderBy, pageSize, pageNumber) {
-
-      // Obligatory params
-      var queryParams = {
-        orderBy: orderBy,
-        pageSize: pageSize ? pageSize : 5,
-        pageNumber: pageNumber ? pageNumber : 0
-      };
-
-      if(enabled !== null)
-        queryParams.enabled = enabled;
-
-      return $q(function(resolve, reject) {
-        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
-
-          Restangular.all(path).getList(queryParams).then(function(commentResponse) {
-
-            var paginationParams = {lastPage: 0, pageSize: queryParams.pageSize, currentPage: queryParams.pageNumber};
-            var linkHeader = commentResponse.headers('Link');
-            var comments = commentResponse.data;
-
-            // Si no hay Link -> no habia contenido -> no me interesa paginar nada
-            if(linkHeader){
-              paginationParams.lastPage = LinkParserService.parse(linkHeader);
-            }
-
-            resolve({collection: comments, paginationParams: paginationParams, queryParams: queryParams});
-
-          }).catch(function(response) { reject({status: response.status, message: 'CommentFetchService: FetchComment'})
-          });
-        }).catch(reject);
-      });
     };
 
     function getCommentCommentsWithUserVoteInternal(commentId, depth, orderBy, pageSize, pageNumber) {
