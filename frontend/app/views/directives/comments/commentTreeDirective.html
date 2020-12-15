@@ -6,7 +6,8 @@
       </div>
     </li>
   </ul>
-  <span ng-if="comments.hasNext">
-    <button ng-disabled="loadingMore" ng-click="loadMore()">LOAD MORE</button>
-  </span>
+  <div ng-if="newReplyCount > 0" class="uk-padding-remove-horizontal uk-padding-small">
+     <button class="no-style-button uk-link link-muted uk-margin-small-left"
+             ng-disabled="loadingMore" ng-click="showMore()">SHOW {{newReplyCount}} MORE REPLIES</button>
+  </div>
 </div>

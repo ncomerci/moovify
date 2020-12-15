@@ -58,7 +58,9 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
       })
     }
 
-    $scope.callback = {};
+    $scope.callback = {
+      startReply: {}
+    };
     $scope.callback.vote = function (value) {
 
       if($scope.post.userVote === value) {

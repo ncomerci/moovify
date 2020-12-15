@@ -1,7 +1,7 @@
-<div>
+<div class="comment-like-handler">
 <!--  TODO se pone bien el uk disabled cuando hace falta pero el estilo no se muestra bien-->
 <!--  <button class="like-comment-button" ng-class="{'uk-disabled': sendingVote}" ng-click="sendVote(1)">-->
-  <button class="like-comment-button" ng-if="isUser" ng-disabled="sendingVote" ng-click="sendVote(1)">
+  <button class="like-comment-button primary-button" ng-if="isUser" ng-disabled="sendingVote" ng-click="sendVote(1)">
     <span ng-show="userVote > 0">
       <span class="iconify" data-icon="el:chevron-up" data-inline="false"></span>
     </span>
@@ -9,11 +9,12 @@
       <span class="iconify" data-icon="cil:chevron-top" data-inline="false"></span>
     </span>
   </button>
-  <p>
+  <span>
     {{totalVotes}}
-  </p>
+  </span>
+
 <!--  <button class="like-comment-button" ng-class="{'uk-disabled': sendingVote}"  ng-click="sendVote(-1)">-->
-  <button class="like-comment-button" ng-if="isUser" ng-disabled="sendingVote"  ng-click="sendVote(-1)">
+  <button class="like-comment-button primary-button" ng-if="isUser" ng-disabled="sendingVote"  ng-click="sendVote(-1)">
     <span ng-show="userVote < 0">
       <span class="iconify" data-icon="el:chevron-down" data-inline="false"></span>
     </span>

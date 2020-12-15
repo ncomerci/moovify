@@ -9,3 +9,36 @@
   border-left: 2px solid #c9c9c9;
   margin-left: 1em;
 }
+
+.comment-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+}
+
+.comment-meta {
+  justify-content: center;
+}
+
+.comment-like-handler {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 100%;
+}
+
+//.comment-interactions {
+//  opacity: 0;
+//  height: 0;
+//}
+//
+//.comment:hover .comment-interactions {
+//  opacity: 100%;
+//  height: auto;
+//  transition-duration: 500ms;
+//}
+
+.show-reply{
+  border-left: 2px solid #c9c9c9;
+  margin-left: 1em;
+}
