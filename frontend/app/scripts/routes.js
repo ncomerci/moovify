@@ -46,6 +46,10 @@ define([], function() {
             '/user/resetPassword': {
                 templateUrl: '/views/user/resetPassword.html',
                 controller: 'ResetPasswordCtrl'
+            },
+            '/user/updatePassword': {
+                templateUrl: '/views/user/updatePassword.html',
+                controller: 'UpdatePasswordCtrl'
             }
             /* ===== yeoman hook ===== */
             /* Do not remove these commented lines! Needed for auto-generation */

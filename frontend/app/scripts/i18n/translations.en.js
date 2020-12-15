@@ -46,10 +46,10 @@ define([], function() {
     USER_VOTES: 'Total votes: {{votes}}',
     USER_UPDATE_PASSWORD: 'New password',
     USER_UPDATE_PASSWORD_CHECK: 'Repeat new password',
-    USER_RESET_PASSWORD_HEADER: "Enter your e-mail to reset your password",
+    USER_RESET_PASSWORD_HEADER: "Enter your email to reset your password",
     USER_RESETPASSWORD_VALIDATEDEMAIL: 'Important: your email must have been validated to be able to change your password',
     USER_RESETPASSWORD_SEND: "Send email",
-    USER_RESETPASSWORD_EMAIL: "Enter E-mail",
+    USER_RESETPASSWORD_EMAIL: "Enter email",
     COMMENT_BY:'By: {{username}}',
     COMMENT_BY_REMOVED: 'This user was removed',
     COMMENT_META: 'Post: {{title}} - Votes: {{votes}}',
@@ -135,9 +135,14 @@ define([], function() {
     RESTORE:'Restore',
     MAIL_FEEDBACK_SUCCESS: 'Mail sent successfully, check your mailbox!',
     MAIL_FEEDBACK_ERROR: 'Mail not sent, try again later...',
-
-
-
+    UPDATE_PASS_TITLE: 'Reset your password',
+    UPDATE_PASS_MSG: 'Insert here your new password',
+    UPDATE_PASS_BTN: 'Change password',
+    UPDATE_PASS_TOKEN: 'Token',
+    UPDATE_PASS_NO_TOKEN: "You don't have a token?",
+    UPDATE_PASS_RESEND_EMAIL: "Resend email",
+    UPDATE_PASS_SUCCESS: "Password changed successfully, redirecting to login page...",
+    UPDATE_PASS_ERROR: "An error has occurred, try again later",
 
     WATCHLIST:'Watchlist',
     CRITIQUE:"Critique",
