@@ -8,7 +8,9 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       return $q(function(response, reject){
         RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
           Restangular.one('comments', comment.id).all('votes').customPUT({value: value}).then(function() {
+            comment.totalVotes -= comment.userVote;
             comment.userVote = value;
+            comment.totalVotes += comment.userVote;
             response(comment);
           }).catch(reject);
         }).catch(reject);

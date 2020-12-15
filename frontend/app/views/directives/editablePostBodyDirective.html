@@ -1,0 +1,32 @@
+<div>
+  <div ng-bind-html="htmlBody" ng-if="!editing.value"></div>
+
+
+  <div ng-if="isEditable">
+    <form ng-show="editing.value" name="editForm">
+      <fieldset class="uk-fieldset" ng-init="editableBody.value = body" ng-disabled="sendingEdit">
+        <div class="uk-margin">
+          <textarea name="editBody"
+                    id="edit-post-body"
+                    ng-model="editableBody.value"
+                    autofocus>
+          </textarea>
+        </div>
+        <div ng-if="hasError.value">
+          <div class="uk-text-danger" ng-if="hasError.bodyRequired">{{'FORM_BODY_REQUIRED' | translate}}</div>
+          <div class="uk-text-danger" ng-if="hasError.bodyMinLen">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: bodyConstraints.minLen};}}</div>
+          <div class="uk-text-danger" ng-if="hasError.bodyMaxLen">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: bodyConstraints.maxLen};}}</div>
+        </div>
+        <div class="uk-align-right">
+          <button class="uk-button uk-button-primary uk-border-rounded"
+                  ng-disabled="sendingEdit" type="button"
+                  ng-click="sendEdit()">
+            SEND EDIT
+          </button>
+          <button class="uk-button uk-button-primary uk-border-rounded" ng-click="editing.value = false">CANCEL EDIT</button>
+        </div>
+      </fieldset>
+    </form>
+    <button ng-click="startEdit()">EDIT</button>
+  </div>
+</div>

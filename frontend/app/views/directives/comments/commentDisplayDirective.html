@@ -8,10 +8,10 @@
 
     <button ng-if="isAdmin" ng-click="deleteComment()">DELETE</button>
 
+    <comment-like-handler-directive total-votes="comment.totalVotes" user-vote="comment.userVote" send-vote-fn="callbackFunctions.vote"></comment-like-handler-directive>
+
     <div ng-if="isUser">
       <button ng-click="writtingReply.value = true">REPLY</button>
-
-      <comment-like-handler-directive user-vote="comment.userVote" send-vote-fn="callbackFunctions.vote"></comment-like-handler-directive>
 
       <div ng-if="writtingReply.value">
         <button ng-click="writtingReply.value = false">HIDE REPLY</button>

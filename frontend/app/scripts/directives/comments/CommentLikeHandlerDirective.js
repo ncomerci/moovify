@@ -1,12 +1,13 @@
 'use strict';
-define(['frontend'], function(frontend) {
+define(['frontend', 'services/LoginService', 'services/UserService'], function(frontend) {
 
   frontend.directive('commentLikeHandlerDirective', function() {
 
     return {
       restrict: 'E',
       scope: {
-        userVote: '=',
+        userVote: '=?',
+        totalVotes: '=',
         sendVoteFn: '&'
       },
       templateUrl:'resources/views/directives/comments/commentLikeHandlerDirective.html',
@@ -14,7 +15,16 @@ define(['frontend'], function(frontend) {
         scope.sendVoteFn = scope.sendVoteFn();
         scope.sendingVote = false;
       },
-      controller: function ($scope){
+      controller: function ($scope, UserService, LoggedUserFactory){
+
+        $scope.isUser = false;
+        var loggedUser = LoggedUserFactory.getLoggedUser();
+
+        if(loggedUser.logged) {
+          $scope.isUser = UserService.userHasRole(loggedUser, 'USER');
+        }
+
+        console.log($scope.isUser, $scope.totalVotes);
 
         $scope.sendVote = function (value){
 
@@ -22,9 +32,7 @@ define(['frontend'], function(frontend) {
           $scope.sendVoteFn(value).then(function () {
             $scope.sendingVote = false;
           }).catch(console.log);
-
         }
-
       }
     }
   });

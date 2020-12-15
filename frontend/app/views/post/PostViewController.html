@@ -1,18 +1,34 @@
-<main ng-if="post" class="uk-container-small uk-margin-auto">
+<main ng-if="post && post.enabled" class="uk-container-small uk-margin-auto">
   <h1>{{post.title}}</h1>
   <p>POST BY: {{post.user.username}}</p>
+  <p>Bookmarked: {{post.hasUserBookmarked}}</p>
 
-  <article ng-if="post.body" ng-bind-html="post.body">
+  <button ng-disabled="mutex.bookmark" ng-if="isUser" ng-click="toggleBookmark()">TOGGLE BOOKMARK</button>
+
+  <comment-like-handler-directive total-votes="post.totalLikes" user-vote="post.userVote" send-vote-fn="callback.vote"></comment-like-handler-directive>
+
+  <article ng-if="post.body">
+    <editable-post-body-directive body="post.body" is-editable="isUser && post.owner" send-update-fn="callback.edit"></editable-post-body-directive>
+
   </article>
+
   <div>
     <span ng-repeat="movie in post.movies">{{movie.title}} - ({{movie.releaseDate}})</span>
   </div>
   <hr>
-
-  <comment-reply-directive post-id="{{post.id}}" send-comment-fn="newComment.fn"></comment-reply-directive>
+  <div>
+    <button ng-if="isAdmin" ng-disabled="mutex.deleting" ng-click="deletePost()">DELETE POST</button>
+  </div>
+  <div ng-if="isUser">
+    <comment-reply-directive post-id="{{post.id}}" send-comment-fn="newComment.fn"></comment-reply-directive>
+  </div>
 
   <section id="post-comments" ng-if="comments">
     <h1>COMMENT SECTION</h1>
     <comment-tree-directive comments="comments"></comment-tree-directive>
   </section>
+</main>
+
+<main ng-if="post && !post.enabled">
+  <h1>REMOVED POST</h1>
 </main>
