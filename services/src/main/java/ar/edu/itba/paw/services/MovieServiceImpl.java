@@ -113,12 +113,6 @@ public class MovieServiceImpl implements MovieService {
 
     @Transactional(readOnly = true)
     @Override
-    public Collection<Movie> getAllMoviesNotPaginated() {
-        return movieDao.getAllMoviesNotPaginated();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public Collection<MovieCategory> getAvailableCategories() {
         return movieCategoryDao.getAllCategories();
     }

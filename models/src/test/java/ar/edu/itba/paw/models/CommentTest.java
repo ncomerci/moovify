@@ -27,7 +27,6 @@ public class CommentTest {
     private static final Set<CommentVote> DEFAULT_LIKES = Collections.emptySet();
 
 
-
     @Test
     public void testCalculateTotalLikes() {
 
@@ -70,7 +69,7 @@ public class CommentTest {
     }
 
     @Test
-    public void testGetLikeValue() {
+    public void testGetVoteValue() {
 
         long userRealId = 5L;
         int likeValue = -1;
@@ -114,12 +113,52 @@ public class CommentTest {
     }
 
     @Test
-    public void testGetDescendantCount() {
+    public void testGetVoteValueByUsername() {
 
+        String userRealUsername = "realUsername";
+
+        int likeValue = -1;
+
+        Set<CommentVote> likes = new HashSet<>();
+        CommentVote like;
+        User realUser = Mockito.mock(User.class);
+        Mockito.when(realUser.getUsername()).thenReturn(userRealUsername);
+
+        User fakeUser1 = Mockito.mock(User.class);
+        Mockito.lenient().when(fakeUser1.getUsername()).thenReturn("fake1");
+
+        User fakeUser2 = Mockito.mock(User.class);
+        Mockito.lenient().when(fakeUser2.getUsername()).thenReturn("fake2");
+
+        like = Mockito.mock(CommentVote.class);
+        Mockito.when(like.getValue()).thenReturn(likeValue);
+        Mockito.when(like.getUser()).thenReturn(realUser);
+
+        likes.add(like);
+
+        // Create other likes
+        like = Mockito.mock(CommentVote.class);
+        Mockito.lenient().when(like.getUser()).thenReturn(fakeUser1);
+        likes.add(like);
+
+        like = Mockito.mock(CommentVote.class);
+        Mockito.lenient().when(like.getUser()).thenReturn(fakeUser2);
+        likes.add(like);
+
+        Comment comment = new Comment(DEFAULT_ID, DEFAULT_CREATION_DATE, DEFAULT_POST, DEFAULT_PARENT, DEFAULT_CHILDREN,
+                DEFAULT_BODY, DEFAULT_EDITED, DEFAULT_LAST_EDITED, DEFAULT_USER, DEFAULT_ENABLED, likes);
+
+        // Exercise
+        int value = comment.getVoteValue(userRealUsername);
+
+        Assert.assertEquals(likeValue, value);
+    }
+
+    @Test
+    public void testGetDescendantCount() {
 
         Set<Comment> descendants1 = new HashSet<>();
         Set<Comment> descendants2 = new HashSet<>();
-
 
         Comment descendant1 = new Comment(20L, DEFAULT_CREATION_DATE, DEFAULT_POST, DEFAULT_PARENT, DEFAULT_CHILDREN,
                 DEFAULT_BODY, DEFAULT_EDITED, DEFAULT_LAST_EDITED, DEFAULT_USER, DEFAULT_ENABLED, DEFAULT_LIKES);
@@ -170,10 +209,8 @@ public class CommentTest {
     @Test
     public void testGetDescendantCountMaxDepthLimit() {
 
-
         Set<Comment> descendants1 = new HashSet<>();
         Set<Comment> descendants2 = new HashSet<>();
-
 
         Comment descendant1 = new Comment(20L, DEFAULT_CREATION_DATE, DEFAULT_POST, DEFAULT_PARENT, DEFAULT_CHILDREN,
                 DEFAULT_BODY, DEFAULT_EDITED, DEFAULT_LAST_EDITED, DEFAULT_USER, DEFAULT_ENABLED, DEFAULT_LIKES);

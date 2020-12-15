@@ -3,10 +3,7 @@ package ar.edu.itba.paw.webapp.controller;
 import ar.edu.itba.paw.interfaces.services.CommentService;
 import ar.edu.itba.paw.interfaces.services.SearchService;
 import ar.edu.itba.paw.interfaces.services.UserService;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentEditionException;
-import ar.edu.itba.paw.interfaces.services.exceptions.IllegalCommentLikeException;
-import ar.edu.itba.paw.interfaces.services.exceptions.MissingCommentEditPermissionException;
-import ar.edu.itba.paw.interfaces.services.exceptions.RestoredEnabledModelException;
+import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.*;
 import ar.edu.itba.paw.webapp.dto.generic.GenericIntegerValueDto;
 import ar.edu.itba.paw.webapp.dto.input.CommentCreateDto;
@@ -173,7 +170,7 @@ public class CommentController {
     @Produces(MediaType.APPLICATION_JSON)
     @DELETE
     @Path("/{id}/enabled")
-    public Response deleteComment(@PathParam("id") long id){
+    public Response deleteComment(@PathParam("id") long id) throws DeletedDisabledModelException {
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 

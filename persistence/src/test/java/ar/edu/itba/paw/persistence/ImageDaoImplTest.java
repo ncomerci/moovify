@@ -49,7 +49,6 @@ public class ImageDaoImplTest {
         this.jdbcTemplate = new JdbcTemplate(ds);
         this.imageInsert = new SimpleJdbcInsert(ds)
                 .withTableName(Image.TABLE_NAME);
-
     }
 
     @Test

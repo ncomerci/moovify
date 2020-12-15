@@ -9,6 +9,7 @@ import ar.edu.itba.paw.interfaces.services.MailService;
 import ar.edu.itba.paw.interfaces.services.UserService;
 import ar.edu.itba.paw.interfaces.services.exceptions.*;
 import ar.edu.itba.paw.models.Image;
+import ar.edu.itba.paw.models.Post;
 import ar.edu.itba.paw.models.Role;
 import ar.edu.itba.paw.models.User;
 import org.junit.Assert;
@@ -74,54 +75,6 @@ public class UserServiceTest {
      * - validatePasswordResetToken -> 1
      * - updatePassword             -> 2
      */
-
-    // Verifico que el service retorne el user que le dio el DAO y para generarlo haya utilizado la imagen que subio
-//    @Test
-//    public void testRegisterWithAvatar() throws DuplicateUniqueUserAttributeException {
-//
-//        User userMock = Mockito.when(Mockito.mock(User.class).getAvatarId()).thenReturn(AVATAR_ID).getMock();
-//
-//        UserService userServiceSpy = Mockito.spy(userService);
-//
-//        Image imgMock = Mockito.when(Mockito.mock(Image.class).getId()).thenReturn(AVATAR_ID).getMock();
-//
-//        Mockito.when(imageService.uploadImage(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(imgMock);
-//
-//        Mockito.when(dao.register(
-//                Mockito.anyString(), // username
-//                Mockito.anyString(), // password
-//                Mockito.anyString(), // name
-//                Mockito.anyString(), // email
-//                Mockito.anyString(), // description
-//                Mockito.anyString(), // language
-//                Mockito.anySet(),    // roles
-//                Mockito.any(Image.class), // image
-//                Mockito.anyBoolean() // enabled
-//            )).thenReturn(userMock);
-//
-//        Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(PASSWORD);
-//
-//        Mockito.doNothing().when(userServiceSpy).createConfirmationEmail(
-//                Mockito.any(User.class),
-//                Mockito.anyString(),
-//                Mockito.any(Locale.class)
-//        );
-//
-//        User user = userServiceSpy.register(USERNAME, PASSWORD, NAME, EMAIL, DESCRIPTION, IMAGE, "", Locale.ENGLISH);
-//
-//        // Quiero revisar que el register haya utilizado el mock que le da el image service
-//        Mockito.verify(dao).register(Mockito.anyString(), // username
-//                Mockito.anyString(), // password
-//                Mockito.anyString(), // name
-//                Mockito.anyString(), // email
-//                Mockito.anyString(), // description
-//                Mockito.anyString(), // language
-//                Mockito.anySet(),    // roles
-//                Mockito.eq(imgMock), // image mock
-//                Mockito.anyBoolean() // enabled
-//        );
-//        Assert.assertEquals(AVATAR_ID, user.getAvatarId());
-//    }
 
     @Test
     public void testRegister() throws DuplicateUniqueUserAttributeException {
@@ -210,45 +163,103 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGeneralUserUpdateAll() throws DuplicateUniqueUserAttributeException {
-
-        String username = "testUsername";
+    public void testUpdateName() {
         String name = "testName";
-        String description = "testDescription";
-        String password = "testPassword";
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getName()).thenReturn("");
+
+        userService.updateName(user, name);
+
+        Mockito.verify(user).setName(name);
+    }
+
+    @Test
+    public void testUpdateNameDoNothing() {
+        String name = "testName";
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getName()).thenReturn(name);
+
+        userService.updateName(user, name);
+
+        Mockito.verify(user, Mockito.never()).setName(Mockito.anyString());
+    }
+
+    @Test
+    public void testUpdateUsername() throws DuplicateUniqueUserAttributeException {
+        String username = "testUsername";
 
         User user = Mockito.mock(User.class);
         Mockito.when(user.getUsername()).thenReturn("");
-        Mockito.when(user.getName()).thenReturn("");
-        Mockito.when(user.getDescription()).thenReturn("");
-        Mockito.when(user.getPassword()).thenReturn("");
 
-        userService.updateUser(user, name, username, description, password);
+        userService.updateUsername(user, username);
 
         Mockito.verify(dao).updateUsername(user, username);
-        Mockito.verify(user).setName(name);
+    }
+
+    @Test
+    public void testUpdateUsernameDoNothing() throws DuplicateUniqueUserAttributeException {
+        String username = "testUsername";
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getUsername()).thenReturn(username);
+
+        userService.updateUsername(user, username);
+
+        Mockito.verify(dao, Mockito.never()).updateUsername(Mockito.any(User.class), Mockito.anyString());
+    }
+
+    @Test
+    public void testUpdateDescription() {
+        String description = "testDescription";
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getDescription()).thenReturn("");
+
+        userService.updateDescription(user, description);
+
         Mockito.verify(user).setDescription(description);
     }
 
     @Test
-    public void testGeneralUserUpdateNone() throws DuplicateUniqueUserAttributeException {
-
-        String username = "testUsername";
-        String name = "testName";
+    public void testUpdateDescriptionDoNothing() {
         String description = "testDescription";
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getDescription()).thenReturn(description);
+
+        userService.updateDescription(user, description);
+
+        Mockito.verify(user, Mockito.never()).setDescription(Mockito.anyString());
+    }
+
+    @Test
+    public void testUpdatePassword() {
+        String password = "testPassword";
+        String encodedPassword = "encoded";
+
+        User user = Mockito.mock(User.class);
+        Mockito.when(user.getPassword()).thenReturn("");
+
+        Mockito.when(passwordEncoder.encode(Mockito.anyString())).thenReturn(encodedPassword);
+
+        userService.updatePassword(user, password);
+
+        Mockito.verify(passwordEncoder).encode(password);
+        Mockito.verify(user).setPassword(encodedPassword);
+    }
+
+    @Test
+    public void testUpdatePasswordDoNothing() {
         String password = "testPassword";
 
         User user = Mockito.mock(User.class);
-        Mockito.when(user.getUsername()).thenReturn(username);
-        Mockito.when(user.getName()).thenReturn(name);
-        Mockito.when(user.getDescription()).thenReturn(description);
         Mockito.when(user.getPassword()).thenReturn(password);
 
-        userService.updateUser(user, name, username, description, password);
+        userService.updatePassword(user, password);
 
-        Mockito.verify(dao, Mockito.never()).updateUsername(user, username);
-        Mockito.verify(user, Mockito.never()).setName(name);
-        Mockito.verify(user, Mockito.never()).setDescription(description);
+        Mockito.verify(user, Mockito.never()).setPassword(Mockito.anyString());
     }
 
     @Test
@@ -389,5 +400,32 @@ public class UserServiceTest {
         Mockito.when(user.isEnabled()).thenReturn(false);
 
         userService.unfollowUser(user, followedUser);
+    }
+
+    @Test(expected = IllegalPostBookmarkException.class)
+    public void testBookmarkDisabledPost() throws IllegalPostBookmarkException {
+
+        User user = Mockito.mock(User.class);
+
+        Post bookmarkedPost = Mockito.mock(Post.class);
+        Mockito.when(bookmarkedPost.isEnabled()).thenReturn(false);
+
+        userService.bookmarkPost(user, bookmarkedPost);
+    }
+
+    @Test(expected = IllegalPostUnbookmarkException.class)
+    public void testUnbookmarkDisabledPost() throws IllegalPostUnbookmarkException {
+
+        User user = Mockito.mock(User.class);
+
+        Post bookmarkedPost = Mockito.mock(Post.class);
+        Mockito.when(bookmarkedPost.isEnabled()).thenReturn(false);
+
+        userService.unbookmarkPost(user, bookmarkedPost);
+    }
+
+    @Test(expected = InvalidSortCriteriaException.class)
+    public void testGetInvalidSortCriteria() throws InvalidSortCriteriaException {
+        userService.getUserSortCriteria("INVALID");
     }
 }
