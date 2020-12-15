@@ -47,12 +47,6 @@ public class WebConfig {
         return env.getProperty("app.base_path");
     }
 
-//    @Override
-//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("/resources/**")
-//                .addResourceLocations("/resources/");
-//    }
-
     @Bean
     public DataSource dataSource() {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();

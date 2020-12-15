@@ -90,6 +90,15 @@
     <url-pattern>/resources/*</url-pattern>
   </filter-mapping>
 
+  <filter>
+    <filter-name>AcceptHeaderLocaleFilter</filter-name>
+    <filter-class>ar.edu.itba.paw.webapp.config.AcceptHeaderLocaleFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>AcceptHeaderLocaleFilter</filter-name>
+    <url-pattern>/api/*</url-pattern>
+  </filter-mapping>
+
   <servlet-mapping>
     <servlet-name>jersey-servlet</servlet-name>
     <url-pattern>/api/*</url-pattern>
