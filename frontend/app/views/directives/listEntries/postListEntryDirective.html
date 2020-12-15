@@ -7,7 +7,7 @@
         {{'RESTORE' | translate}}
       </button>
     </div>
-    <div class="uk-width-4-5 uk-margin-small-top uk-margin-small-bottom uk-text-truncate">
+    <div class="uk-width-expand uk-margin-small-top uk-margin-small-bottom uk-text-truncate">
       <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
         <span ng-switch="post.postCategory.name">
             <span ng-switch-when="watchlist" class="iconify small-iconify" data-icon="bi:list-ol" data-inline="false"></span>
@@ -52,9 +52,9 @@
         </span>
       </p>
     </div>
-    <div class="uk-width-1-6">
+    <div class="uk-width-auto">
       <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
-        <span>{{ getAgeMessage(post.creationDate) | translate }}</span>
+        <pretty-date-directive creation-date="post.creationDate"></pretty-date-directive>
       </p>
     </div>
   </div>

@@ -15,12 +15,13 @@ require.config({
         marked: '../../bower_components/marked/lib/marked',
         requirejs: '../../bower_components/requirejs/require',
         restangular: '../../bower_components/restangular/dist/restangular',
+        'js-joda': '../../bower_components/js-joda/dist/js-joda',
         uikit: '../../bower_components/uikit/dist/js/uikit',
         uikiticons: '../../bower_components/uikit/dist/js/uikit-icons',
         'uikit-icons': '../../bower_components/uikit/dist/js/uikit-icons',
         iconify: 'external_dependencies/iconify/iconify',
         easymde: 'external_dependencies/easymde/easyMde',
-        purify: 'external_dependencies/purify/purify'
+        purify: 'external_dependencies/purify/purify',
     },
     shim: {
         angular: {
