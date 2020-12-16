@@ -18,15 +18,14 @@
           <div class="uk-text-danger" ng-if="hasError.bodyMaxLen">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: bodyConstraints.maxLen};}}</div>
         </div>
         <div class="uk-align-right">
+          <button class="uk-button uk-button-default uk-modal-close uk-text-primary uk-border-rounded" ng-click="editing.value = false">{{'CANCEL_POST_BODY_EDIT' | translate}}</button>
           <button class="uk-button uk-button-primary uk-border-rounded"
                   ng-disabled="sendingEdit" type="button"
                   ng-click="sendEdit()">
-            SEND EDIT
+            {{'SEND_POST_BODY_EDIT' | translate}}
           </button>
-          <button class="uk-button uk-button-primary uk-border-rounded" ng-click="editing.value = false">CANCEL EDIT</button>
         </div>
       </fieldset>
     </form>
-    <button ng-click="startEdit()">EDIT</button>
   </div>
 </div>

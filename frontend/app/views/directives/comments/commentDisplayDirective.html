@@ -8,7 +8,7 @@
       </div>
       <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
         <a class="uk-comment-title" ng-href="user/{{comment.user.id}}">{{comment.user.username}}</a>
-        <p class="uk-comment-meta uk-margin-remove-top">{{comment.creationDateTime | date}}</p>
+        <p class="uk-comment-meta uk-margin-remove-top"><pretty-date-directive creation-date="comment.creationDateTime"></pretty-date-directive></p>
       </div>
       <div class="comment-vote-handler">
         <comment-like-handler-directive total-votes="comment.totalVotes" user-vote="comment.userVote" send-vote-fn="callbackFunctions.vote"></comment-like-handler-directive>

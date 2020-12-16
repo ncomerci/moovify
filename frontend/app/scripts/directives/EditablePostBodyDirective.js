@@ -8,7 +8,8 @@ define(['frontend','easymde', 'marked', 'purify'], function(frontend,EasyMDE,mar
       scope: {
         body: '=',
         sendUpdateFn: '&',
-        isEditable: '='
+        isEditable: '=',
+        triggerEditFn: '='
       },
       templateUrl:'resources/views/directives/editablePostBodyDirective.html',
       link: function (scope){
@@ -33,7 +34,11 @@ define(['frontend','easymde', 'marked', 'purify'], function(frontend,EasyMDE,mar
         $scope.mde = null;
         $scope.hasError = {value: false};
 
-        $scope.startEdit = function () {
+        $scope.triggerEditFn.fn = function () {
+
+          if($scope.editing.value){
+            return $scope.editing.value = false;
+          }
 
           $scope.editing.value = true;
 

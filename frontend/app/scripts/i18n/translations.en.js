@@ -251,7 +251,13 @@ define([], function() {
     WRITE_COMMENT_PLACEHOLDER: 'Write new comment here...',
     WRITE_REPLY_COMMENT_PLACEHOLDER: "Write your comment here...",
 
-    POST_VIEW_POST_AUTHOR: 'Author: {{postAuthor}}'
+    POST_VIEW_POST_AUTHOR: 'Author: {{postAuthor}}',
+    POST_VIEW_MOVIES: 'Movies',
+    POST_VIEW_TAGS: 'Tags',
+    POST_VIEW_COMMENTS: 'Comments',
+    NO_COMMENTS_PLACEHOLDER: 'There are no comments to show, make the first one!',
+    CANCEL_POST_BODY_EDIT: 'Cancel',
+    SEND_POST_BODY_EDIT: 'Send'
     // COMMENT_VIEW_HEADING: "Reply to {{postTitle}}",
 
 
