@@ -1,8 +1,8 @@
-define(['frontend', 'services/utilities/RestFulResponseFactory'], function(frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utilities/PageTitleService'], function(frontend) {
 
     'use strict';
-    frontend.controller('UpdatePasswordCtrl', function($scope, RestFulResponse, $location, $timeout) {
-
+    frontend.controller('UpdatePasswordCtrl', function($scope, RestFulResponse, PageTitle, $location, $timeout) {
+      PageTitle.setTitle('UPDATE_PASSWORD_TITLE');
       $scope.newPass = {};
       $scope.btnPressed = false;
 

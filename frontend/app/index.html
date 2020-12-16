@@ -21,7 +21,7 @@
         <ul class="uk-navbar-nav">
           <li class="uk-visible@s uk-flex uk-flex-middle">
 
-            <a id="nav-search-toggle" class="uk-navbar-toggle" title="{{'SEARCH_TITLE' | translate}}">
+            <a id="nav-search-toggle" class="uk-navbar-toggle" title="{{'SEARCH' | translate}}">
               <span uk-icon="icon: search; ratio: 1.7"></span>
             </a>
             <div class="uk-drop" id="navbar-search-drop" data-uk-drop="mode: click; pos: left-center; offset: 0; boundary: #navbar">
@@ -30,7 +30,7 @@
                 <input autofocus id="nav-search" name="searchQuery" ng-model="search.query" class="uk-search-input"
                        ng-keydown="$event.keyCode === 13 && execSearch()" type="search" placeholder="{{'SEARCH_PLACEHOLDER' | translate}}" >
                 <a id="submit-navbar-search-button" ng-click="execSearch()"
-                   class="uk-button uk-button-default uk-border-rounded search-button uk-text-uppercase" >{{'SEARCH_TITLE' | translate}}</a>
+                   class="uk-button uk-button-default uk-border-rounded search-button uk-text-uppercase" >{{'SEARCH' | translate}}</a>
               </form>
             </div>
 
@@ -49,7 +49,7 @@
             <a ng-if="loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" href="#" uk-toggle="target: #confirm-email-modal">
               {{'NAVBAR_CREATE_POST' | translate}}
             </a>
-            <a ng-if="!loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" ng-href="/posts/create">{{'NAVBAR_CREATE_POST' | translate}}</a>
+            <a ng-if="!loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" ng-href="/post/create">{{'NAVBAR_CREATE_POST' | translate}}</a>
           </li>
           <li ng-if="loggedUser.logged" class="ng-cloak">
             <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" ng-href="/user">

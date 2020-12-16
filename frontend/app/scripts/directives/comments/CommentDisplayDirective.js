@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'directives/comments/CommentTreeDirective', 'services/CommentInteractionService',
+define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'services/CommentInteractionService',
   'services/fetch/CommentFetchService', 'directives/comments/CommentReplyDirective', 'directives/comments/EditableCommentBodyDirective',
-  'directives/comments/CommentLikeHandlerDirective', 'services/UserService', 'services/LoginService'], function(frontend) {
+  'directives/comments/CommentLikeHandlerDirective', 'services/UserService', 'services/LoginService'], function(frontend, UIkit) {
 
   frontend.directive('commentDisplayDirective', function (){
 
@@ -19,6 +19,10 @@ define(['frontend', 'directives/comments/CommentTreeDirective', 'services/Commen
 
         $scope.isUser = false;
         $scope.isAdmin = false;
+        $scope.deletingComment = false;
+        $scope.sendingDelete = {value: false};
+        $scope.currentChildren = 0;
+
         var loggedUser = LoggedUserFactory.getLoggedUser();
 
         if(loggedUser.logged) {
@@ -29,6 +33,7 @@ define(['frontend', 'directives/comments/CommentTreeDirective', 'services/Commen
         if(!$scope.comment.childrenFetched) {
           CommentFetchService.getCommentCommentsWithUserVote($scope.comment).then(function (comment) {
             $scope.comment.children = comment;
+            $scope.currentChildren = $scope.comment.children.length;
           })
         }
 
@@ -36,7 +41,10 @@ define(['frontend', 'directives/comments/CommentTreeDirective', 'services/Commen
           return Array.isArray($scope.comment.children) && $scope.comment.children.length > 0;
         }
 
-        $scope.callbackFunctions = {};
+        $scope.callbackFunctions = {
+          startEdit: {},
+          startReply: {}
+        };
 
         $scope.callbackFunctions.vote = function(value) {
 
@@ -77,10 +85,17 @@ define(['frontend', 'directives/comments/CommentTreeDirective', 'services/Commen
           return $scope.comment.put();
         }
 
-        $scope.deleteComment = function () {
+        $scope.openDeleteModal = function () {
+          $scope.deletingComment = true;
+          UIkit.modal(document.getElementById('delete-comment-modal-' + $scope.comment.id)).show();
+        }
 
-          $q.resolve($scope.comment.all('enabled').remove()).then(function(response) {
+        $scope.confirmDelete = function (){
+          $scope.sendingDelete.value = true;
+          $q.resolve($scope.comment.all('enabled').remove()).then(function() {
+            $scope.sendingDelete.value = false;
             $scope.comment.enabled = false;
+            UIkit.modal(document.getElementById('delete-comment-modal-' + $scope.comment.id)).hide();
           }).catch(console.log);
         }
       }

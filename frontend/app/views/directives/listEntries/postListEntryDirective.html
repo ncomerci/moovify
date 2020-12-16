@@ -7,7 +7,7 @@
         {{'RESTORE' | translate}}
       </button>
     </div>
-    <div class="uk-width-4-5 uk-margin-small-top uk-margin-small-bottom uk-text-truncate">
+    <div class="uk-width-expand uk-margin-small-top uk-margin-small-bottom uk-text-truncate">
       <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
         <span ng-switch="post.postCategory.name">
             <span ng-switch-when="watchlist" class="iconify small-iconify" data-icon="bi:list-ol" data-inline="false"></span>
@@ -16,13 +16,14 @@
             <span ng-switch-when="debate" class="iconify small-iconify" data-icon="octicon:comment-discussion-24" data-inline="false"></span>
         </span>
 
-        <span>{{post.postCategory.name}}</span>
+        <span>{{getCategory() | translate}}</span>
         <span  ng-if="isAdmin(post.user)">
           <span> - </span>
            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
         </span>
 
-        <span> {{post.user.enabled ? post.user.username : 'INVALID'}}</span>
+        <span ng-if="post.user.enabled"> {{post.user.name}}</span>
+        <span ng-if="!post.user.enabled"> {{'OWNER_DELETED' | translate}}</span>
 
         <span>{{'VOTES_DISPLAY' |translate:{votes:post.totalLikes};}}</span>
 
@@ -33,7 +34,7 @@
 
       </p>
 
-      <a class="text-lead" ng-href="/posts/{{post.id}}">
+      <a class="text-lead" ng-href="/post/{{post.id}}">
         <span ng-if="post.hasUserBookmarked">
           <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false" title="{{'BOOKMARKED_TITLE' | translate}}"></span>
           <span> - </span>
@@ -43,17 +44,17 @@
 
 
       <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
-        {{'MOVIES_DISCUSSED' | translate}}
+        <ng-pluralize count="post.movies.length" when="moviesDiscussedForm"></ng-pluralize>
         <span ng-repeat="movie in post.movies">
-          <a ng-href="/movies/{{movie.id}}">
+          <a ng-href="/movie/{{movie.id}}">
             {{movie.title}}
           </a>
         </span>
       </p>
     </div>
-    <div class="uk-width-1-6">
+    <div class="uk-width-auto">
       <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
-        <span>{{ getAgeMessage(post.creationDate) | translate }}</span>
+        <pretty-date-directive creation-date="post.creationDate"></pretty-date-directive>
       </p>
     </div>
   </div>

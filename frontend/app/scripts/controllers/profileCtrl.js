@@ -1,11 +1,54 @@
 define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateAvatarService',
     'services/utilities/RestFulResponseFactory', 'directives/fetch/FetchPostsDirective',
-    'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService']
+    'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService',
+    'services/UserService', 'services/utilities/PageTitleService']
   , function(frontend, UIkit) {
 
     'use strict';
     frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
-                                                UpdateAvatar, RestFulResponse, LoggedUserFactory) {
+                                                UpdateAvatar, RestFulResponse, LoggedUserFactory, UserService, PageTitle) {
+
+      PageTitle.setTitle('PROFILE_TITLE', {user:$scope.loggedUser.username})
+
+      var routeID = parseInt($routeParams.id);
+      $scope.user = {};
+      $scope.loadUserFinished = false;
+
+      if(routeID) {
+        if(routeID !== $scope.loggedUser.id) {
+          RestFulResponse.noAuth().one('/users/' + routeID).get().then(function (r) {
+            Object.assign($scope.user, r.data);
+            $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
+            $scope.tabs = [
+              {value:'posts', message:"{{'USER_POST_TAB_DISPLAY' | translate}}"},
+              {value:'comments', message:"{{'USER_COMMENTS_TAB_DISPLAY' | translate}}"},
+              {value:'bookmarks', message:"{{'USER_BOOK_TAB_DISPLAY' | translate}}"},
+              {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
+            ];
+            $scope.loadUserFinished = true;
+          }).catch(function (err) {
+            console.log(err);
+            // $location.path('/404');
+          })
+        } else {
+          Object.assign($scope.user, $scope.loggedUser);
+          $scope.isAdmin = UserService.userHasRole($scope.loggedUser, 'ADMIN');
+          $scope.loadUserFinished = true;
+        }
+      } else {
+        Object.assign($scope.user, $scope.loggedUser);
+        $scope.isAdmin = UserService.userHasRole($scope.loggedUser, 'ADMIN');
+        $scope.loadUserFinished = true;
+      }
+
+
+      $scope.profileSameAsLogged = function () {
+        return $routeParams.id === undefined || routeID === $scope.loggedUser.id;
+      }
+
+      if(UserService.userHasRole($scope.loggedUser, 'NOT_VALIDATED')) {
+        UIkit.modal(document.getElementById('confirm-email-profile-modal')).show();
+      }
 
       $scope.tabs = [
         {value:'posts', message:"{{'PROFILE_POST_TAB_DISPLAY' | translate }}"},
@@ -123,12 +166,14 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       });
 
       $scope.uploadAvatar = function () {
-        UpdateAvatar.uploadAvatar();
+        UpdateAvatar.uploadAvatar().then(function () {
+          $scope.user.avatar = $scope.loggedUser.avatar;
+        });
         UIkit.modal(document.getElementById('avatar-update-modal')).hide();
       };
 
       $scope.updateUserInfo = function () {
-        $scope.editBtnPressed = true;
+        $scope.btnPressed = true;
 
         if(
           !$scope.fieldIsNotValid('editForm', 'name') &&
@@ -148,7 +193,8 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
                .then(function () {
                  $scope.loading = false;
                  Object.assign($scope.loggedUser, aux);
-                 $scope.editBtnPressed = false;
+                 Object.assign($scope.user, aux);
+                 $scope.btnPressed = false;
                  UIkit.modal(document.getElementById('edit-info-modal')).hide();
                  if(aux.username !== undefined) {
                    LoggedUserFactory.logout().then(function () {
@@ -179,7 +225,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       }
 
       $scope.fieldRequired = function (form, field) {
-        return $scope.editBtnPressed && $scope[form][field].$error.required !== undefined;
+        return $scope.btnPressed && $scope[form][field].$error.required !== undefined;
       }
 
       // fieldRequired || cons1 || cons2 || ... || consN
@@ -218,12 +264,12 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
           description: $scope.loggedUser.description
         }
 
-        $scope.editBtnPressed = false;
+        $scope.btnPressed = false;
         $scope.loading = false;
       }
 
       $scope.updatePassword = function () {
-        $scope.editBtnPressed = true;
+        $scope.btnPressed = true;
 
         if(
           !$scope.fieldIsNotValid('changePassForm', 'password') &&
@@ -236,7 +282,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
             r.one('/user').customPUT($scope.editPass, undefined, undefined, {'Content-Type': 'application/json'})
               .then(function () {
                 $scope.loading = false;
-                $scope.editBtnPressed = false;
+                $scope.btnPressed = false;
                 UIkit.modal(document.getElementById('change-password-modal')).hide();
                 LoggedUserFactory.logout().then(function () {
                   $location.path('/login');
@@ -253,6 +299,45 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       }
 
       $scope.resetInfoModal();
+
+      $scope.confirmEmail = {};
+      $scope.tokenError = false;
+
+      $scope.sendConfirmation = function () {
+        $scope.btnPressed = true;
+        if(
+          !$scope.fieldRequired('confirmMailForm', 'token')
+        ) {
+          RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
+            r.all('/user/email_confirmation').customPUT($scope.confirmEmail, undefined, undefined, {'Content-Type': 'application/json'})
+              .then(function () {
+                var idx = $scope.loggedUser.roles.indexOf('NOT_VALIDATED');
+                $scope.loggedUser.roles[idx] = 'USER';
+                UIkit.modal(document.getElementById('confirm-email-profile-modal')).hide();
+              })
+              .catch(function (err) {
+                $scope.tokenError = true;
+                console.log(err);
+              })
+          })
+        }
+      }
+
+      $scope.resendSuccess = false;
+      $scope.resendError = false;
+
+      $scope.resendEmail = function () {
+        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
+          r.all('/user/email_confirmation').post().then(function () {
+            $scope.resendSuccess = true;
+          }).catch(function (err) {
+            $scope.resendError = true;
+            console.log(err);
+          })
+        })
+      }
+
+
     });
 
 });

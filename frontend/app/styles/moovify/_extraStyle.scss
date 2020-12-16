@@ -198,6 +198,11 @@ a.anchor {
   height: 18px;
 }
 
+.admin-badge-profile {
+  width: 26px;
+  height: 26px;
+}
+
 .admin-button {
   border: 1px solid #F3F3F3;
   color: #F3F3F3;
@@ -290,7 +295,9 @@ form {
 }
 
 .color-div {
-  background-color: #30475e;
+  background-color: #222831;
+  height: auto;
+  min-height: 557px;
 }
 
 .image-profile-shape {
@@ -356,4 +363,50 @@ button.like-post-button:hover, button.like-comment-button:hover{
 
 .separator {
   border-bottom: 2px solid #ECECEC
+}
+
+.tab-padding {
+  padding-top: 10px;
+}
+
+.no-style-button  {
+    border:none;
+    background-color:transparent;
+    padding: 0;
+    outline:none;
+}
+
+button.link-muted, a.link-muted{
+  color: #414D62;
+}
+
+.resize-vertical {
+  resize: vertical;
+}
+
+.primary-button {
+  color: $moovify-primary-color-light;
+}
+
+.primary-button:hover {
+  color: $moovify-primary-color-dark;
+}
+
+.primary-button:disabled,
+.primary-button:hover:disabled{
+  color: $moovify-disabled;
+  cursor: none;
+}
+
+.primary-button:disabled,
+.primary-button:hover:disabled{
+  color: $moovify-disabled;
+  cursor: none;
+}
+
+.disabled-button,
+.disabled-button:disabled,
+.disabled-button:hover,
+.disabled-button:hover:disabled{
+  color: $moovify-disabled;
 }

@@ -25,7 +25,7 @@
       </div>
       <div class="uk-width-auto">
         <p class="uk-text-meta uk-text-right uk-margin-small-top uk-margin-remove-bottom uk-padding-small">
-          <span>{{ getAgeMessage(comment.creationDate) | translate }}</span>
+          <pretty-date-directive creation-date="comment.creationDateTime"></pretty-date-directive>
         </p>
       </div>
     </div>

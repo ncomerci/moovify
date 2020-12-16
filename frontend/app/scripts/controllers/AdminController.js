@@ -1,9 +1,11 @@
 define(['frontend', 'directives/TabDisplayDirective', 'directives/search/SearchPostsDirective',
-  'directives/search/SearchUsersDirective','directives/search/SearchCommentsDirective'
+  'directives/search/SearchUsersDirective','directives/search/SearchCommentsDirective',
+  'services/utilities/PageTitleService'
 ], function(frontend) {
 
     'use strict';
-    frontend.controller('AdminController', function($scope, $routeParams, $location, $httpParamSerializer) {
+    frontend.controller('AdminController', function($scope, $routeParams, $location, PageTitle, $httpParamSerializer) {
+      PageTitle.setTitle('ADMIN_PANEL_TITLE')
 
       $scope.showingValues = [
         { value: 'posts', message: 'POST_TAB_DISPLAY' },

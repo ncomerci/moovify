@@ -1,11 +1,11 @@
 'use strict';
 define(['frontend', 'uikit', 'directives/search/SearchMoviesDirective', 'directives/search/SearchUsersDirective',
-  'directives/search/SearchPostsDirective', 'directives/TabDisplayDirective'], function(frontend) {
+  'directives/search/SearchPostsDirective', 'directives/TabDisplayDirective', 'services/utilities/PageTitleService'], function(frontend) {
 
   var defaultType = 'posts';
 
-    frontend.controller('SearchController', function($scope, $routeParams, $location) {
-
+    frontend.controller('SearchController', function($scope, $routeParams, $location, PageTitle) {
+      PageTitle.setTitle('SEARCH_TITLE')
       $scope.query = {
         value: $routeParams.query ? $routeParams.query : ''
       };

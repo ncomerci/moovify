@@ -1,17 +1,17 @@
 'use strict';
-define(['frontend', 'services/DisplayService', 'services/utilities/RestFulResponseFactory','services/LoginService'], function (frontend) {
+define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService', 'services/utilities/RestFulResponseFactory','services/LoginService'], function (frontend) {
 
   frontend.directive('commentListEntryDirective', function (DisplayService, LoggedUserFactory, RestFulResponse, $q){
     return {
       restrict: 'E',
       scope: {
         comment: '=',
-        adminControls:'<',
-        removeCommentFn:'&'
+        adminControls:'<?',
+        removeCommentFn:'&?'
       },
       templateUrl: 'resources/views/directives/listEntries/commentListEntryDirective.html',
       link: function (scope) {
-        if(removeCommentFn)
+        if(scope.removeCommentFn)
           scope.removeCommentFn = scope.removeCommentFn();
       },
       controller: function ($scope, $q) {
@@ -20,10 +20,6 @@ define(['frontend', 'services/DisplayService', 'services/utilities/RestFulRespon
         }
 
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
-
-        $scope.getAgeMessage = function (creationDate) {
-          return DisplayService.getAgeMessageCode(creationDate);
-        }
 
         $scope.recoverComment = function () {
           return $q(function (resolve, reject) {

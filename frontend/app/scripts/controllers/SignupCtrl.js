@@ -2,7 +2,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
     'use strict';
     frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, PageTitle, RestFulResponse, $location, $translate, UpdateAvatar) {
-      PageTitle.setTitle('asd') //TODO: cambiar la key
+      PageTitle.setTitle('SIGNUP_TITLE')
 
       if(LoggedUserFactory.getLoggedUser().logged) {
         $location.path('/');
@@ -12,7 +12,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       $scope.signUpError = false;
       $scope.loading = false;
 
-      $scope.user = {};
+      $scope.user = {description: ''};
 
       $scope.nameConstrains = {
         pattern: /^[a-zA-Z ]*$/,

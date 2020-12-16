@@ -1,39 +1,92 @@
-<div>
+<div class="comment uk-padding uk-padding-remove-right uk-padding-remove-vertical">
   <!-- enabled comment view -->
-  <div ng-if="comment.enabled" style="border: 2px solid black;">
+  <div ng-if="comment.enabled">
 
-    <p>ID: {{comment.id}} - {{comment.user.username}}</p>
-
-    <editable-comment-body-directive is-editable="isUser && comment.isOwner" body="comment.body" send-update-fn="callbackFunctions.edit"></editable-comment-body-directive>
-
-    <button ng-if="isAdmin" ng-click="deleteComment()">DELETE</button>
-
-    <comment-like-handler-directive total-votes="comment.totalVotes" user-vote="comment.userVote" send-vote-fn="callbackFunctions.vote"></comment-like-handler-directive>
-
-    <div ng-if="isUser">
-      <button ng-click="writtingReply.value = true">REPLY</button>
-
-      <div ng-if="writtingReply.value">
-        <button ng-click="writtingReply.value = false">HIDE REPLY</button>
-        <comment-reply-directive parent-id="{{comment.id}}" send-comment-fn="callbackFunctions.reply"></comment-reply-directive>
+    <div class="comment-header">
+      <div class="comment-avatar">
+        <img class="circle-comment uk-comment-avatar" ng-src="{{comment.user.avatar}}" alt="">
+      </div>
+      <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
+        <a class="uk-comment-title" ng-href="user/{{comment.user.id}}">{{comment.user.username}}</a>
+        <p class="uk-comment-meta uk-margin-remove-top">{{comment.creationDateTime | date}}</p>
+      </div>
+      <div class="comment-vote-handler">
+        <comment-like-handler-directive total-votes="comment.totalVotes" user-vote="comment.userVote" send-vote-fn="callbackFunctions.vote"></comment-like-handler-directive>
       </div>
     </div>
+
+    <div class="comment-body">
+      <editable-comment-body-directive is-editable="isUser && comment.isOwner" body="comment.body"
+                                       send-update-fn="callbackFunctions.edit"
+                                       start-edit="callbackFunctions.startEdit"></editable-comment-body-directive>
+    </div>
+
+    <div ng-if="isUser" class="comment-interactions uk-text-small">
+      <button class="no-style-button uk-link link-muted" ng-click="callbackFunctions.startReply.fn()"
+              ng-if="isUser && callbackFunctions.startReply">
+        <span uk-icon="icon: commenting; ratio 1"></span> REPLY</button>
+
+      <a class="link-muted" ng-href="mailto:{{comment.user.email}}"><span uk-icon="icon: mail; ratio 1"></span> MAIL AUTHOR</a>
+
+      <button ng-if="isAdmin" class="no-style-button uk-link link-muted" ng-click="openDeleteModal()">
+        <span uk-icon="icon: trash; ratio 1"></span> DELETE</button>
+
+      <button class="no-style-button uk-link link-muted" ng-if="isUser && comment.isOwner && callbackFunctions.startEdit"
+              ng-click="callbackFunctions.startEdit.fn()"><span uk-icon="icon: pencil; ratio 1"></span> EDIT</button>
+    </div>
+
   </div>
 
   <!-- deleted comment view -->
   <div ng-if="!comment.enabled">
-    <p style="color: red">DELETED COMMENT</p>
-    <div ng-if="isAdmin">
-      <p>[COMMENT BODY] {{comment.body}}</p>
+    <div class="comment-header">
+      <div class="comment-avatar">
+        <img class="circle-comment" src="resources/images/avatar.jpg" alt="">
+      </div>
+      <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
+        <p class="uk-comment-title">DELETED COMMENT</p>
+      </div>
+    </div>
+    <div class="comment-body">
+      <div ng-if="isAdmin">
+        <p>[COMMENT BODY] {{comment.body}}</p>
+      </div>
     </div>
   </div>
 
-  <div ng-if="hasChildren()">
+  <div class="uk-margin-small uk-margin-remove-left uk-margin-remove-left" >
 
-    <button ng-if="!showChildren.value" ng-click="showChildren.value = true">SHOW CHILDREN</button>
+    <div class="show-reply uk-padding-small uk-padding-remove-bottom">
+
+      <div ng-if="isUser">
+        <comment-reply-directive parent-id="{{comment.id}}" start-reply="callbackFunctions.startReply"
+                                 send-comment-fn="callbackFunctions.reply"></comment-reply-directive>
+      </div>
+
+      <button class="no-style-button uk-link link-muted"
+              ng-if="hasChildren() && !showChildren.value" ng-click="showChildren.value = true">
+        SHOW {{currentChildren}} REPLIES</button>
+
+    </div>
     <div ng-if="showChildren.value">
       <comment-tree-directive comments="comment.children"></comment-tree-directive>
     </div>
   </div>
 
+</div>
+
+<!--delete modal-->
+<div ng-if="isAdmin" id="delete-comment-modal-{{comment.id}}" uk-modal>
+  <div class="uk-modal-dialog" ng-if="deletingComment ">
+    <div class="uk-modal-header">
+      <h1 class="uk-modal-title">CONFIRM DELETE TITLE</h1>
+    </div>
+    <p class="uk-padding-small">{{comment.body}}</p>
+    <div class="uk-modal-footer uk-text-right">
+      <button class="uk-button uk-button-default uk-modal-close uk-text-primary"
+              type="button" ng-click="avatar.file = undefined" ng-disabled="sendingDelete.value">KEEP COMMENT</button>
+      <button class="uk-button uk-button-primary" type="button"
+              ng-disabled="sendingDelete.value" ng-click="confirmDelete()">DELETE COMMENT</button>
+    </div>
+  </div>
 </div>

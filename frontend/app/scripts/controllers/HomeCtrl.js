@@ -5,7 +5,7 @@ define(['frontend', 'services/utilities/PageTitleService', 'services/LoginServic
 
 	frontend.controller('HomeCtrl', function($scope, PageTitle, $routeParams, $location, UserFetchService) {
 
-    PageTitle.setTitle('Moovify'); // TODO: cambiar key
+    PageTitle.setTitle('HOME_TITLE');
 
     $scope.showingValues = [
       { value: 'hottestPosts', message: 'POST_ORDER_HOTTEST' },

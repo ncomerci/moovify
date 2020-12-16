@@ -1,17 +1,21 @@
-<form name="replyForm">
+<form name="replyForm" ng-if="writtingReply.value">
   <fieldset class="uk-fieldset">
     <div class="uk-margin">
-      <textarea class="uk-textarea"
+      <textarea class="uk-textarea resize-vertical"
                 rows="5" name="replyBody"
                 ng-model="body.content"
                 placeholder="REPLY PLACE HOLDER"
-                ng-maxlength="{{maxLen}}"
                 autofocus
                 ng-disabled="sendingComment">
       </textarea>
     </div>
     <p class="uk-text-muted uk-align-left">{{body.content.length}}/{{maxLen}}</p>
     <div class="uk-align-right">
+      <button class="uk-button uk-button-primary uk-border-rounded"
+              ng-disabled="sendingComment" type="button" ng-if="startReply"
+              ng-click="writtingReply.value = false">
+        CANCEL REPLY
+      </button>
       <button class="uk-button uk-button-primary uk-border-rounded"
               ng-disabled="body.content.length > 400 || sendingComment || body.content.length <= 0" type="button"
               ng-click="sendComment()">

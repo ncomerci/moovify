@@ -5,7 +5,6 @@ define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTi
   frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $location, PageTitle, $window, RestFulResponse) {
 
     $scope.loggedUser = LoggedUserFactory.getLoggedUser();
-    PageTitle.setTitle('asdasd'); // TODO: cambiar key
     $scope.title = PageTitle.getTitle();
 
     $scope.search = {query: ''};

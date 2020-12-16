@@ -1,8 +1,10 @@
 define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulResponseFactory', 'services/PostCategoriesService',
-  'services/fetch/MovieFetchService', 'directives/PostCreateModalDirective', 'services/LoginService'], function(frontend, UIkit, EasyMDE, DOMPurify) {
+  'services/fetch/MovieFetchService', 'directives/PostCreateModalDirective', 'services/LoginService', 'services/utilities/PageTitleService'
+], function(frontend, UIkit, EasyMDE, DOMPurify) {
 
   'use strict';
-  frontend.controller('PostCreateController', function($scope, PostCategoriesService, MovieFetchService, RestFulResponse, $location, LoggedUserFactory) {
+  frontend.controller('PostCreateController', function($scope, PostCategoriesService, MovieFetchService, PageTitle, RestFulResponse, $location, LoggedUserFactory) {
+    PageTitle.setTitle('POST_CREATE_TITLE');
 
     $scope.post = {};
     $scope.moviesTitles = [];
@@ -84,6 +86,14 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulRes
       });
     }
 
+    function handleCreatePost(postResponse){
+      $scope.easyMde.clearAutosavedValue();
+      var modalElem = document.getElementById('movies-modal');
+      UIkit.modal(modalElem).hide();
+      var link = postResponse.headers('Location');
+      return link.substring(link.indexOf("api/") + 3);
+    }
+
     function easyMdeFullscreenHandle(fullscreen){
       document.getElementById('navbar').style.visibility = (fullscreen) ? 'hidden' : 'visible';
     }
@@ -116,7 +126,7 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulRes
         var movies = $scope.post.movies;
         $scope.post.movies = [];
 
-        Object.values(movies).forEach(function (movie) {
+        Object.values(movies).forEach(function  (movie) {
           $scope.post.movies.push(movie);
         })
 
@@ -128,9 +138,8 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulRes
 
         RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function (Restful) {
           Restful.all('posts').post($scope.post).then(function (postResponse) {
-              $scope.easyMde.clearAutosavedValue();
-              var link = postResponse.headers('Location');
-              $location.path(link.substring(link.indexOf("api/") + 1));
+
+              $location.path(handleCreatePost(postResponse));
             }
           ).catch(function (err) {
             console.log(err);

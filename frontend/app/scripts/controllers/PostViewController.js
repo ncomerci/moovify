@@ -1,10 +1,11 @@
 define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFetchService',
   'directives/comments/CommentTreeDirective', 'services/CommentInteractionService', 'services/LoginService', 'services/UserService',
-  'services/PostInteractionService', 'directives/EditablePostBodyDirective'], function(frontend) {
+  'services/PostInteractionService', 'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService'], function(frontend) {
 
   'use strict';
   frontend.controller('PostViewController', function ($scope, PostFetchService, $location, PostInteractionService,
-                           LoggedUserFactory, UserService, CommentFetchService, $q, CommentInteractionService, $routeParams) {
+                           LoggedUserFactory, UserService, CommentFetchService, PageTitle, $q, CommentInteractionService, $routeParams) {
+
 
     $scope.post = null;
     $scope.comments = null;
@@ -32,6 +33,7 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
 
     PostFetchService.fetchPost(postId).then(function(post) {
       $scope.post = post;
+      PageTitle.setTitle('POST_VIEW_TITLE', {post:$scope.post.title})
     }).catch(console.log);
 
     CommentFetchService.getPostCommentsWithUserVote(postId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
@@ -58,7 +60,9 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
       })
     }
 
-    $scope.callback = {};
+    $scope.callback = {
+      startReply: {}
+    };
     $scope.callback.vote = function (value) {
 
       if($scope.post.userVote === value) {

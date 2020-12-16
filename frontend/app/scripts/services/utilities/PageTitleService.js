@@ -9,8 +9,8 @@ define(['frontend'], function(frontend) {
 	    getTitle: function () {
 	      return title;
       },
-      setTitle: function (i18nKey) {
-	      $translate(i18nKey).then(function(t) { title.value = t }).catch(function() { title.value = 'Moovify' });
+      setTitle: function (i18nKey, args) {
+	      $translate(i18nKey, args).then(function(t) { title.value = t }).catch(function() { title.value = 'Moovify' });
       }
     }
 	});

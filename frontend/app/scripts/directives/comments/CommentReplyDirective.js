@@ -15,7 +15,8 @@ define(['frontend', 'services/utilities/LocalStorageService'], function(frontend
       scope: {
         postId: '@?',
         sendCommentFn: '&',
-        parentId: '@?'
+        parentId: '@?',
+        startReply: '=?'
       },
       templateUrl:'resources/views/directives/comments/commentReplyDirective.html',
       link: function (scope){
@@ -26,6 +27,7 @@ define(['frontend', 'services/utilities/LocalStorageService'], function(frontend
       controller: function ($scope, LocalStorageService){
 
         $scope.sendingComment = false;
+        $scope.writtingReply= {value: false};
 
         if($scope.postId) {
           $scope.storageKey = getPostReplyStorageKey($scope.postId);
@@ -34,12 +36,26 @@ define(['frontend', 'services/utilities/LocalStorageService'], function(frontend
           $scope.storageKey = getCommentReplyStorageKey($scope.parentId);
         }
 
+        if($scope.startReply){
+          $scope.startReply.fn = function () {
+            $scope.writtingReply.value = true;
+          }
+        }
+        else {
+          $scope.writtingReply.value = true;
+        }
+
         $scope.body = {content: LocalStorageService.get($scope.storageKey)};
 
         $scope.sendComment = function () {
 
           $scope.sendingComment = true;
           $scope.sendCommentFn($scope.body.content).then(function () {
+
+            if($scope.startReply){
+              $scope.writtingReply.value = false;
+            }
+
             $scope.sendingComment = false;
             LocalStorageService.delete($scope.storageKey);
             $scope.body.content = '';
