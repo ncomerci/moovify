@@ -8,15 +8,15 @@
       </button>
     </div>
     <div ng-if="!adminControls" class="uk-width-1-6 uk-margin-remove">
-      <a ng-href="{{user.url}}">
+      <a ng-href="/users/{{user.id}}">
         <img class="image-user-display" ng-src="{{user.avatar}}" alt="">
       </a>
     </div>
     <div class="uk-width-expand uk-margin-small-top uk-margin-small-bottom" ng-class="{'uk-padding-remove-left margin-user-display':!adminControls}">
       <div class="uk-flex">
         <div class="uk-width-expand">
-          <a ng-href="{{user.url}}" class="text-lead" ng-class="{'uk-text-secondary uk-text-bold uk-text-middle': isAdmin(user)}">
-          <span ng-if="loggedUser.logged && user.userFollowing">
+          <a ng-href="/users/{{user.id}}" class="text-lead" ng-class="{'uk-text-secondary uk-text-bold uk-text-middle': isAdmin(user)}">
+          <span ng-if="loggedUser.logged && user.userFollower">
             <span class="iconify small-iconify" data-icon="ri:user-follow-line" data-inline="false" title="{{'FOLLOW_TITLE'| translate}}"></span>
             <span>-</span>
           </span>
