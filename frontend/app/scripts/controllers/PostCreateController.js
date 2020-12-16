@@ -91,7 +91,7 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulRes
       var modalElem = document.getElementById('movies-modal');
       UIkit.modal(modalElem).hide();
       var link = postResponse.headers('Location');
-      return link.substring(link.indexOf("api/") + 3);
+      return '/post' + link.substring(link.indexOf("posts/") + 5);
     }
 
     function easyMdeFullscreenHandle(fullscreen){
