@@ -54,7 +54,11 @@ define([], function() {
             '/user/updatePassword': {
                 templateUrl: '/views/user/updatePassword.html',
                 controller: 'UpdatePasswordCtrl'
-            }
+            },
+            '/comment/:id': {
+              templateUrl: 'resources/views/comment/commentViewController.html',
+              controller: 'CommentViewController'
+            },
             /* ===== yeoman hook ===== */
             /* Do not remove these commented lines! Needed for auto-generation */
         }

@@ -6,7 +6,8 @@ define(['frontend', 'directives/comments/CommentDisplayDirective'], function(fro
     return {
       restrict: 'E',
       scope: {
-        comments: '='
+        comments: '=',
+        depth: '='
       },
       templateUrl:'resources/views/directives/comments/commentTreeDirective.html',
       link: function(scope) {

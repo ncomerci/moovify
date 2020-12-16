@@ -1,5 +1,5 @@
 <div>
-  <p ng-show="!editing.value">{{body}}</p>
+  <p class="uk-text-break" ng-show="!editing.value">{{body}}</p>
   <form ng-if="editing.value" name="editForm">
     <fieldset class="uk-fieldset" ng-init="editableBody.value = body">
       <div class="uk-margin">

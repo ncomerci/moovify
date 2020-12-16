@@ -1,0 +1,88 @@
+<main ng-if="mainComment" class="uk-container-small uk-margin-auto">
+
+  <h1>REPLY TO POST <a ng-href="post/{{mainComment.originalElement.post.id}}">{{mainComment.originalElement.post.title}}</a></h1>
+
+  <div class="comment uk-padding uk-padding-remove-right uk-padding-remove-vertical">
+    <!-- enabled comment view -->
+    <div ng-if="mainComment.enabled">
+
+      <div class="comment-header">
+        <div class="comment-avatar">
+          <img class="circle-comment uk-comment-avatar" ng-src="{{mainComment.user.avatar}}" alt="">
+        </div>
+        <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
+          <a class="uk-comment-title" ng-href="user/{{mainComment.user.id}}">{{mainComment.user.username}}</a>
+          <p class="uk-comment-meta uk-margin-remove-top">{{mainComment.creationDateTime | date}}</p>
+        </div>
+        <div class="comment-vote-handler">
+          <comment-like-handler-directive total-votes="mainComment.totalVotes" user-vote="mainComment.userVote" send-vote-fn="callback.vote"></comment-like-handler-directive>
+        </div>
+      </div>
+
+      <div class="comment-body">
+        <editable-comment-body-directive is-editable="isUser && mainComment.isOwner" body="mainComment.body"
+                                         send-update-fn="callback.edit"
+                                         start-edit="callbackFunctions.startEdit"></editable-comment-body-directive>
+      </div>
+
+      <div class="comment-interactions uk-text-small">
+
+      <span ng-if="isUser">
+
+        <button ng-if="isAdmin" class="no-style-button uk-link link-muted" ng-click="openDeleteModal()">
+          <span uk-icon="icon: trash; ratio 1"></span> DELETE</button>
+
+        <button class="no-style-button uk-link link-muted" ng-if="isUser && mainComment.isOwner && callbackFunctions.startEdit"
+                ng-click="callbackFunctions.startEdit.fn()"><span uk-icon="icon: pencil; ratio 1"></span> EDIT</button>
+
+      </span>
+        <a class="link-muted" ng-href="mailto:{{mainComment.user.email}}"><span uk-icon="icon: mail; ratio 1"></span> MAIL AUTHOR</a>
+      </div>
+
+    </div>
+
+    <!-- deleted comment view -->
+    <div ng-if="!mainComment.enabled">
+      <div class="comment-header">
+        <div class="comment-avatar">
+          <img class="circle-comment" src="resources/images/avatar.jpg" alt="">
+        </div>
+        <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
+          <p class="uk-comment-title">DELETED COMMENT</p>
+        </div>
+      </div>
+      <div class="comment-body">
+        <div ng-if="isAdmin">
+          <p>[COMMENT BODY] {{mainComment.body}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div ng-if="isUser" class="uk-margin-top">
+      <comment-reply-directive parent-id="{{mainComment.id}}" send-comment-fn="newComment.fn"></comment-reply-directive>
+    </div>
+  </div>
+
+  <div class="uk-margin-small uk-margin-remove-left uk-margin-remove-left" >
+    <div ng-if="comments">
+      <comment-tree-directive depth="0" comments="comments"></comment-tree-directive>
+    </div>
+  </div>
+
+</main>
+
+<!--delete modal-->
+<div ng-if="isAdmin" id="delete-comment-modal-{{mainComment.id}}" uk-modal>
+  <div class="uk-modal-dialog" ng-if="deletingComment ">
+    <div class="uk-modal-header">
+      <h1 class="uk-modal-title">CONFIRM DELETE TITLE</h1>
+    </div>
+    <p class="uk-padding-small">{{mainComment.body}}</p>
+    <div class="uk-modal-footer uk-text-right">
+      <button class="uk-button uk-button-default uk-modal-close uk-text-primary"
+              type="button" ng-disabled="sendingDelete.value">KEEP COMMENT</button>
+      <button class="uk-button uk-button-primary" type="button"
+              ng-disabled="sendingDelete.value" ng-click="confirmDelete()">DELETE COMMENT</button>
+    </div>
+  </div>
+</div>
