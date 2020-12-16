@@ -214,6 +214,42 @@ define([], function() {
     USER_PROMOTE: "Promote",
     USER_PROMOTE_TITLE: "Are you sure you want to promote {{username}} to admin?",
     USER_DELETE: "Delete",
-    USER_DELETE_TITLE: "Are you sure you want to delete to {{username}}?"
+    USER_DELETE_TITLE: "Are you sure you want to delete to {{username}}?",
+
+
+
+
+    // SIN TRADUCIR
+    COMMENT_VIEW_HEADING: "Comment to post",
+    SIGN_UP_TO_START_COMMENTING: "Want to share your thoughts? Sign up and start commenting right away!",
+    CONFIRM_EMAIL_TO_START_COMMENTING: "You're almost done, confirm your email and start sharing!",
+    CREATE_NEW_ACCOUNT: 'Create new account',
+    GO_TO_PROFILE: 'Go to profile',
+    COMMENT_REPLIES: 'Comment replies',
+    DELETE_COMMENT_BUTTON: 'Delete',
+    REPLY_COMMENT_BUTTON: 'Reply',
+    GO_TO_VIEW_COMMENT_BUTTON: 'Comment view',
+    EDIT_COMMENT_BUTTON: 'Edit',
+    MAIL_AUTHOR_COMMENT_BUTTON: 'Mail author',
+    COMMENT_VIEW_CREATE_NEW_COMMENT: 'Create new comment',
+    CONFIRM_COMMENT_DELETE_MODAL_TITLE: 'Confirm deletion',
+    CONFIRM_COMMENT_DELETE_MODAL_BODY: 'Delete the comment "{{commentBody}}"?',
+    CONFIRM_COMMENT_DELETE_MODAL_CANCEL_BUTTON: 'Cancel',
+    CONFIRM_COMMENT_DELETE_MODAL_DELETE_BUTTON: 'Delete',
+    DELETED_COMMENT_MESSAGE: 'This comment has been deleted',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_TITLE: 'Going to comment view',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_BODY: 'In order to reply to this comment you must go to its view.',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_CANCEL_BUTTON: 'Cancel',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_GO_BUTTON: 'Go to view',
+    COMMENT_REPLY_CANCEL_BUTTON: 'Cancel',
+    COMMENT_REPLY_SEND_BUTTON: 'Send',
+    CANCEL_COMMENT_EDIT_BUTTON: 'Cancel',
+    SEND_COMMENT_EDIT_BUTTON: 'Send',
+
+    POST_VIEW_POST_AUTHOR: 'Author: {{postAuthor}}'
+    // COMMENT_VIEW_HEADING: "Reply to {{postTitle}}",
+
+
+
 	};
 });

@@ -32,6 +32,9 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
 
     PostFetchService.fetchPost(postId).then(function(post) {
       $scope.post = post;
+      if(!post.enabled){
+        $location.path('404');
+      }
       PageTitle.setTitle('POST_VIEW_TITLE', {post:$scope.post.title});
     }).catch(console.log);
 

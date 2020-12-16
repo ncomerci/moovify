@@ -8,17 +8,17 @@
                 autofocus ng-disabled="sendingComment">
       </textarea>
     </div>
-    <p class="uk-text-muted uk-align-left">{{body.content.length}}/{{maxLen}}</p>
+    <p class="uk-text-muted uk-align-left">{{body.content.length ? body.content.length : 0}}/{{maxLen}}</p>
     <div class="uk-align-right">
-      <button class="uk-button uk-button-primary uk-border-rounded"
+      <button class="uk-button uk-button-default uk-text-primary uk-border-rounded"
               ng-disabled="sendingComment" type="button" ng-if="startReply"
               ng-click="writtingReply.value = false">
-        CANCEL REPLY
+         {{'COMMENT_REPLY_CANCEL_BUTTON' | translate}}
       </button>
       <button class="uk-button uk-button-primary uk-border-rounded"
-              ng-disabled="body.content.length > 400 || sendingComment || body.content.length <= 0" type="button"
+              ng-disabled="!body.content || body.content.length > 400 || sendingComment || body.content.length <= 0" type="button"
               ng-click="sendComment()">
-        SEND REPLY
+        {{'COMMENT_REPLY_SEND_BUTTON' | translate}}
       </button>
     </div>
   </fieldset>

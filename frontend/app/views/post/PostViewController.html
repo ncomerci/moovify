@@ -19,7 +19,7 @@
         </span>
         {{post.title}}
       </h1>
-      <p>POST BY: {{post.user.username}}</p>
+      <p>{{'POST_VIEW_POST_AUTHOR' | translate: {postAuthor: post.user.username};}}</p>
     </div>
     <div class="post-vote-handler uk-padding-small">
       <comment-like-handler-directive total-votes="post.totalLikes" user-vote="post.userVote" send-vote-fn="callback.vote"></comment-like-handler-directive>
@@ -46,8 +46,4 @@
     <h1>COMMENT SECTION</h1>
     <comment-tree-directive depth="0" comments="comments"></comment-tree-directive>
   </section>
-</main>
-
-<main ng-if="post && !post.enabled">
-  <h1>REMOVED POST</h1>
 </main>

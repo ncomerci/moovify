@@ -21,8 +21,9 @@ define(['frontend','uikit', 'services/fetch/CommentFetchService',
       deleting: false
     };
     var loggedUser = LoggedUserFactory.getLoggedUser();
+    $scope.isLogged = loggedUser.logged;
 
-    if(loggedUser.logged) {
+    if($scope.isLogged) {
       $scope.isAdmin = UserService.userHasRole(loggedUser, 'ADMIN');
       $scope.isUser = UserService.userHasRole(loggedUser, 'USER');
     }

@@ -426,3 +426,20 @@ button.link-muted, a.link-muted{
 .unfollow-btn:active {
   border-color: #f0264c;
 }
+
+.margin-very-small-right {
+  margin-right: 5px !important;
+}
+.margin-very-small-left {
+  margin-left: 5px !important;
+}
+.margin-very-small-top {
+  margin-top: 5px !important;
+}
+.margin-very-small-bottom {
+  margin-bottom: 5px !important;
+}
+
+.word-brake {
+  word-break: break-all;
+}
