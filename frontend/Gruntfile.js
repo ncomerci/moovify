@@ -32,6 +32,7 @@ module.exports = function (grunt) {
               '.*resources/(.*)$ /$1 [L]'
             ]),
             connect.static(appConfig.tmp),
+            connect().use('/static_dependencies', connect.static('./static_dependencies')),
             connect().use('/bower_components', connect.static('./bower_components')),
             connect.static(appConfig.app)
             ];

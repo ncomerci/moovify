@@ -16,7 +16,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
           RestFulResponse.noAuth().all('/user/password_reset').post(aux).then(function () {
             $scope.mailSent = true;
             $timeout(function () {
-              $location.path('/user/updatePassword');
+              $location.path('/updatePassword');
             }, 2000);
           }).catch(function (err) {
             $scope.mailError = true;
