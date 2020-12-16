@@ -15,13 +15,27 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
+      // Main.js
       'app/tests/test-build.js',
+
+      // Sources
       { pattern: 'app/scripts/*.js', included: false },
       { pattern: 'app/scripts/**/*.js', included: false },
+
+      // Project Dependencies
       { pattern: 'bower_components/**/*.js', included: false },
       { pattern: 'static_dependencies/**/*.js', included: false },
+
+      // Angular Mocks Dev Dependency
       { pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false },
+
+      // PhantomJS Polyfill Dev Dependencies
       { pattern: 'node_modules/phantomjs-polyfill-includes/includes-polyfill.js', included: false },
+      { pattern: 'node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js', included: false },
+      { pattern: 'node_modules/url-search-params-polyfill/index.js', included: false },
+      { pattern: 'node_modules/phantomjs-polyfill-find/find-polyfill.js', included: false },
+
+      // Tests
       { pattern: 'app/tests/**/*.test.js', included: false }
     ],
 

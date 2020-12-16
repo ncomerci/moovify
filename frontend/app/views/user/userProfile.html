@@ -23,7 +23,7 @@
           <div class="uk-text-danger" ng-show="avatar.error">{{'FORM_AVATAR_SIZE_ERROR' | translate}}</div>
           <div class="uk-flex uk-flex-middle uk-flex-center">
             <h2 class="uk-text-bold uk-margin-remove-bottom uk-text-large uk-text-primary">{{user.name}}
-            <span ng-if="isAdmin">
+              <span ng-if="isAdmin">
                <span class="iconify admin-badge-profile" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
             </span>
             </h2>
@@ -37,7 +37,7 @@
             <a class="uk-button-default uk-border-rounded follow-btn" ng-show="!isFollowed && loggedUser.logged" ng-click="followUser()">
               {{'USER_FOLLOW' | translate}}
             </a>
-            <a class="uk-button-default uk-border-rounded uk-text-danger unfollow-btn" ng-show="isFollowed"ng-click="unfollowUser()">
+            <a class="uk-border-rounded uk-text-danger unfollow-btn" ng-show="isFollowed"ng-click="unfollowUser()">
               {{'USER_UNFOLLOW' | translate}}
             </a>
             <span ng-if="loggedUser.roles.includes('ADMIN')">
@@ -47,7 +47,7 @@
               >
                 {{'USER_PROMOTE' | translate}}
               </a>
-              <a class="uk-button-default uk-border-rounded uk-text-danger unfollow-btn uk-margin-small-left"
+              <a class="uk-border-rounded uk-text-danger unfollow-btn uk-margin-small-left"
                  href="#delete-modal" uk-toggle
               >
                 {{'USER_DELETE' | translate}}
@@ -133,7 +133,7 @@
   </div>
 
 
-<!-- UPDATE AVATAR MODAL -->
+  <!-- UPDATE AVATAR MODAL -->
   <div id="avatar-update-modal" ng-show="profileSameAsLogged()" uk-modal>
     <div class="uk-modal-dialog">
       <div class="uk-modal-header">
@@ -144,8 +144,8 @@
         {{avatar.file.name}}
       </div>
       <div class="uk-modal-footer uk-text-right">
-        <button class="uk-button uk-button-default uk-modal-close uk-text-primary" type="button" ng-click="avatar.file = undefined">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
-        <button class="uk-button uk-button-primary" type="button" ng-click="uploadAvatar()">{{'UPDATE_AVATAR_MODAL_ACCEPT' | translate}}</button>
+        <button class="uk-button uk-button-default uk-border-rounded uk-modal-close uk-text-primary" type="button" ng-click="avatar.file = undefined">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
+        <button class="uk-button uk-button-primary uk-border-rounded" type="button" ng-click="uploadAvatar()">{{'UPDATE_AVATAR_MODAL_ACCEPT' | translate}}</button>
       </div>
     </div>
   </div>
@@ -201,8 +201,8 @@
         </form>
       </div>
       <div class="uk-modal-footer uk-text-right">
-        <button class="uk-button uk-button-default uk-modal-close uk-text-primary" type="button">{{'UPDATE_INFO_MODAL_CANCEL' | translate}}</button>
-        <button class="uk-button uk-button-primary" type="button" ng-click="updatePassword()">{{'UPDATE_INFO_MODAL_ACCEPT' | translate}}</button>
+        <button class="uk-button uk-button-default uk-border-rounded uk-modal-close uk-text-primary" type="button">{{'UPDATE_INFO_MODAL_CANCEL' | translate}}</button>
+        <button class="uk-button uk-button-primary uk-border-rounded" type="button" ng-click="updatePassword()">{{'UPDATE_INFO_MODAL_ACCEPT' | translate}}</button>
       </div>
     </div>
   </div>
@@ -215,69 +215,87 @@
       </div>
       <div class="uk-modal-body">
         <form name="editForm">
-          <label>
-            <input class="uk-input"
-                   type="text"
-                   name="name"
-                   ng-model="editInfo.name"
-                   placeholder="{{'USER_CREATE_NAME' | translate}}"
-                   ng-class="{'uk-form-danger': fieldIsNotValid('editForm', 'name') || checkFieldError('name')}"
-                   ng-pattern="nameConstrains.pattern"
-                   ng-minlength="{{nameConstrains.minLen}}"
-                   ng-maxlength="{{nameConstrains.maxLen}}"
-                   ng-change="resetFieldErrors('name')"
-                   required
-            >
-          </label>
-          <div class="uk-text-danger" ng-if="fieldRequired('editForm', 'name')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
-          <div class="uk-text-danger" ng-if="editForm.name.$error.pattern">{{'FORM_NAME_PATTERN_ERROR' | translate}}</div>
-          <div class="uk-text-danger" ng-if="editForm.name.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: nameConstrains.minLen};}}</div>
-          <div class="uk-text-danger" ng-if="editForm.name.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: nameConstrains.maxLen};}}</div>
-          <div class="uk-text-danger" ng-if="checkFieldError('name')">{{getFieldErrors('name')}}</div>
+          <div>
+            <label for="edit-name-input">
+              {{'USER_EDIT_NAME' | translate}}
+            </label>
+            <div class="uk-flex">
+              <input class="uk-input"
+                     id="edit-name-input"
+                     type="text"
+                     name="name"
+                     ng-model="editInfo.name"
+                     placeholder="{{'USER_CREATE_NAME' | translate}}"
+                     ng-class="{'uk-form-danger': fieldIsNotValid('editForm', 'name') || checkFieldError('name')}"
+                     ng-pattern="nameConstrains.pattern"
+                     ng-minlength="{{nameConstrains.minLen}}"
+                     ng-maxlength="{{nameConstrains.maxLen}}"
+                     ng-change="resetFieldErrors('name')"
+                     required
+              >
+              <div class="uk-text-danger" ng-if="fieldRequired('editForm', 'name')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+              <div class="uk-text-danger" ng-if="editForm.name.$error.pattern">{{'FORM_NAME_PATTERN_ERROR' | translate}}</div>
+              <div class="uk-text-danger" ng-if="editForm.name.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: nameConstrains.minLen};}}</div>
+              <div class="uk-text-danger" ng-if="editForm.name.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: nameConstrains.maxLen};}}</div>
+              <div class="uk-text-danger" ng-if="checkFieldError('name')">{{getFieldErrors('name')}}</div>
+            </div>
+          </div>
 
-          <label>
-            <input class="uk-input uk-margin-top"
-                   name="username"
-                   type="text"
-                   ng-model="editInfo.username"
-                   placeholder="{{'USER_CREATE_USERNAME' | translate}}"
-                   ng-class="{'uk-form-danger': fieldIsNotValid('editForm', 'username') || checkFieldError('username')}"
-                   ng-pattern="usernameConstrains.pattern"
-                   ng-minlength="{{usernameConstrains.minLen}}"
-                   ng-maxlength="{{usernameConstrains.maxLen}}"
-                   ng-change="resetFieldErrors('username')"
-                   required
-            />
-          </label>
-          <div class="uk-text-danger" ng-if="fieldRequired('editForm', 'username')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
-          <div class="uk-text-danger" ng-if="editForm.username.$error.pattern">{{'FORM_USERNAME_PATTERN_ERROR' | translate}}</div>
-          <div class="uk-text-danger" ng-if="editForm.username.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: usernameConstrains.minLen};}}</div>
-          <div class="uk-text-danger" ng-if="editForm.username.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: usernameConstrains.maxLen};}}</div>
-          <div class="uk-text-danger" ng-if="checkFieldError('username')">{{getFieldErrors('username')}}</div>
+          <div class="uk-margin-top">
+            <label for="edit-username-input">
+              {{'USER_EDIT_USERNAME' | translate}}
+            </label>
+            <div class="uk-flex">
+              <input class="uk-input"
+                     id="edit-username-input"
+                     name="username"
+                     type="text"
+                     ng-model="editInfo.username"
+                     placeholder="{{'USER_CREATE_USERNAME' | translate}}"
+                     ng-class="{'uk-form-danger': fieldIsNotValid('editForm', 'username') || checkFieldError('username')}"
+                     ng-pattern="usernameConstrains.pattern"
+                     ng-minlength="{{usernameConstrains.minLen}}"
+                     ng-maxlength="{{usernameConstrains.maxLen}}"
+                     ng-change="resetFieldErrors('username')"
+                     required
+              />
+              <div class="uk-text-danger" ng-if="fieldRequired('editForm', 'username')">{{'FORM_FIELD_REQUIRED' | translate}}</div>
+              <div class="uk-text-danger" ng-if="editForm.username.$error.pattern">{{'FORM_USERNAME_PATTERN_ERROR' | translate}}</div>
+              <div class="uk-text-danger" ng-if="editForm.username.$error.minlength">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: usernameConstrains.minLen};}}</div>
+              <div class="uk-text-danger" ng-if="editForm.username.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: usernameConstrains.maxLen};}}</div>
+              <div class="uk-text-danger" ng-if="checkFieldError('username')">{{getFieldErrors('username')}}</div>
+            </div>
+          </div>
 
-          <label>
-            <textarea class="uk-textarea uk-margin-top"
-                   rows="5"
-                   name="description"
-                   type="text"
-                   ng-model="editInfo.description"
-                   placeholder="{{'USER_DESCRIPTION_PLACEHOLDER' | translate}}"
-                   ng-class="{'uk-form-danger': descriptionIsNotValid() || checkFieldError('description')}"
-                   ng-maxlength="{{descriptionConstrains.maxLen}}"
-                   ng-change="resetFieldErrors('description')"
+          <div class="uk-margin-top">
+            <label for="edit-description-input">
+              {{'USER_EDIT_DESCRIPTION' | translate}}
+            </label>
+            <div class="uk-flex">
+            <textarea class="uk-textarea"
+                      id="edit-description-input"
+                      rows="5"
+                      name="description"
+                      type="text"
+                      ng-model="editInfo.description"
+                      placeholder="{{'USER_DESCRIPTION_PLACEHOLDER' | translate}}"
+                      ng-class="{'uk-form-danger': descriptionIsNotValid() || checkFieldError('description')}"
+                      ng-maxlength="{{descriptionConstrains.maxLen}}"
+                      ng-change="resetFieldErrors('description')"
             ></textarea>
-          </label>
-          <div class="uk-text-danger" ng-if="editForm.description.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: descriptionConstrains.maxLen};}}</div>
-          <div class="uk-text-danger" ng-if="checkFieldError('description')">{{getFieldErrors('description')}}</div>
+              <div class="uk-text-danger" ng-if="editForm.description.$error.maxlength">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: descriptionConstrains.maxLen};}}</div>
+              <div class="uk-text-danger" ng-if="checkFieldError('description')">{{getFieldErrors('description')}}</div>
+            </div>
+          </div>
         </form>
       </div>
       <div class="uk-modal-footer uk-text-right">
-        <button class="uk-button uk-button-default uk-modal-close uk-text-primary"
+        <button class="uk-button uk-button-default uk-modal-close uk-text-primary uk-border-rounded"
                 type="button"
         >
           {{'UPDATE_INFO_MODAL_CANCEL' | translate}}
         </button>
-        <button class="uk-button uk-button-primary"
+        <button class="uk-button uk-button-primary uk-border-rounded"
                 type="button"
                 ng-click="updateUserInfo()"
                 ng-class="{'uk-disabled': loading, 'disabled-primary': loading}"
@@ -352,8 +370,8 @@
       <h2 class="uk-modal-title">{{'USER_DELETE_TITLE' | translate: {username: user.username};}}</h2>
     </div>
     <div class="uk-modal-footer uk-text-right">
-      <button class="uk-button uk-button-default uk-modal-close uk-text-primary" type="button">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
-      <button class="uk-button uk-button-danger" type="button" ng-click="deleteUser()">{{'USER_DELETE' | translate}}</button>
+      <button class="uk-button uk-button-default uk-border-rounded uk-modal-close uk-text-primary" type="button">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
+      <button class="uk-button uk-button-danger uk-border-rounded" type="button" ng-click="deleteUser()">{{'USER_DELETE' | translate}}</button>
     </div>
   </div>
 </div>

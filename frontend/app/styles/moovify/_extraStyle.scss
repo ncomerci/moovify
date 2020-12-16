@@ -419,12 +419,18 @@ button.link-muted, a.link-muted{
 .unfollow-btn {
   text-decoration: none !important;
   padding: 0 15px 0 15px;
-  border-color: #f0506e;
+  border: 1px solid #f0506e;
 }
 
 .unfollow-btn:hover,
 .unfollow-btn:active {
-  border-color: #f0264c;
+  border: 1px solid #f0264c;
+  outline: none;
+  background-color: transparent;
+}
+
+button:focus {
+  outline: none;
 }
 
 .margin-very-small-right {

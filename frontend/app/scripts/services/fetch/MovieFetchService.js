@@ -3,12 +3,12 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
 
   frontend.service('MovieFetchService', function (RestFulResponse, LinkParserService, $q){
 
-    this.searchMovies = function(query, category, age, enabled, orderBy, pageSize, pageNumber) {
-      return fetchMovies('/movies', query, category, age, enabled, orderBy, pageSize, pageNumber);
+    this.searchMovies = function(query, category, age, orderBy, pageSize, pageNumber) {
+      return fetchMovies('/movies', query, category, age, orderBy, pageSize, pageNumber);
     }
 
-    this.fetchMovies = function(path, enabled, orderBy, pageSize, pageNumber) {
-      return fetchMovies(path, null, null, null, enabled, orderBy, pageSize, pageNumber);
+    this.fetchMovies = function(path, orderBy, pageSize, pageNumber) {
+      return fetchMovies(path, null, null, null, orderBy, pageSize, pageNumber);
     }
 
     this.fetchMovieById = function (movieId) {
@@ -22,14 +22,16 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
       });
     }
 
-    function fetchMovies(path, query, category, decade, enabled, orderBy, pageSize, pageNumber) {
+    function fetchMovies(path, query, category, decade, orderBy, pageSize, pageNumber) {
 
       var queryParams = {
-        query: query,
         orderBy: orderBy,
         pageSize: pageSize ? pageSize : 5,
         pageNumber: pageNumber ? pageNumber : 0
       };
+
+      if(query)
+        queryParams.query = query;
 
       if(category) {
         queryParams.movieCategory = category;
@@ -37,10 +39,6 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
 
       if(decade) {
         queryParams.decade = decade;
-      }
-
-      if(enabled) {
-        queryParams.enabled = enabled;
       }
 
       return $q(function(resolve, reject) {

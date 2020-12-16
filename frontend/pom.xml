@@ -66,6 +66,19 @@
           </execution>
 
           <execution>
+            <id>javascript tests</id>
+            <goals>
+              <goal>karma</goal>
+            </goals>
+
+            <phase>test</phase>
+
+            <configuration>
+              <karmaConfPath>app/tests/karma.conf.js</karmaConfPath>
+            </configuration>
+          </execution>
+
+          <execution>
             <id>grunt build</id>
             <goals>
               <goal>grunt</goal>
@@ -74,8 +87,6 @@
               <arguments>--no-color</arguments>
             </configuration>
           </execution>
-
-          <!--    TODO: Run tests      -->
 
         </executions>
       </plugin>
