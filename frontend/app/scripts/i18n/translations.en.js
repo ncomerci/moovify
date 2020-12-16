@@ -189,10 +189,15 @@ define([], function() {
     ADMIN: 'Admin',
     PAGINATION_PAGE_SIZE: "Showing",
     PROFILE_POST_TAB_DISPLAY: "Your posts",
+    USER_POST_TAB_DISPLAY: "posts",
     PROFILE_COMMENTS_TAB_DISPLAY: "Your comments",
+    USER_COMMENTS_TAB_DISPLAY: "comments",
     PROFILE_BOOK_TAB_DISPLAY: "Your bookmarked posts",
+    USER_BOOK_TAB_DISPLAY: "bookmarked posts",
     PROFILE_FOLLOWED_USERS: "Your followed users",
+    USER_FOLLOWED_USERS: "followed users",
     PROFILE_EDIT_DETAILS: "Edit information",
     PROFILE_NO_DESCRIPTION: "You don't have a description yet!",
+    USER_NO_DESCRIPTION: "This user doesn't have a description",
 	};
 });

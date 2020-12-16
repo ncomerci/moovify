@@ -1,4 +1,7 @@
+$tab-margin-horizontal:      0px;
+$tab-item-active-color:      $moovify-primary-color-dark;
+
 @mixin hook-tab-item-active(){
-  border-bottom: 1px solid transparent;
-  border-color: #1e87f0
+  border-bottom: 3px solid transparent;
+  border-color: $moovify-primary-color-dark;
 }

@@ -6,12 +6,12 @@ define(['frontend', 'services/DisplayService', 'services/utilities/RestFulRespon
       restrict: 'E',
       scope: {
         comment: '=',
-        adminControls:'<',
-        removeCommentFn:'&'
+        adminControls:'<?',
+        removeCommentFn:'&?'
       },
       templateUrl: 'resources/views/directives/listEntries/commentListEntryDirective.html',
       link: function (scope) {
-        if(removeCommentFn)
+        if(scope.removeCommentFn)
           scope.removeCommentFn = scope.removeCommentFn();
       },
       controller: function ($scope, $q) {

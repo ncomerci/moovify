@@ -4,7 +4,8 @@ define(['frontend', 'services/utilities/RestFulResponseFactory'], function(front
   frontend.factory('LoggedUserFactory', function(RestFulResponse, $window, $q, $location) {
     var loggedUser = {
       logged: false,
-      expDate: undefined
+      expDate: undefined,
+      roles: []
     };
     var mutex = {
       value: false
