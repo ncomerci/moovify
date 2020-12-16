@@ -16,10 +16,22 @@ define(['frontend', 'services/UserService', 'directives/PrettyDateDirective',
           scope.removePostFn = scope.removePostFn();
       },
       controller: function ($scope, $q) {
+
+        $scope.categoryMap = {
+          "watchlist": "{{'WATCHLIST' | translate }}",
+          "critique":"{{'CRITIQUE' | translate }}",
+          "debate":"{{'DEBATE' | translate }}",
+          "news":"{{'NEWS' | translate }}"
+        }
+
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
 
         $scope.isAdmin = function (user){
           return UserService.userHasRole(user, 'ADMIN');
+        }
+
+        $scope.getCategory = function (){
+          return $scope.categoryMap[$scope.post.category.name];
         }
 
         $scope.recoverPost = function () {

@@ -16,7 +16,7 @@
             <span ng-switch-when="debate" class="iconify small-iconify" data-icon="octicon:comment-discussion-24" data-inline="false"></span>
         </span>
 
-        <span>{{post.postCategory.name}}</span>
+        <span>{{getCategory()}}</span>
         <span  ng-if="isAdmin(post.user)">
           <span> - </span>
            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
