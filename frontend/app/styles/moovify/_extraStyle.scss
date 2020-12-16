@@ -409,3 +409,19 @@ button.link-muted, a.link-muted{
 .disabled-button:hover:disabled{
   color: $moovify-disabled;
 }
+
+.follow-btn {
+  text-decoration: none !important;
+  padding: 0 15px 0 15px;
+}
+
+.unfollow-btn {
+  text-decoration: none !important;
+  padding: 0 15px 0 15px;
+  border-color: #f0506e;
+}
+
+.unfollow-btn:hover,
+.unfollow-btn:active {
+  border-color: #f0264c;
+}

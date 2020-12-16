@@ -5,38 +5,57 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
   , function(frontend, UIkit) {
 
     'use strict';
-    frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
-                                                UpdateAvatar, RestFulResponse, LoggedUserFactory, UserService, PageTitle) {
-
-      PageTitle.setTitle('PROFILE_TITLE', {user:$scope.loggedUser.username})
+    frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams, UpdateAvatar,
+                                                RestFulResponse, LoggedUserFactory, UserService, PageTitle, $q) {
 
       var routeID = parseInt($routeParams.id);
       $scope.user = {};
       $scope.loadUserFinished = false;
+      $scope.isFollowed = false;
 
       if(routeID) {
         if(routeID !== $scope.loggedUser.id) {
-          RestFulResponse.noAuth().one('/users/' + routeID).get().then(function (r) {
-            Object.assign($scope.user, r.data);
-            $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
-            $scope.tabs = [
-              {value:'posts', message:"{{'USER_POST_TAB_DISPLAY' | translate}}"},
-              {value:'comments', message:"{{'USER_COMMENTS_TAB_DISPLAY' | translate}}"},
-              {value:'bookmarks', message:"{{'USER_BOOK_TAB_DISPLAY' | translate}}"},
-              {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
-            ];
-            $scope.loadUserFinished = true;
-          }).catch(function (err) {
-            console.log(err);
-            // $location.path('/404');
+          var getUserData = $q(function (resolve, reject) {
+            RestFulResponse.noAuth().one('/users/' + routeID).get().then(function (r) {
+              Object.assign($scope.user, r.data);
+              $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
+              $scope.tabs = [
+                {value:'posts', message:"{{'USER_POST_TAB_DISPLAY' | translate}}"},
+                {value:'comments', message:"{{'USER_COMMENTS_TAB_DISPLAY' | translate}}"},
+                {value:'bookmarks', message:"{{'USER_BOOK_TAB_DISPLAY' | translate}}"},
+                {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
+              ];
+              PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
+              resolve();
+            }).catch(function (err) {
+              console.log(err);
+              $location.path('/404');
+              reject();
+            })
+          });
+
+          var followedUser = $q(function (resolve, reject){
+            RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
+              r.one('user/following/'+routeID).get().then(function (resp) {
+                $scope.isFollowed = resp.data.response;
+                resolve();
+              }).catch(reject);
+            }).catch(reject);
           })
+
+          $q.all(getUserData, followedUser).then(function () {
+            $scope.loadUserFinished = true;
+          })
+
         } else {
           Object.assign($scope.user, $scope.loggedUser);
+          PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
           $scope.isAdmin = UserService.userHasRole($scope.loggedUser, 'ADMIN');
           $scope.loadUserFinished = true;
         }
       } else {
         Object.assign($scope.user, $scope.loggedUser);
+        PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
         $scope.isAdmin = UserService.userHasRole($scope.loggedUser, 'ADMIN');
         $scope.loadUserFinished = true;
       }
@@ -337,7 +356,20 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         })
       }
 
-
+      $scope.followUser = function () {
+        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
+          r.one('/user/following/'+routeID).put().then(function (){
+            $scope.isFollowed = true;
+          }).catch(console.log);
+        }).catch(console.log);
+      }
+      $scope.unfollowUser = function () {
+        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
+          r.one('/user/following/'+routeID).remove().then(function (){
+            $scope.isFollowed = false;
+          }).catch(console.log);
+        }).catch(console.log);
+      }
     });
 
 });

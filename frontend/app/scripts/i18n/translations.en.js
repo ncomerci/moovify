@@ -209,5 +209,7 @@ define([], function() {
     PROFILE_EDIT_DETAILS: "Edit information",
     PROFILE_NO_DESCRIPTION: "You don't have a description yet!",
     USER_NO_DESCRIPTION: "This user doesn't have a description",
+    USER_FOLLOW: "Follow",
+    USER_UNFOLLOW: "Unfollow"
 	};
 });
