@@ -38,10 +38,12 @@ require.config({
     iconify: '../../static_dependencies/iconify/iconify',
     easymde: '../../static_dependencies/easymde/easyMde',
     purify: '../../static_dependencies/purify/purify',
-    jasmine: '../../node_modules/jasmine/bin/jasmine',
+    'js-joda-timezone': '../../bower_components/js-joda-timezone/dist/js-joda-timezone',
     angularMocks: '../../node_modules/angular-mocks/angular-mocks',
-    phantomPolyfillIncludesArray: '../../node_modules/phantomjs-polyfill-includes/includes-polyfill',
-    'js-joda-timezone': '../../bower_components/js-joda-timezone/dist/js-joda-timezone'
+    polyfillIncludesArray: '../../node_modules/phantomjs-polyfill-includes/includes-polyfill',
+    polyfillObjectAssign: '../../node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill',
+    polyfillURLSearchParams: '../../node_modules/url-search-params-polyfill/index',
+    polyfillFindArray: '../../node_modules/phantomjs-polyfill-find/find-polyfill'
   },
 
   shim: {

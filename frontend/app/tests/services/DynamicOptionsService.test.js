@@ -1,6 +1,6 @@
-define(['angular', 'angularMocks', 'frontend', 'services/PostCategoriesService', 'restangular'], function(angular) {
+define(['angular', 'angularMocks', 'frontend', 'services/DynamicOptionsService', 'restangular'], function(angular) {
 
-  describe('PostCategoriesService', function() {
+  describe('DynamicOptionsService', function() {
 
     var $scope;
     var $q;
@@ -29,22 +29,22 @@ define(['angular', 'angularMocks', 'frontend', 'services/PostCategoriesService',
       $provide.value('RestFulResponse', {noAuth: function() { return ReqFullResponse }});
     });
 
-    it('get post categories test', inject(function(PostCategoriesService){
+    it('get options test', inject(function(DynamicOptionsService){
 
-      var categories = [];
+      var options = [];
 
       for (var i = 0; i < 5; i++) {
-        var category = {};
-        category[i] = i;
-        category.plain = function () {
+        var option = {};
+        option[i] = i;
+        option.plain = function () {
         };
-        categories.push(category);
+        options.push(option);
       }
 
-      $httpBackend.expectGET(/.*\/api\/posts\/categories/).respond(204, categories)
+      $httpBackend.expectGET(/.*\/api\/hola\/options/).respond(200, options)
 
-      PostCategoriesService.getPostCategories().then(function (returnedCategories) {
-        expect(returnedCategories.map(function(c) { return c.originalElement })).toEqual(categories);
+      DynamicOptionsService.getOptions('/hola').then(function (returnedOptions) {
+        expect(returnedOptions.map(function(c) { return c.originalElement })).toEqual(options);
       });
 
       $httpBackend.flush();

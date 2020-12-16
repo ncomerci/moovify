@@ -17,12 +17,12 @@
         </span>
 
         <span>{{getCategory() | translate}}</span>
-        <span  ng-if="isAdmin(post.user)">
-          <span> - </span>
-           <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
-        </span>
+        <span> - </span>
 
         <span ng-if="post.user.enabled"> {{post.user.name}}</span>
+        <span  ng-if="isAdmin(post.user)">
+           <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
+        </span>
         <span ng-if="!post.user.enabled"> {{'OWNER_DELETED' | translate}}</span>
 
         <span>{{'VOTES_DISPLAY' |translate:{votes:post.totalLikes};}}</span>

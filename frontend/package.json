@@ -37,9 +37,12 @@
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-requirejs": "^1.1.0",
     "load-grunt-tasks": "^0.4.0",
+    "phantomjs-polyfill-find": "github:ptim/phantomjs-polyfill-find",
     "phantomjs-polyfill-includes": "^1.0.2",
+    "phantomjs-polyfill-object-assign": "0.0.2",
     "requirejs": "^2.1.11",
-    "time-grunt": "^0.3.1"
+    "time-grunt": "^0.3.1",
+    "url-search-params-polyfill": "^8.1.0"
   },
   "dependencies": {}
 }

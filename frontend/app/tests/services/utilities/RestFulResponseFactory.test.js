@@ -41,7 +41,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/utilities/RestFulRespon
 
       var expirationDate = new Date(1608069813 * 1000)
 
-      $httpBackend.expectPOST('http://localhost/api/user/refresh_token').respond(200, '', {Authorization: authorizationHeader});
+      $httpBackend.expectPOST(/.*\/api\/user\/refresh_token/).respond(200, '', {Authorization: authorizationHeader});
 
       RestFulResponse.withAuth(loggedUser).then(function (restfull) {
         expect(loggedUser.expDate).toEqual(expirationDate);
