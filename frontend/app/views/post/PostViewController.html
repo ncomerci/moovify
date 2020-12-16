@@ -37,13 +37,14 @@
   <div>
     <button ng-if="isAdmin" ng-disabled="mutex.deleting" ng-click="deletePost()">DELETE POST</button>
   </div>
+
   <div ng-if="isUser">
     <comment-reply-directive post-id="{{post.id}}" send-comment-fn="newComment.fn"></comment-reply-directive>
   </div>
 
   <section id="post-comments" ng-if="comments">
     <h1>COMMENT SECTION</h1>
-    <comment-tree-directive comments="comments"></comment-tree-directive>
+    <comment-tree-directive depth="0" comments="comments"></comment-tree-directive>
   </section>
 </main>
 

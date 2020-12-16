@@ -27,11 +27,7 @@ define(['frontend', 'services/LoginService', 'services/UserService'], function(f
           $scope.userVote = 0;
         }
 
-        console.log('Comment like directive', $scope);
-
         $scope.sendVote = function (value){
-
-          console.log('Comment like directive', $scope);
 
           if(!$scope.isUser){
             return;

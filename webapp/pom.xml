@@ -167,11 +167,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.passay</groupId>
-      <artifactId>passay</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>io.jsonwebtoken</groupId>
       <artifactId>jjwt-api</artifactId>
     </dependency>

@@ -22,6 +22,7 @@ define([], function() {
     SEARCH_TITLE: 'Moovify | Busqueda',
     SIGNUP_TITLE: 'Moovify | Registrarse',
     UPDATE_PASSWORD_TITLE: 'Moovify | Actualizar contraseña',
+    COMMENT_VIEW_TITLE: 'Moovify | Comentario',
     USER_LOGIN: 'Ingresar',
     USER_LOGIN_ALT: 'Ingresar',
     USER_LOGOUT: 'Salir',
