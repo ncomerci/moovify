@@ -49,7 +49,7 @@
             <a ng-if="loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" href="#" uk-toggle="target: #confirm-email-modal">
               {{'NAVBAR_CREATE_POST' | translate}}
             </a>
-            <a ng-if="!loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" ng-href="/posts/create">{{'NAVBAR_CREATE_POST' | translate}}</a>
+            <a ng-if="!loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" ng-href="/post/create">{{'NAVBAR_CREATE_POST' | translate}}</a>
           </li>
           <li ng-if="loggedUser.logged" class="ng-cloak">
             <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" ng-href="/user">

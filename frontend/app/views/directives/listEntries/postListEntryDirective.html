@@ -34,7 +34,7 @@
 
       </p>
 
-      <a class="text-lead" ng-href="/posts/{{post.id}}">
+      <a class="text-lead" ng-href="/post/{{post.id}}">
         <span ng-if="post.hasUserBookmarked">
           <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false" title="{{'BOOKMARKED_TITLE' | translate}}"></span>
           <span> - </span>
@@ -44,7 +44,7 @@
 
 
       <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
-        {{'MOVIES_DISCUSSED' | translate}}
+        <ng-pluralize count="post.movies.length" when="moviesDiscussedForm"></ng-pluralize>
         <span ng-repeat="movie in post.movies">
           <a ng-href="/movie/{{movie.id}}">
             {{movie.title}}
