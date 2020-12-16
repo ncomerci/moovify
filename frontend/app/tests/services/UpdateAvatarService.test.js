@@ -7,7 +7,6 @@ define(['angular', 'angularMocks', 'frontend', 'services/UpdateAvatarService', '
     var $httpBackend;
     var Restangular;
     var $provide;
-    var UpdateAvatar;
 
     var user = {expDate: new Date(Date.now() + 100), avatar: ''};
 
@@ -17,12 +16,11 @@ define(['angular', 'angularMocks', 'frontend', 'services/UpdateAvatarService', '
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (_$rootScope_, _$q_, _$httpBackend_, _Restangular_, _UpdateAvatar_) {
+    beforeEach(inject(function (_$rootScope_, _$q_, _$httpBackend_, _Restangular_) {
       $scope = _$rootScope_;
       $q = _$q_;
       $httpBackend = _$httpBackend_;
       Restangular = _Restangular_;
-      UpdateAvatar = _UpdateAvatar_;
     }));
 
     beforeEach(function() {
@@ -37,14 +35,14 @@ define(['angular', 'angularMocks', 'frontend', 'services/UpdateAvatarService', '
       });
     });
 
-    it('set file success test', function () {
+    it('set file success test', inject(function(UpdateAvatar) {
 
-      $httpBackend.expectPUT('http://localhost/api/user/avatar').respond(204);
+      $httpBackend.expectPUT(/.*\/api\/user\/avatar/).respond(204);
 
       UpdateAvatar.uploadAvatar();
 
       $httpBackend.flush();
-    });
+    }));
 
   });
 

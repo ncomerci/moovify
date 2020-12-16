@@ -25,11 +25,13 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
     function fetchMovies(path, query, category, decade, enabled, orderBy, pageSize, pageNumber) {
 
       var queryParams = {
-        query: query,
         orderBy: orderBy,
         pageSize: pageSize ? pageSize : 5,
         pageNumber: pageNumber ? pageNumber : 0
       };
+
+      if(query)
+        queryParams.query = query;
 
       if(category) {
         queryParams.movieCategory = category;

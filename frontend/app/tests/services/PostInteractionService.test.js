@@ -2,7 +2,6 @@ define(['angular', 'angularMocks', 'frontend', 'services/PostInteractionService'
 
   describe('PostInteractionService', function() {
 
-    var PostInteractionService;
     var $scope;
     var $q;
     var $httpBackend;
@@ -15,8 +14,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/PostInteractionService'
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (_PostInteractionService_, _$rootScope_, _$q_, _$httpBackend_, _Restangular_) {
-      PostInteractionService = _PostInteractionService_;
+    beforeEach(inject(function (_$rootScope_, _$q_, _$httpBackend_, _Restangular_) {
       $scope = _$rootScope_;
       $q = _$q_;
       $httpBackend = _$httpBackend_;
@@ -35,7 +33,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/PostInteractionService'
       });
     });
 
-    it('send vote success test', function () {
+    it('send vote success test', inject(function (PostInteractionService) {
 
       var value = 1;
 
@@ -47,7 +45,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/PostInteractionService'
         userVote: -1
       }
 
-      $httpBackend.expectPUT('http://localhost/api/posts/1/votes', {value: value}).respond(200);
+      $httpBackend.expectPUT(/.*\/api\/posts\/1\/votes/, {value: value}).respond(200);
 
       PostInteractionService.sendVote(post, value).then(function (post) {
         expect(post.totalLikes).toEqual(2);
@@ -57,11 +55,11 @@ define(['angular', 'angularMocks', 'frontend', 'services/PostInteractionService'
       $httpBackend.flush();
 
       $scope.$digest();
-    });
+    }));
 
-    it('toggle bookmark false test', function () {
+    it('toggle bookmark false test', inject(function (PostInteractionService) {
 
-      $httpBackend.expectDELETE('http://localhost/api/user/bookmarked/1').respond(204);
+      $httpBackend.expectDELETE(/.*\/api\/user\/bookmarked\/1/).respond(204);
 
       var post = {
         hasUserBookmarked: true,
@@ -75,11 +73,11 @@ define(['angular', 'angularMocks', 'frontend', 'services/PostInteractionService'
       $httpBackend.flush();
 
       $scope.$digest();
-    });
+    }));
 
-    it('toggle bookmark true test', function () {
+    it('toggle bookmark true test', inject(function (PostInteractionService) {
 
-      $httpBackend.expectPUT('http://localhost/api/user/bookmarked/1').respond(204);
+      $httpBackend.expectPUT(/.*\/api\/user\/bookmarked\/1/).respond(204);
 
       var post = {
         hasUserBookmarked: false,
@@ -93,7 +91,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/PostInteractionService'
       $httpBackend.flush();
 
       $scope.$digest();
-    });
+    }));
   });
 
 

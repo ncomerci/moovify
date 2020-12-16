@@ -1,4 +1,4 @@
-define(['angular', 'angularMocks', 'frontend', 'services/UserService', 'phantomPolyfillIncludesArray'], function(angular) {
+define(['angular', 'angularMocks', 'frontend', 'services/UserService', 'polyfillIncludesArray'], function(angular) {
 
   describe('UserService', function() {
 

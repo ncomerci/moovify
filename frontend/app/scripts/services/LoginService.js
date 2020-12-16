@@ -60,6 +60,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory'], function(front
               expDate: undefined
             };
             Object.assign(loggedUser, aux);
+            // TODO: Preguntarle a nico que onda
             RestFulResponse.clearHeaders();
             $location.path('/');
             resolve();
