@@ -22,6 +22,7 @@ require.config({
         iconify: 'external_dependencies/iconify/iconify',
         easymde: 'external_dependencies/easymde/easyMde',
         purify: 'external_dependencies/purify/purify',
+        'js-joda-timezone': '../../bower_components/js-joda-timezone/dist/js-joda-timezone'
     },
     shim: {
         angular: {
