@@ -82,7 +82,6 @@ define([], function() {
     MOVIE_TAB_DISPLAY: 'Películas',
     USER_TAB_DISPLAY: 'Usuarios',
     COMMENT_TAB_DISPLAY: 'Comentarios',
-    MOVIES_DISCUSSED: 'Películas discutidas:',
     ANY_TIME: 'Todos los tiempos',
     MOVIE_YEAR: 'Año: {{year}}',
     ALL: 'Todos',
