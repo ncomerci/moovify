@@ -1,12 +1,14 @@
 define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateAvatarService',
     'services/utilities/RestFulResponseFactory', 'directives/fetch/FetchPostsDirective',
     'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService',
-    'services/UserService']
+    'services/UserService', 'services/utilities/PageTitleService']
   , function(frontend, UIkit) {
 
     'use strict';
     frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
-                                                UpdateAvatar, RestFulResponse, LoggedUserFactory, UserService) {
+                                                UpdateAvatar, RestFulResponse, LoggedUserFactory, UserService, PageTitle) {
+
+      PageTitle.setTitle('PROFILE_TITLE', {user:$scope.loggedUser.username})
 
       var routeID = parseInt($routeParams.id);
       $scope.user = {};

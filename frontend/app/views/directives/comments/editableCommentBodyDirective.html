@@ -1,28 +1,27 @@
 <div>
   <p ng-show="!editing.value">{{body}}</p>
-  <div ng-if="isEditable">
-    <button ng-click="editing.value = true">EDIT</button>
-    <form ng-if="editing.value" name="editForm">
-      <button ng-click="editing.value = false">HIDE EDIT</button>
-      <fieldset class="uk-fieldset" ng-init="editableBody.value = body">
-        <div class="uk-margin">
-        <textarea class="uk-textarea"
-                  rows="5" name="editBody"
-                  ng-model="editableBody.value"
-                  placeholder="REPLY PLACE HOLDER"
-                  autofocus
-                  ng-disabled="sendingEdit">
-        </textarea>
-        </div>
-        <p id="reply-counter" class="uk-text-muted uk-align-left">{{editableBody.value.length}}/{{maxLen}}</p>
-        <div class="uk-align-right">
-          <button class="uk-button uk-button-primary uk-border-rounded"
-                  ng-disabled="editableBody.value.length > 400 || sendingEdit || editableBody.value.length <= 0" type="button"
-                  ng-click="sendEdit()">
-            SEND EDIT
-          </button>
-        </div>
-      </fieldset>
-    </form>
-  </div>
+  <form ng-if="editing.value" name="editForm">
+    <fieldset class="uk-fieldset" ng-init="editableBody.value = body">
+      <div class="uk-margin">
+      <textarea class="uk-textarea"
+                rows="5" name="editBody"
+                ng-model="editableBody.value"
+                placeholder="REPLY PLACE HOLDER"
+                autofocus
+                ng-disabled="sendingEdit">
+      </textarea>
+      </div>
+      <p id="reply-counter" class="uk-text-muted uk-align-left">{{editableBody.value.length}}/{{maxLen}}</p>
+      <div class="uk-align-right">
+        <button class="uk-button uk-button-primary uk-border-rounded"
+                ng-disabled="sendingEdit"
+                ng-click="editing.value = false">CANCEL EDIT</button>
+        <button class="uk-button uk-button-primary uk-border-rounded"
+                ng-disabled="editableBody.value.length > 400 || sendingEdit || editableBody.value.length <= 0" type="button"
+                ng-click="sendEdit()">
+          SEND EDIT
+        </button>
+      </div>
+    </fieldset>
+  </form>
 </div>

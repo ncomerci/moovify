@@ -8,7 +8,8 @@ define(['frontend'], function(frontend) {
       scope: {
         body: '=',
         sendUpdateFn: '&',
-        isEditable: '='
+        isEditable: '=',
+        startEdit: '='
       },
       templateUrl:'resources/views/directives/comments/editableCommentBodyDirective.html',
       link: function (scope){
@@ -21,6 +22,10 @@ define(['frontend'], function(frontend) {
         $scope.editing = {value: false};
 
         $scope.editableBody = {value: ''};
+
+        $scope.startEdit.fn = function () {
+          $scope.editing.value = true;
+        }
 
         $scope.sendEdit = function () {
 

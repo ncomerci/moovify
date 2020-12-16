@@ -20,7 +20,7 @@
         <dd>{{movie.originalLanguage}}</dd>
         <dt class="uk-text-uppercase">{{'MOVIE_VOTE_AVERAGE' | translate}}</dt>
         <dd>{{movie.voteAverage}}</dd>
-        <dt class="uk-text-uppercase">{{'MOVIE_CATEGORIES' | translate}}</dt>
+        <dt class="uk-text-uppercase"><ng-pluralize count="movie.categories.length" when="categoriesForm"></ng-pluralize></dt>
         <dd>
           <ul class="uk-padding-small uk-padding-remove-right uk-padding-remove-bottom">
               <li ng-repeat="category in movie.categories">

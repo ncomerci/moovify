@@ -1,7 +1,8 @@
 'use strict';
-define(['frontend', 'services/DisplayService', 'services/UserService', 'services/utilities/RestFulResponseFactory','services/LoginService'], function(frontend) {
+define(['frontend', 'services/UserService', 'directives/PrettyDateDirective',
+  'services/utilities/RestFulResponseFactory','services/LoginService'], function(frontend) {
 
-  frontend.directive('postListEntryDirective', function(DisplayService, LoggedUserFactory, RestFulResponse, UserService, $q) {
+  frontend.directive('postListEntryDirective', function(LoggedUserFactory, RestFulResponse, UserService, $q) {
     return {
       restrict: 'E',
       scope: {
@@ -15,14 +16,22 @@ define(['frontend', 'services/DisplayService', 'services/UserService', 'services
           scope.removePostFn = scope.removePostFn();
       },
       controller: function ($scope, $q) {
-        $scope.getAgeMessage = function (creationDate) {
-          return DisplayService.getAgeMessageCode(creationDate);
+
+        $scope.categoryMap = {
+          "watchlist": "{{'WATCHLIST' | translate }}",
+          "critique":"{{'CRITIQUE' | translate }}",
+          "debate":"{{'DEBATE' | translate }}",
+          "news":"{{'NEWS' | translate }}"
         }
 
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
 
         $scope.isAdmin = function (user){
           return UserService.userHasRole(user, 'ADMIN');
+        }
+
+        $scope.getCategory = function (){
+          return $scope.categoryMap[$scope.post.category.name];
         }
 
         $scope.recoverPost = function () {

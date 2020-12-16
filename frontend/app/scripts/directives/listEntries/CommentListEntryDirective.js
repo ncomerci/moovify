@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/DisplayService', 'services/utilities/RestFulResponseFactory','services/LoginService'], function (frontend) {
+define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService', 'services/utilities/RestFulResponseFactory','services/LoginService'], function (frontend) {
 
   frontend.directive('commentListEntryDirective', function (DisplayService, LoggedUserFactory, RestFulResponse, $q){
     return {
@@ -20,10 +20,6 @@ define(['frontend', 'services/DisplayService', 'services/utilities/RestFulRespon
         }
 
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
-
-        $scope.getAgeMessage = function (creationDate) {
-          return DisplayService.getAgeMessageCode(creationDate);
-        }
 
         $scope.recoverComment = function () {
           return $q(function (resolve, reject) {

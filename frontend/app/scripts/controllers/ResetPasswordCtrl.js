@@ -1,7 +1,9 @@
-define(['frontend', 'services/utilities/RestFulResponseFactory'], function(frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utilities/PageTitleService'], function(frontend) {
 
     'use strict';
-    frontend.controller('ResetPasswordCtrl', function($scope, RestFulResponse, $timeout, $location) {
+    frontend.controller('ResetPasswordCtrl', function($scope, RestFulResponse, PageTitle, $timeout, $location) {
+      PageTitle.setTitle('RESET_PASSWORD_TITLE');
+
       $scope.btnPressed = false;
       $scope.mailSent = false;
       $scope.mailError = false;

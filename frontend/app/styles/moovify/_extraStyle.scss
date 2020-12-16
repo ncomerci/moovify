@@ -368,3 +368,45 @@ button.like-post-button:hover, button.like-comment-button:hover{
 .tab-padding {
   padding-top: 10px;
 }
+
+.no-style-button  {
+    border:none;
+    background-color:transparent;
+    padding: 0;
+    outline:none;
+}
+
+button.link-muted, a.link-muted{
+  color: #414D62;
+}
+
+.resize-vertical {
+  resize: vertical;
+}
+
+.primary-button {
+  color: $moovify-primary-color-light;
+}
+
+.primary-button:hover {
+  color: $moovify-primary-color-dark;
+}
+
+.primary-button:disabled,
+.primary-button:hover:disabled{
+  color: $moovify-disabled;
+  cursor: none;
+}
+
+.primary-button:disabled,
+.primary-button:hover:disabled{
+  color: $moovify-disabled;
+  cursor: none;
+}
+
+.disabled-button,
+.disabled-button:disabled,
+.disabled-button:hover,
+.disabled-button:hover:disabled{
+  color: $moovify-disabled;
+}
