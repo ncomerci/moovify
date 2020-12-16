@@ -4,7 +4,6 @@ define(['frontend', 'services/fetch/MovieFetchService', 'services/fetch/PostFetc
   'use strict';
   frontend.controller('MovieViewController', function($scope, $routeParams, $httpParamSerializer, $locale, MovieFetchService, PostFetchService, PageTitle, DisplayService, MovieCategoriesService) {
 
-
     $scope.movie = null;
     $scope.posts = null;
     $scope.setNewUrl = null;

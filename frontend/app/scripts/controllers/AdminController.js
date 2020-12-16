@@ -53,5 +53,11 @@ define(['frontend', 'directives/TabDisplayDirective', 'directives/search/SearchP
         }
       }, true);
 
+      // Change on back and forward
+      $scope.$on('$locationChangeSuccess', function() {
+        if($routeParams.showing !== $scope.showing.value)
+          $scope.showing.value = $routeParams.showing ? $routeParams.showing : $scope.showingValues[0].value;
+      });
+
     });
 });

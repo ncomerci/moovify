@@ -253,6 +253,7 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
+    @Transactional
     @Override
     public void deleteUserRefreshToken(User user) {
         final Optional<AuthenticationRefreshToken> optToken = authenticationRefreshTokenDao.findRefreshTokenByUser(user);

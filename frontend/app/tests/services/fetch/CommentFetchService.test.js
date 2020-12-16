@@ -103,7 +103,23 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/CommentFetchServi
       $scope.$digest();
     }));
 
-  //  TODO: Test rest of FetchCommentService methods
+    it('fetch one comment test', inject(function(CommentFetchService) {
+
+      var comment = {id: 1};
+
+      $httpBackend.expectGET(/.*\/api\/comments\/1/).respond(200, comment);
+
+      CommentFetchService.fetchOneComment(comment.id).then(function(returnedComment) {
+        expect(returnedComment.originalElement).toEqual(comment);
+      })
+
+      $httpBackend.flush();
+
+      $scope.$digest();
+
+    }));
+
+  //  TODO: Test getPostCommentsWithUserVote, getCommentCommentsWithUserVote and getCommentCommentsWithUserVoteById - Nacho?
 
   });
 });
