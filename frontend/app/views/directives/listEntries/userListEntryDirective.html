@@ -21,6 +21,10 @@
             <span>-</span>
           </span>
             {{user.username}}
+            <span ng-if="isAdmin">
+                <span>-</span>
+               <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
+            </span>
           </a>
           <p class="uk-text-meta uk-margin-remove-vertical uk-text-truncate">
             {{'USER_NAME' | translate:{name:user.name};}}

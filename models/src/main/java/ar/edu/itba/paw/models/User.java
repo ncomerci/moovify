@@ -298,6 +298,14 @@ public class User {
         return getFollowingUsers().stream().anyMatch(user -> user.getUsername().equals(username));
     }
 
+    public boolean isUserFollower(User user) {
+        return getFollowers().contains(user);
+    }
+
+    public boolean isUserFollower(String username) {
+        return getFollowers().stream().anyMatch(user -> user.getUsername().equals(username));
+    }
+
     public Collection<User> getFollowers() {
         return followers;
     }

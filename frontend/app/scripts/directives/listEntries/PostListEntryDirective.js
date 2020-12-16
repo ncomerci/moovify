@@ -2,7 +2,7 @@
 define(['frontend', 'services/UserService', 'directives/PrettyDateDirective',
   'services/utilities/RestFulResponseFactory','services/LoginService'], function(frontend) {
 
-  frontend.directive('postListEntryDirective', function(LoggedUserFactory, RestFulResponse, UserService, $q) {
+  frontend.directive('postListEntryDirective', function(LoggedUserFactory, RestFulResponse, UserService, $locale, $q) {
     return {
       restrict: 'E',
       scope: {
@@ -24,6 +24,19 @@ define(['frontend', 'services/UserService', 'directives/PrettyDateDirective',
           "news":"{{'NEWS' | translate }}"
         }
 
+        if($locale.id === 'es'){
+          $scope.moviesDiscussedForm = {
+            1: 'Película discutida:',
+            other:'Películas discutidas:'
+          }
+        }
+        else{
+          $scope.moviesDiscussedForm = {
+            1: 'Movie discussed:',
+            other:'Movies discussed:'
+          }
+        }
+
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
 
         $scope.isAdmin = function (user){
@@ -31,7 +44,7 @@ define(['frontend', 'services/UserService', 'directives/PrettyDateDirective',
         }
 
         $scope.getCategory = function (){
-          return $scope.categoryMap[$scope.post.category.name];
+          return $scope.categoryMap[$scope.post.postCategory.name];
         }
 
         $scope.recoverPost = function () {
