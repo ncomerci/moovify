@@ -1,6 +1,6 @@
-define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFetchService',
+define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/CommentFetchService',
   'directives/comments/CommentTreeDirective', 'services/CommentInteractionService', 'services/LoginService', 'services/UserService',
-  'services/PostInteractionService', 'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService'], function(frontend) {
+  'services/PostInteractionService', 'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService'], function(frontend, UIkit) {
 
   'use strict';
   frontend.controller('PostViewController', function ($scope, PostFetchService, $location, PostInteractionService,
@@ -91,12 +91,20 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
       return $scope.post.put();
     }
 
-    $scope.deletePost = function() {
+    $scope.openDeleteModal = function () {
+      $scope.deletingPost = true;
+      UIkit.modal(document.getElementById('delete-post-modal')).show();
+    }
 
-      $scope.mutex.deleting = false;
+
+    $scope.confirmDelete = function() {
+
+      $scope.mutex.deleting = true;
 
       $scope.post.all('enabled').remove().then(function() {
         $scope.post.enabled = false;
+        UIkit.modal(document.getElementById('delete-post-modal')).hide();
+        $location.path('/');
       }).catch(console.log);
 
     }

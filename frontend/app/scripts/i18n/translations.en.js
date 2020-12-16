@@ -252,11 +252,18 @@ define([], function() {
     POST_VIEW_POST_AUTHOR: 'Author: {{postAuthor}}',
     POST_VIEW_MOVIES: 'Movies',
     POST_VIEW_TAGS: 'Tags',
+    POST_EDIT_BUTTON: 'Edit post',
+    POST_DELETE_BUTTON: 'Delete post',
     POST_VIEW_COMMENTS: 'Comments',
     NO_COMMENTS_PLACEHOLDER: 'There are no comments to show, make the first one!',
     CANCEL_POST_BODY_EDIT: 'Cancel',
-    SEND_POST_BODY_EDIT: 'Send'
+    SEND_POST_BODY_EDIT: 'Send',
     // COMMENT_VIEW_HEADING: "Reply to {{postTitle}}",
+
+    CONFIRM_POST_DELETE_MODAL_TITLE: 'Confirm deletion',
+    CONFIRM_POST_DELETE_MODAL_BODY: 'Delete the post "{{postTitle}}"?',
+    CONFIRM_POST_DELETE_MODAL_CANCEL_BUTTON: 'Cancel',
+    CONFIRM_POST_DELETE_MODAL_DELETE_BUTTON: 'Delete'
 
 
 
