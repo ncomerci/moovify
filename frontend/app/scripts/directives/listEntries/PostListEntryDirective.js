@@ -31,7 +31,7 @@ define(['frontend', 'services/UserService', 'directives/PrettyDateDirective',
         }
 
         $scope.getCategory = function (){
-          return $scope.categoryMap[$scope.post.category.name];
+          return $scope.categoryMap[$scope.post.postCategory.name];
         }
 
         $scope.recoverPost = function () {
