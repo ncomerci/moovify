@@ -17,7 +17,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         if(routeID !== $scope.loggedUser.id) {
           var getUserData = $q(function (resolve, reject) {
             RestFulResponse.noAuth().one('/users/' + routeID).get().then(function (r) {
-              if(r.data.enabled === false) throw '';
+              // if(r.data.enabled === false) throw '';
               Object.assign($scope.user, r.data);
               $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
               $scope.tabs = [
