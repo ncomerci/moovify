@@ -301,9 +301,13 @@ form {
 }
 
 .image-profile-shape {
-  background: none repeat scroll 0 0 /*#f2a365*/;
+  //background: none repeat scroll 0 0 /*#f2a365*/;
   border-radius: 110px;
   display: block;
+  object-fit: cover;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
   width: 180px;
   height: 180px;
   left: 50%;
@@ -431,4 +435,29 @@ button.link-muted, a.link-muted{
 
 button:focus {
   outline: none;
+}
+
+.margin-very-small-right {
+  margin-right: 5px !important;
+}
+.margin-very-small-left {
+  margin-left: 5px !important;
+}
+.margin-very-small-top {
+  margin-top: 5px !important;
+}
+.margin-very-small-bottom {
+  margin-bottom: 5px !important;
+}
+
+.word-brake {
+  word-break: break-all;
+}
+
+.primary-badge {
+  background-color: $moovify-primary-color-light;
+}
+
+.primary-badge:hover {
+  background-color: $moovify-primary-color-dark;
 }

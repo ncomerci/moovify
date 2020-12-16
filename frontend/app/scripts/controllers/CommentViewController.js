@@ -1,6 +1,6 @@
 define(['frontend','uikit', 'services/fetch/CommentFetchService',
   'directives/comments/CommentTreeDirective', 'services/CommentInteractionService', 'services/LoginService', 'services/UserService',
-  'services/utilities/PageTitleService'], function(frontend, UIkit) {
+  'services/utilities/PageTitleService',  'directives/PrettyDateDirective'], function(frontend, UIkit) {
 
   'use strict';
   frontend.controller('CommentViewController', function ($scope, $location, LoggedUserFactory, UserService,
@@ -21,8 +21,9 @@ define(['frontend','uikit', 'services/fetch/CommentFetchService',
       deleting: false
     };
     var loggedUser = LoggedUserFactory.getLoggedUser();
+    $scope.isLogged = loggedUser.logged;
 
-    if(loggedUser.logged) {
+    if($scope.isLogged) {
       $scope.isAdmin = UserService.userHasRole(loggedUser, 'ADMIN');
       $scope.isUser = UserService.userHasRole(loggedUser, 'USER');
     }

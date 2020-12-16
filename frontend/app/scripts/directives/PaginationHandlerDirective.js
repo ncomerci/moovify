@@ -52,8 +52,6 @@ define(['frontend'], function(frontend) {
             if(newPageSize){
               scope.resetPaginationFn();
             }
-
-            console.log("paginationSearch");
             scope.searchFn();
           }
         });

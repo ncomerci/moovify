@@ -38,7 +38,7 @@ define(['frontend', 'services/utilities/LocalStorageService'], function(frontend
 
         if($scope.startReply){
           $scope.startReply.fn = function () {
-            $scope.writtingReply.value = true;
+            $scope.writtingReply.value = !$scope.writtingReply.value;
           }
         }
         else {

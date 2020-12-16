@@ -15,7 +15,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       scope: {
         query: '=',
-        enabled: '@',
+        enabled: '<',
         refreshUrlFn: '='
       },
       link: function(scope){
@@ -37,7 +37,6 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
           movieCategory: init($routeParams.movieCategory, null),
           decade: init($routeParams.decade, null),
           orderBy: init($routeParams.orderBy, 'newest'),
-          enabled: true
         };
 
         scope.resetPagination = null;
@@ -80,7 +79,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         $scope.execSearch = function() {
 
           MovieFetchService.searchMovies($scope.query.value, $scope.filterParams.movieCategory,
-            $scope.filterParams.decade, $scope.filterParams.enabled, $scope.filterParams.orderBy,
+            $scope.filterParams.decade, $scope.filterParams.orderBy,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 
             function(resp) {
@@ -94,14 +93,18 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
               else
                 $scope.firstSearchDone = true;
 
-              $scope.paginationMutex = true;
+              $scope.paginationMutex = false;
             }
           ).catch(function(){ $location.path('/404') });
         };
 
         $scope.refreshUrlFn = function() {
-          Object.keys($scope.queryParams)
-            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
+          if ($scope.queryParams !== null) {
+            Object.keys($scope.queryParams)
+              .forEach(function (paramKey) {
+                $location.search(paramKey, $scope.queryParams[paramKey])
+              });
+          }
         };
 
 

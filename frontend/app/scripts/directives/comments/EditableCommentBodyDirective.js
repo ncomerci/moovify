@@ -24,7 +24,7 @@ define(['frontend'], function(frontend) {
         $scope.editableBody = {value: ''};
 
         $scope.startEdit.fn = function () {
-          $scope.editing.value = true;
+          $scope.editing.value = !$scope.editing.value;
         }
 
         $scope.sendEdit = function () {

@@ -1,6 +1,6 @@
-define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFetchService',
+define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/CommentFetchService',
   'directives/comments/CommentTreeDirective', 'services/CommentInteractionService', 'services/LoginService', 'services/UserService',
-  'services/PostInteractionService', 'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService'], function(frontend) {
+  'services/PostInteractionService', 'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService'], function(frontend, UIkit) {
 
   'use strict';
   frontend.controller('PostViewController', function ($scope, PostFetchService, $location, PostInteractionService,
@@ -18,7 +18,7 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
       deleting: false
     };
     var loggedUser = LoggedUserFactory.getLoggedUser();
-
+    $scope.isLogged = loggedUser.logged;
     if(loggedUser.logged) {
       $scope.isAdmin = UserService.userHasRole(loggedUser, 'ADMIN');
       $scope.isUser = UserService.userHasRole(loggedUser, 'USER');
@@ -32,6 +32,9 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
 
     PostFetchService.fetchPost(postId).then(function(post) {
       $scope.post = post;
+      if(!post.enabled){
+        $location.path('404');
+      }
       PageTitle.setTitle('POST_VIEW_TITLE', {post:$scope.post.title});
     }).catch(console.log);
 
@@ -51,6 +54,11 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
 
     }
 
+    $scope.getMovieYear = function (date) {
+      console.log(date);
+      return new Date(date).getFullYear();
+    }
+
     $scope.toggleBookmark = function () {
       $scope.mutex.bookmark = true;
       PostInteractionService.toggleBookmark($scope.post).then(function(post) {
@@ -60,7 +68,8 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
     }
 
     $scope.callback = {
-      startReply: {}
+      startReply: {},
+      startEdit: {}
     };
     $scope.callback.vote = function (value) {
 
@@ -82,12 +91,20 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
       return $scope.post.put();
     }
 
-    $scope.deletePost = function() {
+    $scope.openDeleteModal = function () {
+      $scope.deletingPost = true;
+      UIkit.modal(document.getElementById('delete-post-modal')).show();
+    }
 
-      $scope.mutex.deleting = false;
+
+    $scope.confirmDelete = function() {
+
+      $scope.mutex.deleting = true;
 
       $scope.post.all('enabled').remove().then(function() {
         $scope.post.enabled = false;
+        UIkit.modal(document.getElementById('delete-post-modal')).hide();
+        $location.path('/');
       }).catch(console.log);
 
     }

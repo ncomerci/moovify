@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'services/CommentInteractionService',
   'services/fetch/CommentFetchService', 'directives/comments/CommentReplyDirective', 'directives/comments/EditableCommentBodyDirective',
-  'directives/comments/CommentLikeHandlerDirective', 'services/UserService', 'services/LoginService'], function(frontend, UIkit) {
+  'directives/comments/CommentLikeHandlerDirective', 'services/UserService', 'services/LoginService', 'directives/PrettyDateDirective'], function(frontend, UIkit) {
 
   frontend.directive('commentDisplayDirective', function (){
 

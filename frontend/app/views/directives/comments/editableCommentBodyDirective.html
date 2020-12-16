@@ -13,13 +13,13 @@
       </div>
       <p id="reply-counter" class="uk-text-muted uk-align-left">{{editableBody.value.length}}/{{maxLen}}</p>
       <div class="uk-align-right">
-        <button class="uk-button uk-button-primary uk-border-rounded"
+        <button class="uk-button uk-button-default uk-text-primary uk-border-rounded"
                 ng-disabled="sendingEdit"
-                ng-click="editing.value = false">CANCEL EDIT</button>
+                ng-click="editing.value = false">{{'CANCEL_COMMENT_EDIT_BUTTON' | translate}}</button>
         <button class="uk-button uk-button-primary uk-border-rounded"
                 ng-disabled="editableBody.value.length > 400 || sendingEdit || editableBody.value.length <= 0" type="button"
                 ng-click="sendEdit()">
-          SEND EDIT
+          {{'SEND_COMMENT_EDIT_BUTTON' | translate}}
         </button>
       </div>
     </fieldset>

@@ -21,34 +21,36 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       },
 
       controller: function ($scope, PostFetchService) {
-
-        $scope.fetchPosts = function() {
+        $scope.fetchPosts = function () {
 
           PostFetchService.fetchPosts($scope.path, $scope.enabled, $scope.order,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
+            function (resp) {
+              $scope.posts = resp.collection;
+              $scope.paginationParams = resp.paginationParams;
+              $scope.queryParams = resp.queryParams;
 
-              function(resp) {
-                $scope.posts = resp.collection;
-                $scope.paginationParams = resp.paginationParams;
-                $scope.queryParams = resp.queryParams;
+              if ($scope.firstSearchDone)
+                $scope.refreshUrlFn();
+              else
+                $scope.firstSearchDone = true;
 
-                if($scope.firstSearchDone)
-                  $scope.refreshUrlFn();
-                else
-                  $scope.firstSearchDone = true;
-
-                $scope.paginationMutex = false;
-              }
-
-          ).catch(function() { $location.path('/404') });
+              $scope.paginationMutex = false;
+            }
+          ).catch(function () {
+            $location.path('/404')
+          });
 
         };
 
-        $scope.refreshUrlFn = function() {
-          Object.keys($scope.queryParams)
-            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
+        $scope.refreshUrlFn = function () {
+          if ($scope.queryParams !== null) {
+            Object.keys($scope.queryParams)
+              .forEach(function (paramKey) {
+                $location.search(paramKey, $scope.queryParams[paramKey])
+              });
+          }
         };
-
       },
 
       link: function(scope) {

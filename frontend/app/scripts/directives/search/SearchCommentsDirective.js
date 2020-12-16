@@ -67,11 +67,9 @@ define(['frontend', 'services/fetch/CommentFetchService', 'directives/Pagination
 
         // Execute first search
         scope.execSearch();
-
       },
       controller: function ($scope, CommentFetchService) {
         $scope.execSearch = function () {
-
           CommentFetchService.searchComments(
             $scope.query.value, $scope.filterParams.enabled, $scope.filterParams.orderBy,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
@@ -80,7 +78,6 @@ define(['frontend', 'services/fetch/CommentFetchService', 'directives/Pagination
               $scope.comments = resp.collection;
               $scope.paginationParams = resp.paginationParams;
               $scope.queryParams = resp.queryParams
-
 
               if ($scope.firstSearchDone)
                 $scope.refreshUrlFn();
@@ -95,10 +92,12 @@ define(['frontend', 'services/fetch/CommentFetchService', 'directives/Pagination
         };
 
         $scope.refreshUrlFn = function () {
-          Object.keys($scope.queryParams)
-            .forEach(function (paramKey) {
-              $location.search(paramKey, $scope.queryParams[paramKey])
-            });
+          if ($scope.queryParams !== null) {
+            Object.keys($scope.queryParams)
+              .forEach(function (paramKey) {
+                $location.search(paramKey, $scope.queryParams[paramKey])
+              });
+          }
         };
 
         $scope.removeComment = function (comment) {

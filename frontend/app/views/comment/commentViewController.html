@@ -1,8 +1,11 @@
 <main ng-if="mainComment" class="uk-container-small uk-margin-auto">
 
-  <h1>REPLY TO POST <a ng-href="post/{{mainComment.originalElement.post.id}}">{{mainComment.originalElement.post.title}}</a></h1>
+  <h1 class="uk-text-meta uk-margin-top">{{ 'COMMENT_VIEW_HEADING' | translate}}</h1>
+  <p class="uk-text-lead uk-margin-small-top"><a ng-href="post/{{mainComment.originalElement.post.id}}">
+    {{mainComment.originalElement.post.title}}
+  </a></p>
 
-  <div class="comment uk-padding uk-padding-remove-right uk-padding-remove-vertical">
+  <div class="comment">
     <!-- enabled comment view -->
     <div ng-if="mainComment.enabled">
 
@@ -12,7 +15,7 @@
         </div>
         <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
           <a class="uk-comment-title" ng-href="user/{{mainComment.user.id}}">{{mainComment.user.username}}</a>
-          <p class="uk-comment-meta uk-margin-remove-top">{{mainComment.creationDateTime | date}}</p>
+          <p class="uk-comment-meta uk-margin-remove-top"><pretty-date-directive creation-date="mainComment.creationDateTime"></pretty-date-directive></p>
         </div>
         <div class="comment-vote-handler">
           <comment-like-handler-directive total-votes="mainComment.totalVotes" user-vote="mainComment.userVote" send-vote-fn="callback.vote"></comment-like-handler-directive>
@@ -30,13 +33,15 @@
       <span ng-if="isUser">
 
         <button ng-if="isAdmin" class="no-style-button uk-link link-muted" ng-click="openDeleteModal()">
-          <span uk-icon="icon: trash; ratio 1"></span> DELETE</button>
+          <span class="margin-very-small-left margin-very-small-right" uk-icon="icon: trash; ratio 1"></span>{{'DELETE_COMMENT_BUTTON' | translate}}</button>
 
         <button class="no-style-button uk-link link-muted" ng-if="isUser && mainComment.isOwner && callbackFunctions.startEdit"
-                ng-click="callbackFunctions.startEdit.fn()"><span uk-icon="icon: pencil; ratio 1"></span> EDIT</button>
+                ng-click="callbackFunctions.startEdit.fn()">
+          <span class="margin-very-small-left margin-very-small-right" uk-icon="icon: pencil; ratio 1"></span>{{'EDIT_COMMENT_BUTTON' | translate}}</button>
 
       </span>
-        <a class="link-muted" ng-href="mailto:{{mainComment.user.email}}"><span uk-icon="icon: mail; ratio 1"></span> MAIL AUTHOR</a>
+        <a class="link-muted uk-link" ng-href="mailto:{{mainComment.user.email}}">
+          <span class="margin-very-small-left margin-very-small-right" uk-icon="icon: mail; ratio 1"></span>{{'MAIL_AUTHOR_COMMENT_BUTTON' | translate}}</a>
       </div>
 
     </div>
@@ -48,24 +53,42 @@
           <img class="circle-comment" src="resources/images/avatar.jpg" alt="">
         </div>
         <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
-          <p class="uk-comment-title">DELETED COMMENT</p>
+          <p class="uk-comment-title error">{{'DELETED_COMMENT_MESSAGE' | translate}}</p>
         </div>
       </div>
       <div class="comment-body">
         <div ng-if="isAdmin">
-          <p>[COMMENT BODY] {{mainComment.body}}</p>
+          <p>[ {{mainComment.body}} ]</p>
         </div>
       </div>
     </div>
 
-    <div ng-if="isUser" class="uk-margin-top">
-      <comment-reply-directive parent-id="{{mainComment.id}}" send-comment-fn="newComment.fn"></comment-reply-directive>
+    <hr class="uk-divider">
+
+    <div class="uk-margin-top">
+      <div ng-if="isUser">
+        <h2 class="uk-margin-large-top">{{'COMMENT_VIEW_CREATE_NEW_COMMENT' | translate}}</h2>
+        <comment-reply-directive parent-id="{{mainComment.id}}" send-comment-fn="newComment.fn"></comment-reply-directive>
+      </div>
+      <div ng-if="!isLogged" class="uk-text-center uk-text-lead uk-margin-large-top uk-margin-large-bottom">
+        <p class="uk-margin-remove-bottom">{{'SIGN_UP_TO_START_COMMENTING' | translate}}</p>
+        <a href="signup">{{'CREATE_NEW_ACCOUNT' | translate}}</a>
+      </div>
+      <span ng-if="isLogged && !isUser" class="uk-text-center uk-text-lead uk-margin-large-top uk-margin-large-bottom">
+        <p class="uk-margin-remove-bottom">{{'CONFIRM_EMAIL_TO_START_COMMENTING' | translate}}</p>
+        <a href="signup">{{'GO_TO_PROFILE' | translate}}</a>
+      </span>
     </div>
+
   </div>
 
   <div class="uk-margin-small uk-margin-remove-left uk-margin-remove-left" >
+
+    <h2>{{'COMMENT_REPLIES' | translate}}</h2>
+
     <div ng-if="comments">
       <comment-tree-directive depth="0" comments="comments"></comment-tree-directive>
+      <p ng-if="comments">{{'NO_COMMENTS_PLACEHOLDER' | translate}}</p>
     </div>
   </div>
 
@@ -75,14 +98,14 @@
 <div ng-if="isAdmin" id="delete-comment-modal-{{mainComment.id}}" uk-modal>
   <div class="uk-modal-dialog" ng-if="deletingComment ">
     <div class="uk-modal-header">
-      <h1 class="uk-modal-title">CONFIRM DELETE TITLE</h1>
+      <h1 class="uk-modal-title">{{'CONFIRM_COMMENT_DELETE_MODAL_TITLE' | translate}}</h1>
     </div>
-    <p class="uk-padding-small">{{mainComment.body}}</p>
+    <p class="uk-padding-small word-brake">{{'CONFIRM_COMMENT_DELETE_MODAL_BODY' | translate: {commentBody: mainComment.body};}}</p>
     <div class="uk-modal-footer uk-text-right">
       <button class="uk-button uk-button-default uk-modal-close uk-text-primary"
-              type="button" ng-disabled="sendingDelete.value">KEEP COMMENT</button>
+              type="button" ng-disabled="sendingDelete.value">{{'CONFIRM_COMMENT_DELETE_MODAL_CANCEL_BUTTON' | translate}}</button>
       <button class="uk-button uk-button-primary" type="button"
-              ng-disabled="sendingDelete.value" ng-click="confirmDelete()">DELETE COMMENT</button>
+              ng-disabled="sendingDelete.value" ng-click="confirmDelete()">{{'CONFIRM_COMMENT_DELETE_MODAL_DELETE_BUTTON' | translate}}</button>
     </div>
   </div>
 </div>

@@ -66,6 +66,9 @@ define([], function() {
     USER_RESETPASSWORD_VALIDATEDEMAIL: 'Important: your email must have been validated to be able to change your password',
     USER_RESETPASSWORD_SEND: "Send email",
     USER_RESETPASSWORD_EMAIL: "Enter email",
+    USER_EDIT_NAME: "Edit your name",
+    USER_EDIT_USERNAME: "Edit your username",
+    USER_EDIT_DESCRIPTION: "Edit your description",
     OWNER_DELETED: 'Owner deleted',
     COMMENT_BY:'By: {{username}}',
     COMMENT_BY_REMOVED: 'This user was removed',
@@ -74,6 +77,7 @@ define([], function() {
     SEARCH:'Search',
     SEARCH_PLACEHOLDER: 'Search...',
     ALL_POSTS: 'All posts',
+    ALL_COMMENTS:'All comments',
     POST_CATEGORIES: 'Type of post:',
     POST_AGE: 'From:',
     MOVIE_CATEGORY: 'Category:',
@@ -215,6 +219,58 @@ define([], function() {
     USER_PROMOTE: "Promote",
     USER_PROMOTE_TITLE: "Are you sure you want to promote {{username}} to admin?",
     USER_DELETE: "Delete",
-    USER_DELETE_TITLE: "Are you sure you want to delete to {{username}}?"
+    USER_DELETE_TITLE: "Are you sure you want to delete to {{username}}?",
+    PAGE_404: "Page not found",
+    PAGE_404_1: "Sorry, but the page you were trying to view does not exist.",
+    PAGE_404_2: "It looks like this was the result of an address that is no longer available or is mistyped.",
+    PAGE_404_BTN: "Go to the home page",
+
+
+
+    // SIN TRADUCIR
+    COMMENT_VIEW_HEADING: "Comment to post",
+    SIGN_UP_TO_START_COMMENTING: "Want to share your thoughts? Sign up and start commenting right away!",
+    CONFIRM_EMAIL_TO_START_COMMENTING: "You're almost done, confirm your email and start sharing!",
+    CREATE_NEW_ACCOUNT: 'Create new account',
+    GO_TO_PROFILE: 'Go to profile',
+    COMMENT_REPLIES: 'Comment replies',
+    DELETE_COMMENT_BUTTON: 'Delete',
+    REPLY_COMMENT_BUTTON: 'Reply',
+    GO_TO_VIEW_COMMENT_BUTTON: 'Comment view',
+    EDIT_COMMENT_BUTTON: 'Edit',
+    MAIL_AUTHOR_COMMENT_BUTTON: 'Mail author',
+    COMMENT_VIEW_CREATE_NEW_COMMENT: 'Create new comment',
+    CONFIRM_COMMENT_DELETE_MODAL_TITLE: 'Confirm deletion',
+    CONFIRM_COMMENT_DELETE_MODAL_BODY: 'Delete the comment "{{commentBody}}"?',
+    CONFIRM_COMMENT_DELETE_MODAL_CANCEL_BUTTON: 'Cancel',
+    CONFIRM_COMMENT_DELETE_MODAL_DELETE_BUTTON: 'Delete',
+    DELETED_COMMENT_MESSAGE: 'This comment has been deleted',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_TITLE: 'Going to comment view',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_BODY: 'In order to reply to this comment you must go to its view.',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_CANCEL_BUTTON: 'Cancel',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_GO_BUTTON: 'Go to view',
+    COMMENT_REPLY_CANCEL_BUTTON: 'Cancel',
+    COMMENT_REPLY_SEND_BUTTON: 'Send',
+    CANCEL_COMMENT_EDIT_BUTTON: 'Cancel',
+    SEND_COMMENT_EDIT_BUTTON: 'Send',
+
+    POST_VIEW_POST_AUTHOR: 'Author: {{postAuthor}}',
+    POST_VIEW_MOVIES: 'Movies',
+    POST_VIEW_TAGS: 'Tags',
+    POST_EDIT_BUTTON: 'Edit post',
+    POST_DELETE_BUTTON: 'Delete post',
+    POST_VIEW_COMMENTS: 'Comments',
+    NO_COMMENTS_PLACEHOLDER: 'There are no comments to show, make the first one!',
+    CANCEL_POST_BODY_EDIT: 'Cancel',
+    SEND_POST_BODY_EDIT: 'Send',
+    // COMMENT_VIEW_HEADING: "Reply to {{postTitle}}",
+
+    CONFIRM_POST_DELETE_MODAL_TITLE: 'Confirm deletion',
+    CONFIRM_POST_DELETE_MODAL_BODY: 'Delete the post "{{postTitle}}"?',
+    CONFIRM_POST_DELETE_MODAL_CANCEL_BUTTON: 'Cancel',
+    CONFIRM_POST_DELETE_MODAL_DELETE_BUTTON: 'Delete'
+
+
+
 	};
 });
