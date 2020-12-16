@@ -449,3 +449,11 @@ button:focus {
 .word-brake {
   word-break: break-all;
 }
+
+.primary-badge {
+  background-color: $moovify-primary-color-light;
+}
+
+.primary-badge:hover {
+  background-color: $moovify-primary-color-dark;
+}
