@@ -235,7 +235,7 @@ define([], function() {
     EDIT_COMMENT_BUTTON: 'Edit',
     MAIL_AUTHOR_COMMENT_BUTTON: 'Mail author',
     COMMENT_VIEW_CREATE_NEW_COMMENT: 'Create new comment',
-    CONFIRM_COMMENT_DELETE_MODAL_TITLE: 'Confirm deletion',
+    CONFIRM_COMMENT_DELETE_MODAL_TITLE: 'Confirm deleting',
     CONFIRM_COMMENT_DELETE_MODAL_BODY: 'Delete the comment "{{commentBody}}"?',
     CONFIRM_COMMENT_DELETE_MODAL_CANCEL_BUTTON: 'Cancel',
     CONFIRM_COMMENT_DELETE_MODAL_DELETE_BUTTON: 'Delete',
@@ -248,6 +248,8 @@ define([], function() {
     COMMENT_REPLY_SEND_BUTTON: 'Send',
     CANCEL_COMMENT_EDIT_BUTTON: 'Cancel',
     SEND_COMMENT_EDIT_BUTTON: 'Send',
+    WRITE_COMMENT_PLACEHOLDER: 'Write new comment here...',
+    WRITE_REPLY_COMMENT_PLACEHOLDER: "Write your comment here...",
 
     POST_VIEW_POST_AUTHOR: 'Author: {{postAuthor}}'
     // COMMENT_VIEW_HEADING: "Reply to {{postTitle}}",

@@ -165,6 +165,7 @@ define([], function() {
     CONFIRM_EMAIL_FOOTER: "Hey! Tienes que confirmar tu email. Para ello,",
     CONFIRM_EMAIL_BTN_MODAL: "Haz click aquí",
 
+
     WATCHLIST:'Lista',
     CRITIQUE:"Crítica",
     DEBATE:"Debate",
@@ -219,6 +220,34 @@ define([], function() {
     USER_PROMOTE: "Promover",
     USER_PROMOTE_TITLE: "Estás seguro que quieres promover a {{username}} a administrador?",
     USER_DELETE: "Eliminar",
-    USER_DELETE_TITLE: "Estás seguro que quieres eliminar a {{username}}?"
+    USER_DELETE_TITLE: "Estás seguro que quieres eliminar a {{username}}?",
+
+    COMMENT_VIEW_HEADING: "Comentar al post",
+    SIGN_UP_TO_START_COMMENTING: "Quieres compartir tus ideas? Registrate y empezá a comentar al instante!",
+    CONFIRM_EMAIL_TO_START_COMMENTING: "Ya casi terminás, confirmá tu email y comenzá a compartir!",
+    CREATE_NEW_ACCOUNT: 'Crear una nueva cuenta',
+    GO_TO_PROFILE: 'Ir al perfil',
+    COMMENT_REPLIES: 'Respuestas del comentario',
+    DELETE_COMMENT_BUTTON: 'Borrar',
+    REPLY_COMMENT_BUTTON: 'Responder',
+    GO_TO_VIEW_COMMENT_BUTTON: 'Ver comentario',
+    EDIT_COMMENT_BUTTON: 'Editar',
+    MAIL_AUTHOR_COMMENT_BUTTON: 'Enviar mail',
+    COMMENT_VIEW_CREATE_NEW_COMMENT: 'Crear un nuevo comentario',
+    CONFIRM_COMMENT_DELETE_MODAL_TITLE: 'Confirmar borrar',
+    CONFIRM_COMMENT_DELETE_MODAL_BODY: 'Borrar el comentario "{{commentBody}}"?',
+    CONFIRM_COMMENT_DELETE_MODAL_CANCEL_BUTTON: 'Cancelar',
+    CONFIRM_COMMENT_DELETE_MODAL_DELETE_BUTTON: 'Borrar',
+    DELETED_COMMENT_MESSAGE: 'Este comentario ha sido borrado',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_TITLE: 'Yendo a la vista del comentario',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_BODY: 'Para poder responderle a este comentario debes ir a su página',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_CANCEL_BUTTON: 'Cancelar',
+    CONFIRM_GO_TO_COMMENT_VIEW_MODAL_GO_BUTTON: 'Ir a la página',
+    COMMENT_REPLY_CANCEL_BUTTON: 'Cancelar',
+    COMMENT_REPLY_SEND_BUTTON: 'Enviar',
+    CANCEL_COMMENT_EDIT_BUTTON: 'Cancelar',
+    SEND_COMMENT_EDIT_BUTTON: 'Enviar',
+    WRITE_COMMENT_PLACEHOLDER: 'Escribe tu nuevo comentario aquí...',
+    WRITE_REPLY_COMMENT_PLACEHOLDER: "Escribe tu comentario aquí..."
   };
 });
