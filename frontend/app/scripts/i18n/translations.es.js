@@ -248,6 +248,14 @@ define([], function() {
     CANCEL_COMMENT_EDIT_BUTTON: 'Cancelar',
     SEND_COMMENT_EDIT_BUTTON: 'Enviar',
     WRITE_COMMENT_PLACEHOLDER: 'Escribe tu nuevo comentario aquí...',
-    WRITE_REPLY_COMMENT_PLACEHOLDER: "Escribe tu comentario aquí..."
+    WRITE_REPLY_COMMENT_PLACEHOLDER: "Escribe tu comentario aquí...",
+
+    POST_VIEW_POST_AUTHOR: 'Autor: {{postAuthor}}',
+    POST_VIEW_MOVIES: 'Películas',
+    POST_VIEW_TAGS: 'Tags',
+    POST_VIEW_COMMENTS: 'Comentarios',
+    NO_COMMENTS_PLACEHOLDER: 'No hay comentarios para mostrar, escribe el primero!',
+    CANCEL_POST_BODY_EDIT: 'Cancelar',
+    SEND_POST_BODY_EDIT: 'Enviar'
   };
 });
