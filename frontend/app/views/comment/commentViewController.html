@@ -15,7 +15,7 @@
         </div>
         <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
           <a class="uk-comment-title" ng-href="user/{{mainComment.user.id}}">{{mainComment.user.username}}</a>
-          <p class="uk-comment-meta uk-margin-remove-top">{{mainComment.creationDateTime | date}}</p>
+          <p class="uk-comment-meta uk-margin-remove-top"><pretty-date-directive creation-date="mainComment.creationDateTime"></pretty-date-directive></p>
         </div>
         <div class="comment-vote-handler">
           <comment-like-handler-directive total-votes="mainComment.totalVotes" user-vote="mainComment.userVote" send-vote-fn="callback.vote"></comment-like-handler-directive>
@@ -88,6 +88,7 @@
 
     <div ng-if="comments">
       <comment-tree-directive depth="0" comments="comments"></comment-tree-directive>
+      <p ng-if="comments">{{'NO_COMMENTS_PLACEHOLDER' | translate}}</p>
     </div>
   </div>
 

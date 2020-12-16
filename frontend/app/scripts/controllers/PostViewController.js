@@ -18,7 +18,7 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
       deleting: false
     };
     var loggedUser = LoggedUserFactory.getLoggedUser();
-
+    $scope.isLogged = loggedUser.logged;
     if(loggedUser.logged) {
       $scope.isAdmin = UserService.userHasRole(loggedUser, 'ADMIN');
       $scope.isUser = UserService.userHasRole(loggedUser, 'USER');
@@ -54,6 +54,11 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
 
     }
 
+    $scope.getMovieYear = function (date) {
+      console.log(date);
+      return new Date(date).getFullYear();
+    }
+
     $scope.toggleBookmark = function () {
       $scope.mutex.bookmark = true;
       PostInteractionService.toggleBookmark($scope.post).then(function(post) {
@@ -63,7 +68,8 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
     }
 
     $scope.callback = {
-      startReply: {}
+      startReply: {},
+      startEdit: {}
     };
     $scope.callback.vote = function (value) {
 

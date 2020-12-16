@@ -19,31 +19,61 @@
         </span>
         {{post.title}}
       </h1>
-      <p>{{'POST_VIEW_POST_AUTHOR' | translate: {postAuthor: post.user.username};}}</p>
+      <p>{{'POST_VIEW_POST_AUTHOR' | translate}} <a href="users/{{post.user.id}}">{{post.user.username}}</a></p>
     </div>
     <div class="post-vote-handler uk-padding-small">
       <comment-like-handler-directive total-votes="post.totalLikes" user-vote="post.userVote" send-vote-fn="callback.vote"></comment-like-handler-directive>
     </div>
   </div>
-
+  <hr class="uk-margin-remove-top">
   <article ng-if="post.body">
-    <editable-post-body-directive body="post.body" is-editable="isUser && post.owner" send-update-fn="callback.edit"></editable-post-body-directive>
+    <editable-post-body-directive body="post.body" is-editable="isUser && post.owner"
+                                  send-update-fn="callback.edit" trigger-edit-fn="callback.startEdit"></editable-post-body-directive>
+
   </article>
 
   <div>
-    <span ng-repeat="movie in post.movies">{{movie.title}} - ({{movie.releaseDate}})</span>
-  </div>
-  <hr>
-  <div>
-    <button ng-if="isAdmin" ng-disabled="mutex.deleting" ng-click="deletePost()">DELETE POST</button>
+    <h2 class="uk-text-meta">{{'POST_VIEW_MOVIES' | translate}}</h2>
+    <span ng-repeat="movie in post.movies">
+      <a class="uk-badge primary-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
+        ng-href="movie/{{movie.id}}">{{movie.title}} - ({{movie.releaseDate | date: 'yyyy'}})</a>
+    </span>
   </div>
 
-  <div ng-if="isUser">
-    <comment-reply-directive post-id="{{post.id}}" send-comment-fn="newComment.fn"></comment-reply-directive>
+  <div>
+    <h2 class="uk-text-meta">{{'POST_VIEW_TAGS' | translate}}</h2>
+    <span ng-repeat="tag in post.tags">
+      <a class="uk-badge primary-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom uk-text-normal"
+         ng-href="search?showing=posts&query={{tag}}">{{tag}}</a>
+    </span>
+  </div>
+
+  <hr>
+  <div class="uk-flex uk-align-right">
+    <button ng-if="isUser && post.owner && callback.startEdit.fn" ng-disabled="mutex.deleting" class="uk-margin-right uk-button uk-button-default uk-text-primary uk-border-rounded"
+            ng-click="callback.startEdit.fn()">EDIT POST</button>
+    <button ng-if="isAdmin" ng-disabled="mutex.deleting" class="uk-button uk-button-default logout-button uk-border-rounded"
+            ng-click="deletePost()">DELETE POST</button>
+  </div>
+
+  <div class="uk-margin-top">
+    <div ng-if="isUser">
+      <h3 class="uk-margin-large-top">{{'COMMENT_VIEW_CREATE_NEW_COMMENT' | translate}}</h3>
+      <comment-reply-directive post-id="{{post.id}}" send-comment-fn="newComment.fn"></comment-reply-directive>
+    </div>
+    <div ng-if="!isLogged" class="uk-text-center uk-text-lead uk-margin-large-top uk-margin-large-bottom">
+      <p class="uk-margin-remove-bottom">{{'SIGN_UP_TO_START_COMMENTING' | translate}}</p>
+      <a href="signup">{{'CREATE_NEW_ACCOUNT' | translate}}</a>
+    </div>
+    <span ng-if="isLogged && !isUser" class="uk-text-center uk-text-lead uk-margin-large-top uk-margin-large-bottom">
+        <p class="uk-margin-remove-bottom">{{'CONFIRM_EMAIL_TO_START_COMMENTING' | translate}}</p>
+        <a href="signup">{{'GO_TO_PROFILE' | translate}}</a>
+      </span>
   </div>
 
   <section id="post-comments" ng-if="comments">
-    <h1>COMMENT SECTION</h1>
+    <h2>{{'POST_VIEW_COMMENTS' | translate}}</h2>
     <comment-tree-directive depth="0" comments="comments"></comment-tree-directive>
+    <p class="uk-text-center uk-text-lead" ng-if="comments">{{'NO_COMMENTS_PLACEHOLDER' | translate}}</p>
   </section>
 </main>
