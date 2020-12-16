@@ -198,10 +198,21 @@ define([], function() {
     ADMIN: 'Administrador',
     PAGINATION_PAGE_SIZE: "Mostrando",
     PROFILE_POST_TAB_DISPLAY: "Tus posts",
+    USER_POST_TAB_DISPLAY: "Posts",
     PROFILE_COMMENTS_TAB_DISPLAY: "Tus comentarios",
+    USER_COMMENTS_TAB_DISPLAY: "Comentarios",
     PROFILE_BOOK_TAB_DISPLAY: "Tus posts guardados",
+    USER_BOOK_TAB_DISPLAY: "Posts guardados",
     PROFILE_FOLLOWED_USERS: "Tus usuarios seguidos",
+    USER_FOLLOWED_USERS: "Usuarios seguidos",
     PROFILE_EDIT_DETAILS: "Editar información",
     PROFILE_NO_DESCRIPTION: "Todavía no posees una descripción!",
+    USER_NO_DESCRIPTION: "Este usuario no posee una descripción",
+    USER_FOLLOW: "Seguir",
+    USER_UNFOLLOW: "Dejar de seguir",
+    USER_PROMOTE: "Promover",
+    USER_PROMOTE_TITLE: "Estás seguro que quieres promover a {{username}} a administrador?",
+    USER_DELETE: "Eliminar",
+    USER_DELETE_TITLE: "Estás seguro que quieres eliminar a {{username}}?"
   };
 });

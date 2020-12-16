@@ -27,7 +27,7 @@ define([], function() {
                 templateUrl: 'resources/views/user/userProfile.html',
                 controller: 'profileCtrl'
             },
-            '/users/:id': {
+            '/user/:id': {
               templateUrl: 'resources/views/user/userProfile.html',
               controller: 'profileCtrl'
             },

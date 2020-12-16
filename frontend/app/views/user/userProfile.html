@@ -40,6 +40,19 @@
             <a class="uk-button-default uk-border-rounded uk-text-danger unfollow-btn" ng-show="isFollowed"ng-click="unfollowUser()">
               {{'USER_UNFOLLOW' | translate}}
             </a>
+            <span ng-if="loggedUser.roles.includes('ADMIN')">
+              <a class="uk-button-default uk-border-rounded follow-btn uk-margin-small-left"
+                 ng-show="!isAdmin"
+                 href="#promote-modal" uk-toggle
+              >
+                {{'USER_PROMOTE' | translate}}
+              </a>
+              <a class="uk-button-default uk-border-rounded uk-text-danger unfollow-btn uk-margin-small-left"
+                 href="#delete-modal" uk-toggle
+              >
+                {{'USER_DELETE' | translate}}
+              </a>
+            </span>
           </div>
 
           <hr class="uk-divider-icon">
@@ -316,5 +329,31 @@
         />
       </div>
     </form>
+  </div>
+</div>
+
+<!--PROMOTE MODAL-->
+<div id="promote-modal" ng-show="!profileSameAsLogged()" uk-modal>
+  <div class="uk-modal-dialog">
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">{{'USER_PROMOTE_TITLE' | translate: {username: user.username};}}</h2>
+    </div>
+    <div class="uk-modal-footer uk-text-right">
+      <button class="uk-button uk-button-default uk-modal-close uk-text-primary" type="button">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
+      <button class="uk-button uk-button-primary" type="button" ng-click="promoteUser()">{{'UPDATE_AVATAR_MODAL_ACCEPT' | translate}}</button>
+    </div>
+  </div>
+</div>
+
+<!--DELETE MODAL-->
+<div id="delete-modal" ng-show="!profileSameAsLogged()" uk-modal>
+  <div class="uk-modal-dialog">
+    <div class="uk-modal-header">
+      <h2 class="uk-modal-title">{{'USER_DELETE_TITLE' | translate: {username: user.username};}}</h2>
+    </div>
+    <div class="uk-modal-footer uk-text-right">
+      <button class="uk-button uk-button-default uk-modal-close uk-text-primary" type="button">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
+      <button class="uk-button uk-button-danger" type="button" ng-click="deleteUser()">{{'USER_DELETE' | translate}}</button>
+    </div>
   </div>
 </div>

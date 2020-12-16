@@ -198,17 +198,21 @@ define([], function() {
     ADMIN: 'Admin',
     PAGINATION_PAGE_SIZE: "Showing",
     PROFILE_POST_TAB_DISPLAY: "Your posts",
-    USER_POST_TAB_DISPLAY: "posts",
+    USER_POST_TAB_DISPLAY: "Posts",
     PROFILE_COMMENTS_TAB_DISPLAY: "Your comments",
-    USER_COMMENTS_TAB_DISPLAY: "comments",
+    USER_COMMENTS_TAB_DISPLAY: "Comments",
     PROFILE_BOOK_TAB_DISPLAY: "Your bookmarked posts",
-    USER_BOOK_TAB_DISPLAY: "bookmarked posts",
+    USER_BOOK_TAB_DISPLAY: "Bookmarked posts",
     PROFILE_FOLLOWED_USERS: "Your followed users",
-    USER_FOLLOWED_USERS: "followed users",
+    USER_FOLLOWED_USERS: "Followed users",
     PROFILE_EDIT_DETAILS: "Edit information",
     PROFILE_NO_DESCRIPTION: "You don't have a description yet!",
     USER_NO_DESCRIPTION: "This user doesn't have a description",
     USER_FOLLOW: "Follow",
-    USER_UNFOLLOW: "Unfollow"
+    USER_UNFOLLOW: "Unfollow",
+    USER_PROMOTE: "Promote",
+    USER_PROMOTE_TITLE: "Are you sure you want to promote {{username}} to admin?",
+    USER_DELETE: "Delete",
+    USER_DELETE_TITLE: "Are you sure you want to delete to {{username}}?"
 	};
 });

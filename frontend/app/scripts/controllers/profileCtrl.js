@@ -17,6 +17,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         if(routeID !== $scope.loggedUser.id) {
           var getUserData = $q(function (resolve, reject) {
             RestFulResponse.noAuth().one('/users/' + routeID).get().then(function (r) {
+              if(r.data.enabled === false) throw '';
               Object.assign($scope.user, r.data);
               $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
               $scope.tabs = [
@@ -360,6 +361,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
           r.one('/user/following/'+routeID).put().then(function (){
             $scope.isFollowed = true;
+            $scope.user.followerCount += 1;
           }).catch(console.log);
         }).catch(console.log);
       }
@@ -367,9 +369,27 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
           r.one('/user/following/'+routeID).remove().then(function (){
             $scope.isFollowed = false;
+            $scope.user.followerCount -= 1;
+          }).catch(console.log);
+        }).catch(console.log);
+      }
+
+      $scope.promoteUser = function () {
+        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
+          r.one('/users/'+routeID+'/privilege').put().then(function () {
+            $scope.isAdmin = true;
+            UIkit.modal(document.getElementById('promote-modal')).hide();
+          }).catch(console.log);
+        }).catch(console.log);
+      };
+
+      $scope.deleteUser = function () {
+        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
+          r.one('/users/'+routeID+'/enabled').remove().then(function () {
+            UIkit.modal(document.getElementById('delete-modal')).hide();
+            $location.path('/404');
           }).catch(console.log);
         }).catch(console.log);
       }
     });
-
 });
