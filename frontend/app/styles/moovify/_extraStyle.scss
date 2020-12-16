@@ -296,6 +296,7 @@ form {
 
 .color-div {
   background-color: #30475e;
+  min-height: 100vh;
 }
 
 .image-profile-shape {
@@ -361,6 +362,10 @@ button.like-post-button:hover, button.like-comment-button:hover{
 
 .separator {
   border-bottom: 2px solid #ECECEC
+}
+
+.tab-padding {
+  padding-top: 10px;
 }
 
 .no-style-button  {

@@ -1,64 +1,73 @@
-<div class="color-div">
-  <div class="uk-height-medium uk-flex uk-flex-center uk-flex-middle uk-background-cover uk-light pink-div"></div>
-
-<!--  TODO: MODAL DE CONFIMARCIÓN DE USUARIO-->
+<div ng-show="loadUserFinished">
+  <div class="uk-height-medium uk-flex uk-flex-center uk-flex-middle uk-background-cover uk-light"
+       data-src="/resources/images/background.jpg"
+       uk-img
+  >
+  </div>
 
   <div class="uk-width-1-3 image-profile-position">
     <div class="uk-transition-toggle" tabindex="0">
       <div class="image-profile-shape elevation-effect" uk-form-custom>
-        <img class='image-profile-shape' ng-src="{{loggedUser.avatar}}" alt="avatar"/>
-        <input id="avatar" name="avatar" type="file" accept="image/*"/>
-        <div class="uk-position-bottom-center add-img-btn">
+        <img class='image-profile-shape' ng-src="{{user.avatar}}" alt="avatar"/>
+        <input id="avatar" name="avatar" type="file" accept="image/*" ng-show="profileSameAsLogged()"/>
+        <div class="uk-position-bottom-center add-img-btn" ng-show="profileSameAsLogged()">
           <span class="iconify uk-transition-fade" data-icon="mdi:camera-plus" data-inline="false"></span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="main-page">
+  <div class="main-page color-div">
     <div class="uk-padding-remove" uk-grid>
       <div class="uk-width-1-3">
         <br><br><br><br><br>
         <div class="profile-details-position uk-text-primary">
           <div class="uk-text-danger" ng-show="avatar.error">{{'FORM_AVATAR_SIZE_ERROR' | translate}}</div>
           <div class="uk-flex uk-flex-middle uk-flex-center">
-            <h2 class="uk-text-bold uk-margin-remove-bottom uk-text-large uk-text-primary">{{loggedUser.name}}
+            <h2 class="uk-text-bold uk-margin-remove-bottom uk-text-large uk-text-primary">{{user.name}}
             <span ng-if="isAdmin">
-              <span>-</span>
                <span class="iconify admin-badge-profile" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
             </span>
             </h2>
           </div>
 
-          <div class="uk-margin-small-top uk-text-center"><span class="uk-text-bold">@</span>{{loggedUser.username}}</div>
+          <div class="uk-margin-small-top uk-text-center"><span class="uk-text-bold">@</span>{{user.username}}</div>
+
+
           <hr class="uk-divider-icon">
 
           <div class="uk-grid-column uk-child-width-1-2 uk-margin-small-bottom" uk-grid>
             <div class="uk-text-right">
-              <span class="uk-text-bold">{{loggedUser.followerCount}} </span>
-              <ng-pluralize count="loggedUser.followerCount" when="followForms"></ng-pluralize>
+              <span class="uk-text-bold">{{user.followerCount}} </span>
+              <ng-pluralize count="user.followerCount" when="followForms"></ng-pluralize>
             </div>
             <div class="uk-text-left">
-              <span class="uk-text-bold">{{loggedUser.totalLikes}}</span>
-              <ng-pluralize count="loggedUser.totalLikes" when="voteForms"></ng-pluralize>
+              <span class="uk-text-bold">{{user.totalLikes}}</span>
+              <ng-pluralize count="user.totalLikes" when="voteForms"></ng-pluralize>
             </div>
             <div class="uk-text-bold uk-text-right uk-margin-small-top">{{'USER_PROFILE_CREATION_DATE' | translate}}</div>
-            <div class="uk-text-left uk-margin-small-top">{{ loggedUser.creationDate | date: 'MMM yyyy' }}</div>
+            <div class="uk-text-left uk-margin-small-top">{{ user.creationDate | date: 'MMM yyyy' }}</div>
             <div class="uk-text-bold uk-text-right uk-margin-small-top uk-text-capitalize">{{'USER_CREATE_EMAIL' | translate}}:</div>
-            <div class="uk-text-left uk-margin-small-top uk-text-break">{{loggedUser.email}}</div>
+            <div class="uk-text-left uk-margin-small-top">{{user.email}}</div>
           </div>
-          <div class="uk-text-italic uk-text-center uk-margin-bottom uk-text-break">
-            {{loggedUser.description ? loggedUser.description : ('PROFILE_NO_DESCRIPTION' | translate)}}
+
+          <hr>
+
+          <div class="uk-text-italic uk-text-center uk-margin-bottom uk-text-break" ng-if="user.description">
+            {{user.description}}
+          </div>
+          <div class="uk-text-italic uk-text-center uk-margin-bottom uk-text-break" ng-if="!user.description">
+            {{profileSameAsLogged() ? ('PROFILE_NO_DESCRIPTION' | translate) : ('USER_NO_DESCRIPTION' | translate)}}
           </div>
         </div>
 
         <div class="uk-grid-column uk-child-width-1-2 uk-margin-small-bottom" uk-grid>
-          <div>
-            <a class="uk-button uk-button-default uk-align-right uk-border-rounded uk-text-uppercase uk-margin-bottom" href="#edit-info-modal" uk-toggle>
+          <div ng-show="profileSameAsLogged()">
+            <a class="uk-button uk-button-default uk-align-right uk-border-rounded uk-text-uppercase uk-margin-bottom uk-margin-remove-left" href="#edit-info-modal" uk-toggle>
               {{'PROFILE_EDIT_DETAILS' | translate}}
             </a>
           </div>
-          <div>
+          <div ng-show="profileSameAsLogged()">
             <a class="uk-button uk-button-default uk-border-rounded uk-text-uppercase uk-margin-bottom" href="#change-password-modal" uk-toggle>
               {{'CHANGE_PASSWORD_TITLE' | translate}}
             </a>
@@ -67,28 +76,33 @@
 
       </div>
       <div class="uk-width-2-3">
-        <tab-display-directive tab-selected="showing.value" tabs="tabs"></tab-display-directive>
+        <div style="background: #222831">
+          <tab-display-directive tab-selected="showing.value" tabs="tabs" ng-if="user.id"></tab-display-directive>
+        </div>
 
-        <div class="uk-width-expand uk-margin-small-top">
+        <div class="uk-width-expand uk-padding-small"
+             style="background: #ececec; height: 100vh"
+             ng-if="user.id"
+        >
 
           <!--    User Posts    -->
           <div ng-show="showing.value === 'posts'">
-            <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/user/posts" refresh-url-fn="setPostsUrl" ></fetch-posts-directive>
+            <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/users/{{user.id}}/posts" refresh-url-fn="setPostsUrl" ></fetch-posts-directive>
           </div>
 
           <!--    User Comments    -->
           <div ng-show="showing.value === 'comments'">
-            <fetch-comments-directive default-page-size="25" order="'newest'" enabled="true" path="/user/comments" refresh-url-fn="setCommentsUrl" ></fetch-comments-directive>
+            <fetch-comments-directive default-page-size="25" order="'newest'" enabled="true" path="/users/{{user.id}}/comments" refresh-url-fn="setCommentsUrl" ></fetch-comments-directive>
           </div>
 
           <!--    User Bookmarked Posts    -->
           <div ng-show="showing.value === 'bookmarks'">
-            <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/user/bookmarked" refresh-url-fn="setBookmarksUrl" ></fetch-posts-directive>
+            <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/users/{{user.id}}/bookmarked" refresh-url-fn="setBookmarksUrl" ></fetch-posts-directive>
           </div>
 
           <!--    Users Following      -->
           <div ng-show="showing.value === 'following'">
-            <fetch-users-directive default-page-size="25" order="'votes'" enabled="true" path="/user/following" refresh-url-fn="setFollowingUrl" ></fetch-users-directive>
+            <fetch-users-directive default-page-size="25" order="'votes'" enabled="true" path="/users/{{user.id}}/following" refresh-url-fn="setFollowingUrl" ></fetch-users-directive>
           </div>
 
         </div>
@@ -99,7 +113,7 @@
 
 
 <!-- UPDATE AVATAR MODAL -->
-  <div id="avatar-update-modal" uk-modal>
+  <div id="avatar-update-modal" ng-show="profileSameAsLogged()" uk-modal>
     <div class="uk-modal-dialog">
       <div class="uk-modal-header">
         <h2 class="uk-modal-title">{{'UPDATE_AVATAR_MODAL_TITLE' | translate}}</h2>
@@ -116,7 +130,7 @@
   </div>
 
   <!-- CHANGE PASSWORD MODAL -->
-  <div id="change-password-modal" uk-modal>
+  <div id="change-password-modal" ng-show="profileSameAsLogged()" uk-modal>
     <div class="uk-modal-dialog">
       <div class="uk-modal-header">
         <h2 class="uk-modal-title">{{'CHANGE_PASSWORD_TITLE' | translate}}</h2>
@@ -173,7 +187,7 @@
   </div>
 
   <!-- EDIT INFO MODAL -->
-  <div id="edit-info-modal" uk-modal>
+  <div id="edit-info-modal" ng-show="profileSameAsLogged()" uk-modal>
     <div class="uk-modal-dialog">
       <div class="uk-modal-header">
         <h2 class="uk-modal-title">{{'PROFILE_EDIT_DETAILS' | translate}}</h2>
@@ -255,8 +269,16 @@
   </div>
 </div>
 
+<div style="position: fixed; bottom: 0; padding: 8px 8px;"
+     class="uk-width-expand uk-background-primary uk-text-bold uk-text-center"
+     ng-show="user.roles.includes('NOT_VALIDATED') && profileSameAsLogged()"
+>
+  {{'CONFIRM_EMAIL_FOOTER' | translate}}
+  <a class="uk-text-secondary" href="#confirm-email-profile-modal" uk-toggle>{{'CONFIRM_EMAIL_BTN_MODAL' | translate}}</a>
+</div>
+
 <!-- Confirm email modal -->
-<div id="confirm-email-profile-modal" ng-show="loggedUser.roles.includes('NOT_VALIDATED')" uk-modal>
+<div id="confirm-email-profile-modal" ng-show="user.roles.includes('NOT_VALIDATED') && profileSameAsLogged()" uk-modal>
   <div class="uk-modal-dialog uk-modal-body">
     <button class="uk-modal-close-default" type="button" uk-close></button>
     <h2 class="uk-modal-title">{{'USER_EMAILCONFIRM_TITLE' | translate}}</h2>

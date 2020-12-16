@@ -10,7 +10,43 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
 
       PageTitle.setTitle('PROFILE_TITLE', {user:$scope.loggedUser.username})
 
-      if($scope.loggedUser.roles.includes('NOT_VALIDATED')) {
+      var routeID = parseInt($routeParams.id);
+      $scope.user = {};
+      $scope.loadUserFinished = false;
+
+      if(routeID) {
+        if(routeID !== $scope.loggedUser.id) {
+          RestFulResponse.noAuth().one('/users/' + routeID).get().then(function (r) {
+            Object.assign($scope.user, r.data);
+            $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
+            $scope.tabs = [
+              {value:'posts', message:"{{'USER_POST_TAB_DISPLAY' | translate}}"},
+              {value:'comments', message:"{{'USER_COMMENTS_TAB_DISPLAY' | translate}}"},
+              {value:'bookmarks', message:"{{'USER_BOOK_TAB_DISPLAY' | translate}}"},
+              {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
+            ];
+            $scope.loadUserFinished = true;
+          }).catch(function (err) {
+            console.log(err);
+            // $location.path('/404');
+          })
+        } else {
+          Object.assign($scope.user, $scope.loggedUser);
+          $scope.isAdmin = UserService.userHasRole($scope.loggedUser, 'ADMIN');
+          $scope.loadUserFinished = true;
+        }
+      } else {
+        Object.assign($scope.user, $scope.loggedUser);
+        $scope.isAdmin = UserService.userHasRole($scope.loggedUser, 'ADMIN');
+        $scope.loadUserFinished = true;
+      }
+
+
+      $scope.profileSameAsLogged = function () {
+        return $routeParams.id === undefined || routeID === $scope.loggedUser.id;
+      }
+
+      if(UserService.userHasRole($scope.loggedUser, 'NOT_VALIDATED')) {
         UIkit.modal(document.getElementById('confirm-email-profile-modal')).show();
       }
 
@@ -118,8 +154,6 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         repeatPassword: ''
       };
 
-      $scope.isAdmin = UserService.userHasRole($scope.loggedUser, 'ADMIN');
-
       $scope.avatar = UpdateAvatar.getAvatar();
       var inputFile = angular.element(document.getElementById('avatar'))[0];
 
@@ -132,7 +166,9 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       });
 
       $scope.uploadAvatar = function () {
-        UpdateAvatar.uploadAvatar();
+        UpdateAvatar.uploadAvatar().then(function () {
+          $scope.user.avatar = $scope.loggedUser.avatar;
+        });
         UIkit.modal(document.getElementById('avatar-update-modal')).hide();
       };
 
@@ -157,6 +193,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
                .then(function () {
                  $scope.loading = false;
                  Object.assign($scope.loggedUser, aux);
+                 Object.assign($scope.user, aux);
                  $scope.btnPressed = false;
                  UIkit.modal(document.getElementById('edit-info-modal')).hide();
                  if(aux.username !== undefined) {

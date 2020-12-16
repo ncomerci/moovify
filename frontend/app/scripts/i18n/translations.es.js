@@ -157,6 +157,8 @@ define([], function() {
     UPDATE_PASS_RESEND_EMAIL: "Reenviar email",
     UPDATE_PASS_SUCCESS: "Contraseña cambiada satisfactoriamente, redirigiendo a la página de ingreso...",
     UPDATE_PASS_ERROR: "Un error ha ocurrido, intentalo de nuevo más tarde",
+    CONFIRM_EMAIL_FOOTER: "Hey! You need to confirm your email. To do so,",
+    CONFIRM_EMAIL_BTN_MODAL: "click here",
 
     WATCHLIST:'Lista',
     CRITIQUE:"Crítica",

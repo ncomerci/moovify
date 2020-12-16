@@ -6,8 +6,8 @@ define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService',
       restrict: 'E',
       scope: {
         comment: '=',
-        adminControls:'<',
-        removeCommentFn:'&'
+        adminControls:'<?',
+        removeCommentFn:'&?'
       },
       templateUrl: 'resources/views/directives/listEntries/commentListEntryDirective.html',
       link: function (scope) {
