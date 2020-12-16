@@ -59,7 +59,6 @@
 <!--  JWT Utility Dependencies  -->
     <io.jsonwebtoken.version>0.11.2</io.jsonwebtoken.version>
 
-    <org.passay.version>1.0</org.passay.version>
   </properties>
 
   <dependencyManagement>
@@ -335,12 +334,6 @@
               <artifactId>jboss-logging</artifactId>
             </exclusion>
           </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.passay</groupId>
-        <artifactId>passay</artifactId>
-        <version>${org.passay.version}</version>
       </dependency>
 
       <dependency>

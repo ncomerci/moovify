@@ -8,7 +8,8 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
     return {
       restrict: 'E',
       scope: {
-        comment: '='
+        comment: '=',
+        depth: '='
       },
       templateUrl:'resources/views/directives/comments/commentDisplayDirective.html',
       link: function(scope) {
@@ -30,7 +31,7 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
           $scope.isUser = UserService.userHasRole(loggedUser, 'USER');
         }
 
-        if(!$scope.comment.childrenFetched) {
+        if(!$scope.comment.childrenFetched && $scope.depth < 5) {
           CommentFetchService.getCommentCommentsWithUserVote($scope.comment).then(function (comment) {
             $scope.comment.children = comment;
             $scope.currentChildren = $scope.comment.children.length;
@@ -83,6 +84,11 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
 
           $scope.comment.body = newBody;
           return $scope.comment.put();
+        }
+
+        $scope.openGoToViewModal = function () {
+          $scope.tryingReply = true;
+          UIkit.modal(document.getElementById('go-to-comment-view-modal-' + $scope.comment.id)).show();
         }
 
         $scope.openDeleteModal = function () {

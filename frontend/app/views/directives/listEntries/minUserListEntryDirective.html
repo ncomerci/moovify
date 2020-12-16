@@ -1,24 +1,23 @@
 <div class="uk-grid-small uk-flex uk-flex-wrap uk-flex-row uk-flex-center" uk-grid>
   <div class="uk-width-1-3">
-    <a href="/users/{{user.id}}">
+    <a href="/user/{{user.id}}">
       <img class="circle-comment uk-comment-avatar" src="{{user.avatar}}" alt="">
     </a>
   </div>
   <div class="uk-width-2-3 margin-user-home-display">
     <div class="uk-flex">
       <div class="uk-width-expand">
-        <a ng-href="/users/{{user.id}}" ng-class="{'uk-text-secondary uk-text-bold uk-text-middle': isAdmin}">
-          <span ng-if="loggedUser.logged && user.userFollowing">
+        <a ng-href="/user/{{user.id}}" ng-class="{'uk-text-secondary uk-text-bold uk-text-middle': isAdmin}">
+          <span ng-if="user.userFollower">
             <span class="iconify small-iconify" data-icon="ri:user-follow-line" data-inline="false" title="{{'FOLLOW_TITLE'| translate}}"></span>
+            <span>-</span>
           </span>
           {{user.username}}
             <span ng-if="isAdmin">
                 <span>-</span>
                <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
             </span>
-          <div ng-if="loggedUser.logged && user.userFollowed">
-            <span class="iconify small-iconify" data-icon="ri:user-follow-line" data-inline="false" title="{{'ADMIN_TITLE' | translate}}" ></span>
-          </div>
+
         </a>
         <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
           {{'MIN_USER_DISPLAY_META_NAME_VOTES' | translate: { name: user.name, totalVotes: user.totalLikes };}}

@@ -21,22 +21,34 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       });
     };
 
-    this.getCommentCommentsWithUserVote = function (comment, depth, orderBy, pageSize, pageNumber){
+    this.getCommentCommentsWithUserVoteById = function (commentId, depth, orderBy, pageSize, pageNumber){
 
       if(depth)
         depth = 0
 
-      if(!orderBy)
-        orderBy = 'hottest';
+      var queryParams = {orderBy: orderBy, pageSize: pageSize, pageNumber: pageNumber};
 
-      if(!pageSize)
-        pageSize = 5;
+      return $q(function(resolve, reject) {
 
-      if(!pageNumber)
-        pageNumber = 0;
-
-      return getCommentCommentsWithUserVoteInternal(comment, depth, orderBy, pageSize, pageNumber)
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular){
+          Restangular.one('comments', commentId).all('children').getList(queryParams).then(function (response) {
+            handleCommentResponse(response, depth, orderBy, pageSize, pageNumber, resolve, reject);
+          }).catch(reject);
+        }).catch(reject);
+      });
     };
+
+    this.fetchOneComment = function (commentId) {
+
+      return $q(function(resolve, reject) {
+
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular){
+          Restangular.one('comments', commentId).get().then(function (response) {
+           resolve(response.data);
+          }).catch(reject);
+        }).catch(reject);
+      });
+    }
 
     this.searchComments = function (query, enabled, orderBy, pageSize, pageNumber) {
       return fetchComments('/comments', query, enabled, orderBy, pageSize, pageNumber);
@@ -81,22 +93,6 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
         }).catch(reject);
       });
     }
-
-    this.getPostCommentsWithUserVote = function (postId, depth, orderBy, pageSize, pageNumber) {
-
-      var queryParams = {orderBy: orderBy, pageSize: pageSize, pageNumber: pageNumber};
-
-      return $q(function(resolve, reject) {
-
-        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser())
-          .then(function (Restangular){
-            Restangular.one('posts', postId).all('comments').getList(queryParams).then(function (response){
-              handleCommentResponse(response, depth, orderBy, pageSize, pageNumber, resolve, reject);
-            }).catch(reject);
-          }).catch(reject);
-
-      });
-    };
 
     this.getCommentCommentsWithUserVote = function (commentId, depth, orderBy, pageSize, pageNumber){
 
