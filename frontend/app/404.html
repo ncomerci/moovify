@@ -1,18 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Page Not Found :(</title>
-  </head>
-  <body>
-    <div >
-      <h1>Not found <span>:(</span></h1>
-      <p>Sorry, but the page you were trying to view does not exist.</p>
-      <p>It looks like this was the result of either:</p>
-      <ul>
-        <li>a mistyped address</li>
-        <li>an out-of-date link</li>
-      </ul>
-    </div>
-  </body>
-</html>
+<div class="uk-container uk-container-small uk-padding-small uk-text-center">
+  <h1 class="uk-heading-medium uk-text-bold uk-text-uppercase">{{'PAGE_404' | translate}}</h1>
+  <br>
+  <div class="uk-text-muted uk-text-muted uk-text-italic uk-text-bold">
+    <p>{{'PAGE_404_1' | translate}}</p>
+    <p>{{'PAGE_404_2' | translate}}</p>
+  </div>
+  <br>
+  <button class="uk-button uk-button-primary uk-border-rounded uk-margin-top" ng-click="goHome()">{{'PAGE_404_BTN' | translate}}</button>
+</div>

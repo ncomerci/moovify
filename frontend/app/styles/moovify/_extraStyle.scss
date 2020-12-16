@@ -301,9 +301,13 @@ form {
 }
 
 .image-profile-shape {
-  background: none repeat scroll 0 0 /*#f2a365*/;
+  //background: none repeat scroll 0 0 /*#f2a365*/;
   border-radius: 110px;
   display: block;
+  object-fit: cover;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
   width: 180px;
   height: 180px;
   left: 50%;
