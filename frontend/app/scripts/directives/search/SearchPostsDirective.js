@@ -99,8 +99,12 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         };
 
         $scope.refreshUrlFn = function() {
-          Object.keys($scope.queryParams)
-            .forEach(function(paramKey) { $location.search(paramKey, $scope.queryParams[paramKey]) });
+          if ($scope.queryParams !== null) {
+            Object.keys($scope.queryParams)
+              .forEach(function (paramKey) {
+                $location.search(paramKey, $scope.queryParams[paramKey])
+              });
+          }
         };
 
         $scope.removePost = function (post) {

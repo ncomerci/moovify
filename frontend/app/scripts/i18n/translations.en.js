@@ -77,6 +77,7 @@ define([], function() {
     SEARCH:'Search',
     SEARCH_PLACEHOLDER: 'Search...',
     ALL_POSTS: 'All posts',
+    ALL_COMMENTS:'All comments',
     POST_CATEGORIES: 'Type of post:',
     POST_AGE: 'From:',
     MOVIE_CATEGORY: 'Category:',

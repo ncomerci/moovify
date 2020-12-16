@@ -4,8 +4,8 @@
       <label class="uk-padding-small-left uk-margin-small-top uk-form-label uk-margin-small-right uk-width-auto">
         {{'SEARCH_ORDER_BY' | translate}}
       </label>
-      <select ng-model='filterParams.postCategory' class="uk-select uk-form-blank uk-width-expand">
-        <option value="">{{'ALL_POSTS' | translate}}</option>
+      <select ng-model='filterParams.orderBy' class="uk-select uk-form-blank uk-width-expand">
+        <option value="">{{'ALL_COMMENTS' | translate}}</option>
         <option ng-repeat="option in supportedValues['orderBy']" ng-value="option">{{getOrder(option) | translate}}</option>
       </select>
     </div>
