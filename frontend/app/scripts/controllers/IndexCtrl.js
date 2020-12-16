@@ -24,6 +24,7 @@ define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTi
     $scope.execSearch = function () {
       document.activeElement.blur();
       UIkit.drop(document.getElementById('navbar-search-drop')).hide(0);
+      $location.search({});
       $location.path('search');
       $location.search('query', $scope.search.query);
       $scope.search.query = '';

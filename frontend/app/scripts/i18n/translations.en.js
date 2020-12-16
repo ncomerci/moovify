@@ -65,6 +65,9 @@ define([], function() {
     USER_RESETPASSWORD_VALIDATEDEMAIL: 'Important: your email must have been validated to be able to change your password',
     USER_RESETPASSWORD_SEND: "Send email",
     USER_RESETPASSWORD_EMAIL: "Enter email",
+    USER_EDIT_NAME: "Edit your name",
+    USER_EDIT_USERNAME: "Edit your username",
+    USER_EDIT_DESCRIPTION: "Edit your description",
     OWNER_DELETED: 'Owner deleted',
     COMMENT_BY:'By: {{username}}',
     COMMENT_BY_REMOVED: 'This user was removed',
@@ -215,5 +218,6 @@ define([], function() {
     USER_PROMOTE_TITLE: "Are you sure you want to promote {{username}} to admin?",
     USER_DELETE: "Delete",
     USER_DELETE_TITLE: "Are you sure you want to delete to {{username}}?"
+
 	};
 });
