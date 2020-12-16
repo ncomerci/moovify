@@ -23,6 +23,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
         $scope.fetchComments = function() {
 
+          $scope.comments = null;
+
           CommentFetchService.fetchComments($scope.path, $scope.enabled, $scope.order,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 
@@ -55,7 +57,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       link: function(scope) {
 
-        scope.comments = [];
+        scope.comments = null;
 
         scope.paginationMutex = false;
 

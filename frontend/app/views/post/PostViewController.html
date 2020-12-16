@@ -1,4 +1,4 @@
-<main ng-if="post && post.enabled" class="uk-container-small uk-margin-auto">
+<main ng-show="post && post.enabled" class="uk-container-small uk-margin-auto">
   <div class="post-header">
     <div class="post-meta">
       <h1>
@@ -71,11 +71,16 @@
       </span>
   </div>
 
+  <h2>{{'POST_VIEW_COMMENTS' | translate}}</h2>
   <section id="post-comments" ng-if="comments">
-    <h2>{{'POST_VIEW_COMMENTS' | translate}}</h2>
     <comment-tree-directive depth="0" comments="comments"></comment-tree-directive>
-    <p class="uk-text-center uk-text-lead" ng-if="comments">{{'NO_COMMENTS_PLACEHOLDER' | translate}}</p>
+    <p class="uk-text-center uk-text-lead" ng-if="comments.length === 0">{{'NO_COMMENTS_PLACEHOLDER' | translate}}</p>
   </section>
+  <div ng-show="!comments" class="uk-text-center uk-text-lead uk-margin-top">
+    <span class="uk-margin-small-right" uk-spinner="ratio: 3"></span>
+    <p class="uk-text-muted">{{'LOADING' | translate}}</p>
+  </div>
+
 </main>
 
 <div ng-if="isAdmin" id="delete-post-modal" uk-modal>

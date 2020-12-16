@@ -268,9 +268,9 @@ define([], function() {
     CONFIRM_POST_DELETE_MODAL_TITLE: 'Confirm deletion',
     CONFIRM_POST_DELETE_MODAL_BODY: 'Delete the post "{{postTitle}}"?',
     CONFIRM_POST_DELETE_MODAL_CANCEL_BUTTON: 'Cancel',
-    CONFIRM_POST_DELETE_MODAL_DELETE_BUTTON: 'Delete'
+    CONFIRM_POST_DELETE_MODAL_DELETE_BUTTON: 'Delete',
 
-
+    LOADING: 'Loading'
 
 	};
 });

@@ -59,7 +59,7 @@ define(['frontend', 'services/utilities/PageTitleService', 'services/LoginServic
 
     }, true);
 
-    $scope.users = [];
+    $scope.users = null;
 
     var userPageSize = 15;
     var userOrder = "votes";

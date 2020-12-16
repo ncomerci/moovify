@@ -24,6 +24,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
         $scope.fetchMovies = function() {
 
+          $scope.movies = null;
+
           MovieFetchService.fetchMovies($scope.path, $scope.enabled, $scope.order,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 
@@ -56,7 +58,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       link: function(scope) {
 
-        scope.movies = [];
+        scope.movies = null;
 
         scope.paginationMutex = false;
 

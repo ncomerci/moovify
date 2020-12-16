@@ -23,6 +23,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       controller: function ($scope, PostFetchService) {
         $scope.fetchPosts = function () {
 
+          $scope.posts = null;
+
           PostFetchService.fetchPosts($scope.path, $scope.enabled, $scope.order,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
             function (resp) {
@@ -55,7 +57,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       link: function(scope) {
 
-        scope.posts = [];
+        scope.posts = null;
 
         scope.paginationMutex = false;
 

@@ -1,14 +1,20 @@
 <div>
-  <div ng-show="comments.length === 0" class="uk-margin-small-top">
-    <h1 class="uk-text-meta uk-text-center uk-text-bold">{{'COMMENT_NOT_FOUND' | translate}}</h1>
-  </div>
-  <div ng-show="comments.length > 0">
-    <div ng-repeat="comment in comments">
-      <comment-list-entry-directive admin-controls="false" comment="comment"></comment-list-entry-directive>
+  <div ng-show="comments">
+    <div ng-show="comments.length === 0" class="uk-margin-small-top">
+      <h1 class="uk-text-meta uk-text-center uk-text-bold">{{'COMMENT_NOT_FOUND' | translate}}</h1>
     </div>
-    <pagination-handler-directive pagination-params="paginationParams"
-                                  reset-pagination-fn="resetPagination"
-                                  search-fn="fetchComments"
-                                  mutex="paginationMutex"/>
+    <div ng-show="comments.length > 0">
+      <div ng-repeat="comment in comments">
+        <comment-list-entry-directive admin-controls="false" comment="comment"></comment-list-entry-directive>
+      </div>
+      <pagination-handler-directive pagination-params="paginationParams"
+                                    reset-pagination-fn="resetPagination"
+                                    search-fn="fetchComments"
+                                    mutex="paginationMutex"/>
+    </div>
+  </div>
+  <div ng-show="!comments" class="uk-text-center uk-text-lead uk-margin-top">
+    <span class="uk-margin-small-right" uk-spinner="ratio: 3"></span>
+    <p class="uk-text-muted">{{'LOADING' | translate}}</p>
   </div>
 </div>

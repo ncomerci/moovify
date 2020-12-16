@@ -21,7 +21,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       },
       link: function (scope) {
 
-        scope.posts = [];
+        scope.posts = null;
 
         scope.paginationMutex = false;
 
@@ -78,6 +78,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       controller: function ($scope, PostFetchService) {
 
         $scope.execSearch = function() {
+
+          $scope.posts = null;
 
           PostFetchService.searchPosts(
             $scope.query.value, $scope.filterParams.postCategory, $scope.filterParams.postAge, $scope.filterParams.enabled,
