@@ -6,7 +6,7 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
   frontend.controller('PostViewController', function ($scope, PostFetchService, $location, PostInteractionService,
                            LoggedUserFactory, UserService, CommentFetchService, PageTitle, $q, CommentInteractionService, $routeParams) {
 
-    PageTitle.setTitle('POST_VIEW_TITLE', {post:$scope.post.title})
+
     $scope.post = null;
     $scope.comments = null;
 
@@ -33,6 +33,7 @@ define(['frontend', 'services/fetch/PostFetchService', 'services/fetch/CommentFe
 
     PostFetchService.fetchPost(postId).then(function(post) {
       $scope.post = post;
+      PageTitle.setTitle('POST_VIEW_TITLE', {post:$scope.post.title})
     }).catch(console.log);
 
     CommentFetchService.getPostCommentsWithUserVote(postId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
