@@ -21,7 +21,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
 
       return $q(function(response, reject){
         RestFulResponse.withAuth(loggedUser).then(function(Restangular) {
-          console.log(post);
+
           var rest = Restangular.all('user').one('bookmarked', post.id);
 
           if(post.hasUserBookmarked){

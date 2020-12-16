@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'services/utilities/RestFulResponseFactory'], function (frontend) {
+define(['frontend'], function (frontend) {
 
-  frontend.service('UserService', function (RestFulResponse) {
+  frontend.service('UserService', function () {
 
     this.userHasRole = function (user, role) {
       if(!user){

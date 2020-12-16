@@ -19,9 +19,9 @@ require.config({
         uikit: '../../bower_components/uikit/dist/js/uikit',
         uikiticons: '../../bower_components/uikit/dist/js/uikit-icons',
         'uikit-icons': '../../bower_components/uikit/dist/js/uikit-icons',
-        iconify: 'external_dependencies/iconify/iconify',
-        easymde: 'external_dependencies/easymde/easyMde',
-        purify: 'external_dependencies/purify/purify',
+        iconify: '../../static_dependencies/iconify/iconify',
+        easymde: '../../static_dependencies/easymde/easyMde',
+        purify: '../../static_dependencies/purify/purify',
         'js-joda-timezone': '../../bower_components/js-joda-timezone/dist/js-joda-timezone'
     },
     shim: {

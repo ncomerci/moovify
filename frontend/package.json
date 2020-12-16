@@ -2,11 +2,13 @@
   "name": "frontend",
   "version": "0.0.0",
   "devDependencies": {
+    "angular-mocks": "~1.5.11",
     "bower": "^1.3.12",
     "connect-modrewrite": "^0.10.2",
     "grunt": "^0.4.1",
     "grunt-autoprefixer": "^0.7.3",
     "grunt-bower-requirejs": "^1.1.0",
+    "grunt-cli": "^1.3.2",
     "grunt-concurrent": "^0.5.0",
     "grunt-contrib-clean": "^0.5.0",
     "grunt-contrib-compass": "^0.7.2",
@@ -28,10 +30,16 @@
     "grunt-svgmin": "^0.4.0",
     "grunt-usemin": "^2.1.1",
     "grunt-wiredep": "^1.7.0",
+    "jasmine": "^3.6.3",
+    "karma": "^5.2.3",
+    "karma-cli": "^2.0.0",
+    "karma-jasmine": "^4.0.1",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-requirejs": "^1.1.0",
     "load-grunt-tasks": "^0.4.0",
+    "phantomjs-polyfill-includes": "^1.0.2",
     "requirejs": "^2.1.11",
-    "time-grunt": "^0.3.1",
-    "grunt-cli": "^1.3.2"
+    "time-grunt": "^0.3.1"
   },
   "dependencies": {}
 }
