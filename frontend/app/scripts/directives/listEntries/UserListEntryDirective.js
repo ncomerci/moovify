@@ -22,9 +22,8 @@ define(['frontend', 'services/DisplayService', 'services/UserService', 'services
 
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
 
-        $scope.isAdmin = function (user) {
-          return UserService.userHasRole(user, 'ADMIN');
-        }
+        $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
+
 
         $scope.recoverUser = function () {
           return $q(function (resolve, reject) {
