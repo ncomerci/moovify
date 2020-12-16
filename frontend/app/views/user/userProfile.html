@@ -37,7 +37,7 @@
             <a class="uk-button-default uk-border-rounded follow-btn" ng-show="!isFollowed && loggedUser.logged" ng-click="followUser()">
               {{'USER_FOLLOW' | translate}}
             </a>
-            <a class="uk-button-default uk-border-rounded uk-text-danger unfollow-btn" ng-show="isFollowed"ng-click="unfollowUser()">
+            <a class="uk-border-rounded uk-text-danger unfollow-btn" ng-show="isFollowed"ng-click="unfollowUser()">
               {{'USER_UNFOLLOW' | translate}}
             </a>
             <span ng-if="loggedUser.roles.includes('ADMIN')">
@@ -47,7 +47,7 @@
               >
                 {{'USER_PROMOTE' | translate}}
               </a>
-              <a class="uk-button-default uk-border-rounded uk-text-danger unfollow-btn uk-margin-small-left"
+              <a class="uk-border-rounded uk-text-danger unfollow-btn uk-margin-small-left"
                  href="#delete-modal" uk-toggle
               >
                 {{'USER_DELETE' | translate}}

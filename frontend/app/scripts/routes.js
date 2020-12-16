@@ -47,11 +47,11 @@ define([], function() {
                 templateUrl: 'resources/views/admin/admin.html',
                 controller: 'AdminController'
             },
-            '/user/resetPassword': {
+            '/resetPassword': {
                 templateUrl: '/views/user/resetPassword.html',
                 controller: 'ResetPasswordCtrl'
             },
-            '/user/updatePassword': {
+            '/updatePassword': {
                 templateUrl: '/views/user/updatePassword.html',
                 controller: 'UpdatePasswordCtrl'
             },

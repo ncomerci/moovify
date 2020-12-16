@@ -33,6 +33,7 @@ define([], function() {
     USER_LOGIN_RESETPASSWORD: 'Forgot my password',
     USER_CREATE_SIGNUP: 'Sign up',
     USER_CREATE_SIGNUP_ALT: 'Signup',
+    USER_CREATE_SIGNUP_ALT2: 'Sign up!',
     USER_CREATE_SIGNUPDESC: 'Please fill this form to get free access to Moovify',
     USER_CREATE_NAME: 'Name',
     USER_CREATE_EMAIL: 'Email',
