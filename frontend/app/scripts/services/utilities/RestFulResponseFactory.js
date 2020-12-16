@@ -49,7 +49,7 @@ define(['frontend'], function(frontend) {
       withAuthIfPossible: function(loggedUser) {
 
         if(loggedUser.logged){
-          return this.withAuth(loggedUser);
+          return RestFulResponse.withAuth(loggedUser);
         }
         return $q.resolve(this.noAuth());
       },
