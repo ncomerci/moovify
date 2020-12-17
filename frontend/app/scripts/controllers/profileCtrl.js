@@ -357,6 +357,12 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
         }).catch(console.log);
       }
 
-      $scope.logoutEverywhere = LoggedUserFactory.logoutEverywhere;
+      $scope.logoutEverywhere = function () {
+        LoggedUserFactory.logoutEverywhere().then(function () {
+          $translate('ACTION_WARNING').then(function (msg) {
+            UIkit.notification({message: msg, status: 'warning'});
+          });
+        });
+      };
     });
 });
