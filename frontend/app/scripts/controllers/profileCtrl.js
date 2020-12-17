@@ -210,11 +210,6 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
               $scope.loading = false;
               $scope.btnPressed = false;
               UIkit.modal(document.getElementById('edit-info-modal')).hide();
-              if(aux.username !== undefined) {
-                LoggedUserFactory.logout().then(function () {
-                  $location.path('/login');
-                });
-              }
             }).catch(function (err) {
               $scope.loading = false;
               if(err.data) {
@@ -295,8 +290,8 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
             $scope.loading = false;
             $scope.btnPressed = false;
             UIkit.modal(document.getElementById('change-password-modal')).hide();
-            LoggedUserFactory.logout().then(function () {
-              $location.path('/login');
+            $translate('UPDATE_PASS_SUCCESS_ALT').then(function (msg) {
+              UIkit.notification({message: '<span uk-icon=\'icon: check\'></span> '+msg, status:'success'})
             });
           }).catch(function (err) {
             $scope.loading = false;

@@ -122,7 +122,15 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       return $q(function (resolve, reject) {
         RestFulResponse.withAuth(loggedUser).then(function (r) {
           r.one('/user').customPUT(info, undefined, undefined, {'Content-Type': 'application/json'})
-            .then(resolve).catch(reject);
+            .then(function (r) {
+              if(info.username !== undefined) {
+                loggedUser.expDate = RestFulResponse.setToken(r.headers("authorization"));
+                resolve();
+              }
+              else {
+                resolve();
+              }
+            }).catch(reject);
         })
       });
     }
@@ -135,12 +143,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       return $q(function (resolve, reject) {
         RestFulResponse.withAuth(loggedUser).then(function (r) {
           r.one('/user').customPUT(password, undefined, undefined, {'Content-Type': 'application/json'})
-            .then(function () {
-              LoggedUserFactory.logout().then(function () {
-                $location.path('/login');
-                resolve();
-              });
-            }).catch(reject);
+            .then(resolve).catch(reject);
         }).catch(reject);
       });
     }
@@ -153,7 +156,8 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       return $q(function (resolve, reject) {
         RestFulResponse.withAuth(loggedUser).then(function (r) {
           r.all('/user/email_confirmation').customPUT(token, undefined, undefined, {'Content-Type': 'application/json'})
-            .then(function () {
+            .then(function (r) {
+              loggedUser.expDate = RestFulResponse.setToken(r.headers("authorization"));
               var idx = loggedUser.roles.indexOf('NOT_VALIDATED');
               loggedUser.roles[idx] = 'USER';
               resolve();

@@ -161,6 +161,7 @@ define([], function() {
     UPDATE_PASS_NO_TOKEN: "You don't have a token?",
     UPDATE_PASS_RESEND_EMAIL: "Resend email",
     UPDATE_PASS_SUCCESS: "Password changed successfully, redirecting to login page...",
+    UPDATE_PASS_SUCCESS_ALT: "Password changed successfully",
     UPDATE_PASS_ERROR: "An error has occurred, try again later",
     CONFIRM_EMAIL_FOOTER: "Hey! You need to confirm your email. To do so,",
     CONFIRM_EMAIL_BTN_MODAL: "click here",
