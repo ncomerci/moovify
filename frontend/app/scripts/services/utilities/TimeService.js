@@ -108,6 +108,10 @@ define(['frontend', 'js-joda'], function (frontend, JSJoda) {
         return dt.hour() + '/' + dt.monthValue() + '/' + dt.year()
       },
 
+      localDateNow: function (){
+        return LocalDateTime.now().toString();
+      },
+
       getTimeForm: function(creationDate, id){
         if(this.getYearsSinceCreation(creationDate) > 0) {
           return id === 'es'? spanishMap['years'] : otherMap['years'];

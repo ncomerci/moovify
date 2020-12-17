@@ -161,6 +161,7 @@ define([], function() {
     UPDATE_PASS_NO_TOKEN: "¿No tienes un Token?",
     UPDATE_PASS_RESEND_EMAIL: "Reenviar email",
     UPDATE_PASS_SUCCESS: "Contraseña cambiada satisfactoriamente, redirigiendo a la página de ingreso...",
+    UPDATE_PASS_SUCCESS_ALT: "Contraseña cambiada satisfactoriamente",
     UPDATE_PASS_ERROR: "Un error ha ocurrido, intentalo de nuevo más tarde",
     CONFIRM_EMAIL_FOOTER: "¡Hey! Tienes que confirmar tu email. Para ello,",
     CONFIRM_EMAIL_BTN_MODAL: "Haz click aquí",
@@ -278,6 +279,7 @@ define([], function() {
     LOADING: 'Cargando',
 
     CREATE_ACCOUNT_MODAL_TITLE: "¡Oh! Te gustaría demostrar tu interés?",
-    CREATE_ACCOUNT_MODAL_BODY: "Registrate y hazlo al instante!"
+    CREATE_ACCOUNT_MODAL_BODY: "Registrate y hazlo al instante!",
+    ACTION_WARNING: "Esta accion puede tardar hasta 15 minutos en tener efecto"
   };
 });

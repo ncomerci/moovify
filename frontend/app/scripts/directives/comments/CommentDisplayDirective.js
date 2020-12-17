@@ -1,9 +1,9 @@
 'use strict';
 define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'services/entities/CommentService',
-  'directives/comments/CommentReplyDirective', 'directives/comments/EditableCommentBodyDirective',
+  'directives/comments/CommentReplyDirective', 'directives/comments/EditableCommentBodyDirective', 'services/utilities/TimeService',
   'directives/comments/CommentLikeHandlerDirective', 'services/entities/UserService', 'services/LoginService', 'directives/PrettyDateDirective'], function(frontend, UIkit) {
 
-  frontend.directive('commentDisplayDirective', function (){
+  frontend.directive('commentDisplayDirective', function (TimeService){
 
     return {
       restrict: 'E',
@@ -77,6 +77,10 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
           });
         }
 
+        $scope.getDateFormatted = function (creationDate){
+          return TimeService.getDateFormatted(creationDate);
+        };
+
         $scope.callbackFunctions.reply = function(newCommentBody) {
           return $q(function (resolve, reject) {
 
@@ -97,7 +101,8 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
         }
 
         $scope.callbackFunctions.edit = function(newBody) {
-
+          $scope.comment.lastEditTime = TimeService.localDateNow();
+          $scope.comment.edited = true;
           $scope.comment.body = newBody;
           return $scope.comment.put();
         }
