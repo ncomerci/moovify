@@ -8,7 +8,7 @@
       </button>
     </div>
     <div class="uk-width-expand uk-margin-small-top uk-margin-small-bottom uk-text-truncate">
-      <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
+      <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical uk-text-truncate">
         <span ng-switch="post.postCategory.name">
             <span ng-switch-when="watchlist" class="iconify small-iconify" data-icon="bi:list-ol" data-inline="false"></span>
             <span ng-switch-when="critique" class="iconify small-iconify" data-icon="ic:outline-rate-review" data-inline="false"></span>
@@ -43,7 +43,7 @@
       </a>
 
 
-      <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical">
+      <p class="uk-text-capitalize uk-text-meta uk-margin-remove-vertical uk-text-truncate">
         <ng-pluralize count="post.movies.length" when="moviesDiscussedForm"></ng-pluralize>
         <span ng-repeat="movie in post.movies">
           <a ng-href="/movie/{{movie.id}}">

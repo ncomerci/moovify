@@ -47,10 +47,10 @@
         <div class="uk-text-danger" ng-if="bodyMinLen(openModalBtnPressed, post.body)">{{'FORM_MIN_LENGTH_ERROR' | translate : {minLen: bodyConstraints.minLen};}}</div>
         <div class="uk-text-danger" ng-if="bodyMaxLen(openModalBtnPressed, post.body)">{{'FORM_MAX_LENGTH_ERROR' | translate : {maxLen: bodyConstraints.maxLen};}}</div>
         <label class="uk-form-label uk-text-secondary uk-margin-auto">
-          <input  class="uk-textarea"
+          <textarea  class="uk-textarea"
                   id="create-post-data"
                   name="body"
-          />
+          ></textarea>
         </label>
       </div>
 
