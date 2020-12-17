@@ -77,7 +77,8 @@ define(['frontend','uikit', 'services/entities/CommentService',
     }
 
     $scope.callback.edit = function(newBody) {
-
+      $scope.lastEditTime = TimeService.localDateNow();
+      $scope.edited = true;
       $scope.mainComment.body = newBody;
       return $scope.mainComment.put();
     }

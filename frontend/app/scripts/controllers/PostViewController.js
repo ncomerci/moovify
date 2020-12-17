@@ -105,6 +105,8 @@ define(['frontend', 'uikit','services/entities/PostService', 'services/entities/
     }
 
     $scope.callback.edit = function(newBody) {
+      $scope.post.lastEditDate = TimeService.localDateNow();
+      $scope.post.edited = true;
       $scope.post.body = newBody;
       return $scope.post.put();
     }
