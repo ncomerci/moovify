@@ -223,7 +223,7 @@ define([], function() {
 
 
     // SIN TRADUCIR
-    COMMENT_VIEW_HEADING: "Comment to post",
+    COMMENT_VIEW_HEADING: "Comment from post:",
     SIGN_UP_TO_START_COMMENTING: "Want to share your thoughts? Sign up and start commenting right away!",
     CONFIRM_EMAIL_TO_START_COMMENTING: "You're almost done, confirm your email and start sharing!",
     CREATE_NEW_ACCOUNT: 'Create new account',
@@ -255,6 +255,8 @@ define([], function() {
     POST_VIEW_MOVIES: 'Movies',
     POST_VIEW_TAGS: 'Tags',
     POST_VIEW_COMMENTS: 'Comments',
+    CREATION_DATE: ' -Creation date: {{creationDate}} -',
+    MOVIE_WITH_SPACER: ' -{{title}}',
     NO_COMMENTS_PLACEHOLDER: 'There are no comments to show, make the first one!',
     CANCEL_POST_BODY_EDIT: 'Cancel',
     SEND_POST_BODY_EDIT: 'Send'

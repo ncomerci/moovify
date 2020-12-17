@@ -222,7 +222,7 @@ define([], function() {
     USER_DELETE: "Eliminar",
     USER_DELETE_TITLE: "Estás seguro que quieres eliminar a {{username}}?",
 
-    COMMENT_VIEW_HEADING: "Comentar al post",
+    COMMENT_VIEW_HEADING: "Comentario del post:",
     SIGN_UP_TO_START_COMMENTING: "Quieres compartir tus ideas? Registrate y empezá a comentar al instante!",
     CONFIRM_EMAIL_TO_START_COMMENTING: "Ya casi terminás, confirmá tu email y comenzá a compartir!",
     CREATE_NEW_ACCOUNT: 'Crear una nueva cuenta',
@@ -254,6 +254,8 @@ define([], function() {
     POST_VIEW_MOVIES: 'Películas',
     POST_VIEW_TAGS: 'Tags',
     POST_VIEW_COMMENTS: 'Comentarios',
+    CREATION_DATE: ' -Fecha de creación: {{creationDate}} -',
+    MOVIE_WITH_SPACER: ' -{{title}}',
     NO_COMMENTS_PLACEHOLDER: 'No hay comentarios para mostrar, escribe el primero!',
     CANCEL_POST_BODY_EDIT: 'Cancelar',
     SEND_POST_BODY_EDIT: 'Enviar'
