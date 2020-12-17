@@ -8,6 +8,10 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       file: undefined,
       error: false
     }
+    //TODO tobi
+    this.signUp = function (user) {
+      return RestFulResponse.noAuth().all('users').post(user);
+    }
 
     this.userHasRole = function (user, role) {
       if(!user){
@@ -124,6 +128,10 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
         })
       });
     }
+    //TODO tobi
+    this.resetPassword = function (passWithToken) {
+      return RestFulResponse.noAuth().one('/user/password_reset').customPUT(passWithToken, undefined, undefined, {'Content-Type': 'application/json'});
+    }
 
     this.updatePassword = function (loggedUser, password) {
       return $q(function (resolve, reject) {
@@ -137,6 +145,10 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
             }).catch(reject);
         }).catch(reject);
       });
+    }
+    //TODO tobi
+    this.sendToken = function(email) {
+       return RestFulResponse.noAuth().all('/user/password_reset').post(email);
     }
 
     this.sendConfirmToken = function (loggedUser, token) {
