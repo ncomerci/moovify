@@ -42,6 +42,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
           !$scope.fieldIsNotValid('repeatPassword') &&
           !$scope.passwordsNotEquals()
         ) {
+          // TODO: Purge RestFulResponse - Tobi
           var aux = {token: $scope.newPass.token, password: $scope.newPass.password};
           RestFulResponse.noAuth().one('/user/password_reset').customPUT(aux, undefined, undefined, {'Content-Type': 'application/json'})
             .then(function () {

@@ -1,9 +1,9 @@
 'use strict';
 define(['frontend', 'services/utilities/PageTitleService', 'services/LoginService', 'directives/TabDisplayDirective',
-  'directives/fetch/FetchPostsDirective', 'services/fetch/UserFetchService',
+  'directives/fetch/FetchPostsDirective', 'services/entities/UserService',
   'directives/listEntries/MinUserListEntryDirective'], function(frontend) {
 
-	frontend.controller('HomeCtrl', function($scope, PageTitle, $routeParams, $location, UserFetchService) {
+	frontend.controller('HomeCtrl', function($scope, PageTitle, $routeParams, $location, UserService) {
 
     PageTitle.setTitle('HOME_TITLE');
 
@@ -70,7 +70,7 @@ define(['frontend', 'services/utilities/PageTitleService', 'services/LoginServic
     var userOrder = "votes";
 
     // Execute first fetch
-    UserFetchService.fetchUsers("/users", true, userOrder, userPageSize, 0).then(
+    UserService.fetchUsers("/users", true, userOrder, userPageSize, 0).then(
       function(resp) {
         $scope.users = resp.collection;
       }

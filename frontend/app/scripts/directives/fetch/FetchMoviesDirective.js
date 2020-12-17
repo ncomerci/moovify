@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/fetch/MovieFetchService',
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/MovieService',
   'directives/PaginationHandlerDirective', 'directives/listEntries/MovieListEntryDirective'], function(frontend) {
 
   function init(value, defaultVal){
@@ -20,13 +20,13 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       },
 
-      controller: function ($scope, MovieFetchService) {
+      controller: function ($scope, MovieService) {
 
         $scope.fetchMovies = function() {
 
           $scope.movies = null;
 
-          MovieFetchService.fetchMovies($scope.path, $scope.enabled, $scope.order,
+          MovieService.fetchMovies($scope.path, $scope.enabled, $scope.order,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 
             function(resp) {

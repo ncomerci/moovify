@@ -1,10 +1,10 @@
-define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulResponseFactory', 'services/PostCategoriesService',
-  'services/fetch/MovieFetchService', 'directives/PostCreateModalDirective', 'services/utilities/PageTitleService',
-  'services/PostCreateService'
+define(['frontend', 'uikit', 'easymde', 'purify', 'services/entities/PostCategoryService',
+  'services/entities/MovieService', 'directives/PostCreateModalDirective', 'services/utilities/PageTitleService',
+  'services/entities/PostService'
 ], function(frontend, UIkit, EasyMDE, DOMPurify) {
 
   'use strict';
-  frontend.controller('PostCreateController', function($scope, PostCategoriesService, MovieFetchService, PostCreateService, PageTitle, RestFulResponse, $location) {
+  frontend.controller('PostCreateController', function($scope, PostCategoryService, MovieService, PostService, PageTitle, $location) {
     PageTitle.setTitle('POST_CREATE_TITLE');
 
     $scope.post = {};
@@ -22,7 +22,7 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulRes
       "news":"{{'NEWS' | translate }}"
     }
 
-    PostCategoriesService.getPostCategories().then(function(optionArray) {
+    PostCategoryService.getPostCategories().then(function(optionArray) {
       $scope.postCategories = optionArray;
     }).catch(function() { $location.path('/404') });
 
@@ -136,7 +136,7 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulRes
         Object.keys(tags).forEach(function (tag) {
           $scope.post.tags.push(tag);
         })
-        PostCreateService.createPost($scope.post).then(function (postResponse) {
+        PostService.createPost($scope.post).then(function (postResponse) {
           handleCreatePost(postResponse);
           $location.path(handleCreatePost(postResponse))
         }).catch(console.log);

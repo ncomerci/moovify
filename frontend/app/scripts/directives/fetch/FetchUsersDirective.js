@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/fetch/UserFetchService',
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/UserService',
   'directives/PaginationHandlerDirective', 'directives/listEntries/UserListEntryDirective'], function(frontend) {
 
   function init(value, defaultVal){
@@ -19,13 +19,13 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         refreshUrlFn: '='
       },
 
-      controller: function ($scope, UserFetchService) {
+      controller: function ($scope, UserService) {
 
         $scope.fetchUsers = function() {
 
           $scope.users = null;
 
-          UserFetchService.fetchUsers($scope.path, $scope.enabled, $scope.order,
+          UserService.fetchUsers($scope.path, $scope.enabled, $scope.order,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 
             function(resp) {

@@ -1,6 +1,6 @@
 define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch/FetchPostsDirective',
     'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService',
-    'services/UserService', 'services/utilities/PageTitleService']
+    'services/entities/UserService', 'services/utilities/PageTitleService']
   , function(frontend, UIkit) {
 
     'use strict';

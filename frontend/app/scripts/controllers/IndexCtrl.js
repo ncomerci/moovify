@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTitleService', 'services/UserService',
+define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/UserService',
   'services/utilities/RestFulResponseFactory'], function(frontend, UIkit) {
 
   frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $location, UserService,
@@ -10,6 +10,7 @@ define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTi
 
     $scope.search = {query: ''};
 
+    // TODO: Purge RestFulResponse - Tobi
     $scope.waitLogin = true;
     LoggedUserFactory.startLoggedUserCheck();
     RestFulResponse.noAuth().all('/user/refresh_token').post().then(function (resp) {

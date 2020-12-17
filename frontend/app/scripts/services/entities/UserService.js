@@ -1,8 +1,9 @@
 'use strict';
-define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/LoginService'], function (frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/LoginService', 'services/utilities/LinkParserService'], function(frontend) {
 
-  frontend.service('UserService', function ($q, RestFulResponse, LoggedUserFactory, $location) {
+  frontend.service('UserService', function(RestFulResponse, LinkParserService, $q, LoggedUserFactory) {
 
+    // TODO: Logged User Avatar? No deberia estar con el logged user? - Tobi
     var avatarData = {
       file: undefined,
       error: false
@@ -13,7 +14,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
         return false;
       }
 
-       return user.roles.includes(role);
+      return user.roles.includes(role);
     }
 
     this.getUser = function (id) {
@@ -119,7 +120,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       return $q(function (resolve, reject) {
         RestFulResponse.withAuth(loggedUser).then(function (r) {
           r.one('/user').customPUT(info, undefined, undefined, {'Content-Type': 'application/json'})
-           .then(resolve).catch(reject);
+            .then(resolve).catch(reject);
         })
       });
     }
@@ -128,12 +129,12 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       return $q(function (resolve, reject) {
         RestFulResponse.withAuth(loggedUser).then(function (r) {
           r.one('/user').customPUT(password, undefined, undefined, {'Content-Type': 'application/json'})
-           .then(function () {
-             LoggedUserFactory.logout().then(function () {
-               $location.path('/login');
-               resolve();
-             });
-           }).catch(reject);
+            .then(function () {
+              LoggedUserFactory.logout().then(function () {
+                $location.path('/login');
+                resolve();
+              });
+            }).catch(reject);
         }).catch(reject);
       });
     }
@@ -142,14 +143,62 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       return $q(function (resolve, reject) {
         RestFulResponse.withAuth(loggedUser).then(function (r) {
           r.all('/user/email_confirmation').customPUT(token, undefined, undefined, {'Content-Type': 'application/json'})
-           .then(function () {
-             var idx = loggedUser.roles.indexOf('NOT_VALIDATED');
-             loggedUser.roles[idx] = 'USER';
-             resolve();
-           }).catch(reject);
+            .then(function () {
+              var idx = loggedUser.roles.indexOf('NOT_VALIDATED');
+              loggedUser.roles[idx] = 'USER';
+              resolve();
+            }).catch(reject);
         }).catch(reject);
       });
     }
 
+    this.searchUsers = function (query, role, enabled, orderBy, pageSize, pageNumber) {
+      return fetchUsersInternal('/users', query, role, enabled, orderBy, pageSize, pageNumber);
+    }
+
+    this.fetchUsers = function (path, enabled, orderBy, pageSize, pageNumber) {
+      return fetchUsersInternal(path, null, null, enabled, orderBy, pageSize, pageNumber);
+    }
+
+    function fetchUsersInternal(path, query, role, enabled, orderBy, pageSize, pageNumber) {
+
+      // Obligatory params
+      var queryParams = {
+        orderBy: orderBy,
+        pageSize: pageSize ? pageSize : 5,
+        pageNumber: pageNumber ? pageNumber : 0
+      };
+
+      if(query)
+        queryParams.query = query;
+
+      // Optional Params
+      if (role)
+        queryParams.role = role;
+
+      if (enabled !== null)
+        queryParams.enabled = enabled;
+
+      return $q(function (resolve, reject) {
+
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
+
+          Restangular.all(path).getList(queryParams).then(function (userResponse) {
+
+            var paginationParams = {lastPage: 0, pageSize: queryParams.pageSize, currentPage: queryParams.pageNumber};
+            var linkHeader = userResponse.headers('Link');
+            var users = userResponse.data;
+            // Si no hay Link -> no habia contenido -> no me interesa paginar nada
+            if (linkHeader) {
+              paginationParams.lastPage = LinkParserService.parse(linkHeader);
+            }
+            resolve({collection: users, paginationParams: paginationParams, queryParams: queryParams});
+
+          }).catch(function (response) {
+            reject({status: response.status, message: 'UserService: FetchUsers'})
+          });
+        }).catch(reject);
+      });
+    }
   });
 });

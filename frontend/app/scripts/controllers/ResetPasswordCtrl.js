@@ -11,6 +11,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
       $scope.sendEmail = function () {
         $scope.btnPressed = true;
 
+        // TODO: Purge RestFulResponse - Tobi
         if(!$scope.resetPassForm.email.$error.required && !$scope.resetPassForm.email.$error.email) {
           var aux = {email: $scope.email};
           RestFulResponse.noAuth().all('/user/password_reset').post(aux).then(function () {

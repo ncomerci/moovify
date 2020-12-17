@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/TimeService'], function(frontend) {
+define(['frontend', 'services/utilities/TimeService'], function(frontend) {
 
   frontend.directive('prettyDateDirective', function ($locale, TimeService) {
 

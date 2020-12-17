@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/fetch/UserFetchService',
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/UserService',
   'directives/PaginationHandlerDirective', 'directives/search/UserFiltersHandlerDirective', 'directives/listEntries/UserListEntryDirective'], function(frontend) {
 
   var defaultPageSize = 5;
@@ -74,13 +74,13 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       },
 
-      controller: function ($scope, UserFetchService) {
+      controller: function ($scope, UserService) {
 
         $scope.execSearch = function() {
 
           $scope.users = null;
 
-          UserFetchService.searchUsers(
+          UserService.searchUsers(
             $scope.query.value, $scope.filterParams.role, $scope.filterParams.enabled, $scope.filterParams.orderBy,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 

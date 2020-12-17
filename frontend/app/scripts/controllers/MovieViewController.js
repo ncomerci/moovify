@@ -1,8 +1,9 @@
-define(['frontend', 'services/fetch/MovieFetchService', 'services/fetch/PostFetchService', 'services/DisplayService'
+define(['frontend', 'services/entities/MovieService', 'services/entities/PostService', 'services/DisplayService'
   ,'services/utilities/MovieCategoryService', 'directives/fetch/FetchPostsDirective', 'services/utilities/PageTitleService'], function(frontend) {
 
   'use strict';
-  frontend.controller('MovieViewController', function($scope, $routeParams, $httpParamSerializer, $locale, MovieFetchService, PostFetchService, PageTitle, DisplayService, MovieCategoriesService) {
+  frontend.controller('MovieViewController', function($scope, $routeParams, $httpParamSerializer, $locale, MovieService,
+                                                      PostService, PageTitle, DisplayService, MovieCategoryService) {
 
     $scope.movie = null;
     $scope.posts = null;
@@ -31,7 +32,7 @@ define(['frontend', 'services/fetch/MovieFetchService', 'services/fetch/PostFetc
     $scope.getMovieCategory = function (category){
       if(!category)
         return;
-      return MovieCategoriesService.getMovieCategory(category);
+      return MovieCategoryService.getMovieCategory(category);
     }
     function getPostsUrl (id) {
       return '/movies/' + id + '/posts';
@@ -47,7 +48,7 @@ define(['frontend', 'services/fetch/MovieFetchService', 'services/fetch/PostFetc
       return url;
     }
 
-    MovieFetchService.fetchMovieById($routeParams.id).then(function (movie) {
+    MovieService.fetchMovieById($routeParams.id).then(function (movie) {
       $scope.movie = movie;
       PageTitle.setTitle('MOVIE_TITLE', {movie:$scope.movie.title});
     }).catch(console.log);

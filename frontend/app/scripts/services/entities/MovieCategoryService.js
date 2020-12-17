@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend'], function (frontend) {
 
-  frontend.service('MovieCategoriesService', function (){
+  frontend.service('MovieCategoryService', function (){
 
     var movieCategories = {
       "action": "{{'ACTION' | translate }}",

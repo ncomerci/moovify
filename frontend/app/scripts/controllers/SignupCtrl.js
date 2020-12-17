@@ -1,5 +1,5 @@
 define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService',
-  'services/utilities/RestFulResponseFactory', 'services/UserService'], function(frontend) {
+  'services/utilities/RestFulResponseFactory', 'services/entities/UserService'], function(frontend) {
 
     'use strict';
     frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, PageTitle, RestFulResponse, $location, $translate, UserService) {
@@ -74,6 +74,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
           !$scope.passwordsNotEquals()
         )
         {
+          // TODO: Purge RestFulResponse - Tobi
           $scope.loading = true;
           RestFulResponse.noAuth().all('users').post(user).then(function() {
             var aux_user = {

@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'services/fetch/MovieFetchService', 'services/PostCreateModalService'], function(frontend) {
+define(['frontend', 'services/entities/MovieService', 'services/PostCreateModalService'], function(frontend) {
 
-  frontend.directive('postCreateModalDirective', function(MovieFetchService, PostCreateModalService, $location) {
+  frontend.directive('postCreateModalDirective', function(MovieService, PostCreateModalService, $location) {
     return {
       restrict: 'E',
       scope: {
@@ -22,7 +22,7 @@ define(['frontend', 'services/fetch/MovieFetchService', 'services/PostCreateModa
         scope.postCreateFn = scope.postCreateFn();
 
 
-        MovieFetchService.fetchMovies('/movies',
+        MovieService.fetchMovies('/movies',
           null, 1100, 0).then(function (resp) {
             resp.collection.plain().forEach(function(movie) {
               scope.moviesList[movie.title + ' - ' + movie.releaseDate.substring(0, movie.releaseDate.indexOf("-"))] = movie.id;

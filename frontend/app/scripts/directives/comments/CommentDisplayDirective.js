@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'services/CommentInteractionService',
-  'services/fetch/CommentFetchService', 'directives/comments/CommentReplyDirective', 'directives/comments/EditableCommentBodyDirective',
-  'directives/comments/CommentLikeHandlerDirective', 'services/UserService', 'services/LoginService', 'directives/PrettyDateDirective'], function(frontend, UIkit) {
+define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'services/entities/CommentService',
+  'directives/comments/CommentReplyDirective', 'directives/comments/EditableCommentBodyDirective',
+  'directives/comments/CommentLikeHandlerDirective', 'services/entities/UserService', 'services/LoginService', 'directives/PrettyDateDirective'], function(frontend, UIkit) {
 
   frontend.directive('commentDisplayDirective', function (){
 
@@ -16,7 +16,7 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
         scope.writtingReply = {value: false};
         scope.showChildren = {value: false};
       },
-      controller: function($scope, CommentInteractionService, CommentFetchService, $q, UserService, LoggedUserFactory, $locale) {
+      controller: function($scope, CommentService, $q, UserService, LoggedUserFactory, $locale) {
 
         if($locale.id === 'es') {
           $scope.repliesForm = {
@@ -45,7 +45,7 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
         }
 
         if(!$scope.comment.childrenFetched && $scope.depth < 5) {
-          CommentFetchService.getCommentCommentsWithUserVote($scope.comment).then(function (comment) {
+          CommentService.getCommentCommentsWithUserVote($scope.comment).then(function (comment) {
             $scope.comment.children = comment;
             $scope.currentChildren = $scope.comment.children.length;
           })
@@ -67,7 +67,7 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
           }
 
           return $q(function(resolve, reject) {
-            CommentInteractionService.sendVote($scope.comment, value).then(function(comment) {
+            CommentService.sendVote($scope.comment, value).then(function(comment) {
               Object.assign($scope.comment, comment);
               resolve(comment.userVote);
             }).catch(console.log);
@@ -77,7 +77,7 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
         $scope.callbackFunctions.reply = function(newCommentBody) {
           return $q(function (resolve, reject) {
 
-            CommentInteractionService.sendCommentReply($scope.comment, newCommentBody).then(function(newComment) {
+            CommentService.sendCommentReply($scope.comment, newCommentBody).then(function(newComment) {
               // debugger;
               if(Array.isArray($scope.comment.children)){
                 $scope.comment.children.unshift(newComment);

@@ -1,10 +1,10 @@
-define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/CommentFetchService',
-  'directives/comments/CommentTreeDirective', 'services/CommentInteractionService', 'services/LoginService', 'services/UserService',
-  'services/PostInteractionService', 'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService', 'services/TimeService'], function(frontend) {
+define(['frontend', 'uikit','services/entities/PostService', 'services/entities/CommentService',
+  'directives/comments/CommentTreeDirective', 'services/LoginService', 'services/entities/UserService',
+  'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService', 'services/utilities/TimeService'], function(frontend) {
 
   'use strict';
-  frontend.controller('PostViewController', function ($scope, PostFetchService, $location, $locale, PostInteractionService,
-                           LoggedUserFactory, UserService, TimeService, CommentFetchService, PageTitle, $q, CommentInteractionService, $routeParams) {
+  frontend.controller('PostViewController', function ($scope, PostService, $location, $locale,
+                           LoggedUserFactory, UserService, TimeService, CommentService, PageTitle, $q, $routeParams) {
 
     PageTitle.setTitle('POST_VIEW_TITLE');
 
@@ -46,7 +46,7 @@ define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/C
       }
     }
 
-    PostFetchService.fetchPost(postId).then(function(post) {
+    PostService.fetchPost(postId).then(function(post) {
       $scope.post = post;
       if(!post.enabled){
         $location.path('404');
@@ -54,7 +54,7 @@ define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/C
       PageTitle.setTitle('POST_VIEW_TITLE', {post:$scope.post.title});
     }).catch(console.log);
 
-    CommentFetchService.getPostCommentsWithUserVote(postId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
+    CommentService.getPostCommentsWithUserVote(postId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
       $scope.comments = comments;
     }).catch(console.log);
 
@@ -62,7 +62,7 @@ define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/C
     $scope.newComment.fn = function(newCommentBody){
 
       return $q(function (resolve, reject) {
-        CommentInteractionService.sendPostReply($scope.post, newCommentBody).then(function(newComment) {
+        CommentService.sendPostReply($scope.post, newCommentBody).then(function(newComment) {
           $scope.comments.unshift(newComment);
           resolve(newComment);
         }).catch(reject);
@@ -80,7 +80,7 @@ define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/C
 
     $scope.toggleBookmark = function () {
       $scope.mutex.bookmark = true;
-      PostInteractionService.toggleBookmark($scope.post).then(function(post) {
+      PostService.toggleBookmark($scope.post).then(function(post) {
         $scope.post.hasUserBookmarked = post.hasUserBookmarked;
         $scope.mutex.bookmark = false;
       })
@@ -97,7 +97,7 @@ define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/C
       }
 
       return $q(function(resolve, reject) {
-        PostInteractionService.sendVote($scope.post, value).then(function(post) {
+        PostService.sendVote($scope.post, value).then(function(post) {
           Object.assign($scope.post, post);
           resolve(post.userVote);
         }).catch(console.log);

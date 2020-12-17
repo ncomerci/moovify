@@ -2,7 +2,7 @@
 define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/LoginService',
   'services/utilities/LinkParserService'], function(frontend) {
 
-  frontend.service('CommentFetchService', function (RestFulResponse, $q, LoggedUserFactory, LinkParserService) {
+  frontend.service('CommentService', function (RestFulResponse, $q, LoggedUserFactory, LinkParserService) {
 
     // devolver comments con sus comments hijos cargados.
 
@@ -88,8 +88,48 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
 
             resolve({collection: comments, paginationParams: paginationParams, queryParams: queryParams});
 
-          }).catch(function(response) { reject({status: response.status, message: 'CommentFetchService: FetchComment'})
+          }).catch(function(response) { reject({status: response.status, message: 'CommentService: FetchComment'})
           });
+        }).catch(reject);
+      });
+    }
+
+    this.sendVote =  function(comment, value) {
+
+      return $q(function(response, reject){
+        RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
+          Restangular.one('comments', comment.id).all('votes').customPUT({value: value}).then(function() {
+            comment.totalVotes -= comment.userVote;
+            comment.userVote = value;
+            comment.totalVotes += comment.userVote;
+            response(comment);
+          }).catch(reject);
+        }).catch(reject);
+      })
+    }
+
+    this.sendCommentReply = function(comment, newCommentBody) {
+
+      return $q(function(resolve, reject){
+        RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
+          comment.all('children').post({body: newCommentBody}).then(function(response) {
+            Restangular.oneUrl('comments', response.headers('Location')).get().then(function(response) {
+              resolve(response.data);
+            }).catch(reject);
+          }).catch(reject);
+        }).catch(reject);
+      });
+    }
+
+    this.sendPostReply = function(post, newCommentBody) {
+
+      return $q(function(resolve, reject){
+        RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function(Restangular) {
+          post.all('comments').post({body: newCommentBody}).then(function(response) {
+            Restangular.oneUrl('comments', response.headers('Location')).get().then(function(response) {
+              resolve(response.data);
+            }).catch(reject);
+          }).catch(reject);
         }).catch(reject);
       });
     }

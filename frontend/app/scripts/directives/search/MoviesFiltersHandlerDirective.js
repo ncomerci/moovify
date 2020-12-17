@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'services/DynamicOptionsService', 'services/utilities/MovieCategoryService'], function(frontend) {
+define(['frontend', 'services/DynamicOptionsService', 'services/entities/MovieCategoryService'], function(frontend) {
 
-  frontend.directive('moviesFiltersHandlerDirective', function (DynamicOptionsService, $location, MovieCategoriesService) {
+  frontend.directive('moviesFiltersHandlerDirective', function (DynamicOptionsService, $location, MovieCategoryService) {
     return {
       restrict: 'E',
       scope: {
@@ -27,7 +27,7 @@ define(['frontend', 'services/DynamicOptionsService', 'services/utilities/MovieC
         }
 
         $scope.getCategory = function(option) {
-          return MovieCategoriesService.getMovieCategory(option);
+          return MovieCategoryService.getMovieCategory(option);
         }
 
         $scope.getOrder = function(option) {

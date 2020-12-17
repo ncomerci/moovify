@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/DisplayService', 'services/UserService', 'services/LoginService', 'services/utilities/RestFulResponseFactory'], function(frontend) {
+define(['frontend', 'services/DisplayService', 'services/entities/UserService', 'services/LoginService', 'services/utilities/RestFulResponseFactory'], function(frontend) {
 
   frontend.directive('userListEntryDirective', function (DisplayService, UserService, LoggedUserFactory, RestFulResponse, $q) {
     return {
@@ -24,7 +24,7 @@ define(['frontend', 'services/DisplayService', 'services/UserService', 'services
 
         $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
 
-
+        // TODO: Purge RestFulResponse - Tobi
         $scope.recoverUser = function () {
           return $q(function (resolve, reject) {
             RestFulResponse.withAuthIfPossible($scope.loggedUser).then(function (Restangular) {

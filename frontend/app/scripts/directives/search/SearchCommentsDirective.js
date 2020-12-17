@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/fetch/CommentFetchService', 'directives/PaginationHandlerDirective',
+define(['frontend', 'services/entities/CommentService', 'directives/PaginationHandlerDirective',
   'directives/listEntries/CommentListEntryDirective', 'directives/search/CommentsFiltersHandlerDirective'], function (frontend) {
 
   var defaultPageSize = 5;
@@ -68,12 +68,12 @@ define(['frontend', 'services/fetch/CommentFetchService', 'directives/Pagination
         // Execute first search
         scope.execSearch();
       },
-      controller: function ($scope, CommentFetchService) {
+      controller: function ($scope, CommentService) {
         $scope.execSearch = function () {
 
           $scope.comments = null;
 
-          CommentFetchService.searchComments(
+          CommentService.searchComments(
             $scope.query.value, $scope.filterParams.enabled, $scope.filterParams.orderBy,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 

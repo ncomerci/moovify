@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'services/utilities/RestFulResponseFactory'], function (frontend) {
 
-  frontend.service('PostCategoriesService', function($q, RestFulResponse) {
+  frontend.service('PostCategoryService', function($q, RestFulResponse) {
 
     var categories = null;
 

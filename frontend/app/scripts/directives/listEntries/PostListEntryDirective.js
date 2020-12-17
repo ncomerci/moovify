@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/UserService', 'directives/PrettyDateDirective',
+define(['frontend', 'services/entities/UserService', 'directives/PrettyDateDirective',
   'services/utilities/RestFulResponseFactory','services/LoginService'], function(frontend) {
 
   frontend.directive('postListEntryDirective', function(LoggedUserFactory, RestFulResponse, UserService, $locale, $q) {
@@ -47,6 +47,7 @@ define(['frontend', 'services/UserService', 'directives/PrettyDateDirective',
           return $scope.categoryMap[$scope.post.postCategory.name];
         }
 
+        // TODO: Purge RestFulResponse - Tobi
         $scope.recoverPost = function () {
           return $q(function (resolve, reject) {
             RestFulResponse.withAuthIfPossible($scope.loggedUser).then(function (Restangular) {

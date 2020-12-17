@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/fetch/MovieFetchService',
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/MovieService',
   'directives/PaginationHandlerDirective', 'directives/search/MoviesFiltersHandlerDirective', 'directives/listEntries/MovieListEntryDirective'], function(frontend) {
 
   var defaultPageSize = 5;
@@ -74,13 +74,13 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       },
 
-      controller: function ($scope, MovieFetchService) {
+      controller: function ($scope, MovieService) {
 
         $scope.execSearch = function() {
 
           $scope.movies = null;
 
-          MovieFetchService.searchMovies($scope.query.value, $scope.filterParams.movieCategory,
+          MovieService.searchMovies($scope.query.value, $scope.filterParams.movieCategory,
             $scope.filterParams.decade, $scope.filterParams.orderBy,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 

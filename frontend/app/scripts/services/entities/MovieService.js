@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utilities/LinkParserService'], function(frontend) {
 
-  frontend.service('MovieFetchService', function (RestFulResponse, LinkParserService, $q){
+  frontend.service('MovieService', function (RestFulResponse, LinkParserService, $q){
 
     this.searchMovies = function(query, category, age, orderBy, pageSize, pageNumber) {
       return fetchMovies('/movies', query, category, age, orderBy, pageSize, pageNumber);
@@ -54,7 +54,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
 
         resolve({collection: movies, paginationParams: paginationParams, queryParams: queryParams}); //devuelvo la informacion que junte e n el servicio
 
-        }).catch(function(response) { reject({status: response.status, message: 'MovieFetchService: FetchMovie'}) });
+        }).catch(function(response) { reject({status: response.status, message: 'MovieService: FetchMovie'}) });
 
       });
 

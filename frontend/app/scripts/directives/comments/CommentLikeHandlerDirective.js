@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/UserService'], function(frontend) {
+define(['frontend', 'services/LoginService', 'services/entities/UserService'], function(frontend) {
 
   frontend.directive('commentLikeHandlerDirective', function() {
 

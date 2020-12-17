@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utilities/LinkParserService', 'services/fetch/CommentFetchService', 'services/LoginService'], function(frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utilities/LinkParserService', 'services/LoginService'], function(frontend) {
 
-  frontend.service('PostFetchService', function(RestFulResponse, LinkParserService, CommentFetchService, LoggedUserFactory, $q) {
+  frontend.service('PostService', function(RestFulResponse, LinkParserService, LoggedUserFactory, $q) {
 
     this.searchPosts = function(query, category, age, enabled, orderBy, pageSize, pageNumber) {
       return internalFetchPosts('/posts', query, category, age, enabled, orderBy, pageSize, pageNumber);
@@ -21,6 +21,57 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
           Restangular.one('posts', postId).get().then(function (response) {
             resolve(response.data);
           }).catch(reject);
+        }).catch(reject);
+      });
+    }
+
+    this.createPost = function(post) {
+      return $q(function (resolve, reject) {
+        RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function (Restful) {
+          Restful.all('posts').post(post).then(function (postResponse) {
+              resolve(postResponse);
+            }
+          ).catch(function (err) {
+            reject(err);
+          });
+        }).catch(reject);
+      });
+    }
+
+    this.sendVote =  function(post, value) {
+
+      return $q(function(response, reject){
+        post.all('votes').customPUT({value: value}).then(function() {
+          post.totalLikes -= post.userVote;
+          post.userVote = value;
+          post.totalLikes += post.userVote;
+          response(post);
+        }).catch(reject);
+      });
+    }
+
+    this.toggleBookmark = function(post) {
+
+      var loggedUser = LoggedUserFactory.getLoggedUser();
+
+      return $q(function(response, reject){
+        RestFulResponse.withAuth(loggedUser).then(function(Restangular) {
+
+          var rest = Restangular.all('user').one('bookmarked', post.id);
+
+          if(post.hasUserBookmarked){
+            rest.remove().then(function() {
+              post.hasUserBookmarked = false;
+              response(post);
+            }).catch(reject);
+          }
+          else {
+            rest.customPUT({}).then(function() {
+              post.hasUserBookmarked = true;
+              response(post);
+            }).catch(reject);
+          }
+
         }).catch(reject);
       });
     }
@@ -63,7 +114,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
 
           resolve({collection: posts, paginationParams: paginationParams, queryParams: queryParams});
 
-        }).catch(function(response) { reject({status: response.status, message: 'PostFetchService: FetchPost'})
+        }).catch(function(response) { reject({status: response.status, message: 'PostService: FetchPost'})
         });
       }).catch(reject);
     });

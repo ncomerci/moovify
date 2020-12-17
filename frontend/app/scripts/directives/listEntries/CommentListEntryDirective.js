@@ -21,6 +21,7 @@ define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService',
 
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
 
+        // TODO: Purge RestFulResponse - Tobi
         $scope.recoverComment = function () {
           return $q(function (resolve, reject) {
             RestFulResponse.withAuthIfPossible($scope.loggedUser).then(function (Restangular) {

@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/fetch/PostFetchService',
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/PostService',
   'directives/PaginationHandlerDirective', 'directives/search/PostsFiltersHandlerDirective', 'directives/listEntries/PostListEntryDirective'], function(frontend) {
 
   var defaultPageSize = 5;
@@ -75,13 +75,13 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         scope.execSearch();
 
       },
-      controller: function ($scope, PostFetchService) {
+      controller: function ($scope, PostService) {
 
         $scope.execSearch = function() {
 
           $scope.posts = null;
 
-          PostFetchService.searchPosts(
+          PostService.searchPosts(
             $scope.query.value, $scope.filterParams.postCategory, $scope.filterParams.postAge, $scope.filterParams.enabled,
             $scope.filterParams.orderBy, $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 

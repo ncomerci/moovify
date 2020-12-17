@@ -1,10 +1,10 @@
-define(['frontend','uikit', 'services/fetch/CommentFetchService',
-  'directives/comments/CommentTreeDirective', 'services/CommentInteractionService', 'services/LoginService', 'services/UserService',
+define(['frontend','uikit', 'services/entities/CommentService',
+  'directives/comments/CommentTreeDirective', 'services/LoginService', 'services/entities/UserService',
   'services/utilities/PageTitleService',  'directives/PrettyDateDirective'], function(frontend, UIkit) {
 
   'use strict';
   frontend.controller('CommentViewController', function ($scope, $location, LoggedUserFactory, UserService,
-                             CommentFetchService, PageTitle, $q, CommentInteractionService, $routeParams) {
+                                                         PageTitle, $q, CommentService, $routeParams) {
 
     PageTitle.setTitle('COMMENT_VIEW_TITLE');
 
@@ -35,11 +35,11 @@ define(['frontend','uikit', 'services/fetch/CommentFetchService',
     var commentsPageNumber = 0;
 
 
-    CommentFetchService.fetchOneComment(commentId).then(function(comment) {
+    CommentService.fetchOneComment(commentId).then(function(comment) {
       $scope.mainComment = comment;
     }).catch(console.log);
 
-    CommentFetchService.getCommentCommentsWithUserVoteById(commentId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
+    CommentService.getCommentCommentsWithUserVoteById(commentId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
       $scope.comments = comments;
     }).catch(console.log);
 
@@ -47,7 +47,7 @@ define(['frontend','uikit', 'services/fetch/CommentFetchService',
     $scope.newComment.fn = function(newCommentBody){
 
       return $q(function (resolve, reject) {
-        CommentInteractionService.sendCommentReply($scope.mainComment, newCommentBody).then(function(newComment) {
+        CommentService.sendCommentReply($scope.mainComment, newCommentBody).then(function(newComment) {
           $scope.comments.unshift(newComment);
           resolve(newComment);
         }).catch(reject);
@@ -69,7 +69,7 @@ define(['frontend','uikit', 'services/fetch/CommentFetchService',
       }
 
       return $q(function(resolve, reject) {
-        CommentInteractionService.sendVote($scope.mainComment, value).then(function(comment) {
+        CommentService.sendVote($scope.mainComment, value).then(function(comment) {
           Object.assign($scope.mainComment, comment);
           resolve($scope.mainComment.userVote);
         }).catch(console.log);

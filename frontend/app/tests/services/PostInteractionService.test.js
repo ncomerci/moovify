@@ -1,4 +1,4 @@
-define(['angular', 'angularMocks', 'frontend', 'services/PostInteractionService', 'restangular'], function(angular) {
+define(['angular', 'angularMocks', 'frontend', 'services/entities/PostInteractionService', 'restangular'], function(angular) {
 
   describe('PostInteractionService', function() {
 
