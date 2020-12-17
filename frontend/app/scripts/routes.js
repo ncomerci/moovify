@@ -12,6 +12,10 @@ define([], function() {
                 templateUrl: 'resources/404.html',
                 controller: 'errorCtrl'
             },
+          '/500': {
+                templateUrl: 'resources/500.html',
+                controller: 'errorCtrl'
+            },
             '/search': {
                 templateUrl: 'resources/views/search/search.html',
                 controller: 'SearchController'
