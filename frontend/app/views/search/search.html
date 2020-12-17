@@ -11,20 +11,20 @@
         </label>
       </div>
     </div>
-    <tab-display-directive tab-selected="searchOptions.contentType" tabs="tabs"></tab-display-directive>
+    <tab-display-directive tab-selected="showing.value" tabs="tabs"></tab-display-directive>
   </section>
   <section id="search-results" class="uk-margin-top">
     <div class="uk-grid">
       <div class="uk-width-expand uk-margin-small-top">
-        <div ng-show="searchOptions.contentType === 'posts'">
+        <div ng-show="showing.value === 'posts'">
           <search-posts-directive query="query" admin-controls="false" enabled="true" refresh-url-fn="setPostSearchUrl" ></search-posts-directive>
         </div>
 
-        <div ng-show="searchOptions.contentType === 'users'">
+        <div ng-show="showing.value === 'users'">
           <search-users-directive query="query" admin-controls="false" enabled="true" refresh-url-fn="setUserSearchUrl" ></search-users-directive>
         </div>
 
-        <div ng-show="searchOptions.contentType === 'movies'">
+        <div ng-show="showing.value === 'movies'">
           <search-movies-directive query="query" enabled="true" refresh-url-fn="setMovieSearchUrl" ></search-movies-directive>
         </div>
       </div>
