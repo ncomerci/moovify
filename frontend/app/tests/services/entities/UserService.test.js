@@ -163,7 +163,6 @@ define(['angular', 'angularMocks', 'frontend', 'services/entities/UserService', 
       $scope.$digest();
     }));
 
-    // TODO: Make it better
     it('upload avatar test', inject(function (UserService) {
 
       $httpBackend.expectPUT(/.*\/api\/user\/avatar/).respond(204);

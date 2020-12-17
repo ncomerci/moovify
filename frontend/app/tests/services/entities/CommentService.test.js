@@ -123,8 +123,6 @@ define(['angular', 'angularMocks', 'frontend', 'services/entities/CommentService
 
     }));
 
-  //  TODO: Test getPostCommentsWithUserVote, getCommentCommentsWithUserVote and getCommentCommentsWithUserVoteById - Nacho?
-
     it('send vote success test', inject(function (CommentService) {
 
       var value = 1;

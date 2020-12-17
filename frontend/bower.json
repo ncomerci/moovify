@@ -8,12 +8,13 @@
     "es5-shim": "~3.1.0",
     "json3": "~3.3.1",
     "jquery": "~3.5.1",
+    "moment": "~2.8.3",
     "marked": "~1.2.6",
     "requirejs": "~2.1.11",
     "restangular": "~1.6.1",
     "angular-sanitize": "~1.5.0",
     "js-joda-timezone": "js-joda#^2.1.1",
-    "dompurify": "~2.2.4"
+    "dompurify": "~2.0.8"
   },
   "devDependencies": {}
 }

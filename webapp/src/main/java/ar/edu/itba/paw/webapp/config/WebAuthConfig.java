@@ -22,13 +22,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @EnableWebSecurity
 @ComponentScan({ "ar.edu.itba.paw.webapp.auth", })
@@ -56,7 +51,6 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetails).passwordEncoder(passwordEncoder());
     }
 
-    // TODO: DISABLE CORS BEFORE DEPLOYMENT
     // Spring Security Unresolved Issues
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -184,8 +178,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
                     // Default
                     .antMatchers("/api/**").permitAll()
 
-                    // TODO: CORS
-                .and().cors().and().csrf().disable()
+                .and().csrf().disable()
 
                 // Register Jwt Authentication Filter
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -202,33 +195,4 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
-//    TODO: CORS
-    @Bean
-    public CorsFilter corsFilter() {
-
-        UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
-        CorsConfiguration config = new CorsConfiguration();
-
-        final List<String> exposedHeaders = new ArrayList<>();
-
-        exposedHeaders.add("Content-Length");
-        exposedHeaders.add("Content-Range");
-        exposedHeaders.add("Link");
-        exposedHeaders.add("Authorization");
-        exposedHeaders.add("Location");
-
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        config.setExposedHeaders(exposedHeaders);
-
-        source.registerCorsConfiguration("/**", config);
-
-        return new CorsFilter(source);
-    }
-
 }

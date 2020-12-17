@@ -34,8 +34,7 @@ define(['routes',
 				'RestangularProvider',
 				function($routeProvider, $controllerProvider, $compileProvider, $filterProvider, $provide, $translateProvider, $locationProvider, RestangularProvider) {
 
-				  // TODO: Cambiar URL para el deploy
-					RestangularProvider.setBaseUrl('http://localhost/api');
+					RestangularProvider.setBaseUrl('http://pawserver.it.itba.edu.ar/paw-2020b-3/api');
 
 					RestangularProvider.setRestangularFields({
             selfLink: 'url'

@@ -34,8 +34,8 @@ import java.util.Properties;
         "ar.edu.itba.paw.persistence",
     })
 @Configuration
-@PropertySource({ "classpath:/config/web-config-develop.properties" })
-//@PropertySource({ "classpath:/config/web-config-production.properties" })
+//@PropertySource({ "classpath:/config/web-config-develop.properties" })
+@PropertySource({ "classpath:/config/web-config-production.properties" })
 public class WebConfig {
 
     @Autowired
@@ -90,9 +90,10 @@ public class WebConfig {
     public MessageSource messageSource() {
         final ReloadableResourceBundleMessageSource msgSource = new ReloadableResourceBundleMessageSource();
 
+
         msgSource.setBasename("classpath:i18n/messages");
         msgSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
-//        msgSource.setCacheSeconds(env.getProperty("strings.cache", Integer.class));
+        msgSource.setCacheSeconds(env.getProperty("strings.cache", Integer.class));
 
         return msgSource;
     }
