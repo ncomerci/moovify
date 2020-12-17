@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/LoginService'], function (frontend) {
 
-  frontend.service('UserService', function ($q, RestFulResponse, LoggedUserFactory) {
+  frontend.service('UserService', function ($q, RestFulResponse, LoggedUserFactory, $location) {
 
     var avatarData = {
       file: undefined,
@@ -111,6 +111,42 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
           r.one('/users/'+user.id+'/enabled').remove().then(function () {
             resolve();
           }).catch(reject);
+        }).catch(reject);
+      });
+    }
+
+    this.updateInfo = function (loggedUser, info) {
+      return $q(function (resolve, reject) {
+        RestFulResponse.withAuth(loggedUser).then(function (r) {
+          r.one('/user').customPUT(info, undefined, undefined, {'Content-Type': 'application/json'})
+           .then(resolve).catch(reject);
+        })
+      });
+    }
+
+    this.updatePassword = function (loggedUser, password) {
+      return $q(function (resolve, reject) {
+        RestFulResponse.withAuth(loggedUser).then(function (r) {
+          r.one('/user').customPUT(password, undefined, undefined, {'Content-Type': 'application/json'})
+           .then(function () {
+             LoggedUserFactory.logout().then(function () {
+               $location.path('/login');
+               resolve();
+             });
+           }).catch(reject);
+        }).catch(reject);
+      });
+    }
+
+    this.sendConfirmToken = function (loggedUser, token) {
+      return $q(function (resolve, reject) {
+        RestFulResponse.withAuth(loggedUser).then(function (r) {
+          r.all('/user/email_confirmation').customPUT(token, undefined, undefined, {'Content-Type': 'application/json'})
+           .then(function () {
+             var idx = loggedUser.roles.indexOf('NOT_VALIDATED');
+             loggedUser.roles[idx] = 'USER';
+             resolve();
+           }).catch(reject);
         }).catch(reject);
       });
     }

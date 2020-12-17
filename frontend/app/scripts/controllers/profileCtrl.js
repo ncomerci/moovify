@@ -1,12 +1,11 @@
-define(['frontend', 'uikit', 'directives/TabDisplayDirective',
-    'services/utilities/RestFulResponseFactory', 'directives/fetch/FetchPostsDirective',
+define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch/FetchPostsDirective',
     'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService',
     'services/UserService', 'services/utilities/PageTitleService']
   , function(frontend, UIkit) {
 
     'use strict';
     frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
-                                                RestFulResponse, LoggedUserFactory, UserService, PageTitle, $q) {
+                                                LoggedUserFactory, UserService, PageTitle, $q) {
 
       var routeID = parseInt($routeParams.id);
       $scope.user = {};
@@ -198,46 +197,43 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective',
           !$scope.descriptionIsNotValid()
         ) {
           $scope.loading = true;
-          RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-            var aux = {};
-            Object.keys($scope.editInfo).forEach(function (key) {
-              if($scope.editInfo[key] !== $scope.loggedUser[key]) {
-                aux[key] = $scope.editInfo[key];
-              }
-            });
-            if(Object.keys(aux).length > 0) {
-              r.one('/user').customPUT(aux, undefined, undefined, {'Content-Type': 'application/json'})
-               .then(function () {
-                 $scope.loading = false;
-                 Object.assign($scope.loggedUser, aux);
-                 Object.assign($scope.user, aux);
-                 $scope.btnPressed = false;
-                 UIkit.modal(document.getElementById('edit-info-modal')).hide();
-                 if(aux.username !== undefined) {
-                   LoggedUserFactory.logout().then(function () {
-                     $location.path('/login');
-                   });
-                 }
-               })
-               .catch(function (err) {
-                 $scope.loading = false;
-                 if(err.data) {
-                   err.data.forEach(function (e) {
-                     $translate(fieldErrors[e['attribute']].i18nKey).then(function(field) {
-                       $translate('FORM_DUPLICATED_FIELD_ERROR', {field: field}).then(function(msg) {
-                         fieldErrors[e['attribute']].message = msg;
-                       }).catch(function(err) { console.log('inside', err) });
-                     }).catch(function(err){ console.log('outside', err) });
-                   });
-                 } else {
-                   console.log(err);
-                 }
-               });
-            } else {
-              $scope.loading = false;
-              UIkit.modal(document.getElementById('edit-info-modal')).hide();
+          var aux = {};
+          Object.keys($scope.editInfo).forEach(function (key) {
+            if($scope.editInfo[key] !== $scope.loggedUser[key]) {
+              aux[key] = $scope.editInfo[key];
             }
           });
+          if(Object.keys(aux).length > 0) {
+            UserService.updateInfo($scope.loggedUser, aux).then(function () {
+              Object.assign($scope.loggedUser, aux);
+              Object.assign($scope.user, aux);
+              $scope.loading = false;
+              $scope.btnPressed = false;
+              UIkit.modal(document.getElementById('edit-info-modal')).hide();
+              if(aux.username !== undefined) {
+                LoggedUserFactory.logout().then(function () {
+                  $location.path('/login');
+                });
+              }
+            }).catch(function (err) {
+              $scope.loading = false;
+              if(err.data) {
+                err.data.forEach(function (e) {
+                  $translate(fieldErrors[e['attribute']].i18nKey).then(function(field) {
+                    $translate('FORM_DUPLICATED_FIELD_ERROR', {field: field}).then(function(msg) {
+                      fieldErrors[e['attribute']].message = msg;
+                    }).catch(function(err) { console.log('inside', err) });
+                  }).catch(function(err){ console.log('outside', err) });
+                });
+              } else {
+                console.log(err);
+              }
+            })
+          }
+          else {
+            $scope.loading = false;
+            UIkit.modal(document.getElementById('edit-info-modal')).hide();
+          }
         }
       }
 
@@ -294,20 +290,14 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective',
           !$scope.passwordsNotEquals()
         ) {
           $scope.loading = true;
-          RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-            delete $scope.editPass.repeatPassword
-            r.one('/user').customPUT($scope.editPass, undefined, undefined, {'Content-Type': 'application/json'})
-              .then(function () {
-                $scope.loading = false;
-                $scope.btnPressed = false;
-                UIkit.modal(document.getElementById('change-password-modal')).hide();
-                LoggedUserFactory.logout().then(function () {
-                  $location.path('/login');
-                });
-              }).catch(function (err) {
-              $scope.loading = false;
-              console.log(err);
-            })
+          delete $scope.editPass.repeatPassword;
+          UserService.updatePassword($scope.loggedUser, $scope.editPass).then(function () {
+            $scope.loading = false;
+            $scope.btnPressed = false;
+            UIkit.modal(document.getElementById('change-password-modal')).hide();
+            LoggedUserFactory.logout().then(function () {
+              $location.path('/login');
+            });
           }).catch(function (err) {
             $scope.loading = false;
             console.log(err);
@@ -325,18 +315,12 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective',
         if(
           !$scope.fieldRequired('confirmMailForm', 'token')
         ) {
-          RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-            r.all('/user/email_confirmation').customPUT($scope.confirmEmail, undefined, undefined, {'Content-Type': 'application/json'})
-              .then(function () {
-                var idx = $scope.loggedUser.roles.indexOf('NOT_VALIDATED');
-                $scope.loggedUser.roles[idx] = 'USER';
-                UIkit.modal(document.getElementById('confirm-email-profile-modal')).hide();
-              })
-              .catch(function (err) {
-                $scope.tokenError = true;
-                console.log(err);
-              })
-          })
+          UserService.sendConfirmToken($scope.loggedUser, $scope.confirmEmail).then(function () {
+            UIkit.modal(document.getElementById('confirm-email-profile-modal')).hide();
+          }).catch(function (err) {
+            $scope.tokenError = true;
+            console.log(err);
+          });
         }
       }
 
