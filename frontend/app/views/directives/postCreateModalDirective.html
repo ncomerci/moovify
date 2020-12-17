@@ -27,7 +27,7 @@
       <div class="uk-text-danger" ng-if="validateMovieMax()">{{'FORM_MOVIE_MAX_REQUIRED' | translate}}</div>
     </div>
     <div id="movies-selected" class="uk-width-3-4 uk-margin">
-      <span ng-repeat="movie in moviesBadges" class="uk-badge uk-button-primary uk-padding-small uk-margin-small-right uk-margin-small-bottom">
+      <span ng-repeat="movie in moviesBadges" class="uk-badge primary-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">
         <button  ng-click="unselectMovie(movie[0], movie[1])" class="uk-margin-small-left uk-light" type="button" uk-close>
             {{movie[0]}}
         </button>
@@ -50,7 +50,7 @@
                placeholder="{{'POST_CREATE_TAGS_PLACEHOLDER' | translate}}"
                ng-keydown="$event.keyCode === 13 && !createPostForm.tag.$error.maxlength && !createPostForm.tag.$error.pattern && addTag(post.tag)">
         <button id="add-tag-button" class="uk-button uk-button-primary uk-border-rounded uk-width-auto"
-                ng-class="{'uk-disabled':createPostForm.tag.$error.maxlength || !createPostForm.tag.$error.pattern}"
+                ng-disabled="createPostForm.tag.$error.maxlength || createPostForm.tag.$error.pattern"
                 ng-click="addTag(post.tag)"
                 type="button">{{'POST_CREATE_ADD' | translate}}</button>
       </div>
@@ -62,7 +62,7 @@
     </div>
 
     <div id="tags-selected" class="uk-margin uk-width-3-4">
-      <span ng-repeat="tag in tagsBadges" class="uk-badge uk-button-primary uk-padding-small uk-margin-small-right uk-margin-small-bottom">
+      <span ng-repeat="tag in tagsBadges" class="uk-badge primary-badge uk-padding-small uk-margin-small-right uk-margin-small-bottom">
         <button  ng-click="unselectTag(tag)" class="uk-margin-small-left uk-light" type="button" uk-close>
             {{tag}}
         </button>
