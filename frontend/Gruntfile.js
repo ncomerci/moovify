@@ -85,7 +85,7 @@ module.exports = function (grunt) {
         imagesDir: '<%= yeoman.app %>/images',
         javascriptsDir: '<%= yeoman.app %>/scripts',
         fontsDir: '<%= yeoman.app %>/styles/fonts',
-        importPath: './bower_components',
+        importPath: ['./bower_components', './static_dependencies'],
         httpImagesPath: '/images',
         httpGeneratedImagesPath: '/images/generated',
         httpFontsPath: '/styles/fonts',
@@ -158,7 +158,7 @@ module.exports = function (grunt) {
       },
       dist: {
         src: ['<%= yeoman.tmp %>/styles/main.scss'],
-        ignorePath: /(\.\.\/){1,2}bower_components\//
+        ignorePath: [/(\.\.\/){1,2}bower_components\//, /(\.\.\/){1,2}static_dependencies/]
       },
       options: {
         fileTypes: {
@@ -498,7 +498,7 @@ module.exports = function (grunt) {
       'requirejs',
       // pre-required setup for usemin
       'useminPrepare',
-      // compass, imagemin, svgmin
+      // // compass, imagemin, svgmin
       'concurrent:dist',
       // add css vendor prefixes, in: .tmp/styles out: .tmp/styles
       'autoprefixer',
