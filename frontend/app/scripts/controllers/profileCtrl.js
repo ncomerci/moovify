@@ -26,14 +26,11 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
               {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
             ];
             PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
-          }).catch(function (err) {
-            console.log(err);
-            $location.path('/404');
-          });
+          }).catch(function() { $location.path('/500') });
 
           var followedUser = UserService.doLoggedUserFollow($scope.loggedUser, routeID).then(function (bool) {
             $scope.isFollowed = bool;
-          }).catch(console.log);
+          }).catch(); // no need for 500
 
           $q.all(getUserData, followedUser).then(function () {
             $scope.loadUserFinished = true;
@@ -217,11 +214,9 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
                   $translate(fieldErrors[e['attribute']].i18nKey).then(function(field) {
                     $translate('FORM_DUPLICATED_FIELD_ERROR', {field: field}).then(function(msg) {
                       fieldErrors[e['attribute']].message = msg;
-                    }).catch(function(err) { console.log('inside', err) });
-                  }).catch(function(err){ console.log('outside', err) });
+                    }).catch(); // no need for 500
+                  }).catch();
                 });
-              } else {
-                console.log(err);
               }
             })
           }
@@ -295,7 +290,6 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
             });
           }).catch(function (err) {
             $scope.loading = false;
-            console.log(err);
           });
         }
       }
@@ -314,7 +308,6 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
             UIkit.modal(document.getElementById('confirm-email-profile-modal')).hide();
           }).catch(function (err) {
             $scope.tokenError = true;
-            console.log(err);
           });
         }
       }
@@ -327,34 +320,33 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
           $scope.resendSuccess = true;
         }).catch(function (err) {
           $scope.resendError = true;
-          console.log(err);
         });
       }
 
       $scope.followUser = function () {
         UserService.followUser($scope.loggedUser, $scope.user).then(function () {
           $scope.isFollowed = true;
-        }).catch(console.log);
+        }).catch();
       }
 
       $scope.unfollowUser = function () {
         UserService.unfollowUser($scope.loggedUser, $scope.user).then(function () {
           $scope.isFollowed = false;
-        }).catch(console.log);
+        }).catch();
       }
 
       $scope.promoteUser = function () {
         UserService.promoteUser($scope.loggedUser, $scope.user).then(function () {
           $scope.isAdmin = true;
           UIkit.modal(document.getElementById('promote-modal')).hide();
-        }).catch(console.log);
+        }).catch();
       }
 
       $scope.deleteUser = function () {
         UserService.deleteUser($scope.loggedUser, $scope.user).then(function () {
           UIkit.modal(document.getElementById('delete-modal')).hide();
           $location.path('/');
-        }).catch(console.log);
+        }).catch();
       }
 
       $scope.logoutEverywhere = function () {

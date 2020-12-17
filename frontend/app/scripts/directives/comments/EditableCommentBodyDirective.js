@@ -36,7 +36,7 @@ define(['frontend'], function(frontend) {
           $scope.sendUpdateFn($scope.body).then(function () {
             $scope.sendingEdit = false;
             $scope.editing = false;
-          }).catch(console.log);
+          }).catch(function () { $scope.sendingEdit = false; });
         }
 
       }

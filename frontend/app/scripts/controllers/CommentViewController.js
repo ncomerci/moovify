@@ -37,11 +37,11 @@ define(['frontend','uikit', 'services/entities/CommentService',
 
     CommentService.fetchOneComment(commentId).then(function(comment) {
       $scope.mainComment = comment;
-    }).catch(console.log);
+    }).catch(function() { $location.path('/500') });
 
     CommentService.getCommentCommentsWithUserVoteById(commentId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
       $scope.comments = comments;
-    }).catch(console.log);
+    }).catch(); // Can continue without comments
 
     $scope.newComment = {};
     $scope.newComment.fn = function(newCommentBody){
@@ -72,7 +72,7 @@ define(['frontend','uikit', 'services/entities/CommentService',
         CommentService.sendVote($scope.mainComment, value).then(function(comment) {
           Object.assign($scope.mainComment, comment);
           resolve($scope.mainComment.userVote);
-        }).catch(console.log);
+        }).catch(reject);
       });
     }
 

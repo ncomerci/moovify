@@ -28,7 +28,7 @@ define(['frontend', 'services/entities/MovieService', 'services/PostCreateModalS
               scope.moviesList[movie.title + ' - ' + movie.releaseDate.substring(0, movie.releaseDate.indexOf("-"))] = movie.id;
             });
             scope.moviesTitles = Object.keys(scope.moviesList);
-          }).catch(function () { $location.path('/404'); });
+          }).catch(function () { $location.path('/500'); });
       },
       controller: function ($scope) {
         $scope.addMovie = function (movieName) {

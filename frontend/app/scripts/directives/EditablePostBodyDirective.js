@@ -90,7 +90,6 @@ define(['frontend','easymde', 'marked', 'purify'], function(frontend,EasyMDE,mar
 
           if($scope.bodyRequired() || $scope.bodyMinLen() || $scope.bodyMaxLen()){
 
-            console.log('ERRORS');
             $scope.hasError.value = true;
             $scope.hasError.bodyRequired = $scope.bodyRequired();
             $scope.hasError.bodyMinLen = $scope.bodyMinLen();
@@ -106,7 +105,7 @@ define(['frontend','easymde', 'marked', 'purify'], function(frontend,EasyMDE,mar
             $scope.sendingEdit = false;
             $scope.editing.value = false;
             $scope.htmlBody = marked($scope.body);
-          }).catch(console.log);
+          }).catch(function() { $scope.sendingEdit = false; });
         }
 
         $scope.bodyRequired = function () {

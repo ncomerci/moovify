@@ -15,7 +15,7 @@ define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTi
       LoggedUserFactory.saveToken(resp.headers("authorization")).then(function (user) {
         $scope.loggedUser = user;
         $scope.waitLogin = false;
-      }).catch(console.log);
+      }).catch();
     }).catch(function () {
       LoggedUserFactory.finishLoggedUserCheck();
       $scope.waitLogin = false;

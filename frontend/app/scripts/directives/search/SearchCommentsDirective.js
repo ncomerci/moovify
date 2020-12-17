@@ -90,7 +90,7 @@ define(['frontend', 'services/entities/CommentService', 'directives/PaginationHa
               $scope.paginationMutex = false;
             }
           ).catch(function () {
-            $location.path('/404')
+            $location.path('/500')
           });
         };
 

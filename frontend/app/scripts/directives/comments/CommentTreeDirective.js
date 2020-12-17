@@ -35,7 +35,7 @@ define(['frontend', 'directives/comments/CommentDisplayDirective'], function(fro
           $scope.comments.getNext(0).then(function(comments) {
             $scope.newReplyCount = comments.length;
             $scope.newComments = comments;
-          }).catch(console.log);
+          }).catch(); // No need for error
         }
 
         if($scope.comments.hasNext){

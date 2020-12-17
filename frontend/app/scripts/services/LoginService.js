@@ -22,9 +22,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory'], function(front
           RestFulResponse.clearHeaders();
           $location.path('/');
           resolve();
-        }).catch(function (err) {
-          reject(err)
-        })
+        }).catch(reject)
       });
     }
 

@@ -15,7 +15,7 @@ define(['frontend', 'services/DynamicOptionsService'], function(frontend) {
         DynamicOptionsService.getOptions('/posts').then(function(optionArray) {
           scope.supportedValues = {};
           optionArray.forEach(function(opt){ scope.supportedValues[opt.name] = opt.values });
-        }).catch(function() { $location.path('/404') }); // TODO: A 500
+        }).catch(function() { $location.path('/500') });
 
       },
       controller: function($scope){

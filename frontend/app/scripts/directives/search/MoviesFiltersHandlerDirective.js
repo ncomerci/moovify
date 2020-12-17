@@ -14,7 +14,7 @@ define(['frontend', 'services/DynamicOptionsService', 'services/entities/MovieCa
         DynamicOptionsService.getOptions('/movies').then(function(optionArray) {
           scope.supportedValues = {};
           optionArray.forEach(function(opt){ scope.supportedValues[opt.name] = opt.values });
-        }).catch(function() { $location.path('/404') }); //con location.path redirijo
+        }).catch(function() { $location.path('/500') }); //con location.path redirijo
 
       },
       controller: function ($scope) {

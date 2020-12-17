@@ -97,7 +97,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
               $scope.paginationMutex = false;
             }
-          ).catch(function(){ $location.path('/404') });
+          ).catch(function(){ $location.path('/500') });
         };
 
         $scope.refreshUrlFn = function() {

@@ -54,7 +54,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
 
         resolve({collection: movies, paginationParams: paginationParams, queryParams: queryParams}); //devuelvo la informacion que junte e n el servicio
 
-        }).catch(function(response) { reject({status: response.status, message: 'MovieService: FetchMovie'}) });
+        }).catch(reject);
 
       });
 

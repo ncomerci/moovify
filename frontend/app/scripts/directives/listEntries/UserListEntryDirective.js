@@ -27,7 +27,7 @@ define(['frontend', 'services/DisplayService', 'services/entities/UserService', 
         $scope.recoverUser = function () {
           UserService.recoverUser($scope.user).then(function (user) {
             $scope.removeUserFn(user);
-          }).catch(console.log);
+          }).catch();
         }
       },
       templateUrl: 'resources/views/directives/listEntries/userListEntryDirective.html'
