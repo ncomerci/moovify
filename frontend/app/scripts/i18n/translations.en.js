@@ -228,7 +228,7 @@ define([], function() {
     PAGE_500_1: "An error occurred while processing your request.",
     PAGE_500_2: "We apologize for the inconvenience, you can go to the home page and start aging.",
     PAGE_404_BTN: "Go to the home page",
-    SIGNOUT_EVERYWHERE: "Sign out everywhere",
+    SIGNOUT_EVERYWHERE: "Log out everywhere",
 
 
     COMMENT_VIEW_HEADING: "Comment from post:",
