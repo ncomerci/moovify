@@ -25,13 +25,13 @@
 
       <span ng-if="isUser">
 
-        <span ng-if="depth < 5">
+        <span ng-if="depth < maxDepth">
           <button class="no-style-button uk-link link-muted" ng-click="callbackFunctions.startReply.fn()"
                   ng-if="isUser && callbackFunctions.startReply">
             <span class="margin-very-small-left margin-very-small-right" uk-icon="icon: commenting; ratio 1"></span>{{'REPLY_COMMENT_BUTTON' | translate}}</button>
         </span>
 
-        <span ng-if="depth >= 5">
+        <span ng-if="depth >= maxDepth">
           <button class="no-style-button uk-link link-muted" ng-click="openGoToViewModal()">
           <span class="margin-very-small-left margin-very-small-right" uk-icon="icon: commenting; ratio 1"></span>{{'REPLY_COMMENT_BUTTON' | translate}}</button>
         </span>
@@ -45,10 +45,10 @@
           <span class="margin-very-small-left margin-very-small-right" uk-icon="icon: pencil; ratio 1"></span>{{'EDIT_COMMENT_BUTTON' | translate}}</button>
       </span>
 
-      <a class="link-muted" ng-href="mailto:{{comment.user.email}}">
+      <a class="link-muted uk-link" ng-href="mailto:{{comment.user.email}}">
         <span class="margin-very-small-left margin-very-small-right" uk-icon="icon: mail; ratio 1"></span>{{'MAIL_AUTHOR_COMMENT_BUTTON' | translate}}</a>
 
-      <a class="link-muted" ng-href="comment/{{comment.id}}">
+      <a class="link-muted uk-link" ng-href="comment/{{comment.id}}">
         <span class="margin-very-small-left margin-very-small-right" uk-icon="icon: plus-circle; ratio 1"></span>{{'GO_TO_VIEW_COMMENT_BUTTON' | translate}}</a>
     </div>
 

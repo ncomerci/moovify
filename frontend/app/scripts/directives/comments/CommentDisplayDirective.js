@@ -15,6 +15,9 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
       link: function(scope) {
         scope.writtingReply = {value: false};
         scope.showChildren = {value: false};
+
+        scope.maxDepth = 5;
+
       },
       controller: function($scope, CommentInteractionService, CommentFetchService, $q, UserService, LoggedUserFactory) {
 
