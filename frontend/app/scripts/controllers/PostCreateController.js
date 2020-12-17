@@ -1,9 +1,10 @@
 define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulResponseFactory', 'services/PostCategoriesService',
-  'services/fetch/MovieFetchService', 'directives/PostCreateModalDirective', 'services/LoginService', 'services/utilities/PageTitleService'
+  'services/fetch/MovieFetchService', 'directives/PostCreateModalDirective', 'services/utilities/PageTitleService',
+  'services/PostCreateService'
 ], function(frontend, UIkit, EasyMDE, DOMPurify) {
 
   'use strict';
-  frontend.controller('PostCreateController', function($scope, PostCategoriesService, MovieFetchService, PageTitle, RestFulResponse, $location, LoggedUserFactory) {
+  frontend.controller('PostCreateController', function($scope, PostCategoriesService, MovieFetchService, PostCreateService, PageTitle, RestFulResponse, $location) {
     PageTitle.setTitle('POST_CREATE_TITLE');
 
     $scope.post = {};
@@ -86,14 +87,6 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulRes
       });
     }
 
-    function handleCreatePost(postResponse){
-      $scope.easyMde.clearAutosavedValue();
-      var modalElem = document.getElementById('movies-modal');
-      UIkit.modal(modalElem).hide();
-      var link = postResponse.headers('Location');
-      return link.substring(link.indexOf("api/") + 3);
-    }
-
     function easyMdeFullscreenHandle(fullscreen){
       document.getElementById('navbar').style.visibility = (fullscreen) ? 'hidden' : 'visible';
     }
@@ -113,6 +106,14 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulRes
         var modalElem = document.getElementById('movies-modal');
         UIkit.modal(modalElem).show();
       }
+    }
+
+    function handleCreatePost(postResponse){
+      $scope.easyMde.clearAutosavedValue();
+      var modalElem = document.getElementById('movies-modal');
+      UIkit.modal(modalElem).hide();
+      var link = postResponse.headers('Location');
+      return '/post' + link.substring(link.indexOf("posts/") + 5);
     }
 
     $scope.createPost = function () {
@@ -135,16 +136,10 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/utilities/RestFulRes
         Object.keys(tags).forEach(function (tag) {
           $scope.post.tags.push(tag);
         })
-
-        RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function (Restful) {
-          Restful.all('posts').post($scope.post).then(function (postResponse) {
-
-              $location.path(handleCreatePost(postResponse));
-            }
-          ).catch(function (err) {
-            console.log(err);
-          });
-        }).then().catch();
+        PostCreateService.createPost($scope.post).then(function (postResponse) {
+          handleCreatePost(postResponse);
+          $location.path(handleCreatePost(postResponse))
+        }).catch(console.log);
       }
     }
     $scope.bodyRequired = function (button, body) {

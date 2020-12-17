@@ -82,8 +82,7 @@
 
       <button class="no-style-button uk-link link-muted"
               ng-if="hasChildren() && !showChildren.value" ng-click="showChildren.value = true">
-        SHOW {{currentChildren}} REPLIES</button>
-      <!--    TODO FAUS PLURALIZE-->
+        <ng-pluralize count="currentChildren" when="repliesForm"></ng-pluralize></button>
     </div>
     <div ng-if="showChildren.value">
       <comment-tree-directive depth="depth + 1" comments="comment.children"></comment-tree-directive>

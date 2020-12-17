@@ -19,7 +19,20 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
         scope.maxDepth = 5;
 
       },
-      controller: function($scope, CommentInteractionService, CommentFetchService, $q, UserService, LoggedUserFactory) {
+      controller: function($scope, CommentInteractionService, CommentFetchService, $q, UserService, LoggedUserFactory, $locale) {
+
+        if($locale.id === 'es') {
+          $scope.repliesForm = {
+            1:'Mostrar respuesta',
+            other:'Mostrar {} respuestas'
+          }
+        }
+        else {
+          $scope.repliesForm = {
+            1:'Show reply',
+            other:'Show {} replies'
+          }
+        }
 
         $scope.isUser = false;
         $scope.isAdmin = false;

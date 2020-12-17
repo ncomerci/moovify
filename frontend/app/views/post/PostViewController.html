@@ -1,7 +1,7 @@
 <main ng-show="post && post.enabled" class="uk-container-small uk-margin-auto">
   <div class="post-header">
     <div class="post-meta">
-      <h1>
+      <h1 class="word-brake">
         <span ng-if="isUser">
           <button ng-disabled="mutex.bookmark" ng-click="toggleBookmark()" class="no-style-button primary-button">
             <span ng-show="post.hasUserBookmarked">
@@ -19,7 +19,7 @@
         </span>
         {{post.title}}
       </h1>
-      <p>{{'POST_VIEW_POST_AUTHOR' | translate}} <a href="users/{{post.user.id}}">{{post.user.username}}</a></p>
+      <p>{{'POST_VIEW_POST_AUTHOR' | translate}} <a href="user/{{post.user.id}}">{{post.user.username}}</a>{{'CREATION_DATE' | translate:{creationDate:getDateFormatted(post.creationDate)};}}<span data-uk-icon="icon: future"></span> <ng-pluralize count="wordsPerMinute()" when="minsForm"></ng-pluralize></p>
     </div>
     <div class="post-vote-handler uk-padding-small">
       <comment-like-handler-directive total-votes="post.totalLikes" user-vote="post.userVote" send-vote-fn="callback.vote"></comment-like-handler-directive>

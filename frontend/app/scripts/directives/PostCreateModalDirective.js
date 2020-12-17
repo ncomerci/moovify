@@ -36,7 +36,6 @@ define(['frontend', 'services/fetch/MovieFetchService', 'services/PostCreateModa
           $scope.post.movie = "";
           $scope.moviesTitles = Object.keys($scope.moviesList);
           $scope.moviesBadges = Object.entries($scope.movieMap);
-          console.log($scope.moviesTitles);
         }
 
         $scope.unselectMovie = function (movieName, movieId) {

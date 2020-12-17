@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'directives/comments/CommentDisplayDirective'], function(frontend) {
 
-  frontend.directive('commentTreeDirective', function (){
+  frontend.directive('commentTreeDirective', function ($locale){
 
     return {
       restrict: 'E',
@@ -12,7 +12,20 @@ define(['frontend', 'directives/comments/CommentDisplayDirective'], function(fro
       templateUrl:'resources/views/directives/comments/commentTreeDirective.html',
       link: function(scope) {
       },
-      controller: function($scope) {
+      controller: function($scope, $locale) {
+
+        if($locale.id === 'es') {
+          $scope.repliesForm = {
+            1:'Mostrar respuesta',
+            other:'Mostrar {} respuestas'
+          }
+        }
+        else {
+          $scope.repliesForm = {
+            1:'Show reply',
+            other:'Show {} replies'
+          }
+        }
 
         $scope.newReplyCount = 0;
         $scope.newComments = null;

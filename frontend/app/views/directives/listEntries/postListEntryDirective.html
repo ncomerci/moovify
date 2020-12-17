@@ -47,7 +47,7 @@
         <ng-pluralize count="post.movies.length" when="moviesDiscussedForm"></ng-pluralize>
         <span ng-repeat="movie in post.movies">
           <a ng-href="/movie/{{movie.id}}">
-            {{movie.title}}
+            {{'MOVIE_WITH_SPACER' | translate:{title:movie.title};}}
           </a>
         </span>
       </p>

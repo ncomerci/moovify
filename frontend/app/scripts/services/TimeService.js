@@ -102,6 +102,12 @@ define(['frontend', 'js-joda'], function (frontend, JSJoda) {
         return dt1.until(dt2, ChronoUnit.MINUTES);
       },
 
+      getDateFormatted: function (creationDate){
+        var dt = LocalDateTime.parse(creationDate);
+
+        return dt.hour() + '/' + dt.monthValue() + '/' + dt.year()
+      },
+
       getTimeForm: function(creationDate, id){
         if(this.getYearsSinceCreation(creationDate) > 0) {
           return id === 'es'? spanishMap['years'] : otherMap['years'];
