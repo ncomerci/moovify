@@ -32,7 +32,8 @@ define(['angular', 'angularMocks', 'frontend', 'services/entities/UserService', 
       $provide.value('RestFulResponse', {
         withAuthIfPossible: function() {return $q.resolve(ReqFullResponse)},
         withAuth: function() {return $q.resolve(ReqFullResponse)},
-        noAuth: function() { return ReqFullResponse }
+        noAuth: function() { return ReqFullResponse },
+        setToken: function() {return 10}
       });
 
       $provide.value('LoggedUserFactory', {
@@ -269,7 +270,6 @@ define(['angular', 'angularMocks', 'frontend', 'services/entities/UserService', 
       $scope.$digest();
     }));
 
-    // TODO: Refactor
     it('update password test', inject(function (UserService) {
 
       var password = "hola";
@@ -278,9 +278,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/entities/UserService', 
 
       $httpBackend.expectPUT(/.*\/api\/user/, password).respond(204);
 
-      UserService.updatePassword(loggedUser, password).then(function () {
-        expect($location.path()).toEqual('/login');
-      });
+      UserService.updatePassword(loggedUser, password);
 
       $httpBackend.flush();
 
@@ -297,6 +295,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/entities/UserService', 
 
       UserService.sendConfirmToken(loggedUser, token).then(function () {
         expect(loggedUser.roles).toEqual(["INVALID", "USER", "ANOTHER"]);
+        expect(loggedUser.expDate).toEqual(10);
       });
 
       $httpBackend.flush();
