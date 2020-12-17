@@ -1,7 +1,8 @@
-define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/utilities/RestFulResponseFactory', 'services/UpdateAvatarService'], function(frontend) {
+define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService',
+  'services/utilities/RestFulResponseFactory', 'services/UserService'], function(frontend) {
 
     'use strict';
-    frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, PageTitle, RestFulResponse, $location, $translate, UpdateAvatar) {
+    frontend.controller('SignupCtrl', function($scope, LoggedUserFactory, PageTitle, RestFulResponse, $location, $translate, UserService) {
       PageTitle.setTitle('SIGNUP_TITLE')
 
       if(LoggedUserFactory.getLoggedUser().logged) {
@@ -51,12 +52,12 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         },
       }
 
-      $scope.avatar = UpdateAvatar.getAvatar();
+      $scope.avatar = UserService.avatar.get();
 
       var inputFile = angular.element(document.getElementById('avatar'))[0];
 
       inputFile.addEventListener('change', function () {
-        UpdateAvatar.setFile(inputFile.files[0]);
+        UserService.avatar.setFile(inputFile.files[0]);
         $scope.$apply();
       });
 
@@ -81,7 +82,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
             }
             LoggedUserFactory.login(aux_user).then(function () {
               if($scope.avatar.file !== undefined) {
-                UpdateAvatar.uploadAvatar();
+                UserService.avatar.upload();
               }
               $scope.loading = false;
               $location.path('/user');

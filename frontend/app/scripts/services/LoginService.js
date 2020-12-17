@@ -11,6 +11,23 @@ define(['frontend', 'services/utilities/RestFulResponseFactory'], function(front
       value: false
     }
 
+    var logoutInternal = function (query) {
+      return $q(function (resolve, reject) {
+        RestFulResponse.noAuth().one("/user/refresh_token").remove(query).then(function () {
+          var aux = {
+            logged: false,
+            expDate: undefined
+          };
+          Object.assign(loggedUser, aux);
+          RestFulResponse.clearHeaders();
+          $location.path('/');
+          resolve();
+        }).catch(function (err) {
+          reject(err)
+        })
+      });
+    }
+
     var LoggedUserFactory = {
       getLoggedUser: function () {
         return loggedUser;
@@ -53,21 +70,11 @@ define(['frontend', 'services/utilities/RestFulResponseFactory'], function(front
       },
 
       logout: function () {
-        return $q(function (resolve, reject) {
-          RestFulResponse.noAuth().one("/user/refresh_token").remove().then(function () {
-            var aux = {
-              logged: false,
-              expDate: undefined
-            };
-            Object.assign(loggedUser, aux);
-            // TODO: Preguntarle a nico que onda
-            RestFulResponse.clearHeaders();
-            $location.path('/');
-            resolve();
-          }).catch(function (err) {
-            reject(err)
-          })
-        });
+        return logoutInternal();
+      },
+
+      logoutEverywhere: function () {
+        return logoutInternal({allSessions: true});
       },
 
     //  esto es solo debería usarse en index controller

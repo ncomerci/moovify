@@ -224,5 +224,6 @@ define([], function() {
     PAGE_404_1: "Disculpe, la página a la que está intentando acceder no existe.",
     PAGE_404_2: "Podría deberse a que la dirección ya no está disponible o está mal escrita.",
     PAGE_404_BTN: "Ir a la página principal",
+    SIGNOUT_EVERYWHERE: "Cerrar sesión en todas partes"
   };
 });

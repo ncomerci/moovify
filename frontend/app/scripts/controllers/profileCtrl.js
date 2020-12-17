@@ -1,11 +1,11 @@
-define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateAvatarService',
+define(['frontend', 'uikit', 'directives/TabDisplayDirective',
     'services/utilities/RestFulResponseFactory', 'directives/fetch/FetchPostsDirective',
     'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService',
     'services/UserService', 'services/utilities/PageTitleService']
   , function(frontend, UIkit) {
 
     'use strict';
-    frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams, UpdateAvatar,
+    frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
                                                 RestFulResponse, LoggedUserFactory, UserService, PageTitle, $q) {
 
       var routeID = parseInt($routeParams.id);
@@ -15,39 +15,30 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
 
       if(routeID) {
         if(routeID !== $scope.loggedUser.id) {
-          var getUserData = $q(function (resolve, reject) {
-            RestFulResponse.noAuth().one('/users/' + routeID).get().then(function (r) {
-              if(r.data.enabled === false) throw '';
-              Object.assign($scope.user, r.data);
-              $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
-              $scope.tabs = [
-                {value:'posts', message:"{{'USER_POST_TAB_DISPLAY' | translate}}"},
-                {value:'comments', message:"{{'USER_COMMENTS_TAB_DISPLAY' | translate}}"},
-                {value:'bookmarks', message:"{{'USER_BOOK_TAB_DISPLAY' | translate}}"},
-                {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
-              ];
-              PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
-              resolve();
-            }).catch(function (err) {
-              console.log(err);
-              $location.path('/404');
-              reject();
-            })
+
+          var getUserData = UserService.getUser(routeID).then(function (u) {
+            if(u.enabled === false) throw '';
+            Object.assign($scope.user, u);
+            $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
+            $scope.tabs = [
+              {value:'posts', message:"{{'USER_POST_TAB_DISPLAY' | translate}}"},
+              {value:'comments', message:"{{'USER_COMMENTS_TAB_DISPLAY' | translate}}"},
+              {value:'bookmarks', message:"{{'USER_BOOK_TAB_DISPLAY' | translate}}"},
+              {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
+            ];
+            PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
+          }).catch(function (err) {
+            console.log(err);
+            $location.path('/404');
           });
 
-          var followedUser = $q(function (resolve, reject){
-            RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-              r.one('user/following/'+routeID).get().then(function (resp) {
-                $scope.isFollowed = resp.data.response;
-                resolve();
-              }).catch(reject);
-            }).catch(reject);
-          })
+          var followedUser = UserService.doLoggedUserFollow($scope.loggedUser, routeID).then(function (bool) {
+            $scope.isFollowed = bool;
+          }).catch(console.log);
 
           $q.all(getUserData, followedUser).then(function () {
             $scope.loadUserFinished = true;
           })
-
         } else {
           Object.assign($scope.user, $scope.loggedUser);
           PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
@@ -110,7 +101,6 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
 
       // Change on back and forward
       $scope.$on('$locationChangeSuccess', function() {
-        console.log("hoa");
         if($routeParams.showing !== $scope.showing.value)
           $scope.showing.value = $routeParams.showing ? $routeParams.showing : $scope.tabs[0].value;
       });
@@ -181,11 +171,11 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         repeatPassword: ''
       };
 
-      $scope.avatar = UpdateAvatar.getAvatar();
+      $scope.avatar = UserService.avatar.get();
       var inputFile = angular.element(document.getElementById('avatar'))[0];
 
       inputFile.addEventListener('change', function () {
-        UpdateAvatar.setFile(inputFile.files[0]);
+        UserService.avatar.setFile(inputFile.files[0]);
         $scope.$apply();
         if(!$scope.avatar.error && $scope.avatar.file !== undefined) {
           UIkit.modal(document.getElementById('avatar-update-modal')).show();
@@ -193,7 +183,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       });
 
       $scope.uploadAvatar = function () {
-        UpdateAvatar.uploadAvatar().then(function () {
+        UserService.avatar.upload().then(function () {
           $scope.user.avatar = $scope.loggedUser.avatar;
         });
         UIkit.modal(document.getElementById('avatar-update-modal')).hide();
@@ -354,49 +344,40 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       $scope.resendError = false;
 
       $scope.resendEmail = function () {
-        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-          r.all('/user/email_confirmation').post().then(function () {
-            $scope.resendSuccess = true;
-          }).catch(function (err) {
-            $scope.resendError = true;
-            console.log(err);
-          })
-        })
+        UserService.resendConfirmEmail($scope.loggedUser).then(function () {
+          $scope.resendSuccess = true;
+        }).catch(function (err) {
+          $scope.resendError = true;
+          console.log(err);
+        });
       }
 
       $scope.followUser = function () {
-        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-          r.one('/user/following/'+routeID).put().then(function (){
-            $scope.isFollowed = true;
-            $scope.user.followerCount += 1;
-          }).catch(console.log);
+        UserService.followUser($scope.loggedUser, $scope.user).then(function () {
+          $scope.isFollowed = true;
         }).catch(console.log);
       }
+
       $scope.unfollowUser = function () {
-        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-          r.one('/user/following/'+routeID).remove().then(function (){
-            $scope.isFollowed = false;
-            $scope.user.followerCount -= 1;
-          }).catch(console.log);
+        UserService.unfollowUser($scope.loggedUser, $scope.user).then(function () {
+          $scope.isFollowed = false;
         }).catch(console.log);
       }
 
       $scope.promoteUser = function () {
-        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-          r.one('/users/'+routeID+'/privilege').put().then(function () {
-            $scope.isAdmin = true;
-            UIkit.modal(document.getElementById('promote-modal')).hide();
-          }).catch(console.log);
-        }).catch(console.log);
-      };
-
-      $scope.deleteUser = function () {
-        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-          r.one('/users/'+routeID+'/enabled').remove().then(function () {
-            UIkit.modal(document.getElementById('delete-modal')).hide();
-            $location.path('/404');
-          }).catch(console.log);
+        UserService.promoteUser($scope.loggedUser, $scope.user).then(function () {
+          $scope.isAdmin = true;
+          UIkit.modal(document.getElementById('promote-modal')).hide();
         }).catch(console.log);
       }
+
+      $scope.deleteUser = function () {
+        UserService.deleteUser($scope.loggedUser, $scope.user).then(function () {
+          UIkit.modal(document.getElementById('delete-modal')).hide();
+          $location.path('/404');
+        }).catch(console.log);
+      }
+
+      $scope.logoutEverywhere = LoggedUserFactory.logoutEverywhere;
     });
 });

@@ -20,7 +20,7 @@
       <div class="uk-width-1-3" >
         <br><br><br><br><br>
         <div class="profile-details-position uk-text-primary">
-          <div class="uk-text-danger" ng-show="avatar.error">{{'FORM_AVATAR_SIZE_ERROR' | translate}}</div>
+          <div class="uk-text-danger uk-text-center" ng-show="avatar.error">{{'FORM_AVATAR_SIZE_ERROR' | translate}}</div>
           <div class="uk-flex uk-flex-middle uk-flex-center">
             <h2 class="uk-text-bold uk-margin-remove-bottom uk-text-large uk-text-primary">{{user.name}}
               <span ng-if="isAdmin">
@@ -93,6 +93,16 @@
               {{'CHANGE_PASSWORD_TITLE' | translate}}
             </a>
           </div>
+        </div>
+
+        <br><br>
+        <div class="uk-text-center">
+          <button ng-show="profileSameAsLogged()"
+                  class="uk-button unfollow-btn uk-border-rounded uk-text-uppercase uk-text-danger"
+                  ng-click="logoutEverywhere()"
+          >
+            {{'SIGNOUT_EVERYWHERE' | translate}}
+          </button>
         </div>
 
       </div>
