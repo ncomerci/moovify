@@ -94,6 +94,9 @@ public class UserController {
     @POST
     public Response createUser(@Valid final UserCreateDto userCreateDto) {
 
+        if(userCreateDto == null)
+            throw new PayloadRequiredException();
+
         final User user;
 
         try {
@@ -117,7 +120,7 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/options")
-    public Response getUserSearchOptions(){
+    public Response getUserSearchOptions() {
 
         Collection<SearchOptionDto> options = new ArrayList<>();
 

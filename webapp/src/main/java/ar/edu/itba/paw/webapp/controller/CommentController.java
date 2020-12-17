@@ -11,10 +11,7 @@ import ar.edu.itba.paw.webapp.dto.input.CommentEditDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.CommentVoteDto;
 import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
-import ar.edu.itba.paw.webapp.exceptions.CommentNotFoundException;
-import ar.edu.itba.paw.webapp.exceptions.ForbiddenEntityRelationshipAccessException;
-import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
-import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -100,6 +97,9 @@ public class CommentController {
     @Path("/{id}")
     public Response editComment(@PathParam("id") long id, @Valid final CommentEditDto commentEditDto) throws MissingCommentEditPermissionException, IllegalCommentEditionException {
 
+        if(commentEditDto == null)
+            throw new PayloadRequiredException();
+
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
@@ -141,7 +141,10 @@ public class CommentController {
     @Consumes(MediaType.APPLICATION_JSON)
     @POST
     @Path("/{id}/children")
-    public Response createCommentChild(@PathParam("id") long parentId, @Valid final CommentCreateDto commentCreateDto){
+    public Response createCommentChild(@PathParam("id") long parentId, @Valid final CommentCreateDto commentCreateDto) {
+
+        if(commentCreateDto == null)
+            throw new PayloadRequiredException();
 
         final Comment parent = commentService.findCommentById(parentId).orElseThrow(CommentNotFoundException::new);
 
@@ -206,6 +209,9 @@ public class CommentController {
     @PUT
     @Path("/{id}/votes")
     public Response voteComment(@PathParam("id") long id, final GenericIntegerValueDto valueDto) throws IllegalCommentLikeException {
+
+        if(valueDto == null)
+            throw new PayloadRequiredException();
 
         final Comment comment = commentService.findCommentById(id).orElseThrow(CommentNotFoundException::new);
 
