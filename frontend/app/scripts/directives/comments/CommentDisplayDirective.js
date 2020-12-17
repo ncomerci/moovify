@@ -73,7 +73,7 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
             CommentService.sendVote($scope.comment, value).then(function(comment) {
               Object.assign($scope.comment, comment);
               resolve(comment.userVote);
-            }).catch(console.log);
+            }).catch(reject);
           });
         }
 
@@ -123,7 +123,7 @@ define(['frontend', 'uikit', 'directives/comments/CommentTreeDirective', 'servic
             $scope.sendingDelete.value = false;
             $scope.comment.enabled = false;
             UIkit.modal(document.getElementById('delete-comment-modal-' + $scope.comment.id)).hide();
-          }).catch(console.log);
+          }).catch(function () { $scope.sendingDelete.value = false; });
         }
       }
     }

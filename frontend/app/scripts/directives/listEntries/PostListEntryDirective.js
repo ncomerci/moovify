@@ -50,7 +50,7 @@ define(['frontend', 'services/entities/PostService', 'services/entities/UserServ
         $scope.recoverPost = function () {
           PostService.recoverPost($scope.post).then(function (post) {
             $scope.removePostFn(post);
-          }).catch(console.log);
+          }).catch();
         }
       }
     }

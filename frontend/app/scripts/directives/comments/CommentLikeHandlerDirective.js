@@ -43,7 +43,7 @@ define(['frontend', 'services/LoginService', 'services/entities/UserService'], f
           $scope.sendingVote = true;
           $scope.sendVoteFn(value).then(function () {
             $scope.sendingVote = false;
-          }).catch(console.log);
+          }).catch(function () { $scope.sendingVote = false; });
         }
       }
     }

@@ -218,9 +218,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
             }
             resolve({collection: users, paginationParams: paginationParams, queryParams: queryParams});
 
-          }).catch(function (response) {
-            reject({status: response.status, message: 'UserService: FetchUsers'})
-          });
+          }).catch(reject);
         }).catch(reject);
       });
     }

@@ -24,7 +24,7 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/entities/PostCategor
 
     PostCategoryService.getPostCategories().then(function(optionArray) {
       $scope.postCategories = optionArray;
-    }).catch(function() { $location.path('/404') });
+    }).catch(function() { $location.path('/500') });
 
     $scope.titleConstraints = {
       pattern: /^[a-zA-Z ]*$/,
@@ -139,7 +139,7 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/entities/PostCategor
         PostService.createPost($scope.post).then(function (postResponse) {
           handleCreatePost(postResponse);
           $location.path(handleCreatePost(postResponse))
-        }).catch(console.log);
+        }).catch(function() { $location.path('/500') });
       }
     }
     $scope.bodyRequired = function (button, body) {

@@ -75,7 +75,7 @@ define(['frontend', 'services/utilities/PageTitleService', 'services/LoginServic
         $scope.users = resp.collection;
       }
 
-    ).catch(function() { $location.path('/404') });
+    ).catch(); // Can cnotinue without users
 
 	});
 });

@@ -20,7 +20,6 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
             }, 2000);
           }).catch(function (err) {
             $scope.mailError = true;
-            console.log(err);
           });
         }
       }

@@ -51,6 +51,6 @@ define(['frontend', 'services/entities/MovieService', 'services/entities/PostSer
     MovieService.fetchMovieById($routeParams.id).then(function (movie) {
       $scope.movie = movie;
       PageTitle.setTitle('MOVIE_TITLE', {movie:$scope.movie.title});
-    }).catch(console.log);
+    }).catch(function() { $location.path('/500') });
   });
 });

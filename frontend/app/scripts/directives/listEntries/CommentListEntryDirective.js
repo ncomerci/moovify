@@ -24,7 +24,7 @@ define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService',
         $scope.recoverComment = function () {
           CommentService.recoverComment($scope.comment).then(function (comment) {
             $scope.removeCommentFn(comment);
-          }).catch(console.log)
+          }).catch();
         }
       }
     }

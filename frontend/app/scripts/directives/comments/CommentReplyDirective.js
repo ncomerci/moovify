@@ -59,7 +59,8 @@ define(['frontend', 'services/utilities/LocalStorageService'], function(frontend
             $scope.sendingComment = false;
             LocalStorageService.delete($scope.storageKey);
             $scope.body.content = '';
-          }).catch(console.log);
+
+          }).catch(function () { $scope.sendingComment = false; });
         }
 
         $scope.$on('$destroy', function() {

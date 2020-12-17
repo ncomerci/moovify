@@ -40,7 +40,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
               $scope.paginationMutex = false;
             }
           ).catch(function () {
-            $location.path('/404')
+            $location.path('/500')
           });
 
         };

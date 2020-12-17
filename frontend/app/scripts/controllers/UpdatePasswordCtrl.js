@@ -52,7 +52,6 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
               }, 3000)
           }).catch(function (err) {
             $scope.error = true;
-            console.log(err);
           });
         }
       }

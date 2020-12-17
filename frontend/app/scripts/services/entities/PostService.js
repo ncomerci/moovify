@@ -31,9 +31,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
           Restful.all('posts').post(post).then(function (postResponse) {
               resolve(postResponse);
             }
-          ).catch(function (err) {
-            reject(err);
-          });
+          ).catch(reject);
         }).catch(reject);
       });
     }
