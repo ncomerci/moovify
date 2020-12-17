@@ -24,7 +24,6 @@ define(['frontend', 'services/DisplayService', 'services/entities/UserService', 
 
         $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
 
-        // TODO: tobi
         $scope.recoverUser = function () {
           UserService.recoverUser($scope.user).then(function (user) {
             $scope.removeUserFn(user);

@@ -1,6 +1,7 @@
-define(['angular', 'angularMocks', 'frontend', 'services/PostCategoriesService', 'restangular'], function(angular) {
+define(['angular', 'angularMocks', 'frontend', 'services/entities/PostCategoryService',
+  'restangular'], function(angular) {
 
-  describe('PostCategoriesService', function() {
+  describe('PostCategoryService', function() {
 
     var $scope;
     var $q;
@@ -29,7 +30,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/PostCategoriesService',
       $provide.value('RestFulResponse', {noAuth: function() { return ReqFullResponse }});
     });
 
-    it('get post categories test', inject(function(PostCategoriesService){
+    it('get post categories test', inject(function(PostCategoryService){
 
       var categories = [];
 
@@ -43,7 +44,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/PostCategoriesService',
 
       $httpBackend.expectGET(/.*\/api\/posts\/categories/).respond(204, categories)
 
-      PostCategoriesService.getPostCategories().then(function (returnedCategories) {
+      PostCategoryService.getPostCategories().then(function (returnedCategories) {
         expect(returnedCategories.map(function(c) { return c.originalElement })).toEqual(categories);
       });
 

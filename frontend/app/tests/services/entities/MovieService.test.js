@@ -1,6 +1,6 @@
-define(['angular', 'angularMocks', 'frontend', 'services/fetch/UserFetchService', 'restangular', 'polyfillURLSearchParams'], function(angular) {
+define(['angular', 'angularMocks', 'frontend', 'services/entities/MovieService', 'restangular', 'polyfillURLSearchParams'], function(angular) {
 
-  describe('UserFetchService', function() {
+  describe('MovieService', function() {
 
     var $scope;
     var $q;
@@ -26,7 +26,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/UserFetchService'
         RestangularConfigurer.setFullResponse(true);
       });
 
-      $provide.value('RestFulResponse', {withAuthIfPossible: function() {return $q.resolve(ReqFullResponse)}});
+      $provide.value('RestFulResponse', {noAuth: function() {return ReqFullResponse}});
 
       $provide.value('LoggedUserFactory', {
         getLoggedUser: function() { return null; }
@@ -35,24 +35,24 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/UserFetchService'
       $provide.value('LinkParserService', {parse: function() {return 10}});
     });
 
-    it('search users success test', inject(function (UserFetchService) {
+    it('search movies success test', inject(function (MovieService) {
 
       var query = "queryParam";
-      var role = "roleParam";
-      var enabled = true;
+      var category = "categoryParam";
+      var decade = "decadeParam";
       var orderBy = "orderByParam";
       var pageSize = 10;
       var pageNumber = 15;
 
-      var users = [{id: 1}, {id: 2}, {id: 3}, {id: 4}];
+      var movies = [{id: 1}, {id: 2}, {id: 3}, {id: 4}];
 
-      $httpBackend.expectGET(/.*\/api\/users\?.*/).respond(function(method, url) {
+      $httpBackend.expectGET(/.*\/api\/movies\?.*/).respond(function(method, url) {
 
         var searchParams = new URLSearchParams(url.substring(url.indexOf('?'), url.length));
 
         expect(searchParams.get('query')).toEqual(query);
-        expect(searchParams.get('role')).toEqual(role);
-        expect(searchParams.get('enabled')).toEqual(enabled.toString());
+        expect(searchParams.get('movieCategory')).toEqual(category);
+        expect(searchParams.get('decade')).toEqual(decade);
         expect(searchParams.get('orderBy')).toEqual(orderBy);
         expect(searchParams.get('pageSize')).toEqual(pageSize.toString());
         expect(searchParams.get('pageNumber')).toEqual(pageNumber.toString());
@@ -60,11 +60,11 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/UserFetchService'
         return [200, [{id: 1}, {id: 2}, {id: 3}, {id: 4}]];
       });
 
-      UserFetchService.searchUsers(query, role, enabled, orderBy, pageSize, pageNumber).then(function (response) {
-        expect(response.collection.map(function(u) {return u.originalElement })).toEqual(users);
+      MovieService.searchMovies(query, category, decade, orderBy, pageSize, pageNumber).then(function (response) {
+        expect(response.collection.map(function(u) {return u.originalElement })).toEqual(movies);
         expect(response.paginationParams).toEqual({pageSize: pageSize, currentPage: pageNumber, lastPage: 0});
         expect(response.queryParams).toEqual(
-          {query: query, role: role, enabled: enabled, orderBy: orderBy, pageSize: pageSize, pageNumber: pageNumber })
+          {query: query, movieCategory: category, decade: decade, orderBy: orderBy, pageSize: pageSize, pageNumber: pageNumber })
       });
 
       $httpBackend.flush();
@@ -72,20 +72,18 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/UserFetchService'
       $scope.$digest();
     }));
 
-    it('fetch users success test', inject(function (UserFetchService) {
+    it('fetch movies success test', inject(function (MovieService) {
 
-      var enabled = true;
       var orderBy = "orderByParam";
       var pageSize = 10;
       var pageNumber = 15;
 
-      var users = [{id: 1}, {id: 2}, {id: 3}, {id: 4}];
+      var movies = [{id: 1}, {id: 2}, {id: 3}, {id: 4}];
 
-      $httpBackend.expectGET(/.*\/api\/users\?.*/).respond(function(method, url) {
+      $httpBackend.expectGET(/.*\/api\/movies\?.*/).respond(function(method, url) {
 
         var searchParams = new URLSearchParams(url.substring(url.indexOf('?'), url.length));
 
-        expect(searchParams.get('enabled')).toEqual(enabled.toString());
         expect(searchParams.get('orderBy')).toEqual(orderBy);
         expect(searchParams.get('pageSize')).toEqual(pageSize.toString());
         expect(searchParams.get('pageNumber')).toEqual(pageNumber.toString());
@@ -93,11 +91,11 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/UserFetchService'
         return [200, [{id: 1}, {id: 2}, {id: 3}, {id: 4}]];
       });
 
-      UserFetchService.fetchUsers('/users', enabled, orderBy, pageSize, pageNumber).then(function (response) {
-        expect(response.collection.map(function(u) {return u.originalElement })).toEqual(users);
+      MovieService.fetchMovies('/movies', orderBy, pageSize, pageNumber).then(function (response) {
+        expect(response.collection.map(function(u) {return u.originalElement })).toEqual(movies);
         expect(response.paginationParams).toEqual({pageSize: pageSize, currentPage: pageNumber, lastPage: 0});
         expect(response.queryParams).toEqual(
-          {enabled: enabled, orderBy: orderBy, pageSize: pageSize, pageNumber: pageNumber })
+          { orderBy: orderBy, pageSize: pageSize, pageNumber: pageNumber })
       });
 
       $httpBackend.flush();

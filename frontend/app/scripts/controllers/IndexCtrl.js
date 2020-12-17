@@ -11,7 +11,6 @@ define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTi
 
     $scope.waitLogin = true;
     LoggedUserFactory.startLoggedUserCheck();
-    //TODO tobi
     LoggedUserFactory.refreshToken().then(function (resp) {
       LoggedUserFactory.saveToken(resp.headers("authorization")).then(function (user) {
         $scope.loggedUser = user;

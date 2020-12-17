@@ -21,7 +21,6 @@ define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService',
 
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
 
-        //TODO tobi
         $scope.recoverComment = function () {
           CommentService.recoverComment($scope.comment).then(function (comment) {
             $scope.removeCommentFn(comment);
