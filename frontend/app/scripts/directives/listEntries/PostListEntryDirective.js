@@ -2,7 +2,7 @@
 define(['frontend', 'services/entities/PostService', 'services/entities/UserService', 'directives/PrettyDateDirective',
   'services/LoginService'], function(frontend) {
 
-  frontend.directive('postListEntryDirective', function(LoggedUserFactory,UserService, $locale) {
+  frontend.directive('postListEntryDirective', function(LoggedUserFactory,UserService, PostService, $locale) {
     return {
       restrict: 'E',
       scope: {
