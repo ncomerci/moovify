@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'services/DisplayService', 'services/entities/UserService', 'services/LoginService'], function(frontend) {
 
-  frontend.directive('userListEntryDirective', function (DisplayService, UserService, LoggedUserFactory, $q) {
+  frontend.directive('userListEntryDirective', function (DisplayService, UserService, LoggedUserFactory) {
     return {
       restrict: 'E',
       scope: {
@@ -13,7 +13,7 @@ define(['frontend', 'services/DisplayService', 'services/entities/UserService', 
         if(scope.removeUserFn)
           scope.removeUserFn = scope.removeUserFn();
       },
-      controller: function ($scope, $q) {
+      controller: function ($scope) {
         $scope.getYear = function (releaseDate) {
           return DisplayService.getYear(releaseDate);
         }
@@ -30,7 +30,7 @@ define(['frontend', 'services/DisplayService', 'services/entities/UserService', 
           }).catch();
         }
       },
-      templateUrl: 'resources/views/directives/listEntries/userListEntryDirective.html',
+      templateUrl: 'resources/views/directives/listEntries/userListEntryDirective.html'
     }
   });
 });
