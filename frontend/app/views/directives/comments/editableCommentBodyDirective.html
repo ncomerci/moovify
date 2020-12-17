@@ -17,7 +17,7 @@
                 ng-disabled="sendingEdit"
                 ng-click="editing.value = false">{{'CANCEL_COMMENT_EDIT_BUTTON' | translate}}</button>
         <button class="uk-button uk-button-primary uk-border-rounded"
-                ng-disabled="editableBody.value.length > 400 || sendingEdit || editableBody.value.length <= 0" type="button"
+                ng-disabled="editableBody.value.length > maxLen || sendingEdit || editableBody.value.length <= 0" type="button"
                 ng-click="sendEdit()">
           {{'SEND_COMMENT_EDIT_BUTTON' | translate}}
         </button>
