@@ -3,7 +3,7 @@
     <div class="post-meta">
       <h1 class="word-brake">
         <span ng-if="isUser">
-          <button ng-disabled="mutex.bookmark" ng-click="toggleBookmark()" class="no-style-button primary-button">
+          <button ng-disabled="mutex.bookmark" ng-click="toggleBookmark()" class="no-style-button primary-button uk-button">
             <span ng-show="post.hasUserBookmarked">
               <span class="iconify large-iconify"
                     data-icon="mdi-bookmark-check"
@@ -72,7 +72,7 @@
     </div>
     <span ng-if="isLogged && !isUser" class="uk-text-center uk-text-lead uk-margin-large-top uk-margin-large-bottom">
         <p class="uk-margin-remove-bottom">{{'CONFIRM_EMAIL_TO_START_COMMENTING' | translate}}</p>
-        <a href="signup">{{'GO_TO_PROFILE' | translate}}</a>
+        <a href="user" class="uk-flex uk-flex-center">{{'GO_TO_PROFILE' | translate}}</a>
       </span>
   </div>
 

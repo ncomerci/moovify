@@ -11,10 +11,14 @@
 
       <div class="comment-header">
         <div class="comment-avatar">
-          <img class="circle-comment uk-comment-avatar" ng-src="{{mainComment.user.avatar}}" alt="">
+          <a ng-href="user/{{mainComment.user.id}}">
+            <img class="circle-comment uk-comment-avatar" ng-src="{{mainComment.user.avatar}}" alt="">
+          </a>
         </div>
         <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
-          <a class="uk-comment-title" ng-href="user/{{mainComment.user.id}}">{{mainComment.user.username}}</a>
+          <div class="uk-comment-title">
+            <a ng-href="user/{{mainComment.user.id}}">{{mainComment.user.username}}</a>
+          </div>
           <p class="uk-comment-meta uk-margin-remove-top"><pretty-date-directive creation-date="mainComment.creationDateTime"></pretty-date-directive></p>
         </div>
         <div class="comment-vote-handler">

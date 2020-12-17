@@ -48,6 +48,13 @@ define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTi
       $location.path('/user');
     }
 
+    $scope.hasRole = UserService.userHasRole;
+
+    $scope.modalClose = function (path) {
+      UIkit.modal(document.getElementById('no-user-modal')).hide();
+      $location.path(path);
+    }
+
   });
 
 });

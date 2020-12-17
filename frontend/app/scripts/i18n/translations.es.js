@@ -262,6 +262,9 @@ define([], function() {
     MOVIE_WITH_SPACER: ' -{{title}}',
     NO_COMMENTS_PLACEHOLDER: 'No hay comentarios para mostrar, escribe el primero!',
     CANCEL_POST_BODY_EDIT: 'Cancelar',
-    SEND_POST_BODY_EDIT: 'Enviar'
+    SEND_POST_BODY_EDIT: 'Enviar',
+
+    CREATE_ACCOUNT_MODAL_TITLE: "¡Oh! Te gustaría demostrar tu interés?",
+    CREATE_ACCOUNT_MODAL_BODY: "Registrate y hazlo al instante!"
   };
 });

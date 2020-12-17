@@ -274,7 +274,9 @@ define([], function() {
     CONFIRM_POST_DELETE_MODAL_CANCEL_BUTTON: 'Cancel',
     CONFIRM_POST_DELETE_MODAL_DELETE_BUTTON: 'Delete',
 
-    LOADING: 'Loading'
+    LOADING: 'Loading',
 
+    CREATE_ACCOUNT_MODAL_TITLE: "Oh! Would you like to show some interest?",
+    CREATE_ACCOUNT_MODAL_BODY: "Sign up and do it right away!"
 	};
 });

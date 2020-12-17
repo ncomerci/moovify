@@ -27,6 +27,13 @@ define(['frontend', 'services/LoginService', 'services/entities/UserService'], f
           $scope.userVote = 0;
         }
 
+        if(!$scope.isUser) {
+          angular.forEach(angular.element('.like-comment-button'), function (e) {
+            e.setAttribute("uk-toggle", "target: #no-user-modal");
+            e.removeAttribute('ng-click');
+          });
+        }
+
         $scope.sendVote = function (value){
 
           if(!$scope.isUser){
