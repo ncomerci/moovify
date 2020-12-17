@@ -1,7 +1,7 @@
 /* global paths */
 'use strict';
 require.config({
-    baseUrl: '/resources/scripts',
+    baseUrl: '/paw-2020b-3/resources/scripts',
     paths: {
         angular: '../../bower_components/angular/angular',
         'angular-route': '../../bower_components/angular-route/angular-route',
