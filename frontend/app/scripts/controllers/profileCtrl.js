@@ -353,7 +353,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
       $scope.deleteUser = function () {
         UserService.deleteUser($scope.loggedUser, $scope.user).then(function () {
           UIkit.modal(document.getElementById('delete-modal')).hide();
-          $location.path('/404');
+          $location.path('/');
         }).catch(console.log);
       }
 
