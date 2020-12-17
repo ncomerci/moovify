@@ -24,7 +24,7 @@ public class CommentDto {
     private LocalDateTime creationDateTime;
     private LightweightPostDto post;
     private String body;
-    private UserDto user;
+    private LightweightUserDto user;
     private Boolean edited;
     private LocalDateTime lastEditTime;
     private Long totalVotes;
@@ -58,7 +58,7 @@ public class CommentDto {
         creationDateTime = comment.getCreationDate();
         post = new LightweightPostDto(comment.getPost(), uriInfo, securityContext);
         body = comment.getBody();
-        user = new UserDto(comment.getUser(), uriInfo, securityContext);
+        user = new LightweightUserDto(comment.getUser(), uriInfo, securityContext);
         edited = comment.isEdited();
         lastEditTime = comment.getLastEditDate();
         totalVotes = comment.getTotalVotes();
@@ -121,11 +121,11 @@ public class CommentDto {
         this.body = body;
     }
 
-    public UserDto getUser() {
+    public LightweightUserDto getUser() {
         return user;
     }
 
-    public void setUser(UserDto user) {
+    public void setUser(LightweightUserDto user) {
         this.user = user;
     }
 

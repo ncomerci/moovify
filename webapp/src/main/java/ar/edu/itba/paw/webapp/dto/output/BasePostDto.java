@@ -18,23 +18,18 @@ public abstract class BasePostDto {
     private long id;
     private LocalDateTime creationDate;
     private String title;
-    private String body;
     private Integer wordCount;
     private Boolean edited;
     private LocalDateTime lastEditDate;
-    private UserDto user;
+    private LightweightUserDto user;
     private PostCategoryDto postCategory;
     private Collection<String> tags;
-    private boolean enabled;
-    private Long totalLikes;
     private Boolean isOwner;
-    private int userVote;
-    private Boolean hasUserBookmarked;
+    private boolean enabled;
 
     // Relations
     private String comments;
     private String votes;
-
 
     private String url;
 
@@ -55,21 +50,16 @@ public abstract class BasePostDto {
 
         creationDate = post.getCreationDate();
         title = post.getTitle();
-        body = post.getBody();
+
         wordCount = post.getWordCount();
         edited = post.isEdited();
         lastEditDate = post.getLastEditDate();
-        user = new UserDto(post.getUser(), uriInfo, securityContext);
+        user = new LightweightUserDto(post.getUser(), uriInfo, securityContext);
         postCategory = new PostCategoryDto(post.getCategory());
         tags = post.getTags();
-        totalLikes = post.getTotalVotes();
 
         if(securityContext.getUserPrincipal() != null) {
-            final String authenticatedUserUsername = securityContext.getUserPrincipal().getName();
-
-            isOwner = post.getUser().getUsername().equals(authenticatedUserUsername);
-            hasUserBookmarked = post.hasBookmarked(authenticatedUserUsername);
-            userVote = post.getVoteValue(authenticatedUserUsername);
+            isOwner = post.getUser().getUsername().equals(securityContext.getUserPrincipal().getName());
         }
 
         comments = postUriBuilder.clone().path("comments").build().toString();
@@ -104,14 +94,6 @@ public abstract class BasePostDto {
         this.title = title;
     }
 
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
     public Integer getWordCount() {
         return wordCount;
     }
@@ -136,11 +118,11 @@ public abstract class BasePostDto {
         this.lastEditDate = lastEditDate;
     }
 
-    public UserDto getUser() {
+    public LightweightUserDto getUser() {
         return user;
     }
 
-    public void setUser(UserDto user) {
+    public void setUser(LightweightUserDto user) {
         this.user = user;
     }
 
@@ -168,14 +150,6 @@ public abstract class BasePostDto {
         this.enabled = enabled;
     }
 
-    public Long getTotalLikes() {
-        return totalLikes;
-    }
-
-    public void setTotalLikes(Long totalLikes) {
-        this.totalLikes = totalLikes;
-    }
-
     public String getComments() {
         return comments;
     }
@@ -192,14 +166,6 @@ public abstract class BasePostDto {
         this.votes = votes;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public Boolean getOwner() {
         return isOwner;
     }
@@ -208,19 +174,11 @@ public abstract class BasePostDto {
         isOwner = owner;
     }
 
-    public int getUserVote() {
-        return userVote;
+    public String getUrl() {
+        return url;
     }
 
-    public void setUserVote(int userVote) {
-        this.userVote = userVote;
-    }
-
-    public Boolean getHasUserBookmarked() {
-        return hasUserBookmarked;
-    }
-
-    public void setHasUserBookmarked(Boolean hasUserBookmarked) {
-        this.hasUserBookmarked = hasUserBookmarked;
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

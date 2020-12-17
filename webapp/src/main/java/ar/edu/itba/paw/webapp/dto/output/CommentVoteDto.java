@@ -13,7 +13,7 @@ public class CommentVoteDto {
         return commentVotes.stream().map(c -> new CommentVoteDto(c, uriInfo, securityContext)).collect(Collectors.toList());
     }
 
-    private UserDto user;
+    private LightweightUserDto user;
     private int value;
 
     public CommentVoteDto() {
@@ -21,15 +21,15 @@ public class CommentVoteDto {
     }
 
     public CommentVoteDto(CommentVote commentVote, UriInfo uriInfo, SecurityContext securityContext) {
-        user = new UserDto(commentVote.getUser(), uriInfo, securityContext);
+        user = new LightweightUserDto(commentVote.getUser(), uriInfo, securityContext);
         value = commentVote.getValue();
     }
 
-    public UserDto getUser() {
+    public LightweightUserDto getUser() {
         return user;
     }
 
-    public void setUser(UserDto user) {
+    public void setUser(LightweightUserDto user) {
         this.user = user;
     }
 
