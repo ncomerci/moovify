@@ -265,7 +265,7 @@ define([], function() {
     POST_EDIT_BUTTON: 'Edit post',
     POST_DELETE_BUTTON: 'Delete post',
     POST_VIEW_COMMENTS: 'Comments',
-    CREATION_DATE: ' -Creation date: {{creationDate}} -',
+    CREATION_DATE: ' - Creation date: {{creationDate}} -',
     MOVIE_WITH_SPACER: ' -{{title}}',
     NO_COMMENTS_PLACEHOLDER: 'There are no comments to show, make the first one!',
     CANCEL_POST_BODY_EDIT: 'Cancel',
