@@ -15,8 +15,8 @@
 // // ... import all
 
 
-@import 'uikit/src/scss/variables.scss';
-@import 'uikit/src/scss/mixins.scss';
+@import 'uikit/scss/variables.scss';
+@import 'uikit/scss/mixins.scss';
 
 @import "uikit/_variables.scss";
 @import "uikit/_base.scss";
@@ -33,7 +33,7 @@
 @import "uikit/_blank.scss";
 @import "uikit/_background.scss";
 
-@import 'uikit/src/scss/uikit.scss';
+@import 'uikit/scss/uikit.scss';
 
 @import 'moovify/_navBar.scss';
 @import "moovify/_extraStyle.scss";

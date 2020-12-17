@@ -10,7 +10,6 @@
     "jquery": "~3.5.1",
     "marked": "~1.2.6",
     "requirejs": "~2.1.11",
-    "uikit": "git://github.com/uikit/uikit.git#3.x",
     "restangular": "~1.6.1",
     "angular-sanitize": "~1.5.0",
     "js-joda-timezone": "js-joda#^2.1.1",

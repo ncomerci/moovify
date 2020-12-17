@@ -19,7 +19,7 @@
           <span ng-if="!comment.user.enabled">
             {{'COMMENT_BY_REMOVED' | translate }}
           </span>
-          {{'COMMENT_META' | translate:{title:comment.post.title, votes:comment.totalVotes};}}
+          {{'COMMENT_META' | translate:{title:comment.originalElement.post.title, votes:comment.totalVotes};}}
           <span uk-icon="icon: {{comment.totalVotes >= 0 ? 'chevron-up' : 'chevron-down'}}; ratio: 0.8"></span>
         </p>
       </div>

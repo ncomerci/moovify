@@ -281,6 +281,7 @@ define([], function() {
     LOADING: 'Loading',
 
     CREATE_ACCOUNT_MODAL_TITLE: "Oh! Would you like to show some interest?",
-    CREATE_ACCOUNT_MODAL_BODY: "Sign up and do it right away!"
+    CREATE_ACCOUNT_MODAL_BODY: "Sign up and do it right away!",
+    ACTION_WARNING: "This action can take up to 15 minutes to take effect"
 	};
 });
