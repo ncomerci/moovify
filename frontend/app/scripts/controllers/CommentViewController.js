@@ -37,7 +37,6 @@ define(['frontend','uikit', 'services/fetch/CommentFetchService',
 
     CommentFetchService.fetchOneComment(commentId).then(function(comment) {
       $scope.mainComment = comment;
-      console.log($scope.mainComment);
     }).catch(console.log);
 
     CommentFetchService.getCommentCommentsWithUserVoteById(commentId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
