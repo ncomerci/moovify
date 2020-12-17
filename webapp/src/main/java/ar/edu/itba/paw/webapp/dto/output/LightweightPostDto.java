@@ -12,6 +12,8 @@ public class LightweightPostDto extends BasePostDto {
 
     private String movies;
 
+    private String hasUserBookmarked;
+
     public LightweightPostDto() {
         super();
         // For Jersey - Do not use
@@ -24,6 +26,12 @@ public class LightweightPostDto extends BasePostDto {
             return;
 
         movies = getPostUriBuilder(post, uriInfo).path("movies").build().toString();
+
+        if(securityContext.getUserPrincipal() != null) {
+            hasUserBookmarked = uriInfo.getBaseUriBuilder()
+                    .path("user").path("bookmarked").path(String.valueOf(post.getId()))
+                    .build().toString();
+        }
     }
 
     public String getMovies() {
@@ -32,5 +40,13 @@ public class LightweightPostDto extends BasePostDto {
 
     public void setMovies(String movies) {
         this.movies = movies;
+    }
+
+    public String getHasUserBookmarked() {
+        return hasUserBookmarked;
+    }
+
+    public void setHasUserBookmarked(String hasUserBookmarked) {
+        this.hasUserBookmarked = hasUserBookmarked;
     }
 }

@@ -16,7 +16,11 @@ public class PostDto extends BasePostDto {
         return posts.stream().map(p -> new PostDto(p, uriInfo, securityContext)).collect(Collectors.toList());
     }
 
+    private String body;
     private Collection<MovieDto> movies;
+    private Long totalLikes;
+    private int userVote;
+    private Boolean hasUserBookmarked;
 
     public PostDto() {
         super();
@@ -29,7 +33,24 @@ public class PostDto extends BasePostDto {
         if(isProtected(securityContext))
             return;
 
+        body = post.getBody();
         movies = MovieDto.mapMoviesToDto(post.getMovies(), uriInfo);
+        totalLikes = post.getTotalVotes();
+
+        if(securityContext.getUserPrincipal() != null) {
+            final String authenticatedUserUsername = securityContext.getUserPrincipal().getName();
+
+            hasUserBookmarked = post.hasBookmarked(authenticatedUserUsername);
+            userVote = post.getVoteValue(authenticatedUserUsername);
+        }
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
     }
 
     public Collection<MovieDto> getMovies() {
@@ -38,5 +59,29 @@ public class PostDto extends BasePostDto {
 
     public void setMovies(Collection<MovieDto> movies) {
         this.movies = movies;
+    }
+
+    public Long getTotalLikes() {
+        return totalLikes;
+    }
+
+    public void setTotalLikes(Long totalLikes) {
+        this.totalLikes = totalLikes;
+    }
+
+    public int getUserVote() {
+        return userVote;
+    }
+
+    public void setUserVote(int userVote) {
+        this.userVote = userVote;
+    }
+
+    public Boolean getHasUserBookmarked() {
+        return hasUserBookmarked;
+    }
+
+    public void setHasUserBookmarked(Boolean hasUserBookmarked) {
+        this.hasUserBookmarked = hasUserBookmarked;
     }
 }

@@ -13,7 +13,7 @@ public class PostVoteDto {
         return postVotes.stream().map(p -> new PostVoteDto(p, uriInfo, securityContext)).collect(Collectors.toList());
     }
 
-    private UserDto user;
+    private LightweightUserDto user;
     private int value;
 
     public PostVoteDto() {
@@ -21,15 +21,15 @@ public class PostVoteDto {
     }
 
     public PostVoteDto(PostVote postVote, UriInfo uriInfo, SecurityContext securityContext){
-        this.user = new UserDto(postVote.getUser(), uriInfo, securityContext);
+        this.user = new LightweightUserDto(postVote.getUser(), uriInfo, securityContext);
         this.value = postVote.getValue();
     }
 
-    public UserDto getUser() {
+    public LightweightUserDto getUser() {
         return user;
     }
 
-    public void setUser(UserDto user) {
+    public void setUser(LightweightUserDto user) {
         this.user = user;
     }
 
