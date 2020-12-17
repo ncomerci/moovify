@@ -10,8 +10,8 @@ define(['frontend', 'uikit', 'directives/search/SearchMoviesDirective', 'directi
         value: $routeParams.query ? $routeParams.query : ''
       };
 
-      $scope.searchOptions = {
-        contentType: $routeParams.showing
+      $scope.showing = {
+        value: $routeParams.showing
       };
 
       $scope.tabs = [
@@ -24,15 +24,15 @@ define(['frontend', 'uikit', 'directives/search/SearchMoviesDirective', 'directi
       $scope.setUserSearchUrl = null;
       $scope.setMovieSearchUrl = null;
 
-      if(!$scope.searchOptions.contentType) {
-        $scope.searchOptions.contentType = defaultType;
+      if(!$scope.showing.value) {
+        $scope.showing.value = defaultType;
         $location.search('showing', defaultType);
       }
 
-      $scope.$watch('searchOptions.contentType', function(newParam, oldParam, scope) {
+      $scope.$watch('showing.value', function(newParam, oldParam, scope) {
 
         if(newParam !== oldParam) {
-          $location.search({ showing: scope.searchOptions.contentType });
+          $location.search({ showing: scope.showing.value });
 
           if(newParam === 'posts' && scope.setPostSearchUrl !== null){
             scope.setPostSearchUrl();
