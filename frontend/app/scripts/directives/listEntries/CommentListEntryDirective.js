@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService','services/LoginService','services/entities/CommentService'], function (frontend) {
 
-  frontend.directive('commentListEntryDirective', function (DisplayService, LoggedUserFactory, CommentService, $q){
+  frontend.directive('commentListEntryDirective', function (DisplayService, LoggedUserFactory, CommentService){
     return {
       restrict: 'E',
       scope: {
@@ -14,7 +14,7 @@ define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService',
         if(scope.removeCommentFn)
           scope.removeCommentFn = scope.removeCommentFn();
       },
-      controller: function ($scope, $q) {
+      controller: function ($scope) {
         $scope.getBodyFormatted = function (body){
           return DisplayService.getBodyFormatted(body);
         }

@@ -11,7 +11,6 @@ require.config({
         jquery: '../../bower_components/jquery/dist/jquery',
         json3: '../../bower_components/json3/lib/json3',
         lodash: '../../bower_components/lodash/dist/lodash',
-        moment: '../../bower_components/moment/moment',
         marked: '../../bower_components/marked/lib/marked',
         requirejs: '../../bower_components/requirejs/require',
         restangular: '../../bower_components/restangular/dist/restangular',
@@ -21,8 +20,9 @@ require.config({
         'uikit-icons': '../../bower_components/uikit/dist/js/uikit-icons',
         iconify: '../../static_dependencies/iconify/iconify',
         easymde: '../../static_dependencies/easymde/easyMde',
-        purify: '../../static_dependencies/purify/purify',
-        'js-joda-timezone': '../../bower_components/js-joda-timezone/dist/js-joda-timezone'
+        purify: '../../bower_components/dompurify/dist/purify',
+        'js-joda-timezone': '../../bower_components/js-joda-timezone/dist/js-joda-timezone',
+        dompurify: '../../bower_components/dompurify/src/purify'
     },
     shim: {
         angular: {
