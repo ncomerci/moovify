@@ -1,5 +1,5 @@
 define(['frontend', 'services/entities/MovieService', 'services/entities/PostService', 'services/DisplayService'
-  ,'services/utilities/MovieCategoryService', 'directives/fetch/FetchPostsDirective', 'services/utilities/PageTitleService'], function(frontend) {
+  ,'services/entities/MovieCategoryService', 'directives/fetch/FetchPostsDirective', 'services/utilities/PageTitleService'], function(frontend) {
 
   'use strict';
   frontend.controller('MovieViewController', function($scope, $routeParams, $httpParamSerializer, $locale, MovieService,
