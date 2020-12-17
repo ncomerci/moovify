@@ -19,7 +19,7 @@ define(['frontend', 'services/fetch/CommentFetchService', 'directives/Pagination
       },
       link: function (scope) {
 
-        scope.comments = [];
+        scope.comments = null;
 
         scope.paginationMutex = false;
 
@@ -70,6 +70,9 @@ define(['frontend', 'services/fetch/CommentFetchService', 'directives/Pagination
       },
       controller: function ($scope, CommentFetchService) {
         $scope.execSearch = function () {
+
+          $scope.comments = null;
+
           CommentFetchService.searchComments(
             $scope.query.value, $scope.filterParams.enabled, $scope.filterParams.orderBy,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(

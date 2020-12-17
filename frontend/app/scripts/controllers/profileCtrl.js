@@ -108,6 +108,13 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
 
       }, true);
 
+      // Change on back and forward
+      $scope.$on('$locationChangeSuccess', function() {
+        console.log("hoa");
+        if($routeParams.showing !== $scope.showing.value)
+          $scope.showing.value = $routeParams.showing ? $routeParams.showing : $scope.tabs[0].value;
+      });
+
       if($locale.id === 'es') {
         $scope.followForms = {
           0: 'Seguidores',

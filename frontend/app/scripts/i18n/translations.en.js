@@ -220,6 +220,11 @@ define([], function() {
     USER_PROMOTE_TITLE: "Are you sure you want to promote {{username}} to admin?",
     USER_DELETE: "Delete",
     USER_DELETE_TITLE: "Are you sure you want to delete to {{username}}?",
+    PAGE_404: "Page not found",
+    PAGE_404_1: "Sorry, but the page you were trying to view does not exist.",
+    PAGE_404_2: "It looks like this was the result of an address that is no longer available or is mistyped.",
+    PAGE_404_BTN: "Go to the home page",
+
 
 
     // SIN TRADUCIR
@@ -254,15 +259,22 @@ define([], function() {
     POST_VIEW_POST_AUTHOR: 'Author: {{postAuthor}}',
     POST_VIEW_MOVIES: 'Movies',
     POST_VIEW_TAGS: 'Tags',
+    POST_EDIT_BUTTON: 'Edit post',
+    POST_DELETE_BUTTON: 'Delete post',
     POST_VIEW_COMMENTS: 'Comments',
     CREATION_DATE: ' -Creation date: {{creationDate}} -',
     MOVIE_WITH_SPACER: ' -{{title}}',
     NO_COMMENTS_PLACEHOLDER: 'There are no comments to show, make the first one!',
     CANCEL_POST_BODY_EDIT: 'Cancel',
-    SEND_POST_BODY_EDIT: 'Send'
+    SEND_POST_BODY_EDIT: 'Send',
     // COMMENT_VIEW_HEADING: "Reply to {{postTitle}}",
 
+    CONFIRM_POST_DELETE_MODAL_TITLE: 'Confirm deletion',
+    CONFIRM_POST_DELETE_MODAL_BODY: 'Delete the post "{{postTitle}}"?',
+    CONFIRM_POST_DELETE_MODAL_CANCEL_BUTTON: 'Cancel',
+    CONFIRM_POST_DELETE_MODAL_DELETE_BUTTON: 'Delete',
 
+    LOADING: 'Loading'
 
 	};
 });

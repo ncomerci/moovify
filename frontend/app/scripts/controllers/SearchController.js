@@ -43,10 +43,15 @@ define(['frontend', 'uikit', 'directives/search/SearchMoviesDirective', 'directi
           else if(newParam === 'movies' && scope.setMovieSearchUrl !== null){
             scope.setMovieSearchUrl();
           }
-
         }
 
       }, true);
+
+      // Change on back and forward
+      $scope.$on('$locationChangeSuccess', function() {
+        if($routeParams.showing !== $scope.showing.value)
+          $scope.showing.value = $routeParams.showing ? $routeParams.showing : defaultType;
+      });
 
     });
 

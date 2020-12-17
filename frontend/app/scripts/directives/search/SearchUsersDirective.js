@@ -20,7 +20,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       },
       link: function(scope) {
 
-        scope.users = [];
+        scope.users = null;
 
         scope.paginationMutex = false;
 
@@ -77,6 +77,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       controller: function ($scope, UserFetchService) {
 
         $scope.execSearch = function() {
+
+          $scope.users = null;
 
           UserFetchService.searchUsers(
             $scope.query.value, $scope.filterParams.role, $scope.filterParams.enabled, $scope.filterParams.orderBy,

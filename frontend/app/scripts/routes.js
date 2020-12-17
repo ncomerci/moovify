@@ -9,7 +9,8 @@ define([], function() {
                 controller: 'HomeCtrl'
             },
             '/404': {
-                templateUrl: 'resources/404.html'
+                templateUrl: 'resources/404.html',
+                controller: 'errorCtrl'
             },
             '/search': {
                 templateUrl: 'resources/views/search/search.html',
