@@ -64,7 +64,7 @@ define(['frontend', 'services/utilities/PageTitleService', 'services/LoginServic
         $scope.showing.value = $routeParams.showing ? $routeParams.showing : $scope.showingValues[0].value;
     });
 
-    $scope.users = [];
+    $scope.users = null;
 
     var userPageSize = 15;
     var userOrder = "votes";

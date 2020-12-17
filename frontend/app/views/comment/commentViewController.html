@@ -1,7 +1,7 @@
-<main ng-if="mainComment" class="uk-container-small uk-margin-auto">
+<main ng-show="mainComment" class="uk-container-small uk-margin-auto">
 
   <h1 class="uk-text-meta uk-margin-top">{{ 'COMMENT_VIEW_HEADING' | translate}}</h1>
-  <p class="uk-text-lead uk-margin-small-top"><a ng-href="post/{{mainComment.originalElement.post.id}}">
+  <p class="uk-text-lead uk-margin-small-top word-brake"><a ng-href="post/{{mainComment.originalElement.post.id}}">
     {{mainComment.originalElement.post.title}}
   </a></p>
 
@@ -88,7 +88,11 @@
 
     <div ng-if="comments">
       <comment-tree-directive depth="0" comments="comments"></comment-tree-directive>
-      <p ng-if="comments">{{'NO_COMMENTS_PLACEHOLDER' | translate}}</p>
+      <p ng-if="comments" class="uk-text-center uk-text-lead">{{'NO_COMMENTS_PLACEHOLDER' | translate}}</p>
+    </div>
+    <div ng-show="!comments" class="uk-text-center uk-text-lead uk-margin-top">
+      <span class="uk-margin-small-right" uk-spinner="ratio: 3"></span>
+      <p class="uk-text-muted">{{'LOADING' | translate}}</p>
     </div>
   </div>
 

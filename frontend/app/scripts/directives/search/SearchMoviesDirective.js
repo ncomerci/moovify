@@ -20,7 +20,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       },
       link: function(scope){
 
-        scope.movies = [];
+        scope.movies = null;
 
         scope.paginationMutex = false;
 
@@ -77,6 +77,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
       controller: function ($scope, MovieFetchService) {
 
         $scope.execSearch = function() {
+
+          $scope.movies = null;
 
           MovieFetchService.searchMovies($scope.query.value, $scope.filterParams.movieCategory,
             $scope.filterParams.decade, $scope.filterParams.orderBy,

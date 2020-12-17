@@ -23,6 +23,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
         $scope.fetchUsers = function() {
 
+          $scope.users = null;
+
           UserFetchService.fetchUsers($scope.path, $scope.enabled, $scope.order,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 
@@ -55,7 +57,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       link: function(scope) {
 
-        scope.users = [];
+        scope.users = null;
 
         scope.paginationMutex = false;
 

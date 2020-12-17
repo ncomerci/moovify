@@ -1,10 +1,10 @@
 define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/CommentFetchService',
   'directives/comments/CommentTreeDirective', 'services/CommentInteractionService', 'services/LoginService', 'services/UserService',
-  'services/PostInteractionService', 'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService'], function(frontend, UIkit) {
+  'services/PostInteractionService', 'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService', 'services/TimeService'], function(frontend) {
 
   'use strict';
-  frontend.controller('PostViewController', function ($scope, PostFetchService, $location, PostInteractionService,
-                           LoggedUserFactory, UserService, CommentFetchService, PageTitle, $q, CommentInteractionService, $routeParams) {
+  frontend.controller('PostViewController', function ($scope, PostFetchService, $location, $locale, PostInteractionService,
+                           LoggedUserFactory, UserService, TimeService, CommentFetchService, PageTitle, $q, CommentInteractionService, $routeParams) {
 
     PageTitle.setTitle('POST_VIEW_TITLE');
 
@@ -29,6 +29,22 @@ define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/C
     var commentsOrder = 'newest';
     var commentsPageSize = 5;
     var commentsPageNumber = 0;
+    var wordsPerMin = 150;
+
+    if($locale.id === 'es') {
+      $scope.minsForm = {
+        0:'Toma menos de un minuto para leerse',
+        1:'Toma un minuto para leerse',
+        other:'Toma {} minutos para leerse'
+      }
+    }
+    else {
+      $scope.minsForm = {
+        0:'Takes less than a minute for reading',
+        1:'Takes a minute for reading',
+        other:'Takes {} minutes for reading'
+      }
+    }
 
     PostFetchService.fetchPost(postId).then(function(post) {
       $scope.post = post;
@@ -54,8 +70,11 @@ define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/C
 
     }
 
+    $scope.getDateFormatted = function (creationDate){
+      return TimeService.getDateFormatted(creationDate);
+    };
+
     $scope.getMovieYear = function (date) {
-      console.log(date);
       return new Date(date).getFullYear();
     }
 
@@ -107,6 +126,10 @@ define(['frontend', 'uikit','services/fetch/PostFetchService', 'services/fetch/C
         $location.path('/');
       }).catch(console.log);
 
+    }
+
+    $scope.wordsPerMinute = function () {
+      return Math.floor($scope.post.wordCount / wordsPerMin);
     }
 
   });

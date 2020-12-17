@@ -228,7 +228,7 @@ define([], function() {
 
 
     // SIN TRADUCIR
-    COMMENT_VIEW_HEADING: "Comment to post",
+    COMMENT_VIEW_HEADING: "Comment from post:",
     SIGN_UP_TO_START_COMMENTING: "Want to share your thoughts? Sign up and start commenting right away!",
     CONFIRM_EMAIL_TO_START_COMMENTING: "You're almost done, confirm your email and start sharing!",
     CREATE_NEW_ACCOUNT: 'Create new account',
@@ -240,7 +240,7 @@ define([], function() {
     EDIT_COMMENT_BUTTON: 'Edit',
     MAIL_AUTHOR_COMMENT_BUTTON: 'Mail author',
     COMMENT_VIEW_CREATE_NEW_COMMENT: 'Create new comment',
-    CONFIRM_COMMENT_DELETE_MODAL_TITLE: 'Confirm deletion',
+    CONFIRM_COMMENT_DELETE_MODAL_TITLE: 'Confirm deleting',
     CONFIRM_COMMENT_DELETE_MODAL_BODY: 'Delete the comment "{{commentBody}}"?',
     CONFIRM_COMMENT_DELETE_MODAL_CANCEL_BUTTON: 'Cancel',
     CONFIRM_COMMENT_DELETE_MODAL_DELETE_BUTTON: 'Delete',
@@ -253,6 +253,8 @@ define([], function() {
     COMMENT_REPLY_SEND_BUTTON: 'Send',
     CANCEL_COMMENT_EDIT_BUTTON: 'Cancel',
     SEND_COMMENT_EDIT_BUTTON: 'Send',
+    WRITE_COMMENT_PLACEHOLDER: 'Write new comment here...',
+    WRITE_REPLY_COMMENT_PLACEHOLDER: "Write your comment here...",
 
     POST_VIEW_POST_AUTHOR: 'Author: {{postAuthor}}',
     POST_VIEW_MOVIES: 'Movies',
@@ -260,6 +262,8 @@ define([], function() {
     POST_EDIT_BUTTON: 'Edit post',
     POST_DELETE_BUTTON: 'Delete post',
     POST_VIEW_COMMENTS: 'Comments',
+    CREATION_DATE: ' -Creation date: {{creationDate}} -',
+    MOVIE_WITH_SPACER: ' -{{title}}',
     NO_COMMENTS_PLACEHOLDER: 'There are no comments to show, make the first one!',
     CANCEL_POST_BODY_EDIT: 'Cancel',
     SEND_POST_BODY_EDIT: 'Send',
@@ -268,9 +272,9 @@ define([], function() {
     CONFIRM_POST_DELETE_MODAL_TITLE: 'Confirm deletion',
     CONFIRM_POST_DELETE_MODAL_BODY: 'Delete the post "{{postTitle}}"?',
     CONFIRM_POST_DELETE_MODAL_CANCEL_BUTTON: 'Cancel',
-    CONFIRM_POST_DELETE_MODAL_DELETE_BUTTON: 'Delete'
+    CONFIRM_POST_DELETE_MODAL_DELETE_BUTTON: 'Delete',
 
-
+    LOADING: 'Loading'
 
 	};
 });

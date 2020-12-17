@@ -8,7 +8,8 @@
   </ul>
   <div ng-if="newReplyCount > 0" class="uk-padding-remove-horizontal uk-padding-small">
      <button class="no-style-button uk-link link-muted uk-margin-small-left"
-             ng-disabled="loadingMore" ng-click="showMore()">SHOW {{newReplyCount}} MORE REPLIES</button>
-<!--    TODO FAUS PLURALIZE-->
+             ng-disabled="loadingMore" ng-click="showMore()">
+       <ng-pluralize count="newReplyCount" when="repliesForm"></ng-pluralize>
+       </button>
   </div>
 </div>
