@@ -3,12 +3,6 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
 
   frontend.service('UserService', function(RestFulResponse, LinkParserService, $q, LoggedUserFactory) {
 
-    // TODO: Logged User Avatar? No deberia estar con el logged user? - Tobi
-    var avatarData = {
-      file: undefined,
-      error: false
-    }
-
     this.userHasRole = function (user, role) {
       if(!user){
         return false;
@@ -35,26 +29,30 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       });
     }
 
+    var avatarTmp = {
+      file: undefined,
+      error: false
+    }
     this.avatar = {
       setFile: function (file) {
         if (file !== undefined && file.size > 1000000) {
-          avatarData.file = undefined;
-          avatarData.error = true;
+          avatarTmp.file = undefined;
+          avatarTmp.error = true;
         } else {
-          avatarData.file = file;
-          avatarData.error = false;
+          avatarTmp.file = file;
+          avatarTmp.error = false;
         }
       },
       get: function () {
-        return avatarData;
+        return avatarTmp;
       },
       upload: function () {
         return $q(function (resolve, reject) {
           RestFulResponse.withAuth(LoggedUserFactory.getLoggedUser()).then(function (r) {
             var fd = new FormData();
-            fd.append('avatar', avatarData.file);
+            fd.append('avatar', avatarTmp.file);
             r.one('/user/avatar').customPUT(fd, undefined, undefined, {'Content-Type': undefined}).then(function () {
-              avatar.file = undefined;
+              avatarTmp.file = undefined;
               LoggedUserFactory.getLoggedUser().avatar += '?' + new Date().getTime();
               resolve();
             }).catch(reject);
@@ -181,9 +179,9 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
 
       return $q(function (resolve, reject) {
 
-        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (r) {
 
-          Restangular.all(path).getList(queryParams).then(function (userResponse) {
+          r.all(path).getList(queryParams).then(function (userResponse) {
 
             var paginationParams = {lastPage: 0, pageSize: queryParams.pageSize, currentPage: queryParams.pageNumber};
             var linkHeader = userResponse.headers('Link');
