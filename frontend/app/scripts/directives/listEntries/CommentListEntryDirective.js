@@ -1,5 +1,5 @@
 'use strict';
-define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService','services/LoginService','services/entries/CommentService'], function (frontend) {
+define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService','services/LoginService','services/entities/CommentService'], function (frontend) {
 
   frontend.directive('commentListEntryDirective', function (DisplayService, LoggedUserFactory, CommentService, $q){
     return {
