@@ -221,9 +221,12 @@ define([], function() {
     USER_PROMOTE_TITLE: "¿Estás seguro que quieres promover a {{username}} a administrador?",
     USER_DELETE: "Eliminar",
     USER_DELETE_TITLE: "¿Estás seguro que quieres eliminar a {{username}}?",
-    PAGE_404: "Página no encontrada",
+    PAGE_404: "404 - Página no encontrada",
     PAGE_404_1: "Disculpe, la página a la que está intentando acceder no existe.",
     PAGE_404_2: "Podría deberse a que la dirección ya no está disponible o está mal escrita.",
+    PAGE_500: "500 - Error Interno del Servidor",
+    PAGE_500_1: "Ocurrió un error al procesar la solicitud",
+    PAGE_500_2: "Nos disculpamos por el error, puede dirigirse a la pagina principal e intentarlo denuevo",
     PAGE_404_BTN: "Ir a la página principal",
     SIGNOUT_EVERYWHERE: "Cerrar sesión en todas partes",
 

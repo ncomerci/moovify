@@ -88,6 +88,9 @@ public class PostController {
     @POST
     public Response createPost(@Valid final PostCreateDto postCreateDto) {
 
+        if(postCreateDto == null)
+            throw new PayloadRequiredException();
+
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
         final PostCategory postCategory = postService.findCategoryById(postCreateDto.getCategory()).orElseThrow(InvalidPostCategoryException::new);
@@ -101,7 +104,7 @@ public class PostController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/options")
-    public Response getPostOptions(){
+    public Response getPostOptions() {
 
         Collection<SearchOptionDto> options = new ArrayList<>();
 
@@ -127,6 +130,9 @@ public class PostController {
     @PUT
     @Path("/{id}")
     public Response editPost(@PathParam("id") long id, @Valid final PostEditDto postEditDto) throws MissingPostEditPermissionException, IllegalPostEditionException {
+
+        if(postEditDto == null)
+            throw new PayloadRequiredException();
 
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
@@ -222,6 +228,9 @@ public class PostController {
     public Response votePost(@PathParam("id") long id,
                              final GenericIntegerValueDto valueDto) throws IllegalPostLikeException {
 
+        if(valueDto == null)
+            throw new PayloadRequiredException();
+
         final Post post = postService.findPostById(id).orElseThrow(PostNotFoundException::new);
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
@@ -263,7 +272,10 @@ public class PostController {
     @Consumes(MediaType.APPLICATION_JSON)
     @POST
     @Path("/{id}/comments")
-    public Response createPostComment(@PathParam("id") long postId, @Valid final CommentCreateDto commentCreateDto){
+    public Response createPostComment(@PathParam("id") long postId, @Valid final CommentCreateDto commentCreateDto) {
+
+        if(commentCreateDto == null)
+            throw new PayloadRequiredException();
 
         final Post post = postService.findPostById(postId).orElseThrow(PostNotFoundException::new);
 

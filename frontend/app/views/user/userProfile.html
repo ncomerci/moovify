@@ -118,22 +118,22 @@
 
           <!--    User Posts    -->
           <div ng-show="showing.value === 'posts'">
-            <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/users/{{user.id}}/posts" refresh-url-fn="setPostsUrl" ></fetch-posts-directive>
+            <fetch-posts-directive default-page-size="25" order="'newest'" enabled-entities="true" path="/users/{{user.id}}/posts" refresh-url-fn="setPostsUrl" ></fetch-posts-directive>
           </div>
 
           <!--    User Comments    -->
           <div ng-show="showing.value === 'comments'">
-            <fetch-comments-directive default-page-size="25" order="'newest'" enabled="true" path="/users/{{user.id}}/comments" refresh-url-fn="setCommentsUrl" ></fetch-comments-directive>
+            <fetch-comments-directive default-page-size="25" order="'newest'" enabled-entities="true" path="/users/{{user.id}}/comments" refresh-url-fn="setCommentsUrl" ></fetch-comments-directive>
           </div>
 
           <!--    User Bookmarked Posts    -->
           <div ng-show="showing.value === 'bookmarks'">
-            <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/users/{{user.id}}/bookmarked" refresh-url-fn="setBookmarksUrl" ></fetch-posts-directive>
+            <fetch-posts-directive default-page-size="25" order="'newest'" enabled-entities="true" path="/users/{{user.id}}/bookmarked" refresh-url-fn="setBookmarksUrl" ></fetch-posts-directive>
           </div>
 
           <!--    Users Following      -->
           <div ng-show="showing.value === 'following'">
-            <fetch-users-directive default-page-size="25" order="'votes'" enabled="true" path="/users/{{user.id}}/following" refresh-url-fn="setFollowingUrl" ></fetch-users-directive>
+            <fetch-users-directive default-page-size="25" order="'votes'" enabled-entities="true" path="/users/{{user.id}}/following" refresh-url-fn="setFollowingUrl" ></fetch-users-directive>
           </div>
 
         </div>
@@ -367,8 +367,8 @@
       <h2 class="uk-modal-title">{{'USER_PROMOTE_TITLE' | translate: {username: user.username};}}</h2>
     </div>
     <div class="uk-modal-footer uk-text-right">
-      <button class="uk-button uk-button-default uk-modal-close uk-text-primary" type="button">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
-      <button class="uk-button uk-button-primary" type="button" ng-click="promoteUser()">{{'UPDATE_AVATAR_MODAL_ACCEPT' | translate}}</button>
+      <button class="uk-button uk-button-default uk-border-rounded uk-modal-close uk-text-primary" type="button">{{'UPDATE_AVATAR_MODAL_CANCEL' | translate}}</button>
+      <button class="uk-button uk-button-primary uk-border-rounded" type="button" ng-click="promoteUser()">{{'UPDATE_AVATAR_MODAL_ACCEPT' | translate}}</button>
     </div>
   </div>
 </div>

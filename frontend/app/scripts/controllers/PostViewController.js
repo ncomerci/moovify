@@ -1,6 +1,6 @@
 define(['frontend', 'uikit','services/entities/PostService', 'services/entities/CommentService',
   'directives/comments/CommentTreeDirective', 'services/LoginService', 'services/entities/UserService',
-  'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService', 'services/utilities/TimeService'], function(frontend) {
+  'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService', 'services/utilities/TimeService'], function(frontend, UIkit) {
 
   'use strict';
   frontend.controller('PostViewController', function ($scope, $location, $locale, $q, $routeParams, PostService,
@@ -105,6 +105,8 @@ define(['frontend', 'uikit','services/entities/PostService', 'services/entities/
     }
 
     $scope.callback.edit = function(newBody) {
+      $scope.post.lastEditDate = TimeService.localDateNow();
+      $scope.post.edited = true;
       $scope.post.body = newBody;
       return $scope.post.put();
     }

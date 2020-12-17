@@ -15,7 +15,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       scope: {
         query: '=',
-        enabled: '<',
+        enabledEntities: '<',
         refreshUrlFn: '=',
         adminControls:'<'
       },
@@ -38,7 +38,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
           postCategory: init($routeParams.postCategory, null),
           postAge: init($routeParams.postAge, null),
           orderBy: init($routeParams.orderBy, 'newest'),
-          enabled: scope.enabled
+          enabled: scope.enabledEntities
         };
 
         scope.resetPagination = null;

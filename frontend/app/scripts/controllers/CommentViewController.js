@@ -1,10 +1,10 @@
 define(['frontend','uikit', 'services/entities/CommentService',
   'directives/comments/CommentTreeDirective', 'services/LoginService', 'services/entities/UserService',
-  'services/utilities/PageTitleService',  'directives/PrettyDateDirective'], function(frontend, UIkit) {
+  'services/utilities/PageTitleService',  'directives/PrettyDateDirective', 'services/utilities/TimeService'], function(frontend, UIkit) {
 
   'use strict';
   frontend.controller('CommentViewController', function ($scope, $location, LoggedUserFactory, UserService,
-                                                         PageTitle, $q, CommentService, $routeParams) {
+                                                         PageTitle, $q, CommentService, TimeService, $routeParams) {
 
     PageTitle.setTitle('COMMENT_VIEW_TITLE');
 
@@ -77,10 +77,15 @@ define(['frontend','uikit', 'services/entities/CommentService',
     }
 
     $scope.callback.edit = function(newBody) {
-
+      $scope.lastEditTime = TimeService.localDateNow();
+      $scope.edited = true;
       $scope.mainComment.body = newBody;
       return $scope.mainComment.put();
     }
+
+    $scope.getDateFormatted = function (creationDate){
+      return TimeService.getDateFormatted(creationDate);
+    };
 
     $scope.openDeleteModal = function () {
       $scope.deletingComment = true;

@@ -13,7 +13,7 @@ define(['frontend', 'services/entities/CommentService', 'directives/PaginationHa
       restrict: 'E',
       scope: {
         query: '=',
-        enabled: '<',
+        enabledEntities: '<',
         refreshUrlFn: '=',
         adminControls: '<'
       },
@@ -34,7 +34,7 @@ define(['frontend', 'services/entities/CommentService', 'directives/PaginationHa
 
         scope.filterParams = {
           orderBy: init($routeParams.orderBy, 'newest'),
-          enabled: scope.enabled
+          enabled: scope.enabledEntities
         };
 
         scope.resetPagination = null;

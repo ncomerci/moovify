@@ -15,7 +15,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       scope: {
         query: '=',
-        enabled: '<',
+        enabledEntities: '<',
         refreshUrlFn: '='
       },
       link: function(scope){
