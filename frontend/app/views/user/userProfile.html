@@ -118,22 +118,22 @@
 
           <!--    User Posts    -->
           <div ng-show="showing.value === 'posts'">
-            <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/users/{{user.id}}/posts" refresh-url-fn="setPostsUrl" ></fetch-posts-directive>
+            <fetch-posts-directive default-page-size="25" order="'newest'" enabled-entities="true" path="/users/{{user.id}}/posts" refresh-url-fn="setPostsUrl" ></fetch-posts-directive>
           </div>
 
           <!--    User Comments    -->
           <div ng-show="showing.value === 'comments'">
-            <fetch-comments-directive default-page-size="25" order="'newest'" enabled="true" path="/users/{{user.id}}/comments" refresh-url-fn="setCommentsUrl" ></fetch-comments-directive>
+            <fetch-comments-directive default-page-size="25" order="'newest'" enabled-entities="true" path="/users/{{user.id}}/comments" refresh-url-fn="setCommentsUrl" ></fetch-comments-directive>
           </div>
 
           <!--    User Bookmarked Posts    -->
           <div ng-show="showing.value === 'bookmarks'">
-            <fetch-posts-directive default-page-size="25" order="'newest'" enabled="true" path="/users/{{user.id}}/bookmarked" refresh-url-fn="setBookmarksUrl" ></fetch-posts-directive>
+            <fetch-posts-directive default-page-size="25" order="'newest'" enabled-entities="true" path="/users/{{user.id}}/bookmarked" refresh-url-fn="setBookmarksUrl" ></fetch-posts-directive>
           </div>
 
           <!--    Users Following      -->
           <div ng-show="showing.value === 'following'">
-            <fetch-users-directive default-page-size="25" order="'votes'" enabled="true" path="/users/{{user.id}}/following" refresh-url-fn="setFollowingUrl" ></fetch-users-directive>
+            <fetch-users-directive default-page-size="25" order="'votes'" enabled-entities="true" path="/users/{{user.id}}/following" refresh-url-fn="setFollowingUrl" ></fetch-users-directive>
           </div>
 
         </div>
