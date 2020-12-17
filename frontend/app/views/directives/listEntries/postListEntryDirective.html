@@ -19,7 +19,7 @@
         <span>{{getCategory() | translate}}</span>
         <span> - </span>
 
-        <span ng-if="post.user.enabled"> {{post.user.name}}</span>
+        <span ng-if="post.user.enabled"> {{post.user.username}}</span>
         <span  ng-if="isAdmin(post.user)">
            <span class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
         </span>
