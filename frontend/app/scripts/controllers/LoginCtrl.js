@@ -17,7 +17,6 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
           $location.path('/');
         }).catch(function() {
           $scope.loginError = true;
-          $scope.$apply();
         });
       };
     });

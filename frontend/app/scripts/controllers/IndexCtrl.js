@@ -1,8 +1,9 @@
 'use strict';
-define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTitleService',
+define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTitleService', 'services/UserService',
   'services/utilities/RestFulResponseFactory'], function(frontend, UIkit) {
 
-  frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $location, PageTitle, $window, RestFulResponse) {
+  frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $location, UserService,
+                                            PageTitle, $window, RestFulResponse) {
 
     $scope.loggedUser = LoggedUserFactory.getLoggedUser();
     $scope.title = PageTitle.getTitle();
@@ -33,13 +34,11 @@ define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTi
     $scope.logout = LoggedUserFactory.logout
 
     $scope.resendEmail = function () {
-      RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-        r.all('/user/email_confirmation').post().then(function () {
-          $scope.resendSuccess = true;
-        }).catch(function (err) {
-          $scope.resendError = true;
-          console.log(err);
-        });
+      UserService.resendConfirmEmail($scope.loggedUser).then(function () {
+        $scope.resendSuccess = true;
+      }).catch(function (err) {
+        $scope.resendError = true;
+        console.log(err);
       });
     }
 

@@ -60,6 +60,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory'], function(front
             LoggedUserFactory.saveToken(resp.headers("authorization")).then(function (r) {
               resolve(r);
             }).catch(function (err) {
+              mutex.value = false;
               reject(err);
             });
           }).catch(function (err) {
