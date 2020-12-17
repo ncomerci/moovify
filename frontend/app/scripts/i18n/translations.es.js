@@ -165,7 +165,6 @@ define([], function() {
     CONFIRM_EMAIL_FOOTER: "¡Hey! Tienes que confirmar tu email. Para ello,",
     CONFIRM_EMAIL_BTN_MODAL: "Haz click aquí",
 
-
     WATCHLIST:'Lista',
     CRITIQUE:"Crítica",
     DEBATE:"Debate",
@@ -225,6 +224,7 @@ define([], function() {
     PAGE_404_1: "Disculpe, la página a la que está intentando acceder no existe.",
     PAGE_404_2: "Podría deberse a que la dirección ya no está disponible o está mal escrita.",
     PAGE_404_BTN: "Ir a la página principal",
+    SIGNOUT_EVERYWHERE: "Cerrar sesión en todas partes",
 
     COMMENT_VIEW_HEADING: "Comentario del post:",
     SIGN_UP_TO_START_COMMENTING: "Quieres compartir tus ideas? Registrate y empezá a comentar al instante!",

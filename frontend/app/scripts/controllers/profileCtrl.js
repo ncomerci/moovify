@@ -1,12 +1,11 @@
-define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateAvatarService',
-    'services/utilities/RestFulResponseFactory', 'directives/fetch/FetchPostsDirective',
+define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch/FetchPostsDirective',
     'directives/fetch/FetchUsersDirective', 'directives/fetch/FetchCommentsDirective', 'services/LoginService',
     'services/UserService', 'services/utilities/PageTitleService']
   , function(frontend, UIkit) {
 
     'use strict';
-    frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams, UpdateAvatar,
-                                                RestFulResponse, LoggedUserFactory, UserService, PageTitle, $q) {
+    frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
+                                                LoggedUserFactory, UserService, PageTitle, $q) {
 
       var routeID = parseInt($routeParams.id);
       $scope.user = {};
@@ -15,39 +14,30 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
 
       if(routeID) {
         if(routeID !== $scope.loggedUser.id) {
-          var getUserData = $q(function (resolve, reject) {
-            RestFulResponse.noAuth().one('/users/' + routeID).get().then(function (r) {
-              if(r.data.enabled === false) throw '';
-              Object.assign($scope.user, r.data);
-              $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
-              $scope.tabs = [
-                {value:'posts', message:"{{'USER_POST_TAB_DISPLAY' | translate}}"},
-                {value:'comments', message:"{{'USER_COMMENTS_TAB_DISPLAY' | translate}}"},
-                {value:'bookmarks', message:"{{'USER_BOOK_TAB_DISPLAY' | translate}}"},
-                {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
-              ];
-              PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
-              resolve();
-            }).catch(function (err) {
-              console.log(err);
-              $location.path('/404');
-              reject();
-            })
+
+          var getUserData = UserService.getUser(routeID).then(function (u) {
+            if(u.enabled === false) throw '';
+            Object.assign($scope.user, u);
+            $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
+            $scope.tabs = [
+              {value:'posts', message:"{{'USER_POST_TAB_DISPLAY' | translate}}"},
+              {value:'comments', message:"{{'USER_COMMENTS_TAB_DISPLAY' | translate}}"},
+              {value:'bookmarks', message:"{{'USER_BOOK_TAB_DISPLAY' | translate}}"},
+              {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
+            ];
+            PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
+          }).catch(function (err) {
+            console.log(err);
+            $location.path('/404');
           });
 
-          var followedUser = $q(function (resolve, reject){
-            RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-              r.one('user/following/'+routeID).get().then(function (resp) {
-                $scope.isFollowed = resp.data.response;
-                resolve();
-              }).catch(reject);
-            }).catch(reject);
-          })
+          var followedUser = UserService.doLoggedUserFollow($scope.loggedUser, routeID).then(function (bool) {
+            $scope.isFollowed = bool;
+          }).catch(console.log);
 
           $q.all(getUserData, followedUser).then(function () {
             $scope.loadUserFinished = true;
           })
-
         } else {
           Object.assign($scope.user, $scope.loggedUser);
           PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
@@ -180,11 +170,11 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         repeatPassword: ''
       };
 
-      $scope.avatar = UpdateAvatar.getAvatar();
+      $scope.avatar = UserService.avatar.get();
       var inputFile = angular.element(document.getElementById('avatar'))[0];
 
       inputFile.addEventListener('change', function () {
-        UpdateAvatar.setFile(inputFile.files[0]);
+        UserService.avatar.setFile(inputFile.files[0]);
         $scope.$apply();
         if(!$scope.avatar.error && $scope.avatar.file !== undefined) {
           UIkit.modal(document.getElementById('avatar-update-modal')).show();
@@ -192,7 +182,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       });
 
       $scope.uploadAvatar = function () {
-        UpdateAvatar.uploadAvatar().then(function () {
+        UserService.avatar.upload().then(function () {
           $scope.user.avatar = $scope.loggedUser.avatar;
         });
         UIkit.modal(document.getElementById('avatar-update-modal')).hide();
@@ -207,46 +197,43 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
           !$scope.descriptionIsNotValid()
         ) {
           $scope.loading = true;
-          RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-            var aux = {};
-            Object.keys($scope.editInfo).forEach(function (key) {
-              if($scope.editInfo[key] !== $scope.loggedUser[key]) {
-                aux[key] = $scope.editInfo[key];
-              }
-            });
-            if(Object.keys(aux).length > 0) {
-              r.one('/user').customPUT(aux, undefined, undefined, {'Content-Type': 'application/json'})
-               .then(function () {
-                 $scope.loading = false;
-                 Object.assign($scope.loggedUser, aux);
-                 Object.assign($scope.user, aux);
-                 $scope.btnPressed = false;
-                 UIkit.modal(document.getElementById('edit-info-modal')).hide();
-                 if(aux.username !== undefined) {
-                   LoggedUserFactory.logout().then(function () {
-                     $location.path('/login');
-                   });
-                 }
-               })
-               .catch(function (err) {
-                 $scope.loading = false;
-                 if(err.data) {
-                   err.data.forEach(function (e) {
-                     $translate(fieldErrors[e['attribute']].i18nKey).then(function(field) {
-                       $translate('FORM_DUPLICATED_FIELD_ERROR', {field: field}).then(function(msg) {
-                         fieldErrors[e['attribute']].message = msg;
-                       }).catch(function(err) { console.log('inside', err) });
-                     }).catch(function(err){ console.log('outside', err) });
-                   });
-                 } else {
-                   console.log(err);
-                 }
-               });
-            } else {
-              $scope.loading = false;
-              UIkit.modal(document.getElementById('edit-info-modal')).hide();
+          var aux = {};
+          Object.keys($scope.editInfo).forEach(function (key) {
+            if($scope.editInfo[key] !== $scope.loggedUser[key]) {
+              aux[key] = $scope.editInfo[key];
             }
           });
+          if(Object.keys(aux).length > 0) {
+            UserService.updateInfo($scope.loggedUser, aux).then(function () {
+              Object.assign($scope.loggedUser, aux);
+              Object.assign($scope.user, aux);
+              $scope.loading = false;
+              $scope.btnPressed = false;
+              UIkit.modal(document.getElementById('edit-info-modal')).hide();
+              if(aux.username !== undefined) {
+                LoggedUserFactory.logout().then(function () {
+                  $location.path('/login');
+                });
+              }
+            }).catch(function (err) {
+              $scope.loading = false;
+              if(err.data) {
+                err.data.forEach(function (e) {
+                  $translate(fieldErrors[e['attribute']].i18nKey).then(function(field) {
+                    $translate('FORM_DUPLICATED_FIELD_ERROR', {field: field}).then(function(msg) {
+                      fieldErrors[e['attribute']].message = msg;
+                    }).catch(function(err) { console.log('inside', err) });
+                  }).catch(function(err){ console.log('outside', err) });
+                });
+              } else {
+                console.log(err);
+              }
+            })
+          }
+          else {
+            $scope.loading = false;
+            UIkit.modal(document.getElementById('edit-info-modal')).hide();
+          }
         }
       }
 
@@ -303,20 +290,14 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
           !$scope.passwordsNotEquals()
         ) {
           $scope.loading = true;
-          RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-            delete $scope.editPass.repeatPassword
-            r.one('/user').customPUT($scope.editPass, undefined, undefined, {'Content-Type': 'application/json'})
-              .then(function () {
-                $scope.loading = false;
-                $scope.btnPressed = false;
-                UIkit.modal(document.getElementById('change-password-modal')).hide();
-                LoggedUserFactory.logout().then(function () {
-                  $location.path('/login');
-                });
-              }).catch(function (err) {
-              $scope.loading = false;
-              console.log(err);
-            })
+          delete $scope.editPass.repeatPassword;
+          UserService.updatePassword($scope.loggedUser, $scope.editPass).then(function () {
+            $scope.loading = false;
+            $scope.btnPressed = false;
+            UIkit.modal(document.getElementById('change-password-modal')).hide();
+            LoggedUserFactory.logout().then(function () {
+              $location.path('/login');
+            });
           }).catch(function (err) {
             $scope.loading = false;
             console.log(err);
@@ -334,18 +315,12 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
         if(
           !$scope.fieldRequired('confirmMailForm', 'token')
         ) {
-          RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-            r.all('/user/email_confirmation').customPUT($scope.confirmEmail, undefined, undefined, {'Content-Type': 'application/json'})
-              .then(function () {
-                var idx = $scope.loggedUser.roles.indexOf('NOT_VALIDATED');
-                $scope.loggedUser.roles[idx] = 'USER';
-                UIkit.modal(document.getElementById('confirm-email-profile-modal')).hide();
-              })
-              .catch(function (err) {
-                $scope.tokenError = true;
-                console.log(err);
-              })
-          })
+          UserService.sendConfirmToken($scope.loggedUser, $scope.confirmEmail).then(function () {
+            UIkit.modal(document.getElementById('confirm-email-profile-modal')).hide();
+          }).catch(function (err) {
+            $scope.tokenError = true;
+            console.log(err);
+          });
         }
       }
 
@@ -353,49 +328,40 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'services/UpdateA
       $scope.resendError = false;
 
       $scope.resendEmail = function () {
-        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-          r.all('/user/email_confirmation').post().then(function () {
-            $scope.resendSuccess = true;
-          }).catch(function (err) {
-            $scope.resendError = true;
-            console.log(err);
-          })
-        })
+        UserService.resendConfirmEmail($scope.loggedUser).then(function () {
+          $scope.resendSuccess = true;
+        }).catch(function (err) {
+          $scope.resendError = true;
+          console.log(err);
+        });
       }
 
       $scope.followUser = function () {
-        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-          r.one('/user/following/'+routeID).put().then(function (){
-            $scope.isFollowed = true;
-            $scope.user.followerCount += 1;
-          }).catch(console.log);
+        UserService.followUser($scope.loggedUser, $scope.user).then(function () {
+          $scope.isFollowed = true;
         }).catch(console.log);
       }
+
       $scope.unfollowUser = function () {
-        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-          r.one('/user/following/'+routeID).remove().then(function (){
-            $scope.isFollowed = false;
-            $scope.user.followerCount -= 1;
-          }).catch(console.log);
+        UserService.unfollowUser($scope.loggedUser, $scope.user).then(function () {
+          $scope.isFollowed = false;
         }).catch(console.log);
       }
 
       $scope.promoteUser = function () {
-        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-          r.one('/users/'+routeID+'/privilege').put().then(function () {
-            $scope.isAdmin = true;
-            UIkit.modal(document.getElementById('promote-modal')).hide();
-          }).catch(console.log);
-        }).catch(console.log);
-      };
-
-      $scope.deleteUser = function () {
-        RestFulResponse.withAuth($scope.loggedUser).then(function (r) {
-          r.one('/users/'+routeID+'/enabled').remove().then(function () {
-            UIkit.modal(document.getElementById('delete-modal')).hide();
-            $location.path('/404');
-          }).catch(console.log);
+        UserService.promoteUser($scope.loggedUser, $scope.user).then(function () {
+          $scope.isAdmin = true;
+          UIkit.modal(document.getElementById('promote-modal')).hide();
         }).catch(console.log);
       }
+
+      $scope.deleteUser = function () {
+        UserService.deleteUser($scope.loggedUser, $scope.user).then(function () {
+          UIkit.modal(document.getElementById('delete-modal')).hide();
+          $location.path('/404');
+        }).catch(console.log);
+      }
+
+      $scope.logoutEverywhere = LoggedUserFactory.logoutEverywhere;
     });
 });

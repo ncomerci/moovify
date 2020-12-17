@@ -224,7 +224,7 @@ define([], function() {
     PAGE_404_1: "Sorry, but the page you were trying to view does not exist.",
     PAGE_404_2: "It looks like this was the result of an address that is no longer available or is mistyped.",
     PAGE_404_BTN: "Go to the home page",
-
+    SIGNOUT_EVERYWHERE: "Sign out everywhere",
 
 
     // SIN TRADUCIR

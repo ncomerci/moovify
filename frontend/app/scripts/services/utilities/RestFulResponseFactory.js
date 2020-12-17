@@ -7,6 +7,8 @@ define(['frontend'], function(frontend) {
       RestangularConfigurer.setFullResponse(true);
     });
 
+    var logoutHandler = undefined;
+
     // Source: https://stackoverflow.com/questions/38552003/how-to-decode-jwt-token-in-javascript-without-using-a-library
     var parseToken = function (token) {
       var base64Url = token.split('.')[1];
@@ -36,6 +38,7 @@ define(['frontend'], function(frontend) {
               loggedUser.expDate = RestFulResponse.setToken(resp.headers("authorization"));
               resolve(ReqFullResponse);
             }).catch(function (err) {
+              logoutHandler();
               $location.path('/login');
               reject(err);
             });
@@ -56,6 +59,11 @@ define(['frontend'], function(frontend) {
 
       clearHeaders: function () {
         ReqFullResponse.setDefaultHeaders({});
+      },
+
+    //  Funcion para login
+      setLogoutHandler: function (fn) {
+        logoutHandler = fn;
       }
     };
 
