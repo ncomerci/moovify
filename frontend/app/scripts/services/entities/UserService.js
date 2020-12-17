@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/LoginService', 'services/utilities/LinkParserService'], function(frontend) {
 
-  frontend.service('UserService', function(RestFulResponse, LinkParserService, $q, LoggedUserFactory) {
+  frontend.service('UserService', function(RestFulResponse, LinkParserService, $q, $location, LoggedUserFactory) {
 
     this.signUp = function (user) {
       return RestFulResponse.noAuth().all('users').post(user);

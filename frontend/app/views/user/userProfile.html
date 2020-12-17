@@ -199,6 +199,7 @@
                      ng-pattern="passwordConstrains.pattern"
                      ng-minlength="{{passwordConstrains.minLen}}"
                      ng-maxlength="{{passwordConstrains.maxLen}}"
+                     ng-keydown="$event.keyCode === 13 && updatePassword()"
                      required
               />
             </label>
