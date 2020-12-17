@@ -58,6 +58,7 @@ define(['frontend', 'services/utilities/RestFulResponseFactory'], function(front
           mutex.value = true;
           RestFulResponse.noAuth().all("user").post(user).then(function (resp) {
             LoggedUserFactory.saveToken(resp.headers("authorization")).then(function (r) {
+              RestFulResponse.setLogoutHandler(LoggedUserFactory.logout);
               resolve(r);
             }).catch(function (err) {
               mutex.value = false;
