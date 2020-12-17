@@ -53,9 +53,11 @@ define(['frontend', 'services/utilities/RestFulResponseFactory'], function(front
 
         })
       },
+
       refreshToken: function () {
         return RestFulResponse.noAuth().all('/user/refresh_token').post();
       },
+
       login: function (user) {
         return $q(function (resolve, reject) {
           mutex.value = true;

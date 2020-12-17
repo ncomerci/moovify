@@ -47,7 +47,6 @@ define(['frontend', 'services/entities/PostService', 'services/entities/UserServ
           return $scope.categoryMap[$scope.post.postCategory.name];
         }
 
-        // TODO: tobi
         $scope.recoverPost = function () {
           PostService.recoverPost($scope.post).then(function (post) {
             $scope.removePostFn(post);

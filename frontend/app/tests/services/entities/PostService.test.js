@@ -1,6 +1,7 @@
-define(['angular', 'angularMocks', 'frontend', 'services/fetch/PostFetchService', 'restangular', 'polyfillURLSearchParams'], function(angular) {
+define(['angular', 'angularMocks', 'frontend', 'services/entities/PostService', 'restangular',
+  'polyfillURLSearchParams'], function(angular) {
 
-  describe('PostFetchService', function() {
+  describe('PostService', function() {
 
     var $scope;
     var $q;
@@ -26,7 +27,10 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/PostFetchService'
         RestangularConfigurer.setFullResponse(true);
       });
 
-      $provide.value('RestFulResponse', {withAuthIfPossible: function() {return $q.resolve(ReqFullResponse)}});
+      $provide.value('RestFulResponse', {
+        withAuthIfPossible: function() {return $q.resolve(ReqFullResponse)},
+        withAuth: function() {return $q.resolve(ReqFullResponse)}
+      });
 
       $provide.value('LoggedUserFactory', {
         getLoggedUser: function() { return null; }
@@ -35,7 +39,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/PostFetchService'
       $provide.value('LinkParserService', {parse: function() {return 10}});
     });
 
-    it('search posts success test', inject(function (PostFetchService) {
+    it('search posts success test', inject(function (PostService) {
 
       var query = "queryParam";
       var category = "categoryParam";
@@ -62,7 +66,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/PostFetchService'
         return [200, [{id: 1}, {id: 2}, {id: 3}, {id: 4}]];
       });
 
-      PostFetchService.searchPosts(query, category, age, enabled, orderBy, pageSize, pageNumber).then(function (response) {
+      PostService.searchPosts(query, category, age, enabled, orderBy, pageSize, pageNumber).then(function (response) {
         expect(response.collection.map(function(u) {return u.originalElement })).toEqual(posts);
         expect(response.paginationParams).toEqual({pageSize: pageSize, currentPage: pageNumber, lastPage: 0});
         expect(response.queryParams).toEqual(
@@ -74,7 +78,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/PostFetchService'
       $scope.$digest();
     }));
 
-    it('fetch posts success test', inject(function (PostFetchService) {
+    it('fetch posts success test', inject(function (PostService) {
 
       var enabled = true;
       var orderBy = "orderByParam";
@@ -95,7 +99,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/PostFetchService'
         return [200, [{id: 1}, {id: 2}, {id: 3}, {id: 4}]];
       });
 
-      PostFetchService.fetchPosts('/posts', enabled, orderBy, pageSize, pageNumber).then(function (response) {
+      PostService.fetchPosts('/posts', enabled, orderBy, pageSize, pageNumber).then(function (response) {
         expect(response.collection.map(function(u) {return u.originalElement })).toEqual(posts);
         expect(response.paginationParams).toEqual({pageSize: pageSize, currentPage: pageNumber, lastPage: 0});
         expect(response.queryParams).toEqual(
@@ -106,5 +110,95 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/PostFetchService'
 
       $scope.$digest();
     }));
+
+    it('post create success test', inject(function (PostService) {
+
+      var post = {id: 1};
+
+      $httpBackend.expectPOST(/.*\/api\/posts/, post).respond(201);
+
+      PostService.createPost(post);
+
+      $httpBackend.flush();
+
+      $scope.$digest();
+    }));
+
+    it('send vote success test', inject(function (PostService) {
+
+      var value = 1;
+
+      var post = {
+        all: function (path) {
+          return Restangular.all('/posts/1').all(path);
+        },
+        totalLikes: 0,
+        userVote: -1
+      }
+
+      $httpBackend.expectPUT(/.*\/api\/posts\/1\/votes/, {value: value}).respond(200);
+
+      PostService.sendVote(post, value).then(function (post) {
+        expect(post.totalLikes).toEqual(2);
+        expect(post.userVote).toEqual(1);
+      });
+
+      $httpBackend.flush();
+
+      $scope.$digest();
+    }));
+
+    it('toggle bookmark false test', inject(function (PostService) {
+
+      $httpBackend.expectDELETE(/.*\/api\/user\/bookmarked\/1/).respond(204);
+
+      var post = {
+        hasUserBookmarked: true,
+        id: 1
+      }
+
+      PostService.toggleBookmark(post).then(function (post) {
+        expect(post.hasUserBookmarked).toEqual(false);
+      });
+
+      $httpBackend.flush();
+
+      $scope.$digest();
+    }));
+
+    it('toggle bookmark true test', inject(function (PostService) {
+
+      $httpBackend.expectPUT(/.*\/api\/user\/bookmarked\/1/).respond(204);
+
+      var post = {
+        hasUserBookmarked: false,
+        id: 1
+      }
+
+      PostService.toggleBookmark(post).then(function (post) {
+        expect(post.hasUserBookmarked).toEqual(true);
+      });
+
+      $httpBackend.flush();
+
+      $scope.$digest();
+    }));
+
+    it('recover post test', inject(function (PostService) {
+
+      $httpBackend.expectPUT(/.*\/api\/posts\/1\/enabled/).respond(204);
+
+      var post = {id: 1};
+
+      PostService.recoverPost(post).then(function (returnedPost) {
+        expect(returnedPost).toEqual(post);
+      });
+
+      $httpBackend.flush();
+    }));
+
+
+
+
   });
 });

@@ -20,6 +20,7 @@ import ar.edu.itba.paw.webapp.dto.output.CommentDto;
 import ar.edu.itba.paw.webapp.dto.output.PostDto;
 import ar.edu.itba.paw.webapp.dto.output.UserDto;
 import ar.edu.itba.paw.webapp.exceptions.AvatarNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.PayloadRequiredException;
 import ar.edu.itba.paw.webapp.exceptions.PostNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.UserNotFoundException;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -33,7 +34,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.ws.rs.*;
@@ -83,7 +83,10 @@ public class AuthenticatedUserController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response setAuthorizationHeader(@Valid final UserAuthenticationDto userAuthDto) {
+    public Response authenticateUser(@Valid final UserAuthenticationDto userAuthDto) {
+
+        if(userAuthDto == null)
+            throw new PayloadRequiredException();
 
         try {
             Authentication authenticate = authenticationManager
@@ -112,6 +115,9 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     public Response updateUser(@Valid final UserEditDto userEditDto) {
+
+        if(userEditDto == null)
+            throw new PayloadRequiredException();
 
         final User user = userService.findUserByUsername(securityContext.getUserPrincipal().getName()).orElseThrow(UserNotFoundException::new);
 
@@ -455,7 +461,10 @@ public class AuthenticatedUserController {
     @Produces(MediaType.APPLICATION_JSON)
     @PUT
     @Path("/email_confirmation")
-    public Response confirmRegistration(@Valid final TokenDto tokenDto, @Context HttpServletRequest request) throws InvalidEmailConfirmationTokenException {
+    public Response confirmRegistration(@Valid final TokenDto tokenDto) throws InvalidEmailConfirmationTokenException {
+
+        if(tokenDto == null)
+            throw new PayloadRequiredException();
 
         final User user = userService.confirmRegistration(tokenDto.getToken());
 
@@ -476,6 +485,9 @@ public class AuthenticatedUserController {
     @POST
     @Path("/password_reset")
     public Response sendPasswordResetEmail(@Valid final PasswordResetEmailDto passwordResetEmailDto) {
+
+        if(passwordResetEmailDto == null)
+            throw new PayloadRequiredException();
 
         final Optional<User> optUser = userService.findUserByEmail(passwordResetEmailDto.getEmail());
 
@@ -511,6 +523,9 @@ public class AuthenticatedUserController {
     @PUT
     @Path("/password_reset")
     public Response resetPassword(@Valid final PasswordResetDto passwordResetDto) throws InvalidResetPasswordToken {
+
+        if(passwordResetDto == null)
+            throw new PayloadRequiredException();
 
         final boolean isTokenValid = userService.validatePasswordResetToken(passwordResetDto.getToken());
 

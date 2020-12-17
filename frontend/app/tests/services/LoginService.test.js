@@ -37,7 +37,8 @@ define(['angular', 'angularMocks', 'frontend', 'services/LoginService', 'restang
         withAuth: function() { return $q.resolve(ReqFullResponse) },
         setToken: function() { return expDate },
         noAuth: function() { return ReqFullResponse },
-        clearHeaders: function() { ReqFullResponse.setDefaultHeaders({}) }
+        clearHeaders: function() { ReqFullResponse.setDefaultHeaders({}) },
+        setLogoutHandler: function() {}
       };
 
       $provide.value('RestFulResponse', RestFulResponseMock);
@@ -64,7 +65,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/LoginService', 'restang
       $scope.$digest();
     }));
 
-    it('loggin test', inject(function (LoggedUserFactory) {
+    it('login test', inject(function (LoggedUserFactory) {
 
       var user = { useranme: "hola", password: "chau" };
 
@@ -98,6 +99,16 @@ define(['angular', 'angularMocks', 'frontend', 'services/LoginService', 'restang
 
       expect($location.path()).toEqual("/");
       expect(ReqFullResponse.defaultHeaders).toEqual({});
+
+    }));
+
+    it('refresh token test', inject(function(LoggedUserFactory) {
+
+      $httpBackend.expectPOST(/.*\/api\/user\/refresh_token/).respond(200);
+
+      LoggedUserFactory.refreshToken();
+
+      $httpBackend.flush();
 
     }));
 
