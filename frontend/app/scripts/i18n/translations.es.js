@@ -279,6 +279,7 @@ define([], function() {
     LOADING: 'Cargando',
 
     CREATE_ACCOUNT_MODAL_TITLE: "¡Oh! Te gustaría demostrar tu interés?",
-    CREATE_ACCOUNT_MODAL_BODY: "Registrate y hazlo al instante!"
+    CREATE_ACCOUNT_MODAL_BODY: "Registrate y hazlo al instante!",
+    ACTION_WARNING: "Esta accion puede tardar hasta 15 minutos en tener efecto"
   };
 });
