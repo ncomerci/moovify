@@ -17,15 +17,15 @@
     <div class="uk-grid">
       <div class="uk-width-expand uk-margin-small-top">
         <div ng-show="showing.value === 'posts'">
-          <search-posts-directive query="query" admin-controls="false" enabled="true" refresh-url-fn="setPostSearchUrl" ></search-posts-directive>
+          <search-posts-directive query="query" admin-controls="false" enabled-entities="true" refresh-url-fn="setPostSearchUrl" ></search-posts-directive>
         </div>
 
         <div ng-show="showing.value === 'users'">
-          <search-users-directive query="query" admin-controls="false" enabled="true" refresh-url-fn="setUserSearchUrl" ></search-users-directive>
+          <search-users-directive query="query" admin-controls="false" enabled-entities="true" refresh-url-fn="setUserSearchUrl" ></search-users-directive>
         </div>
 
         <div ng-show="showing.value === 'movies'">
-          <search-movies-directive query="query" enabled="true" refresh-url-fn="setMovieSearchUrl" ></search-movies-directive>
+          <search-movies-directive query="query" enabled-entities="true" refresh-url-fn="setMovieSearchUrl" ></search-movies-directive>
         </div>
       </div>
     </div>

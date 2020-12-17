@@ -13,7 +13,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       scope: {
         order: '<',
-        enabled: '<',
+        enabledEntities: '<',
         defaultPageSize: '<',
         path: '@',
         refreshUrlFn: '='
@@ -25,7 +25,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
           $scope.users = null;
 
-          UserService.fetchUsers($scope.path, $scope.enabled, $scope.order,
+          UserService.fetchUsers($scope.path, $scope.enabledEntities, $scope.order,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 
             function(resp) {

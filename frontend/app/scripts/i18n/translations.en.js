@@ -220,9 +220,12 @@ define([], function() {
     USER_PROMOTE_TITLE: "Are you sure you want to promote {{username}} to admin?",
     USER_DELETE: "Delete",
     USER_DELETE_TITLE: "Are you sure you want to delete to {{username}}?",
-    PAGE_404: "Page not found",
+    PAGE_404: "404 - Page not found",
     PAGE_404_1: "Sorry, but the page you were trying to view does not exist.",
     PAGE_404_2: "It looks like this was the result of an address that is no longer available or is mistyped.",
+    PAGE_500: "500 - Internal Server Error",
+    PAGE_500_1: "An error occurred while processing your request.",
+    PAGE_500_2: "We apologize for the inconvenience, you can go to the home page and start aging.",
     PAGE_404_BTN: "Go to the home page",
     SIGNOUT_EVERYWHERE: "Sign out everywhere",
 

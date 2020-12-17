@@ -13,7 +13,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       scope: {
         order: '<',
-        enabled: '<',
+        enabledEntities: '<',
         defaultPageSize: '<',
         path: '@',
         refreshUrlFn: '='
@@ -26,7 +26,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
           $scope.movies = null;
 
-          MovieService.fetchMovies($scope.path, $scope.enabled, $scope.order,
+          MovieService.fetchMovies($scope.path, $scope.enabledEntities, $scope.order,
             $scope.paginationParams.pageSize, $scope.paginationParams.currentPage).then(
 
             function(resp) {
