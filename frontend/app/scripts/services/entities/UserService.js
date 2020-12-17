@@ -172,6 +172,16 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       return fetchUsersInternal(path, null, null, enabled, orderBy, pageSize, pageNumber);
     }
 
+    this.recoverUser = function (user) {
+      return $q(function (resolve, reject) {
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
+          Restangular.one('users', user.id).all('enabled').doPUT().then(function () {
+            resolve(user);
+          }).catch(reject);
+        }).catch(reject);
+      });
+    }
+
     function fetchUsersInternal(path, query, role, enabled, orderBy, pageSize, pageNumber) {
 
       // Obligatory params
