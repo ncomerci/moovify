@@ -227,7 +227,6 @@ define([], function() {
     SIGNOUT_EVERYWHERE: "Sign out everywhere",
 
 
-    // SIN TRADUCIR
     COMMENT_VIEW_HEADING: "Comment from post:",
     SIGN_UP_TO_START_COMMENTING: "Want to share your thoughts? Sign up and start commenting right away!",
     CONFIRM_EMAIL_TO_START_COMMENTING: "You're almost done, confirm your email and start sharing!",
@@ -266,7 +265,8 @@ define([], function() {
     MOVIE_WITH_SPACER: ' -{{title}}',
     NO_COMMENTS_PLACEHOLDER: 'There are no comments to show, make the first one!',
     CANCEL_POST_BODY_EDIT: 'Cancel',
-    SEND_POST_BODY_EDIT: 'Send',
+    SEND_POST_BODY_EDIT: 'Edit',
+    LAST_EDITED: 'Edited: {{date}}',
     // COMMENT_VIEW_HEADING: "Reply to {{postTitle}}",
 
     CONFIRM_POST_DELETE_MODAL_TITLE: 'Confirm deletion',
