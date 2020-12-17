@@ -206,7 +206,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void followUser(User user, User userFollowed) throws IllegalUserFollowException {
 
-        if(!userFollowed.isEnabled())
+        if(!userFollowed.isEnabled() || user.equals(userFollowed))
             throw new IllegalUserFollowException();
 
         user.followUser(userFollowed);

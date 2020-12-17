@@ -260,11 +260,24 @@ define([], function() {
     POST_VIEW_POST_AUTHOR: 'Autor: {{postAuthor}}',
     POST_VIEW_MOVIES: 'Películas',
     POST_VIEW_TAGS: 'Tags',
+    POST_EDIT_BUTTON: 'Editar post',
+    POST_DELETE_BUTTON: 'Borrar post',
     POST_VIEW_COMMENTS: 'Comentarios',
     CREATION_DATE: ' -Fecha de creación: {{creationDate}} -',
     MOVIE_WITH_SPACER: ' -{{title}}',
     NO_COMMENTS_PLACEHOLDER: 'No hay comentarios para mostrar, escribe el primero!',
     CANCEL_POST_BODY_EDIT: 'Cancelar',
-    SEND_POST_BODY_EDIT: 'Enviar'
+    SEND_POST_BODY_EDIT: 'Editar',
+    LAST_EDITED: '- Editado: {{date}}',
+
+    CONFIRM_POST_DELETE_MODAL_TITLE: 'Confirmar borrado',
+    CONFIRM_POST_DELETE_MODAL_BODY: 'Borrar el post "{{postTitle}}"?',
+    CONFIRM_POST_DELETE_MODAL_CANCEL_BUTTON: 'Cancelar',
+    CONFIRM_POST_DELETE_MODAL_DELETE_BUTTON: 'Borrar',
+
+    LOADING: 'Cargando',
+
+    CREATE_ACCOUNT_MODAL_TITLE: "¡Oh! Te gustaría demostrar tu interés?",
+    CREATE_ACCOUNT_MODAL_BODY: "Registrate y hazlo al instante!"
   };
 });

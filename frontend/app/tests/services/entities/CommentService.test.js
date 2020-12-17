@@ -1,6 +1,7 @@
-define(['angular', 'angularMocks', 'frontend', 'services/fetch/CommentFetchService', 'restangular', 'polyfillURLSearchParams'], function(angular) {
+define(['angular', 'angularMocks', 'frontend', 'services/entities/CommentService', 'restangular',
+  'polyfillURLSearchParams'], function(angular) {
 
-  describe('CommentFetchService', function() {
+  describe('CommentService', function() {
 
     var $scope;
     var $q;
@@ -26,7 +27,10 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/CommentFetchServi
         RestangularConfigurer.setFullResponse(true);
       });
 
-      $provide.value('RestFulResponse', {withAuthIfPossible: function() {return $q.resolve(ReqFullResponse)}});
+      $provide.value('RestFulResponse', {
+        withAuthIfPossible: function() {return $q.resolve(ReqFullResponse)},
+        withAuth: function() {return $q.resolve(ReqFullResponse)}
+      });
 
       $provide.value('LoggedUserFactory', {
         getLoggedUser: function() { return null; }
@@ -35,7 +39,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/CommentFetchServi
       $provide.value('LinkParserService', {parse: function() {return 10}});
     });
 
-    it('search comments success test', inject(function (CommentFetchService) {
+    it('search comments success test', inject(function (CommentService) {
 
       var query = "queryParam";
       var enabled = true;
@@ -58,7 +62,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/CommentFetchServi
         return [200, [{id: 1}, {id: 2}, {id: 3}, {id: 4}]];
       });
 
-      CommentFetchService.searchComments(query, enabled, orderBy, pageSize, pageNumber).then(function (response) {
+      CommentService.searchComments(query, enabled, orderBy, pageSize, pageNumber).then(function (response) {
         expect(response.collection.map(function(u) {return u.originalElement })).toEqual(comments);
         expect(response.paginationParams).toEqual({pageSize: pageSize, currentPage: pageNumber, lastPage: 0});
         expect(response.queryParams).toEqual(
@@ -70,7 +74,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/CommentFetchServi
       $scope.$digest();
     }));
 
-    it('fetch comments success test', inject(function (CommentFetchService) {
+    it('fetch comments success test', inject(function (CommentService) {
 
       var enabled = true;
       var orderBy = "orderByParam";
@@ -91,7 +95,7 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/CommentFetchServi
         return [200, [{id: 1}, {id: 2}, {id: 3}, {id: 4}]];
       });
 
-      CommentFetchService.fetchComments('/comments', enabled, orderBy, pageSize, pageNumber).then(function (response) {
+      CommentService.fetchComments('/comments', enabled, orderBy, pageSize, pageNumber).then(function (response) {
         expect(response.collection.map(function(u) {return u.originalElement })).toEqual(comments);
         expect(response.paginationParams).toEqual({pageSize: pageSize, currentPage: pageNumber, lastPage: 0});
         expect(response.queryParams).toEqual(
@@ -103,13 +107,13 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/CommentFetchServi
       $scope.$digest();
     }));
 
-    it('fetch one comment test', inject(function(CommentFetchService) {
+    it('fetch one comment test', inject(function(CommentService) {
 
       var comment = {id: 1};
 
       $httpBackend.expectGET(/.*\/api\/comments\/1/).respond(200, comment);
 
-      CommentFetchService.fetchOneComment(comment.id).then(function(returnedComment) {
+      CommentService.fetchOneComment(comment.id).then(function(returnedComment) {
         expect(returnedComment.originalElement).toEqual(comment);
       })
 
@@ -120,6 +124,95 @@ define(['angular', 'angularMocks', 'frontend', 'services/fetch/CommentFetchServi
     }));
 
   //  TODO: Test getPostCommentsWithUserVote, getCommentCommentsWithUserVote and getCommentCommentsWithUserVoteById - Nacho?
+
+    it('send vote success test', inject(function (CommentService) {
+
+      var value = 1;
+
+      var comment = {
+        id: 1,
+        totalVotes: 0,
+        userVote: -1
+      }
+
+      $httpBackend.expectPUT(/.*\/api\/comments\/1\/votes/, {value: value}).respond(200);
+
+      CommentService.sendVote(comment, value).then(function (comment) {
+        expect(comment.totalVotes).toEqual(2);
+        expect(comment.userVote).toEqual(1);
+      });
+
+      $httpBackend.flush();
+
+      $scope.$digest();
+    }));
+
+    it('send comment reply success test', inject(function (CommentService) {
+
+      var body = "estoEsUnBody";
+
+      var comment = {
+        all: function (path) {
+          return Restangular.all('/comments/1').all(path);
+        }
+      }
+
+      var data = {data: 1};
+
+      $httpBackend.expectPOST(/.*\/api\/comments\/1\/children/, {body: body})
+        .respond(200, {headers: function() { return "unaURL"}});
+
+      $httpBackend.expectGET('unaURL').respond(200, data);
+
+      CommentService.sendCommentReply(comment, body).then(function (data) {
+        expect(data.data).toEqual(1);
+      });
+
+      $httpBackend.flush();
+
+      $scope.$digest();
+    }));
+
+    it('send post reply success test', inject(function (CommentService) {
+
+      var body = "estoEsUnBody";
+
+      var post = {
+        all: function (path) {
+          return Restangular.all('/posts/1').all(path);
+        }
+      }
+
+      var data = {data: 1};
+
+      $httpBackend.expectPOST(/.*\/api\/posts\/1\/comments/, {body: body})
+        .respond(200, {headers: function() { return "unaURL"}});
+
+      $httpBackend.expectGET('unaURL').respond(200, data);
+
+      CommentService.sendPostReply(post, body).then(function (data) {
+        expect(data.data).toEqual(1);
+      });
+
+      $httpBackend.flush();
+
+      $scope.$digest();
+    }));
+
+    it('recover comment test', inject(function (CommentService) {
+
+      var comment = { id: 3 };
+
+      $httpBackend.expectPUT(/.*\/api\/comments\/3\/enabled/).respond(204);
+
+      CommentService.recoverComment(comment).then(function (returnedComment) {
+        expect(returnedComment).toEqual(comment);
+      });
+
+      $httpBackend.flush();
+
+      $scope.$digest();
+    }));
 
   });
 });

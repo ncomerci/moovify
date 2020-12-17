@@ -151,6 +151,16 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
       return getCommentCommentsWithUserVoteInternal(commentId, depth, orderBy, pageSize, pageNumber)
     }
 
+    this.recoverComment = function (comment) {
+      return $q(function (resolve, reject) {
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
+          Restangular.one('comments', comment.id).all('enabled').doPUT().then(function () {
+            resolve(comment);
+          }).catch(reject);
+        }).catch(reject);
+      });
+    };
+
     function getCommentCommentsWithUserVoteInternal(comment, depth, orderBy, pageSize, pageNumber) {
 
       var queryParams = {orderBy: orderBy, pageSize: pageSize, pageNumber: pageNumber};

@@ -1,19 +1,17 @@
 'use strict';
-define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/UserService',
-  'services/utilities/RestFulResponseFactory'], function(frontend, UIkit) {
+define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/UserService'], function(frontend, UIkit) {
 
   frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $location, UserService,
-                                            PageTitle, $window, RestFulResponse) {
+                                            PageTitle) {
 
     $scope.loggedUser = LoggedUserFactory.getLoggedUser();
     $scope.title = PageTitle.getTitle();
 
     $scope.search = {query: ''};
 
-    // TODO: Purge RestFulResponse - Tobi
     $scope.waitLogin = true;
     LoggedUserFactory.startLoggedUserCheck();
-    RestFulResponse.noAuth().all('/user/refresh_token').post().then(function (resp) {
+    LoggedUserFactory.refreshToken().then(function (resp) {
       LoggedUserFactory.saveToken(resp.headers("authorization")).then(function (user) {
         $scope.loggedUser = user;
         $scope.waitLogin = false;
@@ -46,6 +44,13 @@ define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTi
     $scope.gotIt = function () {
       UIkit.modal(document.getElementById('confirm-email-modal')).hide();
       $location.path('/user');
+    }
+
+    $scope.hasRole = UserService.userHasRole;
+
+    $scope.modalClose = function (path) {
+      UIkit.modal(document.getElementById('no-user-modal')).hide();
+      $location.path(path);
     }
 
   });

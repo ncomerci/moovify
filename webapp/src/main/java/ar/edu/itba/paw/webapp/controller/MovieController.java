@@ -14,11 +14,11 @@ import ar.edu.itba.paw.webapp.dto.output.SearchOptionDto;
 import ar.edu.itba.paw.webapp.exceptions.InvalidSearchArgumentsException;
 import ar.edu.itba.paw.webapp.exceptions.MovieNotFoundException;
 import ar.edu.itba.paw.webapp.exceptions.MoviePosterNotFoundException;
+import ar.edu.itba.paw.webapp.exceptions.PayloadRequiredException;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -85,7 +85,10 @@ public class MovieController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response createMovie(@Valid final MovieCreateDto movieCreateDto){
+    public Response createMovie(@Valid final MovieCreateDto movieCreateDto) {
+
+        if(movieCreateDto == null)
+            throw new PayloadRequiredException();
 
         final Movie movie = movieService.register(movieCreateDto.getTitle(), movieCreateDto.getOriginalTitle(),
                 movieCreateDto.getTmdbId(), movieCreateDto.getImdbId(), movieCreateDto.getOriginalLanguage(),
@@ -98,7 +101,7 @@ public class MovieController {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @Path("/options")
-    public Response getMovieSearchOptions(){
+    public Response getMovieSearchOptions() {
 
         Collection<SearchOptionDto> options = new ArrayList<>();
 

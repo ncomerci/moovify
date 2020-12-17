@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService', 'services/utilities/RestFulResponseFactory','services/LoginService'], function (frontend) {
+define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService','services/LoginService','services/entities/CommentService'], function (frontend) {
 
-  frontend.directive('commentListEntryDirective', function (DisplayService, LoggedUserFactory, RestFulResponse, $q){
+  frontend.directive('commentListEntryDirective', function (DisplayService, LoggedUserFactory, CommentService, $q){
     return {
       restrict: 'E',
       scope: {
@@ -21,16 +21,10 @@ define(['frontend', 'directives/PrettyDateDirective', 'services/DisplayService',
 
         $scope.loggedUser = LoggedUserFactory.getLoggedUser();
 
-        // TODO: Purge RestFulResponse - Tobi
         $scope.recoverComment = function () {
-          return $q(function (resolve, reject) {
-            RestFulResponse.withAuthIfPossible($scope.loggedUser).then(function (Restangular) {
-              Restangular.one('comments', $scope.comment.id).all('enabled').doPUT().then(function () {
-                $scope.removeCommentFn($scope.comment);
-                resolve($scope.user);
-              }).catch(reject);
-            }).catch(reject);
-          });
+          CommentService.recoverComment($scope.comment).then(function (comment) {
+            $scope.removeCommentFn(comment);
+          }).catch(console.log)
         }
       }
     }

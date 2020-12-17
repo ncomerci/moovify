@@ -46,17 +46,17 @@
 
           <li class="uk-navbar-item ng-cloak" ng-if="loggedUser.logged">
             <!-- This is a button toggling the modal -->
-            <a ng-if="loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" href="#" uk-toggle="target: #confirm-email-modal">
+            <a ng-if="hasRole(loggedUser, 'NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" href="#" uk-toggle="target: #confirm-email-modal">
               {{'NAVBAR_CREATE_POST' | translate}}
             </a>
-            <a ng-if="!loggedUser.roles.includes('NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" ng-href="/post/create">{{'NAVBAR_CREATE_POST' | translate}}</a>
+            <a ng-if="!hasRole(loggedUser, 'NOT_VALIDATED')" class="uk-padding-remove uk-text-uppercase" ng-href="/post/create">{{'NAVBAR_CREATE_POST' | translate}}</a>
           </li>
           <li ng-if="loggedUser.logged" class="ng-cloak">
             <a class="nav-user uk-padding-remove uk-margin-right uk-margin-small-left" ng-href="/user">
 
               <img ng-src="{{loggedUser.avatar}}" class="uk-comment-avatar circle-navbar" width="45" height="45" alt="User Avatar">
               <span class="uk-text-bold uk-margin-small-left uk-text-uppercase">{{loggedUser.username}}</span>
-              <span ng-if="loggedUser.roles.includes('ADMIN')" class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
+              <span ng-if="hasRole(loggedUser, 'ADMIN')" class="iconify admin-badge" data-icon="entypo:shield" data-inline="false" title="{{'ADMIN_TITLE' | translate}}"></span>
             </a>
             <div class="uk-navbar-dropdown m-bg-primary-lighter-5 m-rounded-bottom-10">
               <ul class="uk-nav uk-navbar-dropdown-nav">
@@ -65,7 +65,7 @@
                     {{'USER_PROFILE' | translate}}
                   </a>
                 </li>
-                <li ng-if="loggedUser.roles.includes('ADMIN')">
+                <li ng-if="hasRole(loggedUser, 'ADMIN')">
                   <a class="uk-text-normal uk-text-center m-text-primary" ng-href="/admin">
                     {{'ADMIN_PANEL_BTN' | translate}}
                   </a>
@@ -86,7 +86,7 @@
   <div ng-view="" ng-if="!waitLogin"></div>
 
   <!-- Confirm email modal -->
-  <div class="ng-cloak" ng-if="loggedUser && loggedUser.roles.includes('NOT_VALIDATED')" id="confirm-email-modal" uk-modal>
+  <div class="ng-cloak" ng-if="loggedUser && hasRole(loggedUser, 'NOT_VALIDATED')" id="confirm-email-modal" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
       <h2 class="uk-modal-title">{{'USER_EMAILCONFIRM_TITLE' | translate}}</h2>
       <p>{{'USER_EMAILCONFIRM_TEXT' | translate}}</p>
@@ -104,3 +104,13 @@
 
 </body>
 </html>
+
+
+<!-- create account modal -->
+<div id="no-user-modal" ng-if="!loggedUser.logged || !hasRole(loggedUser, 'USER')" uk-modal>
+  <div class="uk-modal-dialog uk-modal-body">
+    <h2 class="uk-modal-title">{{'CREATE_ACCOUNT_MODAL_TITLE' | translate}}</h2>
+    <p ng-if="!loggedUser.logged">{{'CREATE_ACCOUNT_MODAL_BODY' | translate}} <a ng-click="modalClose('/signup')">{{'CREATE_NEW_ACCOUNT' | translate}}</a></p>
+    <p ng-if="loggedUser.logged && !hasRole(loggedUser, 'USER')">{{'CONFIRM_EMAIL_TO_START_COMMENTING' | translate}} <a ng-click="modalClose('/user')">{{'GO_TO_PROFILE' | translate}}</a></p>
+  </div>
+</div>

@@ -1,10 +1,10 @@
 define(['frontend', 'uikit','services/entities/PostService', 'services/entities/CommentService',
   'directives/comments/CommentTreeDirective', 'services/LoginService', 'services/entities/UserService',
-  'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService', 'services/utilities/TimeService'], function(frontend) {
+  'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService', 'services/utilities/TimeService'], function(frontend, UIkit) {
 
   'use strict';
-  frontend.controller('PostViewController', function ($scope, PostService, $location, $locale,
-                           LoggedUserFactory, UserService, TimeService, CommentService, PageTitle, $q, $routeParams) {
+  frontend.controller('PostViewController', function ($scope, $location, $locale, $q, $routeParams, PostService,
+                           LoggedUserFactory, UserService, TimeService, CommentService, PageTitle) {
 
     PageTitle.setTitle('POST_VIEW_TITLE');
 
@@ -105,7 +105,6 @@ define(['frontend', 'uikit','services/entities/PostService', 'services/entities/
     }
 
     $scope.callback.edit = function(newBody) {
-
       $scope.post.body = newBody;
       return $scope.post.put();
     }
@@ -128,8 +127,8 @@ define(['frontend', 'uikit','services/entities/PostService', 'services/entities/
 
     }
 
-    $scope.wordsPerMinute = function () {
-      return Math.floor($scope.post.wordCount / wordsPerMin);
+    $scope.wordsPerMinute = function (wordCount) {
+      return Math.floor(wordCount / wordsPerMin);
     }
 
   });

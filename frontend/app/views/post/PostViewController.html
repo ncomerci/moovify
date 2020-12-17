@@ -3,7 +3,7 @@
     <div class="post-meta">
       <h1 class="word-brake">
         <span ng-if="isUser">
-          <button ng-disabled="mutex.bookmark" ng-click="toggleBookmark()" class="no-style-button primary-button">
+          <button ng-disabled="mutex.bookmark" ng-click="toggleBookmark()" class="no-style-button primary-button uk-button">
             <span ng-show="post.hasUserBookmarked">
               <span class="iconify large-iconify"
                     data-icon="mdi-bookmark-check"
@@ -19,11 +19,10 @@
         </span>
         {{post.title}}
       </h1>
-      <p>
-        {{'POST_VIEW_POST_AUTHOR' | translate}}
-        <a href="user/{{post.user.id}}">{{post.user.username}}</a>
-        {{'CREATION_DATE' | translate:{creationDate:getDateFormatted(post.creationDate)};}}<span data-uk-icon="icon: future"></span>
-        <ng-pluralize count="wordsPerMinute()" when="minsForm"></ng-pluralize>
+      <p>{{'POST_VIEW_POST_AUTHOR' | translate}} <a href="user/{{post.user.id}}">{{post.user.username}}</a>
+        {{'CREATION_DATE' | translate:{creationDate:getDateFormatted(post.creationDate)};}}
+        <span data-uk-icon="icon: future"></span> <ng-pluralize count="wordsPerMinute(post.wordCount)" when="minsForm"></ng-pluralize>
+        <span ng-if="post.edited">{{'LAST_EDITED' | translate:{date:getDateFormatted(post.lastEditDate)};}}</span>
       </p>
     </div>
     <div class="post-vote-handler uk-padding-small">
@@ -72,7 +71,7 @@
     </div>
     <span ng-if="isLogged && !isUser" class="uk-text-center uk-text-lead uk-margin-large-top uk-margin-large-bottom">
         <p class="uk-margin-remove-bottom">{{'CONFIRM_EMAIL_TO_START_COMMENTING' | translate}}</p>
-        <a href="signup">{{'GO_TO_PROFILE' | translate}}</a>
+        <a href="user" class="uk-flex uk-flex-center">{{'GO_TO_PROFILE' | translate}}</a>
       </span>
   </div>
 
@@ -95,9 +94,9 @@
     </div>
     <p class="uk-padding-small word-brake">{{'CONFIRM_POST_DELETE_MODAL_BODY' | translate: {postTitle: post.title};}}</p>
     <div class="uk-modal-footer uk-text-right">
-      <button class="uk-button uk-button-default uk-modal-close uk-text-primary"
+      <button class="uk-button uk-button-default uk-border-rounded uk-modal-close uk-text-primary"
               type="button" ng-disabled="mutex.deleting">{{'CONFIRM_POST_DELETE_MODAL_CANCEL_BUTTON' | translate}}</button>
-      <button class="uk-button uk-button-primary" type="button"
+      <button class="uk-button uk-button-primary uk-button-danger uk-border-rounded" type="button"
               ng-disabled="mutex.deleting" ng-click="confirmDelete()">{{'CONFIRM_POST_DELETE_MODAL_DELETE_BUTTON' | translate}}</button>
     </div>
   </div>

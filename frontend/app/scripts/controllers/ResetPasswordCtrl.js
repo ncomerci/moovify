@@ -1,7 +1,7 @@
-define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utilities/PageTitleService'], function(frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utilities/PageTitleService', 'services/entities/UserService'], function(frontend) {
 
     'use strict';
-    frontend.controller('ResetPasswordCtrl', function($scope, RestFulResponse, PageTitle, $timeout, $location) {
+    frontend.controller('ResetPasswordCtrl', function($scope, RestFulResponse, PageTitle, UserService, $timeout, $location) {
       PageTitle.setTitle('RESET_PASSWORD_TITLE');
 
       $scope.btnPressed = false;
@@ -11,10 +11,9 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
       $scope.sendEmail = function () {
         $scope.btnPressed = true;
 
-        // TODO: Purge RestFulResponse - Tobi
         if(!$scope.resetPassForm.email.$error.required && !$scope.resetPassForm.email.$error.email) {
-          var aux = {email: $scope.email};
-          RestFulResponse.noAuth().all('/user/password_reset').post(aux).then(function () {
+          var email = {email: $scope.email};
+          UserService.sendToken(email).then(function () {
             $scope.mailSent = true;
             $timeout(function () {
               $location.path('/updatePassword');

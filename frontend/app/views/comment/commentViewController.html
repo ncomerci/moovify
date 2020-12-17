@@ -11,11 +11,18 @@
 
       <div class="comment-header">
         <div class="comment-avatar">
-          <img class="circle-comment uk-comment-avatar" ng-src="{{mainComment.user.avatar}}" alt="">
+          <a ng-href="user/{{mainComment.user.id}}">
+            <img class="circle-comment uk-comment-avatar" ng-src="{{mainComment.user.avatar}}" alt="">
+          </a>
         </div>
         <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
-          <a class="uk-comment-title" ng-href="user/{{mainComment.user.id}}">{{mainComment.user.username}}</a>
-          <p class="uk-comment-meta uk-margin-remove-top"><pretty-date-directive creation-date="mainComment.creationDateTime"></pretty-date-directive></p>
+          <div class="uk-comment-title">
+            <a ng-href="user/{{mainComment.user.id}}">{{mainComment.user.username}}</a>
+          </div>
+          <p class="uk-comment-meta uk-margin-remove-top">
+            <pretty-date-directive creation-date="mainComment.creationDateTime"></pretty-date-directive>
+            <span ng-if="mainComment.edited">{{'LAST_EDITED' | translate:{date:getDateFormatted(mainComment.lastEditTime)};}}</span>
+          </p>
         </div>
         <div class="comment-vote-handler">
           <comment-like-handler-directive total-votes="mainComment.totalVotes" user-vote="mainComment.userVote" send-vote-fn="callback.vote"></comment-like-handler-directive>
@@ -106,9 +113,9 @@
     </div>
     <p class="uk-padding-small word-brake">{{'CONFIRM_COMMENT_DELETE_MODAL_BODY' | translate: {commentBody: mainComment.body};}}</p>
     <div class="uk-modal-footer uk-text-right">
-      <button class="uk-button uk-button-default uk-modal-close uk-text-primary"
+      <button class="uk-button uk-button-default uk-modal-close uk-border-rounded uk-text-primary"
               type="button" ng-disabled="sendingDelete.value">{{'CONFIRM_COMMENT_DELETE_MODAL_CANCEL_BUTTON' | translate}}</button>
-      <button class="uk-button uk-button-primary" type="button"
+      <button class="uk-button uk-button-primary uk-button-danger uk-border-rounded" type="button"
               ng-disabled="sendingDelete.value" ng-click="confirmDelete()">{{'CONFIRM_COMMENT_DELETE_MODAL_DELETE_BUTTON' | translate}}</button>
     </div>
   </div>
