@@ -1,7 +1,7 @@
 'use strict';
 define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/UserService'], function(frontend, UIkit) {
 
-  frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, LoginService, $location, UserService,
+  frontend.controller('IndexCtrl', function($scope, LoggedUserFactory, $location, UserService,
                                             PageTitle) {
 
     $scope.loggedUser = LoggedUserFactory.getLoggedUser();
@@ -12,7 +12,7 @@ define(['frontend', 'uikit', 'services/LoginService', 'services/utilities/PageTi
     $scope.waitLogin = true;
     LoggedUserFactory.startLoggedUserCheck();
     //TODO tobi
-    LoginService.refreshToken().then(function (resp) {
+    LoggedUserFactory.refreshToken().then(function (resp) {
       LoggedUserFactory.saveToken(resp.headers("authorization")).then(function (user) {
         $scope.loggedUser = user;
         $scope.waitLogin = false;
