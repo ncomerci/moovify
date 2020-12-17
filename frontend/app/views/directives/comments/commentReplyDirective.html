@@ -5,7 +5,7 @@
                 rows="5" name="replyBody"
                 ng-model="body.content"
                 placeholder="{{'WRITE_REPLY_COMMENT_PLACEHOLDER' | translate}}"
-                autofocus ng-disabled="sendingComment">
+                ng-disabled="sendingComment">
       </textarea>
     </div>
     <p class="uk-text-muted uk-align-left">{{body.content.length ? body.content.length : 0}}/{{maxLen}}</p>

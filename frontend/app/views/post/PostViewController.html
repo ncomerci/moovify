@@ -87,6 +87,11 @@
 
 </main>
 
+<div ng-if="!post" class="uk-text-center uk-text-lead uk-margin-top">
+  <span class="uk-margin-small-right" uk-spinner="ratio: 3"></span>
+  <p class="uk-text-muted">{{'LOADING' | translate}}</p>
+</div>
+
 <div ng-if="isAdmin" id="delete-post-modal" uk-modal>
   <div class="uk-modal-dialog" ng-if="deletingPost">
     <div class="uk-modal-header">
