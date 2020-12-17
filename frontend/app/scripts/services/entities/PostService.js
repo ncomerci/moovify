@@ -76,6 +76,16 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
       });
     }
 
+    this.recoverPost = function (post) {
+      return $q(function (resolve, reject) {
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
+          Restangular.one('posts', post.id).all('enabled').doPUT().then(function () {
+            resolve(post);
+          }).catch(reject);
+        }).catch(reject);
+      });
+    };
+
     function internalFetchPosts(path, query, category, age, enabled, orderBy, pageSize, pageNumber) {
 
       // Obligatory params

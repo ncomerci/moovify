@@ -74,9 +74,9 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
           !$scope.passwordsNotEquals()
         )
         {
-          // TODO: Purge RestFulResponse - Tobi
+
           $scope.loading = true;
-          RestFulResponse.noAuth().all('users').post(user).then(function() {
+          UserService.signUp(user).then(function() {
             var aux_user = {
               username: user.username,
               password: user.password

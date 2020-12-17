@@ -19,11 +19,10 @@
         </span>
         {{post.title}}
       </h1>
-      <p>
-        {{'POST_VIEW_POST_AUTHOR' | translate}}
-        <a href="user/{{post.user.id}}">{{post.user.username}}</a>
-        {{'CREATION_DATE' | translate:{creationDate:getDateFormatted(post.creationDate)};}}<span data-uk-icon="icon: future"></span>
-        <ng-pluralize count="wordsPerMinute()" when="minsForm"></ng-pluralize>
+      <p>{{'POST_VIEW_POST_AUTHOR' | translate}} <a href="user/{{post.user.id}}">{{post.user.username}}</a>
+        {{'CREATION_DATE' | translate:{creationDate:getDateFormatted(post.creationDate)};}}
+        <span data-uk-icon="icon: future"></span> <ng-pluralize count="wordsPerMinute(post.wordCount)" when="minsForm"></ng-pluralize>
+        <span ng-if="post.edited">{{'LAST_EDITED' | translate:{date:getDateFormatted(post.lastEditDate)};}}</span>
       </p>
     </div>
     <div class="post-vote-handler uk-padding-small">

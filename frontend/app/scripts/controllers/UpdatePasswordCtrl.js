@@ -1,7 +1,7 @@
-define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utilities/PageTitleService'], function(frontend) {
+define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utilities/PageTitleService', 'services/entities/UserService'], function(frontend) {
 
     'use strict';
-    frontend.controller('UpdatePasswordCtrl', function($scope, RestFulResponse, PageTitle, $location, $timeout) {
+    frontend.controller('UpdatePasswordCtrl', function($scope, RestFulResponse, UserService, PageTitle, $location, $timeout) {
       PageTitle.setTitle('UPDATE_PASSWORD_TITLE');
       $scope.newPass = {};
       $scope.btnPressed = false;
@@ -42,9 +42,9 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/utili
           !$scope.fieldIsNotValid('repeatPassword') &&
           !$scope.passwordsNotEquals()
         ) {
-          // TODO: Purge RestFulResponse - Tobi
-          var aux = {token: $scope.newPass.token, password: $scope.newPass.password};
-          RestFulResponse.noAuth().one('/user/password_reset').customPUT(aux, undefined, undefined, {'Content-Type': 'application/json'})
+
+          var passWithToken = {token: $scope.newPass.token, password: $scope.newPass.password};
+          UserService.resetPassword(passWithToken)
             .then(function () {
               $scope.valid = true;
               $timeout(function () {

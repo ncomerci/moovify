@@ -3,6 +3,16 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
 
   frontend.service('UserService', function(RestFulResponse, LinkParserService, $q, LoggedUserFactory) {
 
+    // TODO: Logged User Avatar? No deberia estar con el logged user? - Tobi
+    var avatarData = {
+      file: undefined,
+      error: false
+    }
+    //TODO tobi
+    this.signUp = function (user) {
+      return RestFulResponse.noAuth().all('users').post(user);
+    }
+
     this.userHasRole = function (user, role) {
       if(!user){
         return false;
@@ -122,6 +132,10 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
         })
       });
     }
+    //TODO tobi
+    this.resetPassword = function (passWithToken) {
+      return RestFulResponse.noAuth().one('/user/password_reset').customPUT(passWithToken, undefined, undefined, {'Content-Type': 'application/json'});
+    }
 
     this.updatePassword = function (loggedUser, password) {
       return $q(function (resolve, reject) {
@@ -135,6 +149,10 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
             }).catch(reject);
         }).catch(reject);
       });
+    }
+    //TODO tobi
+    this.sendToken = function(email) {
+       return RestFulResponse.noAuth().all('/user/password_reset').post(email);
     }
 
     this.sendConfirmToken = function (loggedUser, token) {
@@ -156,6 +174,16 @@ define(['frontend', 'services/utilities/RestFulResponseFactory', 'services/Login
 
     this.fetchUsers = function (path, enabled, orderBy, pageSize, pageNumber) {
       return fetchUsersInternal(path, null, null, enabled, orderBy, pageSize, pageNumber);
+    }
+
+    this.recoverUser = function (user) {
+      return $q(function (resolve, reject) {
+        RestFulResponse.withAuthIfPossible(LoggedUserFactory.getLoggedUser()).then(function (Restangular) {
+          Restangular.one('users', user.id).all('enabled').doPUT().then(function () {
+            resolve(user);
+          }).catch(reject);
+        }).catch(reject);
+      });
     }
 
     function fetchUsersInternal(path, query, role, enabled, orderBy, pageSize, pageNumber) {

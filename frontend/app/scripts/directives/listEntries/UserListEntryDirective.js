@@ -1,7 +1,7 @@
 'use strict';
-define(['frontend', 'services/DisplayService', 'services/entities/UserService', 'services/LoginService', 'services/utilities/RestFulResponseFactory'], function(frontend) {
+define(['frontend', 'services/DisplayService', 'services/entities/UserService', 'services/LoginService'], function(frontend) {
 
-  frontend.directive('userListEntryDirective', function (DisplayService, UserService, LoggedUserFactory, RestFulResponse, $q) {
+  frontend.directive('userListEntryDirective', function (DisplayService, UserService, LoggedUserFactory, $q) {
     return {
       restrict: 'E',
       scope: {
@@ -24,16 +24,11 @@ define(['frontend', 'services/DisplayService', 'services/entities/UserService', 
 
         $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
 
-        // TODO: Purge RestFulResponse - Tobi
+        // TODO: tobi
         $scope.recoverUser = function () {
-          return $q(function (resolve, reject) {
-            RestFulResponse.withAuthIfPossible($scope.loggedUser).then(function (Restangular) {
-              Restangular.one('users', $scope.user.id).all('enabled').doPUT().then(function () {
-                $scope.removeUserFn($scope.user);
-                resolve($scope.user);
-              }).catch(reject);
-            }).catch(reject);
-          });
+          UserService.recoverUser($scope.user).then(function (user) {
+            $scope.removeUserFn(user);
+          }).catch(console.log);
         }
       },
       templateUrl: 'resources/views/directives/listEntries/userListEntryDirective.html',
