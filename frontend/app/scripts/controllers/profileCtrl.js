@@ -21,7 +21,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
             $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
             $scope.tabs = [
               {value:'posts', message:"{{'USER_POST_TAB_DISPLAY' | translate}}"},
-              {value:'comments', message:"{{'USER_COMMENTS_TAB_DISPLAY' | translate}}"},
+              // {value:'comments', message:"{{'USER_COMMENTS_TAB_DISPLAY' | translate}}"},
               {value:'bookmarks', message:"{{'USER_BOOK_TAB_DISPLAY' | translate}}"},
               {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
             ];
