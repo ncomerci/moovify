@@ -170,13 +170,15 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
       $scope.avatar = UserService.avatar.get();
       var inputFile = angular.element(document.getElementById('avatar'))[0];
 
-      inputFile.addEventListener('change', function () {
+      var avatarFn = function () {
         UserService.avatar.setFile(inputFile.files[0]);
         $scope.$apply();
         if(!$scope.avatar.error && $scope.avatar.file !== undefined) {
           UIkit.modal(document.getElementById('avatar-update-modal')).show();
         }
-      });
+      };
+
+      inputFile.addEventListener('change', avatarFn, false);
 
       $scope.uploadAvatar = function () {
         UserService.avatar.upload().then(function () {
