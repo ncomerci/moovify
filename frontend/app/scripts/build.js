@@ -22,7 +22,7 @@ require.config({
         easymde: '../../static_dependencies/easymde/easyMde',
         purify: '../../bower_components/dompurify/dist/purify',
         'js-joda-timezone': '../../bower_components/js-joda-timezone/dist/js-joda-timezone',
-        dompurify: '../../bower_components/dompurify/src/purify',
+        dompurify: '../../bower_components/dompurify/dist/purify',
         moment: '../../bower_components/moment/moment'
     },
     shim: {

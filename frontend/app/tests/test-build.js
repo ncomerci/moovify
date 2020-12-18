@@ -31,12 +31,13 @@ require.config({
     requirejs: '../../bower_components/requirejs/require',
     restangular: '../../bower_components/restangular/dist/restangular',
     'js-joda': '../../bower_components/js-joda/dist/js-joda',
-    uikit: '../../bower_components/uikit/dist/js/uikit',
-    uikiticons: '../../bower_components/uikit/dist/js/uikit-icons',
-    'uikit-icons': '../../bower_components/uikit/dist/js/uikit-icons',
+    uikit: '../../static_dependencies/uikit/js/uikit',
+    uikiticons: '../../static_dependencies/uikit/js/uikit-icons',
+    'uikit-icons': '../../static_dependencies/uikit/js/uikit-icons',
     iconify: '../../static_dependencies/iconify/iconify',
     easymde: '../../static_dependencies/easymde/easyMde',
     purify: '../../bower_components/dompurify/dist/purify',
+    dompurify: '../../bower_components/dompurify/dist/purify',
     'js-joda-timezone': '../../bower_components/js-joda-timezone/dist/js-joda-timezone',
 
     // Testing dependencies
