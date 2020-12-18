@@ -59,7 +59,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
 
       $scope.tabs = [
         {value:'posts', message:"{{'PROFILE_POST_TAB_DISPLAY' | translate }}"},
-        {value:'comments', message:"{{'PROFILE_COMMENTS_TAB_DISPLAY' | translate }}"},
+        // {value:'comments', message:"{{'PROFILE_COMMENTS_TAB_DISPLAY' | translate }}"},
         {value:'bookmarks', message:"{{'PROFILE_BOOK_TAB_DISPLAY' | translate }}"},
         {value:'following', message:"{{'PROFILE_FOLLOWED_USERS' | translate }}"},
       ];
