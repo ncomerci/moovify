@@ -37,7 +37,7 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/entities/PostCategor
     }
     $scope.bodyConstraints = {
       minLen: 6,
-      maxLen: 10000
+      maxLen: 100000
     }
 
     function configureEasyMDE(){
