@@ -55,7 +55,7 @@
   </filter>
   <filter-mapping>
     <filter-name>springSecurityFilterChain</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/api/*</url-pattern>
   </filter-mapping>
 
   <filter>
@@ -81,7 +81,7 @@
   </filter>
   <filter-mapping>
     <filter-name>openEntityManagerInViewFilter</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/api/*</url-pattern>
   </filter-mapping>
 
   <filter>
@@ -92,15 +92,6 @@
     <filter-name>StaticCacheFilter</filter-name>
     <url-pattern>/resources/*</url-pattern>
   </filter-mapping>
-
-<!--  <filter>-->
-<!--    <filter-name>AcceptHeaderLocaleFilter</filter-name>-->
-<!--    <filter-class>ar.edu.itba.paw.webapp.config.AcceptHeaderLocaleFilter</filter-class>-->
-<!--  </filter>-->
-<!--  <filter-mapping>-->
-<!--    <filter-name>AcceptHeaderLocaleFilter</filter-name>-->
-<!--    <url-pattern>/api/*</url-pattern>-->
-<!--  </filter-mapping>-->
 
   <servlet-mapping>
     <servlet-name>jersey-servlet</servlet-name>
