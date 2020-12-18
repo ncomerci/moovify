@@ -56,10 +56,12 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
 
       var inputFile = angular.element(document.getElementById('avatar'))[0];
 
-      inputFile.addEventListener('change', function () {
+      var avatarFn = function () {
         UserService.avatar.setFile(inputFile.files[0]);
         $scope.$apply();
-      });
+      };
+
+      inputFile.addEventListener('change', avatarFn, false);
 
       $scope.signup = function (user) {
 
@@ -85,11 +87,13 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
               if($scope.avatar.file !== undefined) {
                 UserService.avatar.upload();
               }
+              inputFile.removeEventListener('change', avatarFn, false);
               $scope.loading = false;
               $location.path('/user');
             })
           }).catch(function(err) {
             $scope.loading = false;
+            inputFile.removeEventListener('change', avatarFn, false);
             if(err.data) {
               err.data.forEach(function (e) {
                 $translate(fieldErrors[e['attribute']].i18nKey).then(function(field) {
