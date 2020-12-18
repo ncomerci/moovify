@@ -16,7 +16,7 @@ define(['frontend'], function(frontend) {
 
       link: function(scope) {
 
-        scope.pageSizeOptions = [2, 5, 10, 25, 35];
+        scope.pageSizeOptions = [2, 5, 10, 25];
 
         scope.mutex = false;
 
