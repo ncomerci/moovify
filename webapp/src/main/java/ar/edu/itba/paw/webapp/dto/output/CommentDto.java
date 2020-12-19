@@ -56,7 +56,7 @@ public class CommentDto {
             return;
 
         creationDateTime = comment.getCreationDate();
-        post = new LightweightPostDto(comment.getPost(), uriInfo, securityContext);
+//        post = new LightweightPostDto(comment.getPost(), uriInfo, securityContext);
         body = comment.getBody();
         user = new LightweightUserDto(comment.getUser(), uriInfo, securityContext);
         edited = comment.isEdited();
