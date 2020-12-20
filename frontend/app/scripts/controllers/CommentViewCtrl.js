@@ -37,7 +37,14 @@ define(['frontend','uikit', 'services/entities/CommentService',
 
     CommentService.fetchOneComment(commentId).then(function(comment) {
       $scope.mainComment = comment;
-    }).catch(function() { $location.path('/500') });
+    }).catch(function(response) {
+      if(response.status === 404) {
+        $location.path('/404');
+      }
+      else {
+        $location.path('/500');
+      }
+    });
 
     CommentService.getCommentCommentsWithUserVoteById(commentId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
       $scope.comments = comments;

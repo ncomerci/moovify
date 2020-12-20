@@ -1,12 +1,13 @@
-<div class="uk-margin-auto uk-margin-top">
-  <h2 class="uk-article-title uk-margin-auto uk-text-center">
-    <span ng-show="showing.value === 'posts'">{{'RECOVER_POST_DELETED' | translate}}</span>
-    <span ng-show="showing.value === 'comments'">{{'RECOVER_COMMENT_DELETED' | translate}}</span>
-    <span ng-show="showing.value === 'users'">{{'RECOVER_USER_DELETED' | translate}}</span>
-  </h2>
-  <hr class="uk-divider-icon">
-</div>
-<main class="uk-container-small uk-margin-auto uk-padding-small">
+<div ng-if="isAdmin">
+  <div class="uk-margin-auto uk-margin-top">
+    <h2 class="uk-article-title uk-margin-auto uk-text-center">
+      <span ng-show="showing.value === 'posts'">{{'RECOVER_POST_DELETED' | translate}}</span>
+      <span ng-show="showing.value === 'comments'">{{'RECOVER_COMMENT_DELETED' | translate}}</span>
+      <span ng-show="showing.value === 'users'">{{'RECOVER_USER_DELETED' | translate}}</span>
+    </h2>
+    <hr class="uk-divider-icon">
+  </div>
+  <main class="uk-container-small uk-margin-auto uk-padding-small">
   <section id="search-controllers">
     <div class="uk-flex uk-flex-middle">
       <div class="uk-search uk-search-large uk-width-expand">
@@ -39,3 +40,4 @@
     </div>
   </section>
 </main>
+</div>
