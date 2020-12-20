@@ -4,7 +4,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
   , function(frontend, UIkit) {
 
     'use strict';
-    frontend.controller('profileCtrl', function($scope, $locale, $translate, $location, $routeParams,
+    frontend.controller('ProfileCtrl', function($scope, $locale, $translate, $location, $routeParams,
                                                 LoggedUserFactory, UserService, PageTitle, $q) {
 
       var routeID = parseInt($routeParams.id);
