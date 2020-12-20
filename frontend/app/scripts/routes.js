@@ -10,11 +10,11 @@ define([], function() {
             },
             '/404': {
                 templateUrl: 'resources/404.html',
-                controller: 'errorCtrl'
+                controller: 'ErrorCtrl'
             },
           '/500': {
                 templateUrl: 'resources/500.html',
-                controller: 'errorCtrl'
+                controller: 'ErrorCtrl'
             },
             '/search': {
                 templateUrl: 'resources/views/search/search.html',
@@ -30,18 +30,18 @@ define([], function() {
             },
             '/user': {
                 templateUrl: 'resources/views/user/userProfile.html',
-                controller: 'profileCtrl'
+                controller: 'ProfileCtrl'
             },
             '/user/:id': {
               templateUrl: 'resources/views/user/userProfile.html',
-              controller: 'profileCtrl'
+              controller: 'ProfileCtrl'
             },
             '/post/create': {
                 templateUrl: 'resources/views/post/postCreate.html',
                 controller: 'PostCreateCtrl'
             },
             '/post/:id': {
-                templateUrl: 'resources/views/post/PostViewController.html',
+                templateUrl: 'resources/views/post/postView.html',
                 controller: 'PostViewCtrl'
             },
             '/movie/:id': {
@@ -61,7 +61,7 @@ define([], function() {
                 controller: 'UpdatePasswordCtrl'
             },
             '/comment/:id': {
-              templateUrl: 'resources/views/comment/commentViewController.html',
+              templateUrl: 'resources/views/comment/commentView.html',
               controller: 'CommentViewCtrl'
             },
             /* ===== yeoman hook ===== */
