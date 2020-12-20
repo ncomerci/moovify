@@ -160,6 +160,7 @@ public class PostServiceImpl implements PostService {
         return postDao.getUserFavouritePosts(user, enabled, getPostSortCriteria(sortCriteria), pageNumber, pageSize);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public PaginatedCollection<PostVote> getPostVotes(Post post, int pageNumber, int pageSize) {
         return postDao.getPostVotes(post, pageNumber, pageSize);
