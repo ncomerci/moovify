@@ -4,7 +4,7 @@ define(['frontend', 'uikit', 'easymde', 'purify', 'services/entities/PostCategor
 ], function(frontend, UIkit, EasyMDE, DOMPurify) {
 
   'use strict';
-  frontend.controller('PostCreateController', function($scope, PostCategoryService, MovieService, PostService, PageTitle, $location) {
+  frontend.controller('PostCreateCtrl', function($scope, PostCategoryService, MovieService, PostService, PageTitle, $location) {
     PageTitle.setTitle('POST_CREATE_TITLE');
 
     $scope.post = {};

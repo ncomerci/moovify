@@ -4,7 +4,7 @@ define(['frontend', 'directives/TabDisplayDirective', 'directives/search/SearchP
 ], function(frontend) {
 
     'use strict';
-    frontend.controller('AdminController', function($scope, $routeParams, $location, PageTitle, $httpParamSerializer) {
+    frontend.controller('AdminCtrl', function($scope, $routeParams, $location, PageTitle, $httpParamSerializer) {
       PageTitle.setTitle('ADMIN_PANEL_TITLE')
 
       $scope.showingValues = [

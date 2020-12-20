@@ -4,7 +4,7 @@ define(['frontend', 'uikit', 'directives/search/SearchMoviesDirective', 'directi
 
   var defaultType = 'posts';
 
-    frontend.controller('SearchController', function($scope, $routeParams, $location, PageTitle) {
+    frontend.controller('SearchCtrl', function($scope, $routeParams, $location, PageTitle) {
       PageTitle.setTitle('SEARCH_TITLE')
       $scope.query = {
         value: $routeParams.query ? $routeParams.query : ''

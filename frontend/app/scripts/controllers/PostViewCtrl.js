@@ -3,7 +3,7 @@ define(['frontend', 'uikit','services/entities/PostService', 'services/entities/
   'directives/EditablePostBodyDirective', 'services/utilities/PageTitleService', 'services/utilities/TimeService'], function(frontend, UIkit) {
 
   'use strict';
-  frontend.controller('PostViewController', function ($scope, $location, $locale, $q, $routeParams, PostService,
+  frontend.controller('PostViewCtrl', function ($scope, $location, $locale, $q, $routeParams, PostService,
                            LoggedUserFactory, UserService, TimeService, CommentService, PageTitle) {
 
     PageTitle.setTitle('POST_VIEW_TITLE');

@@ -3,7 +3,7 @@ define(['frontend','uikit', 'services/entities/CommentService',
   'services/utilities/PageTitleService',  'directives/PrettyDateDirective', 'services/utilities/TimeService'], function(frontend, UIkit) {
 
   'use strict';
-  frontend.controller('CommentViewController', function ($scope, $location, LoggedUserFactory, UserService,
+  frontend.controller('CommentViewCtrl', function ($scope, $location, LoggedUserFactory, UserService,
                                                          PageTitle, $q, CommentService, TimeService, $routeParams) {
 
     PageTitle.setTitle('COMMENT_VIEW_TITLE');

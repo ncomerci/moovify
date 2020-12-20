@@ -18,7 +18,7 @@ define([], function() {
             },
             '/search': {
                 templateUrl: 'resources/views/search/search.html',
-                controller: 'SearchController'
+                controller: 'SearchCtrl'
             },
             '/login': {
                 templateUrl: 'resources/views/login/login.html',
@@ -38,19 +38,19 @@ define([], function() {
             },
             '/post/create': {
                 templateUrl: 'resources/views/post/postCreate.html',
-                controller: 'PostCreateController'
+                controller: 'PostCreateCtrl'
             },
             '/post/:id': {
                 templateUrl: 'resources/views/post/PostViewController.html',
-                controller: 'PostViewController'
+                controller: 'PostViewCtrl'
             },
             '/movie/:id': {
                 templateUrl: 'resources/views/movie/movieView.html',
-                controller: 'MovieViewController'
+                controller: 'MovieViewCtrl'
             },
             '/admin': {
                 templateUrl: 'resources/views/admin/admin.html',
-                controller: 'AdminController'
+                controller: 'AdminCtrl'
             },
             '/resetPassword': {
                 templateUrl: 'resources/views/user/resetPassword.html',
@@ -62,7 +62,7 @@ define([], function() {
             },
             '/comment/:id': {
               templateUrl: 'resources/views/comment/commentViewController.html',
-              controller: 'CommentViewController'
+              controller: 'CommentViewCtrl'
             },
             /* ===== yeoman hook ===== */
             /* Do not remove these commented lines! Needed for auto-generation */

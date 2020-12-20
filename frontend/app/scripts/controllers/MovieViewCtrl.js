@@ -2,7 +2,7 @@ define(['frontend', 'services/entities/MovieService', 'services/entities/PostSer
   ,'services/entities/MovieCategoryService', 'directives/fetch/FetchPostsDirective', 'services/utilities/PageTitleService'], function(frontend) {
 
   'use strict';
-  frontend.controller('MovieViewController', function($scope, $routeParams, $httpParamSerializer, $locale, MovieService,
+  frontend.controller('MovieViewCtrl', function($scope, $routeParams, $httpParamSerializer, $locale, MovieService,
                                                       PostService, PageTitle, DisplayService, MovieCategoryService) {
 
     $scope.movie = null;
