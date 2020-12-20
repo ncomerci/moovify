@@ -69,7 +69,7 @@ public class Post {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
     private Set<Comment> comments;
 
-    @ElementCollection(targetClass = String.class)
+    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @CollectionTable(
             name="tags",
             joinColumns = @JoinColumn(name = "post_id", nullable = false)
