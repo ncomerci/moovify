@@ -52,7 +52,14 @@ define(['frontend', 'uikit','services/entities/PostService', 'services/entities/
         $location.path('404');
       }
       PageTitle.setTitle('POST_VIEW_TITLE', {post:$scope.post.title});
-    }).catch(function() { $location.path('/500') });
+    }).catch(function(response) {
+      if(response.status === 404) {
+        $location.path('/404');
+      }
+      else {
+        $location.path('/500');
+      }
+    });
 
     CommentService.getPostCommentsWithUserVote(postId, commentDepth, commentsOrder, commentsPageSize, commentsPageNumber).then(function(comments) {
       $scope.comments = comments;

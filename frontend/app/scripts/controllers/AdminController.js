@@ -1,10 +1,22 @@
 define(['frontend', 'directives/TabDisplayDirective', 'directives/search/SearchPostsDirective',
   'directives/search/SearchUsersDirective','directives/search/SearchCommentsDirective',
-  'services/utilities/PageTitleService'
+  'services/utilities/PageTitleService', 'services/entities/UserService', 'services/LoginService'
 ], function(frontend) {
 
     'use strict';
-    frontend.controller('AdminController', function($scope, $routeParams, $location, PageTitle, $httpParamSerializer) {
+    frontend.controller('AdminController', function($scope, LoggedUserFactory, UserService, $routeParams, $location, PageTitle, $httpParamSerializer) {
+
+
+      $scope.isAdmin = false;
+      var loggedUser = LoggedUserFactory.getLoggedUser();
+
+      if(!loggedUser.logged || !UserService.userHasRole(loggedUser, 'ADMIN')){
+        $location.path('/404');
+      } else {
+        $scope.isAdmin = true;
+      }
+
+
       PageTitle.setTitle('ADMIN_PANEL_TITLE')
 
       $scope.showingValues = [
