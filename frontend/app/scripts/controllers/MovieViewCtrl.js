@@ -3,7 +3,7 @@ define(['frontend', 'services/entities/MovieService', 'services/entities/PostSer
 
   'use strict';
   frontend.controller('MovieViewCtrl', function($scope, $routeParams, $httpParamSerializer, $locale, MovieService,
-                                                      PostService, PageTitle, DisplayService, MovieCategoryService) {
+                                                      PostService, PageTitle, DisplayService, MovieCategoryService, $location) {
 
     $scope.movie = null;
     $scope.posts = null;
@@ -51,6 +51,13 @@ define(['frontend', 'services/entities/MovieService', 'services/entities/PostSer
     MovieService.fetchMovieById($routeParams.id).then(function (movie) {
       $scope.movie = movie;
       PageTitle.setTitle('MOVIE_TITLE', {movie:$scope.movie.title});
-    }).catch(function() { $location.path('/500') });
+    }).catch(function(response) {
+      if(response.status === 404) {
+        $location.path('/404');
+      }
+      else {
+        $location.path('/500');
+      }
+    });
   });
 });
