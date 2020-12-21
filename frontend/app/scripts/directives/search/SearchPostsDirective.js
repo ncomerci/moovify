@@ -2,10 +2,12 @@
 define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/PostService',
   'directives/PaginationHandlerDirective', 'directives/search/PostsFiltersHandlerDirective', 'directives/listEntries/PostListEntryDirective'], function(frontend) {
 
-  var defaultPageSize = 5;
+  function init(value, defaultVal, loadFromUrl){
 
-  function init(value, defaultVal){
-    return value ? value : defaultVal;
+    if(loadFromUrl){
+      return value ? value : defaultVal;
+    }
+    return defaultVal;
   }
 
   frontend.directive('searchPostsDirective', function($location, $routeParams) {
@@ -17,6 +19,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         query: '=',
         enabledEntities: '<',
         refreshUrlFn: '=',
+        defaultPageSize: '<',
+        loadFromUrl: '<',
         adminControls:'<'
       },
       link: function (scope) {
@@ -28,8 +32,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         scope.firstSearchDone = false;
 
         scope.paginationParams = {
-          currentPage: init(parseInt($routeParams.pageNumber), 0),
-          pageSize: init(parseInt($routeParams.pageSize), defaultPageSize)
+          currentPage: init(parseInt($routeParams.pageNumber), 0, scope.loadFromUrl),
+          pageSize: init(parseInt($routeParams.pageSize), scope.defaultPageSize, scope.loadFromUrl)
         };
 
         scope.query = scope.$parent.query;
