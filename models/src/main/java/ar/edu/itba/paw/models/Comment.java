@@ -29,7 +29,7 @@ public class Comment {
     @Basic(optional = false)
     private LocalDateTime creationDate;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
