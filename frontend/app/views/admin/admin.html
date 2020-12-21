@@ -26,15 +26,15 @@
     <div class="uk-grid">
       <div class="uk-width-expand uk-margin-small-top">
         <div ng-show="showing.value === 'posts'"><!--{{getCategoryUrl('/users', {query:query.value})}}-->
-          <search-posts-directive query="query" admin-controls="true" enabled-entities="false" refresh-url-fn="postDisabledUrl" ></search-posts-directive>
+          <search-posts-directive query="query" admin-controls="true" load-from-url="showing.value === 'posts'" default-page-size="5" enabled-entities="false" refresh-url-fn="postDisabledUrl" ></search-posts-directive>
         </div>
 
         <div ng-show="showing.value === 'comments'">
-          <search-comments-directive query="query" admin-controls="true" enabled-entities="false" refresh-url-fn="commentsDisabledtUrl" ></search-comments-directive>
+          <search-comments-directive query="query" admin-controls="true" load-from-url="showing.value === 'comments'" default-page-size="5" enabled-entities="false" refresh-url-fn="commentsDisabledtUrl" ></search-comments-directive>
         </div>
 
         <div ng-show="showing.value === 'users'">
-          <search-users-directive query="query" admin-controls="true" enabled-entities="false" refresh-url-fn="usersDisabledUrl" ></search-users-directive>
+          <search-users-directive query="query" admin-controls="true" load-from-url="showing.value === 'users'" default-page-size="5" enabled-entities="false" refresh-url-fn="usersDisabledUrl" ></search-users-directive>
         </div>
       </div>
     </div>
