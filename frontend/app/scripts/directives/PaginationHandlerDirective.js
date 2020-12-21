@@ -50,9 +50,7 @@ define(['frontend'], function(frontend) {
               scope.resetPaginationFn();
             }
 
-            if(newPageNumber){
-              scope.updatePageOptions();
-            }
+            scope.updatePageOptions();
 
             scope.searchFn();
           }
