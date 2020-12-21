@@ -1,7 +1,7 @@
 define(['frontend', 'services/utilities/PageTitleService'], function(frontend) {
 
   'use strict';
-  frontend.controller('errorCtrl', function($scope, PageTitle, $location) {
+  frontend.controller('ErrorCtrl', function($scope, PageTitle, $location) {
 
     if($location.path().match(/.*500$/)) {
       PageTitle.setTitle('PAGE_500');
