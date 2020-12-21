@@ -3,14 +3,20 @@
   <div ng-if="comment.enabled">
 
     <div class="comment-header">
-      <div class="comment-avatar">
+      <div class="comment-avatar" ng-if="comment.user.enabled">
         <a ng-href="user/{{comment.user.id}}">
           <img class="circle-comment uk-comment-avatar" ng-src="{{comment.user.avatar}}" alt="">
         </a>
       </div>
+      <div class="comment-avatar" ng-if="!comment.user.enabled">
+        <img class="circle-comment" src="resources/images/avatar.jpg" alt="">
+      </div>
       <div class="comment-meta uk-margin-small-left uk-margin-right uk-flex uk-flex-column">
-        <div class="uk-comment-title">
+        <div class="uk-comment-title" ng-if="comment.user.enabled">
           <a ng-href="user/{{comment.user.id}}">{{comment.user.username}}</a>
+        </div>
+        <div class="uk-comment-title" ng-if="!comment.user.enabled">
+          {{'USER_DELETED' | translate}}
         </div>
         <p class="uk-comment-meta uk-margin-remove-top">
           <pretty-date-directive creation-date="comment.creationDateTime"></pretty-date-directive>

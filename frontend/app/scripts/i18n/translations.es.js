@@ -280,6 +280,7 @@ define([], function() {
 
     CREATE_ACCOUNT_MODAL_TITLE: "¡Oh! Te gustaría demostrar tu interés?",
     CREATE_ACCOUNT_MODAL_BODY: "Registrate y hazlo al instante!",
-    ACTION_WARNING: "Esta accion puede tardar hasta 15 minutos en tener efecto"
+    ACTION_WARNING: "Esta accion puede tardar hasta 15 minutos en tener efecto",
+    USER_DELETED: "Usuario borrado"
   };
 });

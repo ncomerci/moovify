@@ -282,6 +282,7 @@ define([], function() {
 
     CREATE_ACCOUNT_MODAL_TITLE: "Oh! Would you like to show some interest?",
     CREATE_ACCOUNT_MODAL_BODY: "Sign up and do it right away!",
-    ACTION_WARNING: "This action can take up to 15 minutes to take effect"
+    ACTION_WARNING: "This action can take up to 15 minutes to take effect",
+    USER_DELETED: "User deleted"
 	};
 });
