@@ -12,7 +12,7 @@ define([], function() {
                 templateUrl: 'resources/404.html',
                 controller: 'ErrorCtrl'
             },
-          '/500': {
+            '/500': {
                 templateUrl: 'resources/500.html',
                 controller: 'ErrorCtrl'
             },

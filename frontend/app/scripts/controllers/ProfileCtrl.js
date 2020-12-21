@@ -26,7 +26,14 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
               {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
             ];
             PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
-          }).catch(function() { $location.path('/404') });
+          }).catch(function(response) {
+            if(response.status === 404) {
+              $location.path('/404');
+            }
+            else {
+              $location.path('/500');
+            }
+          });
 
           var followedUser = UserService.doLoggedUserFollow($scope.loggedUser, routeID).then(function (bool) {
             $scope.isFollowed = bool;
@@ -42,6 +49,11 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
           $scope.loadUserFinished = true;
         }
       } else {
+
+        if(!$scope.loggedUser.logged){
+          $location.path('/404');
+        }
+
         Object.assign($scope.user, $scope.loggedUser);
         PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
         $scope.isAdmin = UserService.userHasRole($scope.loggedUser, 'ADMIN');
