@@ -18,12 +18,12 @@
       <a ng-click="paginationParams.currentPage = paginationParams.currentPage - 1"><span uk-pagination-previous></span></a>
     </li>
 
-    <li ng-repeat="page in [].constructor(paginationParams.lastPage + 1) track by $index"
-        ng-if="$index >= firstShownPage && $index <= lastShownPage"
-        ng-class="{ 'uk-active': $index === paginationParams.currentPage }">
-      <a ng-class="{ 'uk-disabled': $index === paginationParams.currentPage || mutex }"
-         ng-click="paginationParams.currentPage = $index"
-      >{{$index + 1}}</a>
+    <li ng-repeat="index in pageNumberOptions"
+        ng-if="index >= firstShownPage && index <= lastShownPage"
+        ng-class="{ 'uk-active': index === paginationParams.currentPage }">
+      <a ng-class="{ 'uk-disabled': index === paginationParams.currentPage || mutex }"
+         ng-click="paginationParams.currentPage = index"
+      >{{index + 1}}</a>
     </li>
 
     <li ng-show="paginationParams.currentPage < paginationParams.lastPage">
