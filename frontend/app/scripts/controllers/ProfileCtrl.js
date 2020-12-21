@@ -50,7 +50,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
         }
       } else {
 
-        if(!$scope.loggedUser.isLogged){
+        if(!$scope.loggedUser.logged){
           $location.path('/404');
         }
 
