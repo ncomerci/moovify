@@ -26,17 +26,17 @@
         <tab-display-directive tabs="showingValues" tab-selected="showing.value"></tab-display-directive>
 <!--    Hottest Posts    -->
         <div ng-show="showing.value === 'hottestPosts'">
-          <fetch-posts-directive default-page-size="25" order="'hottest'" enabled-entities="true" path="/posts" refresh-url-fn="setHottestUrl" ></fetch-posts-directive>
+          <fetch-posts-directive default-page-size="25" load-from-url="showing.value === 'hottestPosts'" order="'hottest'" enabled-entities="true" path="/posts" refresh-url-fn="setHottestUrl" ></fetch-posts-directive>
         </div>
 
 <!--    Newest Posts    -->
         <div ng-show="showing.value === 'newestPosts'">
-          <fetch-posts-directive default-page-size="25" order="'newest'" enabled-entities="true" path="/posts" refresh-url-fn="setNewestUrl" ></fetch-posts-directive>
+          <fetch-posts-directive default-page-size="25" load-from-url="showing.value === 'newestPosts'" order="'newest'" enabled-entities="true" path="/posts" refresh-url-fn="setNewestUrl" ></fetch-posts-directive>
         </div>
 
 <!--    My Feed    -->
         <div ng-if="loggedUser.logged" ng-show="showing.value === 'myFeed'">
-          <fetch-posts-directive default-page-size="25" order="'hottest'" enabled-entities="true" path="/user/following/posts" refresh-url-fn="setFeedUrl" ></fetch-posts-directive>
+          <fetch-posts-directive default-page-size="25" load-from-url="showing.value === 'myFeed'" order="'hottest'" enabled-entities="true" path="/user/following/posts" refresh-url-fn="setFeedUrl" ></fetch-posts-directive>
         </div>
 
       </div>
