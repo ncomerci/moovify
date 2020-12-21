@@ -2,8 +2,12 @@
 define(['frontend', 'services/LoginService', 'services/utilities/PageTitleService', 'services/entities/MovieService',
   'directives/PaginationHandlerDirective', 'directives/listEntries/MovieListEntryDirective'], function(frontend) {
 
-  function init(value, defaultVal){
-    return value ? value : defaultVal;
+  function init(value, defaultVal, loadFromUrl){
+
+    if(loadFromUrl){
+      return value ? value : defaultVal;
+    }
+    return defaultVal;
   }
 
   frontend.directive('fetchMoviesDirective', function($location, $routeParams) {
@@ -15,6 +19,7 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         order: '<',
         enabledEntities: '<',
         defaultPageSize: '<',
+        loadFromUrl: '<',
         path: '@',
         refreshUrlFn: '='
 
@@ -65,8 +70,8 @@ define(['frontend', 'services/LoginService', 'services/utilities/PageTitleServic
         scope.firstSearchDone = false;
 
         scope.paginationParams = {
-          currentPage: init(parseInt($routeParams.pageNumber), 0),
-          pageSize: init(parseInt($routeParams.pageSize), scope.defaultPageSize)
+          currentPage: init(parseInt($routeParams.pageNumber), 0, scope.loadFromUrl),
+          pageSize: init(parseInt($routeParams.pageSize), scope.defaultPageSize, scope.loadFromUrl)
         };
 
         scope.resetPagination = null;
