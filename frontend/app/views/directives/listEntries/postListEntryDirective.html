@@ -34,7 +34,15 @@
 
       </p>
 
-      <a class="text-lead" ng-href="post/{{post.id}}">
+      <p ng-if="!post.enabled" class="uk-text-primary text-lead">
+        <span ng-if="post.hasUserBookmarked">
+          <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false" title="{{'BOOKMARKED_TITLE' | translate}}"></span>
+          <span> - </span>
+        </span>
+        <span>{{post.title}}</span>
+      </p>
+
+      <a ng-if="post.enabled" class="text-lead" ng-href="post/{{post.id}}">
         <span ng-if="post.hasUserBookmarked">
           <span class="iconify small-iconify" data-icon="mdi-bookmark-check" data-inline="false" title="{{'BOOKMARKED_TITLE' | translate}}"></span>
           <span> - </span>
