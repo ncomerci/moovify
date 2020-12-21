@@ -26,7 +26,7 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
               {value:'following', message:"{{'USER_FOLLOWED_USERS' | translate}}"},
             ];
             PageTitle.setTitle('PROFILE_TITLE', {user:$scope.user.username});
-          }).catch(function() { $location.path('/500') });
+          }).catch(function() { $location.path('/404') });
 
           var followedUser = UserService.doLoggedUserFollow($scope.loggedUser, routeID).then(function (bool) {
             $scope.isFollowed = bool;
