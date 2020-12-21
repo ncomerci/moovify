@@ -24,7 +24,7 @@
         <dd>
           <ul class="uk-padding-small uk-padding-remove-right uk-padding-remove-bottom">
               <li ng-repeat="category in movie.categories">
-                <a ng-href="{{getCategoryUrl('/search', {showing:'movies',movieCategory:category.name})}}">{{getMovieCategory(category.name) | translate}}</a>
+                <a ng-href="{{getCategoryUrl('search', {showing:'movies',movieCategory:category.name})}}">{{getMovieCategory(category.name) | translate}}</a>
               </li>
           </ul>
         </dd>
