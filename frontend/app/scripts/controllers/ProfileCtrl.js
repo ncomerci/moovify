@@ -16,7 +16,9 @@ define(['frontend', 'uikit', 'directives/TabDisplayDirective', 'directives/fetch
         if(routeID !== $scope.loggedUser.id) {
 
           var getUserData = UserService.getUser(routeID).then(function (u) {
-            if(u.enabled === false) throw '';
+            if(u.enabled === false) {
+              $location.path('/404');
+            }
             Object.assign($scope.user, u);
             $scope.isAdmin = UserService.userHasRole($scope.user, 'ADMIN');
             $scope.tabs = [
