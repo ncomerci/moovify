@@ -9,6 +9,7 @@ define(['frontend'], function(frontend) {
         paginationParams: '=',
         searchFn: '&',
         resetPaginationFn: '=',
+        width: '<?',
         mutex: '='
       },
 
@@ -18,17 +19,13 @@ define(['frontend'], function(frontend) {
 
         scope.pageSizeOptions = [2, 5, 10, 25];
 
+        if(!scope.width){
+          scope.width = 5;
+        }
+
         scope.mutex = false;
 
-        var width = 5;
-
-        scope.firstShownPage = scope.paginationParams.currentPage - width;
-        if(scope.firstShownPage < 0)
-          scope.firstShownPage = 0;
-
-        scope.lastShownPage = scope.paginationParams.currentPage + width;
-        if(scope.lastShownPage > scope.paginationParams.lastPage)
-          scope.lastShownPage = scope.paginationParams.lastPage;
+        scope.updatePageOptions();
 
         scope.searchFn = scope.searchFn();
 
@@ -52,10 +49,32 @@ define(['frontend'], function(frontend) {
             if(newPageSize){
               scope.resetPaginationFn();
             }
+
+            scope.updatePageOptions();
+
             scope.searchFn();
           }
         });
 
+      },
+      controller: function($scope) {
+
+        $scope.updatePageOptions = function () {
+
+          $scope.pageNumberOptions = [];
+
+          $scope.firstShownPage = $scope.paginationParams.currentPage - Math.floor($scope.width/2);
+          if($scope.firstShownPage < 0)
+            $scope.firstShownPage = 0;
+
+          $scope.lastShownPage = $scope.paginationParams.currentPage + Math.floor($scope.width/2);
+          if($scope.lastShownPage > $scope.paginationParams.lastPage)
+            $scope.lastShownPage = $scope.paginationParams.lastPage;
+
+          for (var i = $scope.firstShownPage; i <= $scope.lastShownPage; i++) {
+            $scope.pageNumberOptions.push(i);
+          }
+        }
       }
     };
   });
