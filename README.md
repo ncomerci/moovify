@@ -19,11 +19,11 @@ Cada capa esta fuertemente separada en los modulos Controllers, Services, Models
 
 El proyecto contó con tres fases distintas, donde las tecnologias utilizadas fueron cambiando.
 
-    Fase 1: Server-Side rendering utilizando Spring MVC, JSP para los templates HTML y JDBC para el manejo de la base de datos.
+- Fase 1: Server-Side rendering utilizando Spring MVC, JSP para los templates HTML y JDBC para el manejo de la base de datos.
 
-    Fase 2: Se reemplazo JDBC por Hibernate.
+- Fase 2: Se reemplazo JDBC por Hibernate.
 
-    Fase 3: Se reemplazo el modelo server-side por el de API. Para esto Spring MVC fue reemplazado por Jersey, y el frontend ahora es implementado con Angularjs como un modulo aparte. Esta es la version final de proyecto.
+- Fase 3: Se reemplazo el modelo server-side por el de API. Para esto Spring MVC fue reemplazado por Jersey, y el frontend ahora es implementado con Angularjs como un modulo aparte. Esta es la version final de proyecto.
 
 ## Building
 
